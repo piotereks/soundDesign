@@ -1,0 +1,28 @@
+ImproTool (python) next steps
+
+1. Dependency between pattern and rythm (default, configurable, on-the fly)
+2. Implementation of rythm pattern (isobar, some manual patterns with CC codes?)
+
+Define base pattern (as dataset) and play it
+Adopt combination o patterns, scales and note leghts (pattern vs decorators)
+
+3. Detect read song bpm and adopt played patterns
+4. Pattern can be selected, can be random
+5. Add keyboard or midi steering for scales, pattern, leghts
+6. Add pattern selection depending on interval provided from keyboard
+7. Later scales can be suggested, selected, randomised,
+8. Predefined sets for differen kind of music e.g. blues kater jazz, any others types
+9. Add your scales to scale.py
+Evetuallly Gather different backgrounds tracks fir standard genres
+Myltiinstrument support
+Tensor flow/magenta generations? Or maybe tensor selected impro patterns
+
+
+Problems:
+1) How to deal with lengths of notes and tempo, specially when converting to midi events.
+This calculation seem to be heart of playing.
+Can isobar be used for that?
+
+2) Midi clock support.
+
+
