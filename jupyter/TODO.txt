@@ -13,7 +13,7 @@ Adopt combination o patterns, scales and note leghts (pattern vs decorators)
 7. Later scales can be suggested, selected, randomised,
 8. Predefined sets for differen kind of music e.g. blues kater jazz, any others types
 9. Add your scales to scale.py
-Evetuallly Gather different backgrounds tracks fir standard genres
+Evetuallly Gather different backgrounds tracks for standard genres
 Myltiinstrument support
 Tensor flow/magenta generations? Or maybe tensor selected impro patterns
 
@@ -25,4 +25,4 @@ Can isobar be used for that?
 
 2) Midi clock support.
 
-
+3) when using isobar and timeline - how to add additional sounds  - timeline.background() instead of run()
