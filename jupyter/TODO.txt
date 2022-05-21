@@ -29,6 +29,7 @@ Can isobar be used for that?
 
 
 What to do with Rythm patterns:
+(Idea: Express patterns with ticks)
 For start just focus on standard patterns (not necessarily equally distributed,but start them first).
 Skip for a moment Ornamentacje and maybe forcus on diminuncje (which are about how to come from one tone to other, but
 but have slightly higher resolution as patterns.
@@ -76,6 +77,7 @@ Or maybe there is psequence easy recalculation....
 Work on easy example first as prototype on how you want to play.
 
 
-
+# Scheduling patterns with clock + actually synchronization
+timeline.background() allows any timing (this is live).
 
 
