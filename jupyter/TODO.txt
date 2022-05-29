@@ -79,5 +79,5 @@ Work on easy example first as prototype on how you want to play.
 
 # Scheduling patterns with clock + actually synchronization
 timeline.background() allows any timing (this is live).
-
+# create loop with pattern ref replaced by other pattern (using sync)
 
