@@ -79,5 +79,8 @@ Work on easy example first as prototype on how you want to play.
 
 # Scheduling patterns with clock + actually synchronization
 timeline.background() allows any timing (this is live).
-# create loop with pattern ref replaced by other pattern (using sync)
+This actually can be achieved by getting one track with click track and second track listening to that.
+Synchronization by click gives to preserve tempo. How to synch with beats?
+
+# create loop with pattern ref replaced by other pattern (using sync) - Done
 
