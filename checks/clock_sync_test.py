@@ -14,9 +14,20 @@ def print_message(message):
 def print_tempo():
     if midi_in.tempo:
         print("Estimated tempo: %.3f" % midi_in.tempo)
-
-
 def crt_input():
+    names = mido.get_input_names()
+    print(names)
+    input_midi_name = 'Bome Virtual MIDI Port 1'
+
+    try:
+        midi_in = mido.open_input(input_midi_name)
+        print(f'open in {input_midi_name} opened')
+
+    except:
+        print(f'open in {input_midi_name} failed')
+    return midi_in
+
+def crt_inputX():
     names = mido.get_input_names()
     print(names)
     input_midi_name = 'Bome Virtual MIDI Port 1'
@@ -72,12 +83,14 @@ def crt_output():
 
 
 midi_in = crt_input()
+print('asdfsdf')
 # crt_output()
 
 # midi_in = iso.MidiInputDevice()
 # midi_in.callback = print_message
 # midi_in.callback = print_tempo
 
-print("Opened MIDI input: %s" % midi_in.device_name)
+print("Opened MIDI input: %s" % midi_in.__dict__)
+# print("Opened MIDI input: %s" % midi_in.device_name)
 
 print('Processing Done')

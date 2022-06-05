@@ -84,3 +84,13 @@ Synchronization by click gives to preserve tempo. How to synch with beats?
 
 # create loop with pattern ref replaced by other pattern (using sync) - Done
 
+# check different souces of midi clock
+## midi file being played (by mido, but also by diff mid players)
+## midi clock tool
+## ableton (both midi clock version, like "Ableton? sync protocol" or OSC
+## by beat-detection python libraries (if any)
+
+Midi clock has
+clock, start, stop, continue (as base).
+is missing sync option though.
+Check here is to evaluate what are the option of syncing.
