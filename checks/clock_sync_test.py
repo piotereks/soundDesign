@@ -1,19 +1,32 @@
 import mido
 import isobar as iso
 import time
+import datetime
 
-
+filter1=('note_on','note_off','clock','control_change')
+filter2=('note_on','note_off','control_change')
+filter=filter1
 def print_message(message):
     """
     The callback argument is a mido Message object:
     https://mido.readthedocs.io/en/latest/messages.html
     """
     print(" - Received MIDI: %s" % message)
+    print(" - Received MIDI: %s" % message.__dict__, message.type)
+    print(dir(message))
 
+
+def print_message_meta(message):
+    """
+    The callback argument is a mido Message object:
+    https://mido.readthedocs.io/en/latest/messages.html
+    """
+    if message.type not in filter:
+        print(datetime.datetime.now()," - Received MIDI: %s" % message)
 
 def print_tempo():
     if midi_in.tempo:
-        print("Estimated tempo: %.3f" % midi_in.tempo)
+        print(time, "Estimated tempo: %.3f" % midi_in.tempo)
 def crt_input():
     names = mido.get_input_names()
     print(names)
@@ -87,7 +100,7 @@ print('asdfsdf')
 # crt_output()
 
 # midi_in = iso.MidiInputDevice()
-# midi_in.callback = print_message
+midi_in.callback = print_message_meta
 # midi_in.callback = print_tempo
 
 print("Opened MIDI input: %s" % midi_in.__dict__)
