@@ -1,5 +1,5 @@
 ImproTool (python) next steps
-
+# General principles
 1. Dependency between pattern and rythm (default, configurable, on-the fly)
 2. Implementation of rythm pattern (isobar, some manual patterns with CC codes?)
 
@@ -33,6 +33,8 @@ What to do with Rythm patterns:
 For start just focus on standard patterns (not necessarily equally distributed,but start them first).
 Skip for a moment Ornamentacje and maybe forcus on diminuncje (which are about how to come from one tone to other, but
 but have slightly higher resolution as patterns.
+
+sdfds
 
 Standard patterns do as rule of beat (length of beat)
 So, when you have measure 4/4 - there are quarter notes as main note (and beat) and there is 4 of quarter notes in beat.
@@ -74,22 +76,29 @@ PSequence for time could be confusing since it changes with change of tempo (or 
 I want to have possibilitiy to calculate that on the fly.
 Or maybe there is psequence easy recalculation....
 
+# Synchronicity
+Midi clock has
+clock, start, stop, continue (as base).
+is missing sync option though.
+Check here is to evaluate what are the option of syncing.
+
+
 Work on easy example first as prototype on how you want to play.
 
 
-# Scheduling patterns with clock + actually synchronization
+## Scheduling patterns with clock + actually synchronization
 timeline.background() allows any timing (this is live).
 This actually can be achieved by getting one track with click track and second track listening to that.
 Synchronization by click gives to preserve tempo. How to synch with beats?
 
-# create loop with pattern ref replaced by other pattern (using sync) - Done
+## create loop with pattern ref replaced by other pattern (using sync) - Done
 
-# check different sources of midi clock
-## midi file being played (by mido, but also by diff mid players)
+## check different sources of midi clock
+### midi file being played (by mido, but also by diff mid players)
 Received MIDI: program_change channel=0 program=0 time=0  = PC message might be used to sync since it goes at start
 
-## midi clock tool
-## ableton (both midi clock version, like "Ableton? sync protocol" or OSC
+### midi clock tool
+### ableton (both midi clock version, like "Ableton? sync protocol" or OSC
 Ableton midi sync dump
 2022-06-09 17:36:04.621986  - Received MIDI: continue time=0
 2022-06-09 17:36:10.622986  - Received MIDI: stop time=0
@@ -104,9 +113,9 @@ Ableton midi sync dump
 2022-06-09 17:36:21.466991  - Received MIDI: stop time=0
 
 
-## by beat-detection python libraries (if any)
-## can tick be used for sync (check what happens if isobar tick is used on output where clock being sent)
-Midi clock has
-clock, start, stop, continue (as base).
-is missing sync option though.
-Check here is to evaluate what are the option of syncing.
+### by beat-detection python libraries (if any)
+### can tick be used for sync (check what happens if isobar tick is used on output where clock being sent)
+
+# Tracker
+Tracker compose of series of pattern provided as list when scheduling timeline
+## Run tracker along with some ready midi file
