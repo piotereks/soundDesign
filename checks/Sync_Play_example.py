@@ -109,7 +109,7 @@ beat = beatNone
 
 # Run main function beat with duration 4. This one is looping forever.
 timeline.background()
-timeline.schedule({
+tmln=timeline.schedule({
     "action": lambda: beat(),
     "duration": 4
 })

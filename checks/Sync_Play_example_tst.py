@@ -263,3 +263,9 @@ tmln = timeline.schedule({
 })
 
 
+# To Do - tracker - couple of changes as list that can be used to play changes.
+# Interactive example
+# mt(bt2)
+# mt(bt1)
+# mt(bt2m)
+# mt(bt1_2)
