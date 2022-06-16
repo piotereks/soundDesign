@@ -1,3 +1,5 @@
+# soundDesign
+
 ImproTool (python) next steps
 # General principles
 1. Dependency between pattern and rythm (default, configurable, on-the fly)
@@ -81,7 +83,9 @@ Midi clock has
 clock, start, stop, continue (as base).
 is missing sync option though.
 Check here is to evaluate what are the option of syncing.
-
+* before synchronizing with Ableton (which should be first usable permament target) create kind-of click track that behaves alike Ableton (or just click track) - clock if fine, but also remember about start stop continue ewentually songpose, or even 3rd prio program changes signal
+* audible metronome as addon to click track.
+ temporary - use midi with sound
 
 Work on easy example first as prototype on how you want to play.
 
@@ -117,6 +121,9 @@ Ableton midi sync dump
 ### can tick be used for sync (check what happens if isobar tick is used on output where clock being sent)
 
 # Tracker
-Tracker compose of series of pattern provided as list when scheduling timeline
-## Run tracker along with some ready midi file
 
+Tracker compose of series of pattern provided as list when scheduling timeline
+* Run tracker along with some ready midi file
+    Running tracker is different than live, but some bigger tracker appoach can be used as live triggerring (for this is worth to remember about keeping possibility to change tracker while play (shorter like duration, but still synchronized).
+Would be good to remember about on-the-fly track changes when submitting tracker (this requires async, replace, but it is possible by action itself, or maybe in action somehow define position counter)  
+* Run tracker synchronized with "parent track"
