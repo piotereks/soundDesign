@@ -3,7 +3,7 @@ import xxx.ttt
 from xxx import ttt
 print(dir(ttt))
 ttt.xxx()
-xxx.ttt.xxx()
+inside_timeline.ttt.xxx()
 
 
 
