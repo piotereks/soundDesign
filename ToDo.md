@@ -11,10 +11,10 @@ Adopt combination o patterns, scales and note leghts (pattern vs decorators)
 5. Add keyboard or midi steering for scales, pattern, leghts
 6. Add pattern selection depending on interval provided from keyboard
 7. Later scales can be suggested, selected, randomised,
-8. Predefined sets for differen kind of music e.g. blues kater jazz, any others types
+8. Predefined sets for different kind of music e.g. blues kater jazz, any others types
 9. Add your scales to scale.py
-Evetuallly Gather different backgrounds tracks for standard genres
-Myltiinstrument support
+Eventually Gather different backgrounds tracks for standard genres
+Multi-instrument support
 Tensor flow/magenta generations? Or maybe tensor selected impro patterns
 
 
@@ -28,13 +28,12 @@ Can isobar be used for that?
 3) when using isobar and timeline - how to add additional sounds  - timeline.background() instead of run()
 
 
-What to do with Rythm patterns:
+What to do with Rythmn patterns:
 (Idea: Express patterns with ticks)
 For start just focus on standard patterns (not necessarily equally distributed,but start them first).
-Skip for a moment Ornamentacje and maybe forcus on diminuncje (which are about how to come from one tone to other, but
+Skip for a moment Ornamentacje and maybe focus on diminuncje (which are about how to come from one tone to other, but
 but have slightly higher resolution as patterns.
 
-sdfds
 
 Standard patterns do as rule of beat (length of beat)
 So, when you have measure 4/4 - there are quarter notes as main note (and beat) and there is 4 of quarter notes in beat.
@@ -90,6 +89,7 @@ Work on easy example first as prototype on how you want to play.
 timeline.background() allows any timing (this is live).
 This actually can be achieved by getting one track with click track and second track listening to that.
 Synchronization by click gives to preserve tempo. How to synch with beats?
+- scheduling of patterns work, but really this is about synchronization with e.g. ableton now.
 
 ## create loop with pattern ref replaced by other pattern (using sync) - Done
 
@@ -98,6 +98,8 @@ Synchronization by click gives to preserve tempo. How to synch with beats?
 Received MIDI: program_change channel=0 program=0 time=0  = PC message might be used to sync since it goes at start
 
 ### midi clock tool
+Currently metronome and play along open midi is done.
+
 ### ableton (both midi clock version, like "Ableton? sync protocol" or OSC
 Ableton midi sync dump
 2022-06-09 17:36:04.621986  - Received MIDI: continue time=0
@@ -115,7 +117,10 @@ Ableton midi sync dump
 
 ### by beat-detection python libraries (if any)
 ### can tick be used for sync (check what happens if isobar tick is used on output where clock being sent)
+This is not applicable. Tick is I guess to create one tick in time.
 
 # Tracker
-Tracker compose of series of pattern provided as list when scheduling timeline
+Tracker compose of series of pattern provided as list when scheduling timeline 
+- this one is done
 ## Run tracker along with some ready midi file
+I can play midi and play my part.
