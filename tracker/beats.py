@@ -7,8 +7,10 @@ class Beats:
 
     notes1 = iso.PSequence([1, 3, 2, 4], repeats=1) + 66
     notes2 = iso.PSequence([1, 3, 2, 4, 3, 5], repeats=1) + 72
+    notes3 = iso.PSequence([2, 5, -2, 4, 3, 5], repeats=1) + 61
     # durx = iso.PSequence([1, 1 / 2, 1, 1 / 3], repeats=1)
     dur4 = iso.PSequence([1], repeats=4)
+    dur3 = iso.PSequence([1], repeats=3)
     dur6 = iso.PSequence([1], repeats=6)
     dur4_2 = iso.PSequence([1 / 2], repeats=4)
     dur6mix = iso.PSequence([1, 1 / 2], repeats=3)
@@ -26,6 +28,9 @@ class Beats:
 
     bt2 = iso.PDict({"note": notes2.copy(),
                      "duration": dur6.copy()
+                     })
+    bt3 = iso.PDict({"note": notes3.copy(),
+                     "duration": dur3.copy()
                      })
 
     bt2m = iso.PDict({"note": notes2.copy(),
