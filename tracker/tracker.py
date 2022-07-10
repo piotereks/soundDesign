@@ -45,20 +45,36 @@ class Tracker:
         self.timeline = None
         self.pattern_idx = 0
         # self.pattern_array = None
-        self.pattern_array = [my_beats.bt1, my_beats.bt3, my_beats.bt1, \
+        self.pattern_array = [my_beats.bt1, my_beats.bt3, my_beats.bt1,
                               my_beats.bt_trip, my_beats.bt2, my_beats.bt1_2, my_beats.bt2]
+        # self.pattern_array = [my_beats.bt1, my_beats.bt_trip]
         # self.pattern_array = [pattern.copy() for pattern in self.pattern_array]
+        # 67,69,68,70
+        # 63,66,59
+        # 67,69,68,70
+        # 76,78,77,79,78
+        # 73,75,74,76,75,79
+        # 67,69,68,70
+        # 73,75,74,76,75,79
+        self.expected_array = [
+                            67, 69, 68, 70,
+                            63, 66, 59,
+                            67, 69, 68, 70,
+                            76, 78, 77, 79, 78,
+                            73, 75, 74, 76, 75, 79,
+                            67, 69, 68, 70,
+                            73, 75, 74, 76, 75, 79]
+
 
         self.init_timeline()
         self.beat = self.beat_none
         # my_tracker.metronome_start()
         self.tmln = self.tracker_timeline()
 
-
     def init_timeline(self):
         log_call()
         self.midi_out = iso.MidiOutputDevice(device_name=self.name, send_clock=True)
-        # filename = "output.mid"
+        filename = "output.mid"
         # self.midi_out = iso.MidiFileOutputDevice(filename)
         # midi_out = iso.DummyOutputDevice()
         self.timeline = iso.Timeline(120, output_device=self.midi_out)
@@ -132,7 +148,7 @@ class Tracker:
         return self.timeline.schedule({
             "action": lambda: self.beat(),
             "duration": 4,
-            # "quantize": 1
+            "quantize": 1
         }
             , quantize=1
             , remove_when_done=False)
@@ -181,7 +197,7 @@ class Tracker:
                 self.pattern_array[self.pattern_idx],
                 replace=True,  # this is not working with version 0.1.1, only with github
                 name="blah",  # this is not working with version 0.1.1, only with github
-                quantize=1
+                # quantize=1
                 # ,remove_when_done=False
             )
             self.pattern_idx += 1
@@ -227,6 +243,11 @@ def sbtp():
 
 def save_midi():
     my_tracker.midi_out.write()
+
+def cmp():
+    # print('expected:\n', my_tracker.expected_array)
+    print('expected:\n', [y for x in my_tracker.pattern_array for y in list(x['note'])])
+    print('played:\n', [x.note for x in my_tracker.midi_out.miditrack if x.type == 'note_on'])
 
 def main():
     global my_tracker
