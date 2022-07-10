@@ -175,6 +175,7 @@ def sync_play_start(in_timeline):
 
 
 class Beats:
+
     notes_trip = iso.PSequence([1, 3, 2, 4, 3], repeats=1) + 75
     dur5_trip = iso.PSequence([1, 1, 1, 1 / 2, 2 / 5], repeats=1)
 

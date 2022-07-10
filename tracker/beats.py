@@ -2,19 +2,34 @@ import isobar as iso
 
 
 class Beats:
-    notes_trip = iso.PSequence([1, 3, 2, 4, 3], repeats=1) + 75
-    dur5_trip = iso.PSequence([1, 1, 1, 1 / 2, 2 / 5], repeats=1)
+    # scale = iso.Scale.minor
+    scale = iso.Scale.chromatic
 
-    notes1 = iso.PSequence([1, 3, 2, 4], repeats=1) + 66
-    notes2 = iso.PSequence([1, 3, 2, 4, 3, 5], repeats=1) + 72
-    # org notes3 = iso.PSequence([2, 5, -2, 4, 3, 5], repeats=1) + 61
-    notes3 = iso.PSequence([2, 5, -2], repeats=1) + 61
-    # durx = iso.PSequence([1, 1 / 2, 1, 1 / 3], repeats=1)
+
+    # notes_trip = iso.PSequence([1, 3, 2, 4, 3], repeats=1) +75
+    # notes1 = iso.PSequence([1, 3, 2, 4], repeats=1)
+    # notes1  = iso.PDegree(notes1, scale) + 66
+    # notes2 = iso.PSequence([1, 3, 2, 4, 3, 5], repeats=1) + 72
+    # notes3 = iso.PSequence([2, 5, -2], repeats=1) + 61
+
+    dur5_trip = iso.PSequence([1, 1, 1, 1 / 2, 2 / 5], repeats=1)
     dur4 = iso.PSequence([1], repeats=4)
     dur3 = iso.PSequence([1], repeats=3)
     dur6 = iso.PSequence([1], repeats=6)
     dur4_2 = iso.PSequence([1 / 2], repeats=4)
     dur6mix = iso.PSequence([1, 1 / 2], repeats=3)
+
+
+    notes_trip = iso.PSequence([1, 3, 2, 4, 3], repeats=1) +14
+    notes1 = iso.PSequence([1, 3, 2, 4], repeats=1) + 5
+    notes2 = iso.PSequence([1, 3, 2, 4, 3, 5], repeats=1) + 11
+    notes3 = iso.PSequence([2, 5, -2], repeats=1)
+
+    notes_trip = iso.PSequence([1, 3, 2, 4, 3], repeats=1) +9
+    notes1 = iso.PSequence([1, 3, 2, 4], repeats=1) + 3
+    notes2 = iso.PSequence([1, 3, 2, 4, 3, 5], repeats=1) + 7
+    notes3 = iso.PSequence([2, 5, -2], repeats=1)
+
 
     bt_trip = iso.PDict({"note": notes_trip.copy(),
                          "duration": dur5_trip.copy()

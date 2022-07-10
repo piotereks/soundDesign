@@ -28,7 +28,9 @@ def log_call():
 
 class Tracker:
     name = "Microsoft GS Wavetable Synth 0"
-
+    scale = iso.Scale.major
+    degree = 0
+    key = iso.Key("C","major")
     # name = "Bome Virtual MIDI Port 2"
     # name = "Bome Virtual MIDI Port 4"
     # name = "Virtual Midi"
@@ -65,20 +67,23 @@ class Tracker:
                             67, 69, 68, 70,
                             73, 75, 74, 76, 75, 79]
 
-
+        # self.init_timeline(True)
         self.init_timeline()
         self.beat = self.beat_none
         # my_tracker.metronome_start()
         self.tmln = self.tracker_timeline()
 
-    def init_timeline(self):
+    def init_timeline(self, file_flag=False):
         log_call()
-        self.midi_out = iso.MidiOutputDevice(device_name=self.name, send_clock=True)
-        filename = "output.mid"
-        # self.midi_out = iso.MidiFileOutputDevice(filename)
+        if file_flag:
+            filename = "output.mid"
+            self.midi_out = iso.MidiFileOutputDevice(filename)
+        else:
+            self.midi_out = iso.MidiOutputDevice(device_name=self.name, send_clock=True)
+
         # midi_out = iso.DummyOutputDevice()
         self.timeline = iso.Timeline(120, output_device=self.midi_out)
-        self.timeline.background()  # use background instead of run to enable live performing (async notes passing)
+        self.timeline.background()  # use background ts()instead of run to enable live performing (async notes passing)
 
     def beat1(self):
         log_call()
@@ -191,10 +196,24 @@ class Tracker:
         self.beat_count %= 4
 
         if not initialize:
+            # key = iso.Key("C", "major")
             print('not init')
             self.pattern_array[self.pattern_idx].reset()
+            print('b:',list(self.pattern_array[self.pattern_idx]['note']))
+            self.pattern_array[self.pattern_idx].reset()
+            # xxxx = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.scale) + 61
+            xxxx = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.key)
+            xto_play = iso.PDict({
+                                 iso.EVENT_NOTE: xxxx,
+                                   iso.EVENT_DURATION: self.pattern_array[self.pattern_idx]['duration'],
+                                   iso.EVENT_OCTAVE: 5
+                                   # iso.EVENT_DEGREE: xxxx
+            })
+            print('a:',list(xxxx))
+            self.pattern_array[self.pattern_idx].reset()
             self.track = self.timeline.schedule(
-                self.pattern_array[self.pattern_idx],
+                # self.pattern_array[self.pattern_idx],
+                xto_play,
                 replace=True,  # this is not working with version 0.1.1, only with github
                 name="blah",  # this is not working with version 0.1.1, only with github
                 # quantize=1
@@ -241,13 +260,16 @@ def sbtn():
 def sbtp():
     my_tracker.beat = my_tracker.pplay
 
+
 def save_midi():
     my_tracker.midi_out.write()
+
 
 def cmp():
     # print('expected:\n', my_tracker.expected_array)
     print('expected:\n', [y for x in my_tracker.pattern_array for y in list(x['note'])])
     print('played:\n', [x.note for x in my_tracker.midi_out.miditrack if x.type == 'note_on'])
+
 
 def main():
     global my_tracker
@@ -257,7 +279,7 @@ def main():
     # my_tracker.init_timeline()
     # tracker.beat = tracker.beat_none
     # my_tracker.beat = my_tracker.beat1
-    my_tracker.metronome_start()
+    # my_tracker.metronome_start()
     # tmln = tracker.tracker_timeline()
     # pprint.pprint(tmln.__dict__)
 

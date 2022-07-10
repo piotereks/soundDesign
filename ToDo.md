@@ -19,13 +19,13 @@ Tensor flow/magenta generations? Or maybe tensor selected impro patterns
 
 
 Problems:
-1) How to deal with lengths of notes and tempo, specially when converting to midi events.
+NA 1) How to deal with lengths of notes and tempo, specially when converting to midi events.
 This calculation seem to be heart of playing.
 Can isobar be used for that?
 
 2) Midi clock support.
 
-3) when using isobar and timeline - how to add additional sounds  - timeline.background() instead of run()
+OK 3) when using isobar and timeline - how to add additional sounds  - timeline.background() instead of run()
 
 
 What to do with Rythmn patterns:
@@ -68,8 +68,8 @@ Express as half-beat e.g. 4/4  - only covers 2 quarter notes (could be theoretic
 *  8x 1/16
 
 Decision to be taken:
-* implement as part of isobard sequences (of velocity and duration - after aligning values)
-* or using own structures (but maybe later applying to sequences)  - better to be as int/and fractint .
+* implement as part of isobar sequences (of velocity and duration - after aligning values)
+NA * or using own structures (but maybe later applying to sequences)  - better to be as int/and fractint .
 
 PSequence for time could be confusing since it changes with change of tempo (or resolution).
 I want to have possibilitiy to calculate that on the fly.
@@ -124,3 +124,11 @@ Tracker compose of series of pattern provided as list when scheduling timeline
 - this one is done
 ## Run tracker along with some ready midi file
 I can play midi and play my part.
+
+
+# User Predefined beats and pattern + apply scale
+## Take your patterns, but play using specific scale.
+Currently, patterns have ready midi notes.
+## Extend isobar with your scales
+## Appregios as scales?
+## Work with classes always
