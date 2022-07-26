@@ -1,9 +1,13 @@
 import numpy as np
 import itertools
 import random 
+import yaml
+import pprint
+
 
 class Patterns:
   def __init__(self):
+    self.__read_config_file__()
     self.pattern_size_for_interval=self.__init_pattern_size_for_interval__()
     self.patterns=map(np.array, [
           [0,1,2,3,1],
@@ -68,7 +72,11 @@ class Patterns:
     else:
       None
 
+  def __read_config_file__(self):
+    with open('/content/SoundDesign/reviewed_pattern_cfg.yaml', 'r') as file:
+      self.patterns_config = yaml.safe_load(file)
 
+      pprint.pprint(self.patterns_config)
 
 ptrn=Patterns()
 
