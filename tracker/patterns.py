@@ -73,14 +73,17 @@ class Patterns:
       None
 
   def __read_config_file__(self):
-    with open('/content/SoundDesign/reviewed_pattern_cfg.yaml', 'r') as file:
+    with open('/content/SoundDesign/tracker/reviewed_pattern_cfg.yaml', 'r') as file:
       self.patterns_config = yaml.safe_load(file)
 
       pprint.pprint(self.patterns_config)
 
-ptrn=Patterns()
 
+def main():
+  ptrn=Patterns()
 
+if __name__ == '__main__':
+  main()
 
 
 
@@ -88,7 +91,7 @@ ptrn=Patterns()
 # for x in np_patterns:
   # print(x,x+2)
 
-suitable_patterns=[pattern for pattern in patterns if pattern[-1] in pattern_size_for_interval[2]] 
+# suitable_patterns=[pattern for pattern in patterns if pattern[-1] in pattern_size_for_interval[2]] 
 #recalculated intervals here.
 
-print('sp',suitable_patterns)
+# print('sp',suitable_patterns)
