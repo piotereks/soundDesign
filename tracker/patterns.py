@@ -9,13 +9,13 @@ class Patterns:
   def __init__(self):
     self.__read_config_file__()
     self.pattern_size_for_interval=self.__init_pattern_size_for_interval__()
-    self.patterns=list(map(np.array, [
-          [0,1,2,3,1],
-          [0,2,1,3,2],
-          [0,-1,1],
-          [0,1,2,3,4,5,6,7,8],
-          [0,2,1,3]
-          ]))
+    # self.patterns=list(map(np.array, [
+    #       [0,1,2,3,1],
+    #       [0,2,1,3,2],
+    #       [0,-1,1],
+    #       [0,1,2,3,4,5,6,7,8],
+    #       [0,2,1,3]
+    #       ]))
     # print('p_type:',type(self.patterns))
     # print('xp1:',list(self.patterns))
     # print('xp2:',list(self.patterns))
@@ -78,8 +78,13 @@ class Patterns:
       None
 
   def __read_config_file__(self):
+    # print('reading config')
     with open('/content/SoundDesign/tracker/reviewed_pattern_cfg.yaml', 'r') as file:
       self.patterns_config = yaml.safe_load(file)
+    # print(self.patterns_config) 
+    # print(self.patterns_config['play_over']) 
+    self.patterns=list(map(lambda x : np.array(x['pattern']),self.patterns_config['play_over']['patterns']))
+    # print('after list')
 
       # pprint.pprint(self.patterns_config)
 
