@@ -9,14 +9,16 @@ class Patterns:
   def __init__(self):
     self.__read_config_file__()
     self.pattern_size_for_interval=self.__init_pattern_size_for_interval__()
-    self.patterns=map(np.array, [
+    self.patterns=list(map(np.array, [
           [0,1,2,3,1],
           [0,2,1,3,2],
           [0,-1,1],
           [0,1,2,3,4,5,6,7,8],
           [0,2,1,3]
-          ])
-
+          ]))
+    # print('p_type:',type(self.patterns))
+    # print('xp1:',list(self.patterns))
+    # print('xp2:',list(self.patterns))
     # self.patterns=[
     #       [0,1,2,3,1],
     #       [0,2,1,3,2],
@@ -28,6 +30,7 @@ class Patterns:
       
   def __init_pattern_size_for_interval__(self):
     max_range=128
+    # print(max_range)
     # dropwhile(lambda x: x<5, [1,4,6,4,1]) --> 6 4 1
     tuple_range=itertools.product(range(1,max_range),range(1,max_range))
     filt_range=itertools.filterfalse(lambda xy: xy[0]*xy[1]>=max_range, tuple_range)
@@ -62,8 +65,10 @@ class Patterns:
     # if interval==0:
     #   return None
     sign=np.sign(interval)
-    interval=abs(interval)  
-    suitable_patterns=[sign*self.multiply_pattern(pattern,int(interval/pattern[-1])) for pattern in patterns if pattern[-1] in self.pattern_size_for_interval[interval]] 
+    interval=abs(interval) 
+    # print('patterns:',list(self.patterns))
+    # print(interval) 
+    suitable_patterns=[sign*self.multiply_pattern(pattern,int(interval/pattern[-1])) for pattern in self.patterns if pattern[-1] in self.pattern_size_for_interval[interval]] 
     return suitable_patterns
 
   def get_random_pattern(self,interval):
@@ -76,7 +81,7 @@ class Patterns:
     with open('/content/SoundDesign/tracker/reviewed_pattern_cfg.yaml', 'r') as file:
       self.patterns_config = yaml.safe_load(file)
 
-      pprint.pprint(self.patterns_config)
+      # pprint.pprint(self.patterns_config)
 
 
 def main():
