@@ -67,8 +67,8 @@ class Tracker:
                             67, 69, 68, 70,
                             73, 75, 74, 76, 75, 79]
 
-        # self.init_timeline(True)
-        self.init_timeline()
+        self.init_timeline(True)
+        # self.init_timeline()
         self.beat = self.beat_none
         # my_tracker.metronome_start()
         self.tmln = self.tracker_timeline()
@@ -225,7 +225,8 @@ class Tracker:
             self.pattern_idx = 0
             self.beat = self.pplay
         self.pattern_array[self.pattern_idx].reset()
-        print(f"{self.pattern_idx=} {sum(self.pattern_array[self.pattern_idx]['duration'])=}")
+        # print(f"{self.pattern_idx=} {sum(self.pattern_array[self.pattern_idx]['duration'])=}")
+        print(f"self.pattern_idx={self.pattern_idx} sum(self.pattern_array[self.pattern_idx]['duration'])={sum(self.pattern_array[self.pattern_idx]['duration'])}")
 
         self.pattern_array[self.pattern_idx].reset()
         # These statements need some analysis about sync
@@ -235,7 +236,7 @@ class Tracker:
         self.pattern_array[self.pattern_idx].reset()
         self.tmln.event_stream['duration'] = math.ceil(sum(self.pattern_array[self.pattern_idx]['duration']))
         # self.tmln.event_stream['duration'] = sum(self.pattern_array[self.pattern_idx]['duration'])
-        print(f"{xxx=} {self.tmln.event_stream['duration']=}")
+        print(f"xxx={xxx} self.tmln.event_stream['duration']={self.tmln.event_stream['duration']}")
         self.pattern_array[self.pattern_idx].reset()
         print("pplay - END")
 
