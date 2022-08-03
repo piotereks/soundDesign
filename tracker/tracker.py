@@ -7,6 +7,7 @@ import isobar as iso
 import inspect
 import isobar as iso
 from beats import *
+from patterns import *
 import pprint
 from copy import deepcopy
 
@@ -22,6 +23,7 @@ import math
 
 global my_tracker
 
+
 def log_call():
     print(inspect.stack()[1][3])
 
@@ -36,7 +38,7 @@ class Tracker:
     # name = "Virtual Midi"
 
     # name= "loopMIDI 6"
-    def __init__(self):
+    def __init__(self, interval_array=None, flag_file=False):
         my_beats = Beats()
         self.midi_out = None
         self.track = None
@@ -45,10 +47,15 @@ class Tracker:
         self.diff_time = 0
         self.prev_time = 0
         self.timeline = None
+        self.patterns = Patterns()
+        self.root_note = 0
         self.pattern_idx = 0
         # self.pattern_array = None
         self.pattern_array = [my_beats.bt1, my_beats.bt3, my_beats.bt1,
                               my_beats.bt_trip, my_beats.bt2, my_beats.bt1_2, my_beats.bt2]
+        print("init spa:",self.pattern_array)
+        self.interval_array = interval_array
+        self.init_pattern_array()
         # self.pattern_array = [my_beats.bt1, my_beats.bt_trip]
         # self.pattern_array = [pattern.copy() for pattern in self.pattern_array]
         # 67,69,68,70
@@ -67,11 +74,39 @@ class Tracker:
                             67, 69, 68, 70,
                             73, 75, 74, 76, 75, 79]
 
-        self.init_timeline(True)
-        # self.init_timeline()
+        # self.init_timeline(True)
+        self.init_timeline()
         self.beat = self.beat_none
         # my_tracker.metronome_start()
         self.tmln = self.tracker_timeline()
+
+    def init_pattern_array(self):
+        # print('scales:',iso.Scale.__dict__)
+        # print('scales2:',iso.Scale['chromatic'])
+
+        self.pattern_array = []
+        patterns = Patterns()
+        root_note = 0
+        for interval in self.interval_array:
+            # print('gsp:', interval, patterns.get_random_pattern(interval))
+            rnd_pattern = patterns.get_random_pattern(interval)+root_note
+            print('gsp:', interval, rnd_pattern)
+            # print('gsp2:', interval, iso.PSequence(rnd_pattern))
+            len_rnd_pattern = len(rnd_pattern)-1
+            print('gsp2:', interval, len_rnd_pattern, iso.PSequence(rnd_pattern[:-1]))
+            beat = iso.PDict({
+                "note": iso.PSequence(rnd_pattern, repeats=1),
+                # "duration": 1/len_rnd_pattern
+                "duration": iso.PSequence([(4/len_rnd_pattern)-0.000000000000002], repeats=len_rnd_pattern)
+            })
+            # print("beat:", beat.note, beat.duration)
+            print("beatx:", list(beat["note"]), list(beat["duration"]))
+            # print("beatx:", list(beat["note"]))
+            self.pattern_array.append(beat)
+            root_note = rnd_pattern[-1]
+        print("init spa2:",self.pattern_array)
+        print(list(self.pattern_array))
+
 
     def init_timeline(self, file_flag=False):
         log_call()
@@ -178,7 +213,7 @@ class Tracker:
             , quantize=1
             , remove_when_done=False)
 
-    def pplay(self, initialize: bool = False):
+    def pplay_old(self, initialize: bool = False):
         # global beat
         # global cp_PDictbeat
         # global idxx
@@ -198,13 +233,14 @@ class Tracker:
         if not initialize:
             # key = iso.Key("C", "major")
             print('not init')
-            self.pattern_array[self.pattern_idx].reset()
+            # self.pattern_array[self.pattern_idx].reset()
             print('b:',list(self.pattern_array[self.pattern_idx]['note']))
             self.pattern_array[self.pattern_idx].reset()
-            # xxxx = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.scale) + 61
-            xxxx = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.key)
+            # converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.scale) + 61
+            converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.key)
+            # converted_note = self.pattern_array[self.pattern_idx]['note']
             xto_play = iso.PDict({
-                                 iso.EVENT_NOTE: xxxx,
+                                 iso.EVENT_NOTE: converted_note,
                                    iso.EVENT_DURATION: self.pattern_array[self.pattern_idx]['duration'],
                                    iso.EVENT_OCTAVE: 5
                                    # iso.EVENT_DEGREE: xxxx
@@ -240,51 +276,212 @@ class Tracker:
         self.pattern_array[self.pattern_idx].reset()
         print("pplay - END")
 
+    def pplay_v1(self, initialize: bool = False):
 
-def ts():
-    global my_tracker
-    my_tracker.ts()
+        log_call()
+        self.beat_count += 1
+
+        self.diff_time = self.timeline.current_time - self.prev_time
+        self.prev_time = self.timeline.current_time
+        print(f"pplay diff:{self.diff_time}, timeXX: {self.timeline.current_time}, {round(self.timeline.current_time)} \
+        beat: {self.beat_count}\n")
+        self.beat_count %= 4
+
+        if not initialize:
+            # key = iso.Key("C", "major")
+            print('not init')
+            self.pattern_array[self.pattern_idx].reset()
+            print('b:',list(self.pattern_array[self.pattern_idx]['note']))
+            self.pattern_array[self.pattern_idx].reset()
+            # converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.scale) + 61
+            # converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.key)
+            converted_note = self.pattern_array[self.pattern_idx]['note']
+            xto_play = iso.PDict({
+                                 iso.EVENT_NOTE: converted_note,
+                                   iso.EVENT_DURATION: self.pattern_array[self.pattern_idx]['duration'],
+                                   iso.EVENT_OCTAVE: 5
+                                   # iso.EVENT_DEGREE: xxxx
+            })
+            print('a:',list(converted_note))
+            self.pattern_array[self.pattern_idx].reset()
+            self.track = self.timeline.schedule(
+                # self.pattern_array[self.pattern_idx],
+                xto_play,
+                replace=True,  # this is not working with version 0.1.1, only with github
+                name="blah",  # this is not working with version 0.1.1, only with github
+                # quantize=1
+                # ,remove_when_done=False
+            )
+            self.pattern_idx += 1
+            self.pattern_idx %= len(self.pattern_array)
+        else:
+            self.pattern_idx = 0
+            self.beat = self.pplay
+        self.pattern_array[self.pattern_idx].reset()
+        # print(f"{self.pattern_idx=} {sum(self.pattern_array[self.pattern_idx]['duration'])=}")
+        print(f"self.pattern_idx={self.pattern_idx} sum(self.pattern_array[self.pattern_idx]['duration'])={sum(self.pattern_array[self.pattern_idx]['duration'])}")
+
+        self.pattern_array[self.pattern_idx].reset()
+        # These statements need some analysis about sync
+        xxx = math.ceil(sum(self.pattern_array[self.pattern_idx]['duration']))
+
+        # print(math.ceil(sum(self.pattern_array[self.pattern_idx]['duration'])))
+        self.pattern_array[self.pattern_idx].reset()
+        self.tmln.event_stream['duration'] = math.ceil(sum(self.pattern_array[self.pattern_idx]['duration']))
+        # self.tmln.event_stream['duration'] = sum(self.pattern_array[self.pattern_idx]['duration'])
+        print(f"xxx={xxx} self.tmln.event_stream['duration']={self.tmln.event_stream['duration']}")
+        self.pattern_array[self.pattern_idx].reset()
+        print("pplay - END")
+
+    def pplay(self, initialize: bool = False):
+
+        log_call()
+        self.beat_count += 1
+
+        self.diff_time = self.timeline.current_time - self.prev_time
+        self.prev_time = self.timeline.current_time
+        print(f"pplay diff:{self.diff_time}, timeXX: {self.timeline.current_time}, {round(self.timeline.current_time)} \
+        beat: {self.beat_count}\n")
+        self.beat_count %= 4
+        if self.pattern_idx == 0:
+            self.scale=iso.Scale.random()
+            print('scale:', self.scale.name)
+
+        if not initialize:
+            # key = iso.Key("C", "major")
+            print('not init')
+            interval = self.interval_array[self.pattern_idx]
+
+            rnd_pattern = self.patterns.get_random_pattern(interval)+self.root_note
+            print('gsp:', interval, rnd_pattern)
+            # print('gsp2:', interval, iso.PSequence(rnd_pattern))
+            len_rnd_pattern = len(rnd_pattern)-1
+            print('gsp2:', interval, len_rnd_pattern, iso.PSequence(rnd_pattern[:-1]))
+            beat = iso.PDict({
+                "note": iso.PSequence(rnd_pattern, repeats=1),
+                # "duration": 1/len_rnd_pattern
+                "duration": iso.PSequence([(4/len_rnd_pattern)-0.000000000000002], repeats=len_rnd_pattern)
+            })
+            # print("beat:", beat.note, beat.duration)
+            print("beatx:", list(beat["note"]), list(beat["duration"]))
+            # print("beatx:", list(beat["note"]))
+            self.pattern_array[self.pattern_idx] = beat
+            self.root_note = rnd_pattern[-1]
 
 
-def sbt1():
-    my_tracker.beat = my_tracker.beat1
+            self.pattern_array[self.pattern_idx].reset()
+            print('b:',list(self.pattern_array[self.pattern_idx]['note']))
+            self.pattern_array[self.pattern_idx].reset()
+
+            converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.scale)
+            # converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.key)
+            # converted_note = self.pattern_array[self.pattern_idx]['note']
+            xto_play = iso.PDict({
+                                 iso.EVENT_NOTE: converted_note,
+                                   iso.EVENT_DURATION: self.pattern_array[self.pattern_idx]['duration'],
+                                   iso.EVENT_OCTAVE: 5
+                                   # iso.EVENT_DEGREE: xxxx
+            })
+            print('a:',list(converted_note))
+            self.pattern_array[self.pattern_idx].reset()
+            self.track = self.timeline.schedule(
+                # self.pattern_array[self.pattern_idx],
+                xto_play,
+                replace=True,  # this is not working with version 0.1.1, only with github
+                name="blah",  # this is not working with version 0.1.1, only with github
+                # quantize=1
+                # ,remove_when_done=False
+            )
+            self.pattern_idx += 1
+            self.pattern_idx %= len(self.pattern_array)
+        else:
+            self.pattern_idx = 0
+            self.beat = self.pplay
+        self.pattern_array[self.pattern_idx].reset()
+        # print(f"{self.pattern_idx=} {sum(self.pattern_array[self.pattern_idx]['duration'])=}")
+        print(f"self.pattern_idx={self.pattern_idx} sum(self.pattern_array[self.pattern_idx]['duration'])={sum(self.pattern_array[self.pattern_idx]['duration'])}")
+
+        self.pattern_array[self.pattern_idx].reset()
+        # These statements need some analysis about sync
+        xxx = math.ceil(sum(self.pattern_array[self.pattern_idx]['duration']))
+
+        # print(math.ceil(sum(self.pattern_array[self.pattern_idx]['duration'])))
+        self.pattern_array[self.pattern_idx].reset()
+        self.tmln.event_stream['duration'] = math.ceil(sum(self.pattern_array[self.pattern_idx]['duration']))
+        # self.tmln.event_stream['duration'] = sum(self.pattern_array[self.pattern_idx]['duration'])
+        print(f"xxx={xxx} self.tmln.event_stream['duration']={self.tmln.event_stream['duration']}")
+        self.pattern_array[self.pattern_idx].reset()
+        print("pplay - END")
 
 
-def sbt2():
-    my_tracker.beat = my_tracker.beat2
-
-
-def sbtn():
-    my_tracker.beat = my_tracker.beat_none
-
-
-def sbtp():
-    my_tracker.beat = my_tracker.pplay
-
-
-def save_midi():
-    my_tracker.midi_out.write()
-
-
-def cmp():
-    # print('expected:\n', my_tracker.expected_array)
-    print('expected:\n', [y for x in my_tracker.pattern_array for y in list(x['note'])])
-    print('played:\n', [x.note for x in my_tracker.midi_out.miditrack if x.type == 'note_on'])
-
-
-def main():
-    global my_tracker
-    log_call()
-    my_tracker = Tracker()
-    print(my_tracker)
-    # my_tracker.init_timeline()
-    # tracker.beat = tracker.beat_none
-    # my_tracker.beat = my_tracker.beat1
-    # my_tracker.metronome_start()
-    # tmln = tracker.tracker_timeline()
-    # pprint.pprint(tmln.__dict__)
-
-
-if __name__ == '__main__':
-    main()
-    print('Processing Done.')
+    # def init_pattern_array(self):
+    #     self.pattern_array = []
+    #     patterns = Patterns()
+    #     root_note = 0
+    #     for interval in self.interval_array:
+    #         # print('gsp:', interval, patterns.get_random_pattern(interval))
+    #         rnd_pattern = patterns.get_random_pattern(interval)+root_note
+    #         print('gsp:', interval, rnd_pattern)
+    #         # print('gsp2:', interval, iso.PSequence(rnd_pattern))
+    #         len_rnd_pattern = len(rnd_pattern)-1
+    #         print('gsp2:', interval, len_rnd_pattern, iso.PSequence(rnd_pattern[:-1]))
+    #         beat = iso.PDict({
+    #             "note": iso.PSequence(rnd_pattern, repeats=1),
+    #             # "duration": 1/len_rnd_pattern
+    #             "duration": iso.PSequence([(4/len_rnd_pattern)-0.000000000000002], repeats=len_rnd_pattern)
+    #         })
+    #         # print("beat:", beat.note, beat.duration)
+    #         print("beatx:", list(beat["note"]), list(beat["duration"]))
+    #         # print("beatx:", list(beat["note"]))
+    #         self.pattern_array.append(beat)
+    #         root_note = rnd_pattern[-1]
+    #     print("init spa2:",self.pattern_array)
+    #     print(list(self.pattern_array))
+#
+# def ts():
+#     global my_tracker
+#     my_tracker.ts()
+#
+#
+# def sbt1():
+#     my_tracker.beat = my_tracker.beat1
+#
+#
+# def sbt2():
+#     my_tracker.beat = my_tracker.beat2
+#
+#
+# def sbtn():
+#     my_tracker.beat = my_tracker.beat_none
+#
+#
+# def sbtp():
+#     my_tracker.beat = my_tracker.pplay
+#
+#
+# def save_midi():
+#     my_tracker.midi_out.write()
+#
+#
+# def cmp():
+#     # print('expected:\n', my_tracker.expected_array)
+#     print('expected:\n', [y for x in my_tracker.pattern_array for y in list(x['note'])])
+#     print('played:\n', [x.note for x in my_tracker.midi_out.miditrack if x.type == 'note_on'])
+#
+#
+# def main():
+#     global my_tracker
+#     log_call()
+#     my_tracker = Tracker()
+#     print(my_tracker)
+#     # my_tracker.init_timeline()
+#     # tracker.beat = tracker.beat_none
+#     # my_tracker.beat = my_tracker.beat1
+#     # my_tracker.metronome_start()
+#     # tmln = tracker.tracker_timeline()
+#     # pprint.pprint(tmln.__dict__)
+#
+#
+# if __name__ == '__main__':
+#     main()
+#     print('Processing Done.')
