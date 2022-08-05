@@ -132,3 +132,25 @@ Currently, patterns have ready midi notes.
 ## Extend isobar with your scales
 ## Appregios as scales?
 ## Work with classes always
+
+h1. new next steps
+## create general pattern with exact values of steps not intervals. Intervals will be calculated.
+## create patter with exact notes values (from scales)
+### play with closes note from selected scale
+### detect scale and assign scale, and play with it (could be dump of all notes for scale is needed (but only withing 0-11 range (denominated/modulated).
+### detecting scales can be per beat, bar and can change. Additional condition to select these scales would be genre of music
+
+## playover selection
+### New scales at isobar
+### using existing patterns but only 4/6/10 (not other numbers)
+### using existing patterns but with increment more than 1
+### using existing pattern but following chord progression (this looks more like appregios, but not necesarily follow appregios
+### think about using different notes leghts
+### this about using rests (pauza) withing lenghts pattern (this in theory allows to use different lengts. e.g. pattern 1-2 can be 1-rest-2 )
+### implement/apply inrements with zero diference (unison) - use maybe diminuntions or existing patterns with 0-increment
+
+
+## get midi keyboard for selecting notes
+# sync to external clock/music
+# recognition of live beats, chords progressions with some 'eventual' special python lib to detect
+ 
