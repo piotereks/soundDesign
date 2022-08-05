@@ -17,6 +17,9 @@ global tline1
 global tline2
 global inside_timeline
 
+global IN_COLAB
+IN_COLAB = 'google.colab' in sys.modules
+
 
 import math
 # global beat
@@ -75,7 +78,7 @@ class Tracker:
                             73, 75, 74, 76, 75, 79]
 
         # self.init_timeline(True)
-        self.init_timeline()
+        self.init_timeline(flag_file)
         self.beat = self.beat_none
         # my_tracker.metronome_start()
         self.tmln = self.tracker_timeline()
@@ -111,11 +114,10 @@ class Tracker:
     def init_timeline(self, file_flag=False):
         log_call()
         if file_flag:
-            filename = "output.mid"
-            self.midi_out = iso.MidiFileOutputDevice(filename)
+          filename = "xoutput.mid"
+          self.midi_out = iso.MidiFileOutputDevice(filename)
         else:
-            self.midi_out = iso.MidiOutputDevice(device_name=self.name, send_clock=True)
-
+          self.midi_out = iso.MidiOutputDevice(device_name=self.name, send_clock=True)
         # midi_out = iso.DummyOutputDevice()
         self.timeline = iso.Timeline(120, output_device=self.midi_out)
         self.timeline.background()  # use background ts()instead of run to enable live performing (async notes passing)
