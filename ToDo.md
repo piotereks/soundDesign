@@ -133,7 +133,7 @@ Currently, patterns have ready midi notes.
 ## Appregios as scales?
 ## Work with classes always
 
-h1. new next steps
+# new next steps
 ## create general pattern with exact values of steps not intervals. Intervals will be calculated.
 ## create patter with exact notes values (from scales)
 ### play with closes note from selected scale
