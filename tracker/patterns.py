@@ -74,15 +74,27 @@ class Patterns:
         interval = abs(interval)
         # print('patterns:',list(self.patterns))
         # print(interval)
-        suitable_patterns = [sign * self.multiply_pattern(pattern, int(interval / pattern[-1])) for pattern in
+        if interval == 0:
+          suitable_patterns = [pattern for pattern in
                              self.patterns if pattern[-1] in self.pattern_size_for_interval[interval]]
+          # print('sp for 0:',suitable_patterns)
+        else:
+          suitable_patterns = [sign * self.multiply_pattern(pattern, int(interval / pattern[-1])) for pattern in
+                             self.patterns if pattern[-1] in self.pattern_size_for_interval[interval]]
+        # print('sp for n:',suitable_patterns)
         return suitable_patterns
 
     def get_random_pattern(self, interval):
-        if interval != 0:
-            return random.choice(self.get_suitable_pattern(interval))
-        else:
-            None
+      # xxx=self.get_suitable_pattern(interval)
+      # print('xxx:',xxx)
+      # yyy=random.choice(xxx)
+      # print('yyy:',yyy)
+      # return yyy
+      return random.choice(self.get_suitable_pattern(interval))
+        # if interval != 0:
+        #     return random.choice(self.get_suitable_pattern(interval))
+        # else:
+        #     None
 
     def __read_config_file__(self):
         # print('reading config')

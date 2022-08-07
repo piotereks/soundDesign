@@ -41,7 +41,7 @@ class Tracker:
     # name = "Virtual Midi"
 
     # name= "loopMIDI 6"
-    def __init__(self, interval_array=None, flag_file=False):
+    def __init__(self, interval_array=None, note_array=None, flag_file=False):
         my_beats = Beats()
         self.midi_out = None
         self.track = None
@@ -56,8 +56,14 @@ class Tracker:
         # self.pattern_array = None
         self.pattern_array = [my_beats.bt1, my_beats.bt3, my_beats.bt1,
                               my_beats.bt_trip, my_beats.bt2, my_beats.bt1_2, my_beats.bt2]
-        print("init spa:",self.pattern_array)
-        self.interval_array = interval_array
+        # if note_array:
+        self.interval_array = []
+        if note_array:
+          for index, note in enumerate(note_array+[note_array[0]]) or []:
+            if index>0:
+              self.interval_array.append(note - note_array[index-1])
+        else:
+          self.interval_array = interval_array
         self.init_pattern_array()
         # self.pattern_array = [my_beats.bt1, my_beats.bt_trip]
         # self.pattern_array = [pattern.copy() for pattern in self.pattern_array]
@@ -92,8 +98,9 @@ class Tracker:
         root_note = 0
         for interval in self.interval_array:
             # print('gsp:', interval, patterns.get_random_pattern(interval))
+            # print('pre gsp:', interval, root_note)
             rnd_pattern = patterns.get_random_pattern(interval)+root_note
-            print('gsp:', interval, rnd_pattern)
+            print('gsp:', interval,  root_note, rnd_pattern)
             # print('gsp2:', interval, iso.PSequence(rnd_pattern))
             len_rnd_pattern = len(rnd_pattern)-1
             print('gsp2:', interval, len_rnd_pattern, iso.PSequence(rnd_pattern[:-1]))
