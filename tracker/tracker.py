@@ -58,12 +58,22 @@ class Tracker:
                               my_beats.bt_trip, my_beats.bt2, my_beats.bt1_2, my_beats.bt2]
         # if note_array:
         self.interval_array = []
+        print('note array:', note_array)
+        print('interval array:', interval_array)
         if note_array:
-          for index, note in enumerate(note_array+[note_array[0]]) or []:
-            if index>0:
-              self.interval_array.append(note - note_array[index-1])
+            for index, note in enumerate(note_array+[note_array[0]]) or []:
+                # print('index,note:', index, note)
+                if index>0:
+                    # print('note - note_array[index-1]:', note - note_array[index-1])
+                    self.interval_array.append(note - note_array[index-1])
+                else:
+                    self.interval_array.append(note)
         else:
-          self.interval_array = interval_array
+            self.interval_array = interval_array
+
+        print('note array2:', note_array)
+        print('interval array2:', interval_array)
+
         self.init_pattern_array()
         # self.pattern_array = [my_beats.bt1, my_beats.bt_trip]
         # self.pattern_array = [pattern.copy() for pattern in self.pattern_array]
@@ -95,17 +105,21 @@ class Tracker:
 
         self.pattern_array = []
         patterns = Patterns()
-        root_note = 0
-        for interval in self.interval_array:
+        print('======')
+        root_note = self.interval_array[0]
+        print("self.interval_array",self.interval_array)
+        for interval in self.interval_array[1:]:
             # print('gsp:', interval, patterns.get_random_pattern(interval))
             # print('pre gsp:', interval, root_note)
             rnd_pattern = patterns.get_random_pattern(interval)+root_note
+            print('------')
             print('gsp:', interval,  root_note, rnd_pattern)
             # print('gsp2:', interval, iso.PSequence(rnd_pattern))
             len_rnd_pattern = len(rnd_pattern)-1
-            print('gsp2:', interval, len_rnd_pattern, iso.PSequence(rnd_pattern[:-1]))
+            notes_seq = iso.PSequence(rnd_pattern[:-1], repeats=1)
+            print('gsp2:', interval, len_rnd_pattern, list(notes_seq.copy()))
             beat = iso.PDict({
-                "note": iso.PSequence(rnd_pattern, repeats=1),
+                "note": notes_seq,
                 # "duration": 1/len_rnd_pattern
                 "duration": iso.PSequence([(4/len_rnd_pattern)-0.000000000000002], repeats=len_rnd_pattern)
             })
@@ -114,6 +128,7 @@ class Tracker:
             # print("beatx:", list(beat["note"]))
             self.pattern_array.append(beat)
             root_note = rnd_pattern[-1]
+            print(f"root note:{root_note}")
         print("init spa2:",self.pattern_array)
         print(list(self.pattern_array))
 

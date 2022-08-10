@@ -35,23 +35,18 @@ def cmp():
 def main():
     global my_tracker
     log_call()
-    # intervals_chain = [1, 3, -2, 1, 1, 10, -9, -4,-1] # fix in random_pattern zero interval
-    intervals_chain = [1, 3, -2, 1, 1, 7, -6, -4,-1] # fix in random_pattern zero interval
+    intervals_chain = [1, 3,    -2, 1, 1, 7, -6, -4, -1] # fix in random_pattern zero interval
+                       # [3, 0, -2, 1, 1, 7, -6, -4, -1, 1]
+    notes_chain = [1, 4, 4, 2, 3, 4, 11, 5, 1, 0]
     print(sum(intervals_chain))
-    my_tracker = Tracker(interval_array=intervals_chain, flag_file=False)
+    flag_file = True
+    flag_file = False
 
-    # print(my_tracker)
-    # my_tracker.init_timeline()
-    # tracker.beat = tracker.beat_none
-    # my_tracker.beat = my_tracker.beat1
-    # my_tracker.metronome_start()
-    # tmln = tracker.tracker_timeline()
-    # pprint.pprint(tmln.__dict__)
+    # my_tracker = Tracker(interval_array=intervals_chain, flag_file=flag_file)
+    my_tracker = Tracker(note_array=notes_chain, flag_file=flag_file)
 
     patterns = Patterns()
 
-    # for interval  in intervals_chain:
-    #     print('gsp:', interval, patterns.get_random_pattern(interval))
 
 
 if __name__ == '__main__':
