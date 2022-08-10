@@ -44,9 +44,20 @@ def main():
 
     # my_tracker = Tracker(interval_array=intervals_chain, flag_file=flag_file)
     my_tracker = Tracker(note_array=notes_chain, flag_file=flag_file)
+    # patterns = Patterns()
+    # my_tracker.metronome_start()
 
-    patterns = Patterns()
 
+#     global my_tracker
+#     log_call()
+#     my_tracker = Tracker()
+#     print(my_tracker)
+#     # my_tracker.init_timeline()
+#     # tracker.beat = tracker.beat_none
+#     # my_tracker.beat = my_tracker.beat1
+#     # my_tracker.metronome_start()
+#     # tmln = tracker.tracker_timeline()
+#     # pprint.pprint(tmln.__dict__)
 
 
 if __name__ == '__main__':
