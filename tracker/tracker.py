@@ -44,6 +44,7 @@ class Tracker:
     # name= "loopMIDI 6"
     def __init__(self,interval_array=None, note_array=None,  midi_note_array=None,flag_file=False):
         my_beats = Beats()
+        self.root_midi = [('C')]
         self.midi_out = None
         self.track = None
         log_call()

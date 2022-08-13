@@ -1,3 +1,143 @@
+scales:
+  - name: chromatic
+    semitones: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+  - name: major
+    semitones: [0, 2, 4, 5, 7, 9, 11]
+  - name: maj7
+    semitones: [0, 2, 4, 5, 7, 9, 10]
+  - name: minor
+    semitones: [0, 2, 3, 5, 7, 8, 11]
+  - name: pureminor
+    semitones: [0, 3, 7]
+  - name: puremajor
+    semitones: [0, 4, 7]
+  - name: minorPenta
+    semitones: [0, 3, 5, 7, 10]
+  - name: majorPenta
+    semitones: [0, 2, 4, 7, 9]
+  - name: ritusen
+    semitones: [0, 2, 5, 7, 9]
+  - name: pelog
+    semitones: [0, 1, 3, 7, 8]
+  - name: augmented
+    semitones: [0, 3, 4, 7, 8, 11]
+  - name: augmented 2
+    semitones: [0, 1, 4, 5, 8, 9]
+  - name: wholetone
+    semitones: [0, 2, 4, 6, 8, 10]
+  - name: ionian
+    semitones: [0, 2, 4, 5, 7, 9, 11]
+  - name: dorian
+    semitones: [0, 2, 3, 5, 7, 9, 10]
+  - name: phrygian
+    semitones: [0, 1, 3, 5, 7, 8, 10]
+  - name: lydian
+    semitones: [0, 2, 4, 6, 7, 9, 11]
+  - name: mixolydian
+    semitones: [0, 2, 4, 5, 7, 9, 10]
+  - name: aeolian
+    semitones: [0, 2, 3, 5, 7, 8, 10]
+  - name: locrian
+    semitones: [0, 1, 3, 5, 6, 8, 10]
+  - name: fourths
+    semitones: [0, 2, 5, 7]
+  - name: "Dur /Jo\u0144ska - 1mod"
+    semitones: [0, 2, 4, 5, 7, 9, 11]
+  - name: durowa miekka /hinduska
+    semitones: [0, 2, 4, 5, 7, 8, 10]
+  - name: Mol /Dorycka - 2 mod
+    semitones: [0, 2, 3, 5, 7, 9, 10]
+  - name: moll melodyczna down
+    semitones: [0, 2, 3, 5, 7, 8, 10]
+  - name: moll melodyczna up
+    semitones: [0, 2, 3, 5, 7, 9, 11]
+  - name: moll melodyczna up/down
+    semitones: [0, 2, 3, 5, 7, 8, 9, 10, 11]
+  - name: moll naturalna
+    semitones: [0, 2, 3, 5, 7, 8, 10]
+  - name: molowa harmoniczna
+    semitones: [0, 2, 3, 5, 7, 8, 11]
+  - name: 5 mod mol harm
+    semitones: [0, 1, 4, 5, 7, 8, 10]
+  - name: "lidian dominant /g\xF3ralska"
+    semitones: [0, 2, 4, 6, 7, 9, 10]
+  - name: lokrycka - 7 mod
+    semitones: [0, 1, 3, 5, 6, 8, 10]
+  - name: miksolidyjska - 5 mod
+    semitones: [0, 2, 4, 5, 7, 9, 10]
+  - name: Frygijska - 3 mod
+    semitones: [0, 1, 3, 5, 7, 8, 10]
+  - name: Lidyjska - 4 mod
+    semitones: [0, 2, 4, 5, 7, 9, 10]
+  - name: Eolska - 6 mod
+    semitones: [0, 2, 3, 5, 7, 8, 10]
+  - name: "pentatoniczna p\xF3\u0142tonowa hemitoniczna"
+    semitones: [0, 2, 6, 7, 9, 11]
+  - name: pentatonika durowa /chinska-mongolska
+    semitones: [0, 2, 4, 7, 9]
+  - name: Pentatonika molowa
+    semitones: [0, 3, 5, 7, 10]
+  - name: "pentatonika p\xF3\u0142tonowa diatoniczna"
+    semitones: [0, 1, 5, 7, 8]
+  - name: bluesowa mol
+    semitones: [0, 3, 5, 6, 7, 10, 11]
+  - name: bluesowa
+    semitones: [0, 3, 5, 6, 7, 10]
+  - name: alterowana
+    semitones: [0, 1, 3, 4, 6, 8, 10]
+  - name: "ca\u0142otonowa"
+    semitones: [0, 2, 4, 6, 8, 10]
+  - name: harmoniczna durowa
+    semitones: [0, 2, 4, 5, 7, 8, 11]
+  - name: "p\xF3lton/ca\u0142y ton."
+    semitones: [0, 1, 3, 4, 6, 7, 9, 10]
+  - name: zmniejszona
+    semitones: [0, 3, 6, 9]
+  - name: bluesowa dur
+    semitones: [0, 2, 3, 4, 7, 8, 9]
+  - name: arabska
+    semitones: [0, 2, 4, 5, 6, 8, 10]
+  - name: "chi\u0144ska-mongolska /pentatonika durowa"
+    semitones: [0, 2, 4, 7, 9]
+  - name: "cyga\u0144ska 1"
+    semitones: [0, 2, 3, 6, 7, 11]
+  - name: "cyga\u0144ska 2"
+    semitones: [0, 1, 4, 5, 7, 8, 11]
+  - name: "g\xF3ralska /lidian dominant"
+    semitones: [0, 2, 4, 6, 7, 9, 10]
+  - name: hawajska
+    semitones: [0, 2, 3, 7, 9]
+  - name: hinduska /durowa miekka
+    semitones: [0, 2, 4, 5, 7, 8, 10]
+  - name: "hiszpa\u0144ka"
+    semitones: [0, 1, 4, 5, 7, 8, 10]
+  - name: "japo\u0144ska down"
+    semitones: [0, 1, 5, 7, 8]
+  - name: "japo\u0144ska up"
+    semitones: [0, 1, 5, 7, 10]
+  - name: "japo\u0144ska up/down"
+    semitones: [0, 1, 5, 7, 8, 10]
+  - name: jawajska
+    semitones: [0, 1, 3, 5, 7, 9, 10]
+  - name: "neapolita\u0144ska"
+    semitones: [0, 1, 3, 5, 7, 8, 11]
+  - name: perska
+    semitones: [0, 1, 4, 5, 6, 8, 11]
+  - name: "w\u0119gierska"
+    semitones: [0, 3, 4, 6, 7, 9, 10]
+  - name: "wo\u0142owska"
+    semitones: [0, 2, 3, 6, 7, 9]
+  - name: bebop major
+    semitones: [0, 2, 4, 5, 7, 8, 9, 11]
+  - name: bebop dominant
+    semitones: [0, 2, 4, 5, 7, 9, 10, 11]
+  - name: bebop dorian
+    semitones: [0, 2, 3, 4, 5, 7, 9, 10]
+  - name: bebop minor
+    semitones: [0, 2, 3, 5, 7, 8, 9, 11]
+  - name: bebop locrian
+    semitones: [0, 1, 3, 5, 6, 7, 8, 10]
+
 play_over:
   patterns:
     -

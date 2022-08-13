@@ -1,5 +1,7 @@
 from tracker import *
 from patterns import *
+global IN_COLAB
+IN_COLAB = 'google.colab' in sys.modules
 
 def ts():
     global my_tracker
@@ -126,9 +128,47 @@ def notepad_scale():
 # uuu=[iso.Scale([int(aaa)-1 for aaa in xxx[1].split()[:-1]],xxx[2]) for xxx in notepad if xxx[0]=="Scale" ]
 # [scale.name for scale in iso.Scale.all()]
 
+
+def read_config_file_scales():
+    # print('reading config')
+    config_file = 'reviewed_pattern_cfg.yaml'
+    if IN_COLAB:
+        config_file = '/content/SoundDesign/tracker/' + config_file
+
+    with open(config_file, 'r') as file:
+        # with open('reviewed_pattern_cfg.yaml', 'r') as file:
+        loaded_yaml = yaml.safe_load(file)
+    uuuu = [iso.Scale(scale['semitones'], scale['name']) for scale in loaded_yaml['scales']]
+
+    # print(self.patterns_config)
+    # print(self.patterns_config['play_over'])
+    # self.patterns = list(map(lambda x: np.array(x['pattern']), self.patterns_config['play_over']['patterns']))
+    # print('after list')
+
+    # pprint.pprint(self.patterns_config)
+def midi_note_to_note_name(note):
+    """
+    corrected tool function
+    Maps a MIDI note index to a note name.
+    Supports fractional pitches.
+    """
+    if (type(note) is not int and type(note) is not float) or (note < 0 or note > 127):
+        raise iso.InvalidMIDIPitch()
+
+    degree = int(note) % len(iso.note_names)
+    octave = int(note / len(iso.note_names))
+    str = "%s%d" % (iso.note_names[degree][0], octave)
+    frac = math.modf(note)[0]
+    if frac > 0:
+        str = (str + " + %2f" % frac)
+
+    return str
+
+
 def main():
     global my_tracker
     log_call()
+    iso.util.midi_note_to_note_name=midi_note_to_note_name  # Overwritte original function
     intervals_chain = [1, 3,    -2, 1, 1, 7, -6, -4, -1] # fix in random_pattern zero interval
                        # [3, 0, -2, 1, 1, 7, -6, -4, -1, 1]
                 #[1, 3,  0,-2, 1, 1, 7, -6, -4, -1]
@@ -148,9 +188,9 @@ def main():
     my_tracker = Tracker(midi_note_array=midi_notes_chain, note_array=notes_chain, flag_file=flag_file)
     # patterns = Patterns()
     # my_tracker.metronome_start()
-    notepad_scale()
-    uuu=[iso.Scale([int(aaa) - 1 for aaa in xxx[1].split()[:-1]], xxx[2]) for xxx in notepad if xxx[0] == "Scale"]
-
+    read_config_file_scales()
+    # notepad_scale()
+    # uuu=[iso.Scale([int(aaa) - 1 for aaa in xxx[1].split()[:-1]], xxx[2]) for xxx in notepad if xxx[0] == "Scale"]
 
 
 
@@ -170,3 +210,9 @@ if __name__ == '__main__':
 print("scale name", iso.Scale.default.name)
 
 # check what is exact mapping between iso.Scale index, notes and midi notes.
+# yaml.dump(xxx, default_flow_style=None)
+
+# iso.util.midi_note_to_note_name(60)
+# Out[18]: 'C4'
+# iso.util.note_name_to_midi_note('C5')
+# Out[19]: 60
