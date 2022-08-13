@@ -42,7 +42,7 @@ class Tracker:
     # name = "Virtual Midi"
 
     # name= "loopMIDI 6"
-    def __init__(self, interval_array=None, note_array=None, flag_file=False):
+    def __init__(self,interval_array=None, note_array=None,  midi_note_array=None,flag_file=False):
         my_beats = Beats()
         self.midi_out = None
         self.track = None
@@ -61,6 +61,8 @@ class Tracker:
         self.interval_array = []
         print('note array:', note_array)
         print('interval array:', interval_array)
+        self.midi_note_array = midi_note_array
+        print("self.midi_note_array:", self.midi_note_array)
         if note_array:
             for index, note in enumerate(note_array + [note_array[0]]) or []:
                 # print('index,note:', index, note)
@@ -144,6 +146,31 @@ class Tracker:
         self.timeline = iso.Timeline(120, output_device=self.midi_out)
         self.timeline.background()  # use background ts()instead of run to enable live performing (async notes passing)
 
+    def beat_test(self):
+        log_call()
+        # global beat_count
+        # global prev_time
+        self.beat_count += 1
+
+        self.diff_time = self.timeline.current_time - self.prev_time
+        self.prev_time = self.timeline.current_time
+        print(
+            f"beat_test diff:{self.diff_time}, timeXX: {self.timeline.current_time}, {round(self.timeline.current_time)} beat: {self.beat_count}\n")
+        self.beat_count %= 4
+
+        notes = iso.PDict({
+            iso.EVENT_NOTE: iso.PSequence(range(-10, 10), repeats=1),
+            iso.EVENT_DURATION: 1/5,
+            iso.EVENT_OCTAVE: 5
+            # iso.EVENT_DEGREE: xxxx
+        })
+
+        xxx = self.timeline.schedule(
+            notes,
+            replace=True,  # this is not working with version 0.1.1, only with github
+            name="blah"  # this is not working with version 0.1.1, only with github
+
+        )
     def beat1(self):
         log_call()
         # global beat_count
@@ -238,7 +265,7 @@ class Tracker:
             , remove_when_done=False)
 
     # def pplay(self, initialize: bool = False):
-    def pplay(self):
+    def pplay_working(self):
 
         log_call()
         self.beat_count += 1
@@ -269,6 +296,102 @@ class Tracker:
         print("before conversion:", list(beat["note"]), list(beat["duration"]))
         self.pattern_array[self.pattern_idx] = beat
         self.root_note = rnd_pattern[-1]
+
+        self.pattern_array[self.pattern_idx].reset()
+
+        # Degree conversion here with scale
+        converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.scale)
+        # converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.key) # is this vaiid usage?
+        xto_play = iso.PDict({
+            iso.EVENT_NOTE: converted_note,
+            iso.EVENT_DURATION: self.pattern_array[self.pattern_idx]['duration'],
+            iso.EVENT_OCTAVE: 5
+            # iso.EVENT_DEGREE: xxxx
+        })
+        print(f'converted with scale {self.scale.name}:', list(converted_note))
+        self.pattern_array[self.pattern_idx].reset()
+        self.track = self.timeline.schedule(
+            # self.pattern_array[self.pattern_idx],
+            xto_play,
+            replace=True,  # this is not working with version 0.1.1, only with github
+            name="blah",  # this is not working with version 0.1.1, only with github
+            # quantize=1
+            # ,remove_when_done=False
+        )
+        self.pattern_idx += 1
+        self.pattern_idx %= len(self.pattern_array)
+        # else:
+        #     self.pattern_idx = 0
+        #     self.beat = self.pplay
+        # self.pattern_array[self.pattern_idx].reset()
+        # print(f"{self.pattern_idx=} {sum(self.pattern_array[self.pattern_idx]['duration'])=}")
+        # print(
+        #     f"self.pattern_idx={self.pattern_idx} sum(self.pattern_array[self.pattern_idx]['duration'])={sum(self.pattern_array[self.pattern_idx]['duration'])}")
+
+        self.pattern_array[self.pattern_idx].reset()
+        # These statements need some analysis about sync
+        # xxx = math.ceil(sum(self.pattern_array[self.pattern_idx]['duration']))
+
+        # print(math.ceil(sum(self.pattern_array[self.pattern_idx]['duration'])))
+        self.pattern_array[self.pattern_idx].reset()
+        self.tmln.event_stream['duration'] = math.ceil(sum(self.pattern_array[self.pattern_idx]['duration']))
+        # self.tmln.event_stream['duration'] = sum(self.pattern_array[self.pattern_idx]['duration'])
+        # print(f"xxx={xxx} self.tmln.event_stream['duration']={self.tmln.event_stream['duration']}")
+        self.pattern_array[self.pattern_idx].reset()
+        print("pplay - END")
+    def pplay(self):
+
+        log_call()
+        self.beat_count += 1
+
+        self.diff_time = self.timeline.current_time - self.prev_time
+        self.prev_time = self.timeline.current_time
+        print(f"---\npplay diff:{self.diff_time}, timeXX: {self.timeline.current_time}, {round(self.timeline.current_time)} \
+        beat: {self.beat_count}")
+        self.beat_count %= 4
+        if self.pattern_idx == 0:
+            self.scale = iso.Scale.random()
+            print('scale:', self.scale.name, list(self.scale.semitones))
+            # note_prev = self.scale.get(self.root_note) + 60 # 60 is midi number of C in 5th Octave
+
+        # if not initialize:
+        # key = iso.Key("C", "major")
+        print("self.midi_note_array2:", self.midi_note_array)
+        print("self.midi_note_array2 cvt:", [self.scale.get(self.scale.indexOf(midi_note)) for midi_note in self.midi_note_array])
+
+        if self.midi_note_array:
+            # this is to denominate midi notes to indexes of elements of scale
+            mod_midi_note_array = [self.midi_note_array[-1]] + self.midi_note_array+[self.midi_note_array[0]]
+            print("mod_midi_note_array:", mod_midi_note_array)
+
+            note = mod_midi_note_array[self.pattern_idx+1] - 60  # 60 is midi number of C in 5th Octave
+            # note_prev = mod_midi_note_array[self.pattern_idx] - 60  # 60 is midi number of C in 5th Octave
+            print('n1:',note,self.root_note)
+            # remember that this function is calculating notes which are not from scale
+            # as note with midi code 1 less
+            note = self.scale.indexOf(note)
+            # note_prev = self.scale.indexOf(note_prev)
+            print('n1:',note,self.root_note)
+            interval = note - self.root_note
+            print('interval:', interval, self.interval_array[self.pattern_idx])
+        else:
+            interval = self.interval_array[self.pattern_idx]
+
+        rnd_pattern = self.patterns.get_random_pattern(interval) + self.root_note
+        print('grp:', interval, rnd_pattern)
+        len_rnd_pattern = len(rnd_pattern) - 1
+        # print('gsp2:', interval, len_rnd_pattern, iso.PSequence(rnd_pattern[:-1]))
+        # base not converted notes pattern
+        beat = iso.PDict({
+            "note": iso.PSequence(rnd_pattern, repeats=1),
+            # "duration": 1/len_rnd_pattern
+            "duration": iso.PSequence([(4 / len_rnd_pattern) - 0.000000000000002], repeats=len_rnd_pattern)
+        })
+        print("before conversion:", list(beat["note"]), list(beat["duration"]))
+        self.pattern_array[self.pattern_idx] = beat
+        self.root_note = rnd_pattern[-1]
+        # self.root_note = self.scale.get(rnd_pattern[-1])  # <-- this conversion is wrong
+        print('new root note:', self.root_note)
 
         self.pattern_array[self.pattern_idx].reset()
 
