@@ -162,8 +162,8 @@ if __name__ == '__main__':
 
 # get(self, n):
 # """ Retrieve the n'th degree of this scale. """
-#     def indexOf(self, note):
-#         """ Return the index of the given note within this scale. """
+#indexOf(self, note):
+#ts()""" Return the index of the given note within this scale. """
 
 # iso.Scale.default.name
-
+# check what is exact mapping between iso.Scale index, notes and midi notes.
