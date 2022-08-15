@@ -129,7 +129,9 @@ I can play midi and play my part.
 # User Predefined beats and pattern + apply scale
 ## Take your patterns, but play using specific scale.
 Currently, patterns have ready midi notes.
-## Extend isobar with your scales
+## Extend isobar with your scales  - done, but as list not as variables
+### compare duplicate of scale
+### Think about scale up/down version and application in patterns
 ## Appregios as scales?
 ## Work with classes always
 
@@ -144,6 +146,8 @@ This is done automatically - I accept that so far.
 ### detecting scales can be per beat, bar and can change. Additional condition to select these scales would be genre of music
 ### Please remember to use different scales for e.g. moll melodyczna up and down
 ### apart from scale use different keys
+### link scales names, but have only one scale in dictionary (?why, to avoid confusion)
+
 
 ## playover selection
 ### New scales at isobar

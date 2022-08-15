@@ -1,11 +1,11 @@
 import time
 import isobar as iso
+from isobar_fixes import *
 
 # one time init    (this is the best to used globals)
 # One time is sufficient, so basically this may be repeated
 
 import inspect
-import isobar as iso
 from beats import *
 from patterns import *
 import pprint
@@ -31,6 +31,8 @@ def log_call():
     print(inspect.stack()[1][3])
 
 
+
+
 class Tracker:
     name = "Microsoft GS Wavetable Synth 0"
     scale = iso.Scale.major
@@ -43,6 +45,7 @@ class Tracker:
 
     # name= "loopMIDI 6"
     def __init__(self,interval_array=None, note_array=None,  midi_note_array=None,flag_file=False):
+        read_config_file_scales()
         my_beats = Beats()
         self.root_midi = [('C')]
         self.midi_out = None
