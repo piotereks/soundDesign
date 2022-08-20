@@ -33,6 +33,7 @@ def log_call():
 
 
 
+
 class Tracker:
     name = "Microsoft GS Wavetable Synth 0"
     scale = iso.Scale.major
@@ -150,17 +151,33 @@ class Tracker:
         self.timeline = iso.Timeline(120, output_device=self.midi_out)
         self.timeline.background()  # use background ts()instead of run to enable live performing (async notes passing)
 
-    def beat_test(self):
-        log_call()
-        # global beat_count
-        # global prev_time
-        self.beat_count += 1
+    def logging(func):
+        def inner(self, *args, **kwargs):
+            log_call()
+            print(func.__name__)
+            self.beat_count += 1
+            self.diff_time = self.timeline.current_time - self.prev_time
+            self.prev_time = self.timeline.current_time
+            print(f"{func.__name__} diff:{self.diff_time}, timeXX: {self.timeline.current_time},"
+                  f" {round(self.timeline.current_time)} beat: {self.beat_count}\n")
+            self.beat_count %= 4
+            # print('bef func')
+            # print('args: ',*args)
+            # print('kwargs: ', ** kwargs)
+            notes = func(self, *args, **kwargs)
+            # print('aft func')
+            xxx = self.timeline.schedule(
+                notes,
+                replace=True,  # this is not working with version 0.1.1, only with github
+                name="blah"  # this is not working with version 0.1.1, only with github
 
-        self.diff_time = self.timeline.current_time - self.prev_time
-        self.prev_time = self.timeline.current_time
-        print(
-            f"beat_test diff:{self.diff_time}, timeXX: {self.timeline.current_time}, {round(self.timeline.current_time)} beat: {self.beat_count}\n")
-        self.beat_count %= 4
+            )
+            print('post sched')
+
+        return inner
+
+    @logging
+    def beat_test(self):
 
         notes = iso.PDict({
             iso.EVENT_NOTE: iso.PSequence(range(-10, 10), repeats=1),
@@ -168,75 +185,26 @@ class Tracker:
             iso.EVENT_OCTAVE: 5
             # iso.EVENT_DEGREE: xxxx
         })
+        return notes
 
-        xxx = self.timeline.schedule(
-            notes,
-            replace=True,  # this is not working with version 0.1.1, only with github
-            name="blah"  # this is not working with version 0.1.1, only with github
-
-        )
+    @logging
     def beat1(self):
-        log_call()
-        # global beat_count
-        # global prev_time
-        self.beat_count += 1
+        return iso.PDict({
+            iso.EVENT_NOTE:iso.PSequence([1, 3, 2, 4], repeats=1) +72 })
 
-        self.diff_time = self.timeline.current_time - self.prev_time
-        self.prev_time = self.timeline.current_time
-        print(
-            f"beat2 diff:{self.diff_time}, timeXX: {self.timeline.current_time}, {round(self.timeline.current_time)} beat: {self.beat_count}\n")
-        self.beat_count %= 4
-
-        notes = iso.PSequence([1, 3, 2, 4], repeats=1)
-
-        xxx = self.timeline.schedule(
-            {"note": notes.copy() + 72,
-             },
-            replace=True,  # this is not working with version 0.1.1, only with github
-            name="blah"  # this is not working with version 0.1.1, only with github
-
-        )
-
+    @logging
     def beat2(self):
-        log_call()
-        # global beat_count
-        # global prev_time
-        self.beat_count += 1
+        return  iso.PDict({
+            iso.EVENT_NOTE:iso.PSequence([1, 3, 2, 4, 3, 5], repeats=1) + 66})
 
-        self.diff_time = self.timeline.current_time - self.prev_time
-        self.prev_time = self.timeline.current_time
-        print(
-            f"beat2 diff:{self.diff_time}, timeXX: {self.timeline.current_time}, {round(self.timeline.current_time)} beat: {self.beat_count}\n")
-        self.beat_count %= 4
-
-        notes = iso.PSequence([1, 3, 2, 4, 3, 5], repeats=1)
-
-        xxx = self.timeline.schedule(
-            {"note": notes.copy() + 66
-             }
-            , replace=True  # this is not working with version 0.1.1, only with github
-            , name="blah"  # this is not working with version 0.1.1, only with github
-        )
-
+    @logging
     def beat_none(self):
-        log_call()
-        print(self)
-        print('xxx')
-        # global beat_count
-        # global prev_time
-        self.beat_count += 1
+        return iso.PDict({
+            iso.EVENT_NOTE:iso.PSequence([None], repeats=4)})
 
-        self.diff_time = self.timeline.current_time - self.prev_time
-        self.prev_time = self.timeline.current_time
-        print(
-            f"beatNone diff:{self.diff_time}, timeXX: {self.timeline.current_time}, {round(self.timeline.current_time)} beat: {self.beat_count}\n")
-        self.beat_count %= 4
 
-        notes = iso.PSequence([1, 3, 2, 4], repeats=1)
 
-        xxx = self.timeline.schedule()
 
-    beat = beat_none
 
     def tracker_timeline(self):
         log_call()
@@ -251,6 +219,10 @@ class Tracker:
     def ts(self):
         log_call()
         self.timeline.stop()
+
+    def tstart(self):
+        log_call()
+        self.timeline.background()
 
     def metronome_start(self):
         log_call()
@@ -268,91 +240,10 @@ class Tracker:
             , quantize=1
             , remove_when_done=False)
 
-    # def pplay(self, initialize: bool = False):
-    def pplay_working(self):
 
-        log_call()
-        self.beat_count += 1
-
-        self.diff_time = self.timeline.current_time - self.prev_time
-        self.prev_time = self.timeline.current_time
-        print(f"---\npplay diff:{self.diff_time}, timeXX: {self.timeline.current_time}, {round(self.timeline.current_time)} \
-        beat: {self.beat_count}")
-        self.beat_count %= 4
-        if self.pattern_idx == 0:
-            self.scale = iso.Scale.random()
-            print('scale:', self.scale.name)
-
-        # if not initialize:
-        # key = iso.Key("C", "major")
-        interval = self.interval_array[self.pattern_idx]
-
-        rnd_pattern = self.patterns.get_random_pattern(interval) + self.root_note
-        print('grp:', interval, rnd_pattern)
-        len_rnd_pattern = len(rnd_pattern) - 1
-        # print('gsp2:', interval, len_rnd_pattern, iso.PSequence(rnd_pattern[:-1]))
-        # base not converted notes pattern
-        beat = iso.PDict({
-            "note": iso.PSequence(rnd_pattern, repeats=1),
-            # "duration": 1/len_rnd_pattern
-            "duration": iso.PSequence([(4 / len_rnd_pattern) - 0.000000000000002], repeats=len_rnd_pattern)
-        })
-        print("before conversion:", list(beat["note"]), list(beat["duration"]))
-        self.pattern_array[self.pattern_idx] = beat
-        self.root_note = rnd_pattern[-1]
-
-        self.pattern_array[self.pattern_idx].reset()
-
-        # Degree conversion here with scale
-        converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.scale)
-        # converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.key) # is this vaiid usage?
-        xto_play = iso.PDict({
-            iso.EVENT_NOTE: converted_note,
-            iso.EVENT_DURATION: self.pattern_array[self.pattern_idx]['duration'],
-            iso.EVENT_OCTAVE: 5
-            # iso.EVENT_DEGREE: xxxx
-        })
-        print(f'converted with scale {self.scale.name}:', list(converted_note))
-        self.pattern_array[self.pattern_idx].reset()
-        self.track = self.timeline.schedule(
-            # self.pattern_array[self.pattern_idx],
-            xto_play,
-            replace=True,  # this is not working with version 0.1.1, only with github
-            name="blah",  # this is not working with version 0.1.1, only with github
-            # quantize=1
-            # ,remove_when_done=False
-        )
-        self.pattern_idx += 1
-        self.pattern_idx %= len(self.pattern_array)
-        # else:
-        #     self.pattern_idx = 0
-        #     self.beat = self.pplay
-        # self.pattern_array[self.pattern_idx].reset()
-        # print(f"{self.pattern_idx=} {sum(self.pattern_array[self.pattern_idx]['duration'])=}")
-        # print(
-        #     f"self.pattern_idx={self.pattern_idx} sum(self.pattern_array[self.pattern_idx]['duration'])={sum(self.pattern_array[self.pattern_idx]['duration'])}")
-
-        self.pattern_array[self.pattern_idx].reset()
-        # These statements need some analysis about sync
-        # xxx = math.ceil(sum(self.pattern_array[self.pattern_idx]['duration']))
-
-        # print(math.ceil(sum(self.pattern_array[self.pattern_idx]['duration'])))
-        self.pattern_array[self.pattern_idx].reset()
-        self.tmln.event_stream['duration'] = math.ceil(sum(self.pattern_array[self.pattern_idx]['duration']))
-        # self.tmln.event_stream['duration'] = sum(self.pattern_array[self.pattern_idx]['duration'])
-        # print(f"xxx={xxx} self.tmln.event_stream['duration']={self.tmln.event_stream['duration']}")
-        self.pattern_array[self.pattern_idx].reset()
-        print("pplay - END")
+    @logging
     def pplay(self):
 
-        log_call()
-        self.beat_count += 1
-
-        self.diff_time = self.timeline.current_time - self.prev_time
-        self.prev_time = self.timeline.current_time
-        print(f"---\npplay diff:{self.diff_time}, timeXX: {self.timeline.current_time}, {round(self.timeline.current_time)} \
-        beat: {self.beat_count}")
-        self.beat_count %= 4
         if self.pattern_idx == 0:
             self.scale = iso.Scale.random()
             print('scale:', self.scale.name, list(self.scale.semitones))
@@ -402,7 +293,7 @@ class Tracker:
         # Degree conversion here with scale
         converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.scale)
         # converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.key) # is this vaiid usage?
-        xto_play = iso.PDict({
+        notes = iso.PDict({
             iso.EVENT_NOTE: converted_note,
             iso.EVENT_DURATION: self.pattern_array[self.pattern_idx]['duration'],
             iso.EVENT_OCTAVE: 5
@@ -410,33 +301,46 @@ class Tracker:
         })
         print(f'converted with scale {self.scale.name}:', list(converted_note))
         self.pattern_array[self.pattern_idx].reset()
-        self.track = self.timeline.schedule(
-            # self.pattern_array[self.pattern_idx],
-            xto_play,
-            replace=True,  # this is not working with version 0.1.1, only with github
-            name="blah",  # this is not working with version 0.1.1, only with github
-            # quantize=1
-            # ,remove_when_done=False
-        )
+
         self.pattern_idx += 1
         self.pattern_idx %= len(self.pattern_array)
-        # else:
-        #     self.pattern_idx = 0
-        #     self.beat = self.pplay
-        # self.pattern_array[self.pattern_idx].reset()
-        # print(f"{self.pattern_idx=} {sum(self.pattern_array[self.pattern_idx]['duration'])=}")
-        # print(
-        #     f"self.pattern_idx={self.pattern_idx} sum(self.pattern_array[self.pattern_idx]['duration'])={sum(self.pattern_array[self.pattern_idx]['duration'])}")
-
-        self.pattern_array[self.pattern_idx].reset()
-        # These statements need some analysis about sync
-        # xxx = math.ceil(sum(self.pattern_array[self.pattern_idx]['duration']))
-
-        # print(math.ceil(sum(self.pattern_array[self.pattern_idx]['duration'])))
         self.pattern_array[self.pattern_idx].reset()
         self.tmln.event_stream['duration'] = math.ceil(sum(self.pattern_array[self.pattern_idx]['duration']))
-        # self.tmln.event_stream['duration'] = sum(self.pattern_array[self.pattern_idx]['duration'])
-        # print(f"xxx={xxx} self.tmln.event_stream['duration']={self.tmln.event_stream['duration']}")
         self.pattern_array[self.pattern_idx].reset()
+
         print("pplay - END")
+        return notes
+
+
+    @logging
+    def beat2(self):
+        return  iso.PDict({
+            iso.EVENT_NOTE:iso.PSequence([1, 3, 2, 4, 3, 5], repeats=1) + 66})
+
+    @logging
+    def beat_none(self):
+        return iso.PDict({
+            iso.EVENT_NOTE: iso.PSequence([None], repeats=4)})
+
+    @logging
+    def play_from_to(self, from_note, to_note ):
+        print()
+        if  None in (from_note, to_note):
+            return None
+        print('after_check')
+        increment = (from_note <= to_note) - (from_note > to_note)
+        print('to_note:', to_note)
+        to_note += increment
+        print('to_note2:', to_note)
+        pattern = range(from_note, to_note, increment)
+        print('Pseq:', list(iso.PSequence(pattern, repeats=1)))
+        print('Pseq + Degree:', list(iso.PDegree(iso.PSequence(pattern, repeats=1), self.scale)))
+        len_pattern = len(pattern)
+        print('scale name:', self.scale.name)
+        return iso.PDict({
+            iso.EVENT_NOTE: iso.PDegree(iso.PSequence(pattern, repeats=1), self.scale),
+            iso.EVENT_DURATION: iso.PSequence([(4 / len_pattern) - 0.000000000000002], repeats=len_pattern),
+            iso.EVENT_OCTAVE: 5
+            # iso.EVENT_DEGREE: xxxx
+        })
 

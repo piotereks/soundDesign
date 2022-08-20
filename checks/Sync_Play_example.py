@@ -88,7 +88,7 @@ def beat2():
     )
 
 
-def beatNone():
+def beatNone2():
     global beat_count
     global prev_time
     beat_count += 1
@@ -102,6 +102,20 @@ def beatNone():
 
     xxx = timeline.schedule()
 
+
+def beatNone():
+    global beat_count
+    global prev_time
+    beat_count += 1
+
+    diff_time = timeline.current_time - prev_time
+    prev_time = timeline.current_time
+    print(f"diff:{diff_time}, timeXX: {timeline.current_time}, {round(timeline.current_time)} beat: {beat_count}\n")
+    beat_count %= 4
+
+    notes = iso.PSequence([None], repeats=4)
+
+    xxx = timeline.schedule()
 
 # intialize with beat1
 # beat=beat1

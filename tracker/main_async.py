@@ -3,24 +3,10 @@ from patterns import *
 global IN_COLAB
 IN_COLAB = 'google.colab' in sys.modules
 
-def tracker_dec(func):
-    def inner():
-        global my_tracker
-        # print(func.__name__)
-        new_func = getattr(my_tracker, func.__name__)
-        print('new func: ',new_func)
-        new_func()
-    return inner
-
-
-@tracker_dec
 def ts():
-    pass
+    global my_tracker
+    my_tracker.ts()
 
-
-@tracker_dec
-def tstart():
-    pass
 
 def sbt1():
     my_tracker.beat = my_tracker.beat1
@@ -39,9 +25,6 @@ def sbtt():
 
 def sbtp():
     my_tracker.beat = my_tracker.pplay
-
-def sbft(note_from = 1, note_to = 10):
-    my_tracker.beat = lambda: my_tracker.play_from_to(note_from, note_to)
 
 
 def save_midi():
