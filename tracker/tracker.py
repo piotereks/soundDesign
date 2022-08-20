@@ -311,6 +311,70 @@ class Tracker:
         print("pplay - END")
         return notes
 
+    @logging
+    def pplay_new(self):
+
+        if self.pattern_idx == 0:
+            self.scale = iso.Scale.random()
+            print('scale:', self.scale.name, list(self.scale.semitones))
+        print("self.midi_note_array2:", self.midi_note_array)
+        print("self.midi_note_array2 cvt:", [self.scale.get(self.scale.indexOf(midi_note)) for midi_note in self.midi_note_array])
+
+        if self.midi_note_array:
+            # this is to denominate midi notes to indexes of elements of scale
+            mod_midi_note_array = [self.midi_note_array[-1]] + self.midi_note_array+[self.midi_note_array[0]]
+            print("mod_midi_note_array:", mod_midi_note_array)
+
+            note = mod_midi_note_array[self.pattern_idx+1] - 60  # 60 is midi number of C in 5th Octave
+            # note_prev = mod_midi_note_array[self.pattern_idx] - 60  # 60 is midi number of C in 5th Octave
+            print('n1:',note,self.root_note)
+            # remember that this function is calculating notes which are not from scale
+            # as note with midi code 1 less
+            note = self.scale.indexOf(note)
+            # note_prev = self.scale.indexOf(note_prev)
+            print('n1:',note,self.root_note)
+            interval = note - self.root_note
+            print('interval:', interval, self.interval_array[self.pattern_idx])
+        else:
+            interval = self.interval_array[self.pattern_idx]
+
+        rnd_pattern = self.patterns.get_random_pattern(interval) + self.root_note
+        print('grp:', interval, rnd_pattern)
+        len_rnd_pattern = len(rnd_pattern) - 1
+        # print('gsp2:', interval, len_rnd_pattern, iso.PSequence(rnd_pattern[:-1]))
+        # base not converted notes pattern
+        beat = iso.PDict({
+            "note": iso.PSequence(rnd_pattern, repeats=1),
+            # "duration": 1/len_rnd_pattern
+            "duration": iso.PSequence([(4 / len_rnd_pattern) - 0.000000000000002], repeats=len_rnd_pattern)
+        })
+        print("before conversion:", list(beat["note"]), list(beat["duration"]))
+        self.pattern_array[self.pattern_idx] = beat
+        self.root_note = rnd_pattern[-1]
+        # self.root_note = self.scale.get(rnd_pattern[-1])  # <-- this conversion is wrong
+        print('new root note:', self.root_note)
+
+        self.pattern_array[self.pattern_idx].reset()
+
+        # Degree conversion here with scale
+        converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.scale)
+        # converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.key) # is this vaiid usage?
+        notes = iso.PDict({
+            iso.EVENT_NOTE: converted_note,
+            iso.EVENT_DURATION: self.pattern_array[self.pattern_idx]['duration'],
+            iso.EVENT_OCTAVE: 5
+        })
+        print(f'converted with scale {self.scale.name}:', list(converted_note))
+        self.pattern_array[self.pattern_idx].reset()
+
+        self.pattern_idx += 1
+        self.pattern_idx %= len(self.pattern_array)
+        self.pattern_array[self.pattern_idx].reset()
+        self.tmln.event_stream['duration'] = math.ceil(sum(self.pattern_array[self.pattern_idx]['duration']))
+        self.pattern_array[self.pattern_idx].reset()
+
+        print("pplay - END")
+        return notes
 
     @logging
     def beat2(self):
@@ -325,8 +389,15 @@ class Tracker:
     @logging
     def play_from_to(self, from_note, to_note ):
         print()
-        if  None in (from_note, to_note):
+        if  from_note == None:
             return None
+        elif to_note == None:
+          return iso.PDict({
+            iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.scale),
+            iso.EVENT_DURATION: iso.PSequence([1], repeats=1),
+            iso.EVENT_OCTAVE: 5
+            # iso.EVENT_DEGREE: xxxx
+        })
         print('after_check')
         increment = (from_note <= to_note) - (from_note > to_note)
         print('to_note:', to_note)
@@ -344,3 +415,33 @@ class Tracker:
             # iso.EVENT_DEGREE: xxxx
         })
 
+    @logging
+    def play_from_to2(self, from_note, to_note ):
+        print()
+        if  from_note == None:
+            return None
+        elif to_note == None:
+          from_note = self.scale.indexOf(from_note-60)
+          return iso.PDict({
+            iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.scale),
+            iso.EVENT_DURATION: iso.PSequence([1], repeats=1),
+            iso.EVENT_OCTAVE: 5
+            # iso.EVENT_DEGREE: xxxx
+        })
+        print('after_check')
+        root_note = self.scale.indexOf(from_note-60)
+        note = self.scale.indexOf(to_note-60)
+        interval = to_note - root_note
+
+        rnd_pattern = self.patterns.get_random_pattern(interval) + root_note
+        len_pattern = len(rnd_pattern)-1
+
+        print('Pseq:', list(iso.PSequence(rnd_pattern, repeats=1)))
+        print('Pseq + Degree:', list(iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale)))
+        print('scale name:', self.scale.name)
+        return iso.PDict({
+            iso.EVENT_NOTE: iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale),
+            iso.EVENT_DURATION: iso.PSequence([(4 / len_pattern) - 0.000000000000002], repeats=len_pattern),
+            iso.EVENT_OCTAVE: 5
+            # iso.EVENT_DEGREE: xxxx
+        })
