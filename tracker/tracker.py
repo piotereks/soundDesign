@@ -165,24 +165,24 @@ class Tracker:
             # print('bef func')
             # print('args: ',*args)
             # print('kwargs: ', ** kwargs)
-            result = func(self, *args, **kwargs)
-            print("result type: ",type(result), result)
-            if type(result) == 'tuple':
-                notes, skip = result
-            else:
-                notes, skip = result, False
-            print('skip checked: ', skip)
-            if not skip:
-                notes[iso.EVENT_NOTE] = iso.PMap(notes[iso.EVENT_NOTE], lambda midi_note: None if not midi_note else None if midi_note < 0 else None if midi_note > 127 else midi_note)
-                print('check notes: ', list(notes[iso.EVENT_NOTE].copy()))
-                # print('aft func')
-                xxx = self.timeline.schedule(
-                    notes,
-                    replace=True,  # this is not working with version 0.1.1, only with github
-                    name="blah"  # this is not working with version 0.1.1, only with github
+            notes = func(self, *args, **kwargs)
+            # print("result type: ",type(result), result)
+            # if type(result) == 'tuple':
+            #     notes, skip = result
+            # else:
+            #     notes, skip = result, False
+            # print('skip checked: ', skip)
+            # if not skip:
+            notes[iso.EVENT_NOTE] = iso.PMap(notes[iso.EVENT_NOTE], lambda midi_note: None if not midi_note else None if midi_note < 0 else None if midi_note > 127 else midi_note)
+            print('check notes: ', list(notes[iso.EVENT_NOTE].copy()))
+            # print('aft func')
+            xxx = self.timeline.schedule(
+                notes,
+                replace=True,  # this is not working with version 0.1.1, only with github
+                name="blah"  # this is not working with version 0.1.1, only with github
 
-                )
-                print('post sched')
+            )
+            print('post sched')
 
         return inner
 
@@ -237,7 +237,7 @@ class Tracker:
     def metronome_start(self):
         log_call()
         # gap = 34
-        metronome_audio = self.timeline.schedule({
+        self.metronome_audio = self.timeline.schedule({
             # "note": iso.PSequence([1, 5, 5, 5]) +gap,
             # "note": iso.PSequence([82, 69, 69, 69]) ,
             "note": iso.PSequence([32, 37, 37, 37]),
@@ -250,6 +250,10 @@ class Tracker:
             , quantize=1
             , remove_when_done=False)
 
+    def metronome_stop(self):
+        log_call()
+        # gap = 34
+        self.metronome_audio.stop()
 
     @log_and_schedule
     def pplay(self):
@@ -324,7 +328,7 @@ class Tracker:
         return notes
 
     @log_and_schedule
-    def pplay_new(self):
+    def pplay_newX(self):
 
         if self.pattern_idx == 0:
             self.scale = iso.Scale.random()
@@ -406,16 +410,24 @@ class Tracker:
 
 
     @log_and_schedule
-    def play_from_to(self, from_note, to_note ):
-        print()
+    def play_from_to(self, from_note, to_note, in_pattern=False ):
+        print(f"{in_pattern=}")
         # if  from_note == None:
         #     return None
-        if to_note is not None:
-            print('is not None', to_note)
-            self.beat = lambda: self.play_from_to(to_note, None)
+        if in_pattern:
+            # self.scale = iso.Scale.chromatic
+            self.pattern_idx += 1
+            self.pattern_idx %= len(self.pattern_array)
+            new_note=self.midi_note_array[self.pattern_idx]
+            print(f"in_pattern (next pattern for later): {self.pattern_idx=} {to_note=} {new_note=}")
+            self.beat = lambda: self.play_from_to(to_note, new_note, in_pattern=True)
         else:
-            print('else ', to_note)
-            self.beat = self.beat_none
+            if to_note is not None:
+                print('is not None', to_note)
+                self.beat = lambda: self.play_from_to(to_note, None)
+            else:
+                print('else ', to_note)
+                self.beat = self.beat_none
         if (to_note is None) or (from_note is None):
           from_note = None if not from_note else self.scale.indexOf(from_note)
           return iso.PDict({
@@ -447,3 +459,15 @@ class Tracker:
             # iso.EVENT_DEGREE: xxxx
         })
 
+    def pplay_new(self):
+        log_call()
+        from_note = self.midi_note_array[self.pattern_idx]
+        to_note = self.midi_note_array[self.pattern_idx+1]
+        print(f"{self.midi_note_array=} {self.pattern_idx=}")
+        print(f"{from_note=} {to_note=}")
+        self.beat = lambda: self.play_from_to(from_note, to_note, in_pattern=True)
+        print(f"{self.midi_note_array=} {self.pattern_idx=}")
+        self.pattern_idx += 1
+        self.pattern_idx %= len(self.pattern_array)
+        print(f"{self.midi_note_array=} {self.pattern_idx=}")
+        print("pplay_new Done")

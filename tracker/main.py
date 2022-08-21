@@ -22,6 +22,14 @@ def ts():
 def tstart():
     pass
 
+def mstart():
+    my_tracker.metronome_start()
+
+def mstop():
+    my_tracker.metronome_stop()
+
+
+
 def sbt1():
     my_tracker.beat = my_tracker.beat1
 
@@ -41,7 +49,7 @@ def sbtp():
     my_tracker.beat = my_tracker.pplay
 
 def sbtn():
-    my_tracker.beat = my_tracker.pplay_new
+    my_tracker.pplay_new()
 
 # def sbft(note_from = 1, note_to = 10):
 #     my_tracker.beat = lambda: my_tracker.play_from_to(note_from, note_to)
@@ -55,6 +63,9 @@ def save_midi():
 
 def rand_scale():
     my_tracker.scale = iso.Scale.random()
+
+def rs():
+    rand_scale()
 
 def cmp():
     # print('expected:\n', my_tracker.expected_array)
