@@ -40,13 +40,21 @@ def sbtt():
 def sbtp():
     my_tracker.beat = my_tracker.pplay
 
-def sbft(note_from = 1, note_to = 10):
+def sbtn():
+    my_tracker.beat = my_tracker.pplay_new
+
+# def sbft(note_from = 1, note_to = 10):
+#     my_tracker.beat = lambda: my_tracker.play_from_to(note_from, note_to)
+
+def sbft(note_from = 60, note_to = 64):
     my_tracker.beat = lambda: my_tracker.play_from_to(note_from, note_to)
 
 
 def save_midi():
     my_tracker.midi_out.write()
 
+def rand_scale():
+    my_tracker.scale = iso.Scale.random()
 
 def cmp():
     # print('expected:\n', my_tracker.expected_array)

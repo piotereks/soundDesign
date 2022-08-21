@@ -58,6 +58,7 @@ class Tracker:
         self.timeline = None
         self.patterns = Patterns()
         self.root_note = 0
+        # self.root_note = None
         self.pattern_idx = 0
         # self.pattern_array = None
         self.pattern_array = [my_beats.bt1, my_beats.bt3, my_beats.bt1,
@@ -151,7 +152,7 @@ class Tracker:
         self.timeline = iso.Timeline(120, output_device=self.midi_out)
         self.timeline.background()  # use background ts()instead of run to enable live performing (async notes passing)
 
-    def logging(func):
+    def log_and_schedule(func):
         def inner(self, *args, **kwargs):
             log_call()
             print(func.__name__)
@@ -164,19 +165,28 @@ class Tracker:
             # print('bef func')
             # print('args: ',*args)
             # print('kwargs: ', ** kwargs)
-            notes = func(self, *args, **kwargs)
-            # print('aft func')
-            xxx = self.timeline.schedule(
-                notes,
-                replace=True,  # this is not working with version 0.1.1, only with github
-                name="blah"  # this is not working with version 0.1.1, only with github
+            result = func(self, *args, **kwargs)
+            print("result type: ",type(result), result)
+            if type(result) == 'tuple':
+                notes, skip = result
+            else:
+                notes, skip = result, False
+            print('skip checked: ', skip)
+            if not skip:
+                notes[iso.EVENT_NOTE] = iso.PMap(notes[iso.EVENT_NOTE], lambda midi_note: None if not midi_note else None if midi_note < 0 else None if midi_note > 127 else midi_note)
+                print('check notes: ', list(notes[iso.EVENT_NOTE].copy()))
+                # print('aft func')
+                xxx = self.timeline.schedule(
+                    notes,
+                    replace=True,  # this is not working with version 0.1.1, only with github
+                    name="blah"  # this is not working with version 0.1.1, only with github
 
-            )
-            print('post sched')
+                )
+                print('post sched')
 
         return inner
 
-    @logging
+    @log_and_schedule
     def beat_test(self):
 
         notes = iso.PDict({
@@ -187,17 +197,17 @@ class Tracker:
         })
         return notes
 
-    @logging
+    @log_and_schedule
     def beat1(self):
         return iso.PDict({
             iso.EVENT_NOTE:iso.PSequence([1, 3, 2, 4], repeats=1) +72 })
 
-    @logging
+    @log_and_schedule
     def beat2(self):
         return  iso.PDict({
             iso.EVENT_NOTE:iso.PSequence([1, 3, 2, 4, 3, 5], repeats=1) + 66})
 
-    @logging
+    @log_and_schedule
     def beat_none(self):
         return iso.PDict({
             iso.EVENT_NOTE:iso.PSequence([None], repeats=4)})
@@ -241,13 +251,13 @@ class Tracker:
             , remove_when_done=False)
 
 
-    @logging
+    @log_and_schedule
     def pplay(self):
 
-        if self.pattern_idx == 0:
-            self.scale = iso.Scale.random()
-            print('scale:', self.scale.name, list(self.scale.semitones))
-            # note_prev = self.scale.get(self.root_note) + 60 # 60 is midi number of C in 5th Octave
+        # if self.pattern_idx == 0:
+        #     self.scale = iso.Scale.random()
+        #     print('scale:', self.scale.name, list(self.scale.semitones))
+        #     # note_prev = self.scale.get(self.root_note) + 60 # 60 is midi number of C in 5th Octave
 
         # if not initialize:
         # key = iso.Key("C", "major")
@@ -259,8 +269,10 @@ class Tracker:
             mod_midi_note_array = [self.midi_note_array[-1]] + self.midi_note_array+[self.midi_note_array[0]]
             print("mod_midi_note_array:", mod_midi_note_array)
 
-            note = mod_midi_note_array[self.pattern_idx+1] - 60  # 60 is midi number of C in 5th Octave
-            # note_prev = mod_midi_note_array[self.pattern_idx] - 60  # 60 is midi number of C in 5th Octave
+            # note = mod_midi_note_array[self.pattern_idx+1] - 60  # 60 is midi number of C in 5th Octave
+            self.root_note = self.scale.indexOf(mod_midi_note_array[self.pattern_idx])
+            note = mod_midi_note_array[self.pattern_idx+1]  # 60 is midi number of C in 5th Octave
+
             print('n1:',note,self.root_note)
             # remember that this function is calculating notes which are not from scale
             # as note with midi code 1 less
@@ -296,7 +308,7 @@ class Tracker:
         notes = iso.PDict({
             iso.EVENT_NOTE: converted_note,
             iso.EVENT_DURATION: self.pattern_array[self.pattern_idx]['duration'],
-            iso.EVENT_OCTAVE: 5
+            # iso.EVENT_OCTAVE: 5
             # iso.EVENT_DEGREE: xxxx
         })
         print(f'converted with scale {self.scale.name}:', list(converted_note))
@@ -311,28 +323,32 @@ class Tracker:
         print("pplay - END")
         return notes
 
-    @logging
+    @log_and_schedule
     def pplay_new(self):
 
         if self.pattern_idx == 0:
             self.scale = iso.Scale.random()
             print('scale:', self.scale.name, list(self.scale.semitones))
         print("self.midi_note_array2:", self.midi_note_array)
-        print("self.midi_note_array2 cvt:", [self.scale.get(self.scale.indexOf(midi_note)) for midi_note in self.midi_note_array])
+        print("self.midi_note_array2 cvt:",
+              [self.scale.get(self.scale.indexOf(midi_note)) for midi_note in self.midi_note_array])
 
         if self.midi_note_array:
             # this is to denominate midi notes to indexes of elements of scale
-            mod_midi_note_array = [self.midi_note_array[-1]] + self.midi_note_array+[self.midi_note_array[0]]
+            mod_midi_note_array = [self.midi_note_array[-1]] + self.midi_note_array + [self.midi_note_array[0]]
             print("mod_midi_note_array:", mod_midi_note_array)
+            # print("function check: ",self.play_from_to(mod_midi_note_array[self.pattern_idx],mod_midi_note_array[self.pattern_idx+1], in_pattern = True))
+            # return self.play_from_to(mod_midi_note_array[self.pattern_idx],mod_midi_note_array[self.pattern_idx+1], in_pattern = True), True
+            # note = mod_midi_note_array[self.pattern_idx+1] - 60  # 60 is midi number of C in 5th Octave
+            self.root_note = self.scale.indexOf(mod_midi_note_array[self.pattern_idx])
+            note = mod_midi_note_array[self.pattern_idx + 1]  # 60 is midi number of C in 5th Octave
 
-            note = mod_midi_note_array[self.pattern_idx+1] - 60  # 60 is midi number of C in 5th Octave
-            # note_prev = mod_midi_note_array[self.pattern_idx] - 60  # 60 is midi number of C in 5th Octave
-            print('n1:',note,self.root_note)
+            print('n1:', note, self.root_note)
             # remember that this function is calculating notes which are not from scale
             # as note with midi code 1 less
             note = self.scale.indexOf(note)
             # note_prev = self.scale.indexOf(note_prev)
-            print('n1:',note,self.root_note)
+            print('n1:', note, self.root_note)
             interval = note - self.root_note
             print('interval:', interval, self.interval_array[self.pattern_idx])
         else:
@@ -362,7 +378,8 @@ class Tracker:
         notes = iso.PDict({
             iso.EVENT_NOTE: converted_note,
             iso.EVENT_DURATION: self.pattern_array[self.pattern_idx]['duration'],
-            iso.EVENT_OCTAVE: 5
+            # iso.EVENT_OCTAVE: 5
+            # iso.EVENT_DEGREE: xxxx
         })
         print(f'converted with scale {self.scale.name}:', list(converted_note))
         self.pattern_array[self.pattern_idx].reset()
@@ -376,62 +393,44 @@ class Tracker:
         print("pplay - END")
         return notes
 
-    @logging
+    @log_and_schedule
     def beat2(self):
         return  iso.PDict({
             iso.EVENT_NOTE:iso.PSequence([1, 3, 2, 4, 3, 5], repeats=1) + 66})
 
-    @logging
+    @log_and_schedule
     def beat_none(self):
         return iso.PDict({
             iso.EVENT_NOTE: iso.PSequence([None], repeats=4)})
 
-    @logging
+
+
+    @log_and_schedule
     def play_from_to(self, from_note, to_note ):
         print()
-        if  from_note == None:
-            return None
-        elif to_note == None:
+        # if  from_note == None:
+        #     return None
+        if to_note is not None:
+            print('is not None', to_note)
+            self.beat = lambda: self.play_from_to(to_note, None)
+        else:
+            print('else ', to_note)
+            self.beat = self.beat_none
+        if (to_note is None) or (from_note is None):
+          from_note = None if not from_note else self.scale.indexOf(from_note)
           return iso.PDict({
             iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.scale),
-            iso.EVENT_DURATION: iso.PSequence([1], repeats=1),
-            iso.EVENT_OCTAVE: 5
+            iso.EVENT_DURATION: iso.PSequence([4], repeats=1),
+            # iso.EVENT_OCTAVE: 5
             # iso.EVENT_DEGREE: xxxx
         })
         print('after_check')
-        increment = (from_note <= to_note) - (from_note > to_note)
-        print('to_note:', to_note)
-        to_note += increment
-        print('to_note2:', to_note)
-        pattern = range(from_note, to_note, increment)
-        print('Pseq:', list(iso.PSequence(pattern, repeats=1)))
-        print('Pseq + Degree:', list(iso.PDegree(iso.PSequence(pattern, repeats=1), self.scale)))
-        len_pattern = len(pattern)
-        print('scale name:', self.scale.name)
-        return iso.PDict({
-            iso.EVENT_NOTE: iso.PDegree(iso.PSequence(pattern, repeats=1), self.scale),
-            iso.EVENT_DURATION: iso.PSequence([(4 / len_pattern) - 0.000000000000002], repeats=len_pattern),
-            iso.EVENT_OCTAVE: 5
-            # iso.EVENT_DEGREE: xxxx
-        })
-
-    @logging
-    def play_from_to2(self, from_note, to_note ):
-        print()
-        if  from_note == None:
-            return None
-        elif to_note == None:
-          from_note = self.scale.indexOf(from_note-60)
-          return iso.PDict({
-            iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.scale),
-            iso.EVENT_DURATION: iso.PSequence([1], repeats=1),
-            iso.EVENT_OCTAVE: 5
-            # iso.EVENT_DEGREE: xxxx
-        })
-        print('after_check')
-        root_note = self.scale.indexOf(from_note-60)
-        note = self.scale.indexOf(to_note-60)
-        interval = to_note - root_note
+        # root_note = self.scale.indexOf(from_note-60)
+        # note = self.scale.indexOf(to_note-60)
+        root_note = self.scale.indexOf(from_note)
+        note = self.scale.indexOf(to_note)
+        interval = note - root_note
+        print(f"{from_note=} {to_note=} {from_note-60=} {to_note-60=}  {root_note=} {note=} {interval=}")
 
         rnd_pattern = self.patterns.get_random_pattern(interval) + root_note
         len_pattern = len(rnd_pattern)-1
@@ -439,9 +438,12 @@ class Tracker:
         print('Pseq:', list(iso.PSequence(rnd_pattern, repeats=1)))
         print('Pseq + Degree:', list(iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale)))
         print('scale name:', self.scale.name)
+
+
         return iso.PDict({
             iso.EVENT_NOTE: iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale),
             iso.EVENT_DURATION: iso.PSequence([(4 / len_pattern) - 0.000000000000002], repeats=len_pattern),
-            iso.EVENT_OCTAVE: 5
+            # iso.EVENT_OCTAVE: 5
             # iso.EVENT_DEGREE: xxxx
         })
+
