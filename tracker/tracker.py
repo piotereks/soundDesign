@@ -10,6 +10,9 @@ from beats import *
 from patterns import *
 import pprint
 from copy import deepcopy
+from queue import Queue
+
+
 
 # global midi_out
 global timeline
@@ -58,6 +61,8 @@ class Tracker:
         self.timeline = None
         self.patterns = Patterns()
         self.root_note = 0
+        self.last_note = None
+        self.note_queue = Queue()
         # self.root_note = None
         self.pattern_idx = 0
         # self.pattern_array = None
@@ -411,7 +416,7 @@ class Tracker:
 
     @log_and_schedule
     def play_from_to(self, from_note, to_note, in_pattern=False ):
-        print(f"{in_pattern=}")
+        print(f"in_pattern: {in_pattern}")
         # if  from_note == None:
         #     return None
         if in_pattern:
@@ -419,7 +424,7 @@ class Tracker:
             self.pattern_idx += 1
             self.pattern_idx %= len(self.pattern_array)
             new_note=self.midi_note_array[self.pattern_idx]
-            print(f"in_pattern (next pattern for later): {self.pattern_idx=} {to_note=} {new_note=}")
+            print(f"in_pattern (next pattern for later): idx: {self.pattern_idx} to_note:{to_note} new_note:{new_note}")
             self.beat = lambda: self.play_from_to(to_note, new_note, in_pattern=True)
         else:
             if to_note is not None:
@@ -442,7 +447,7 @@ class Tracker:
         root_note = self.scale.indexOf(from_note)
         note = self.scale.indexOf(to_note)
         interval = note - root_note
-        print(f"{from_note=} {to_note=} {from_note-60=} {to_note-60=}  {root_note=} {note=} {interval=}")
+        #print(f"{from_note=} {to_note=} {from_note-60=} {to_note-60=}  {root_note=} {note=} {interval=}")
 
         rnd_pattern = self.patterns.get_random_pattern(interval) + root_note
         len_pattern = len(rnd_pattern)-1
@@ -463,11 +468,22 @@ class Tracker:
         log_call()
         from_note = self.midi_note_array[self.pattern_idx]
         to_note = self.midi_note_array[self.pattern_idx+1]
-        print(f"{self.midi_note_array=} {self.pattern_idx=}")
-        print(f"{from_note=} {to_note=}")
+        #print(f"{self.midi_note_array=} {self.pattern_idx=}")
+        #print(f"{from_note=} {to_note=}")
         self.beat = lambda: self.play_from_to(from_note, to_note, in_pattern=True)
-        print(f"{self.midi_note_array=} {self.pattern_idx=}")
+        #print(f"{self.midi_note_array=} {self.pattern_idx=}")
         self.pattern_idx += 1
         self.pattern_idx %= len(self.pattern_array)
-        print(f"{self.midi_note_array=} {self.pattern_idx=}")
+        # print(f"{self.midi_note_array=} {self.pattern_idx=}")
         print("pplay_new Done")
+
+
+    def pplay_queue(self):
+        log_call()
+        from_note = self.last_note
+        to_note = self.note_queue.get()  # handle empty queue
+        self.last_note = to_note
+        print(f"from_note:{from_note} to_note:{to_note}")
+        self.beat = lambda: self.play_from_to(from_note, to_note, in_pattern=True)
+        print("pplay_queue Done")
+

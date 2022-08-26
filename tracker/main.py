@@ -112,6 +112,9 @@ def main():
     midi_notes_chain = list(np.array(notes_chain)+60)
     print(midi_notes_chain)
 
+    # to load queue
+    dummy = [my_tracker.note_queue.put(note) for note in midi_notes_chain]
+
     print(sum(intervals_chain))
     flag_file = True
     flag_file = False
