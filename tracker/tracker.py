@@ -415,7 +415,7 @@ class Tracker:
 
 
     @log_and_schedule
-    def play_from_to(self, from_note, to_note, in_pattern=False ):
+    def play_from_to_old(self, from_note, to_note, in_pattern=False ):
         print(f"in_pattern: {in_pattern}")
         # if  from_note == None:
         #     return None
@@ -426,6 +426,60 @@ class Tracker:
             new_note=self.midi_note_array[self.pattern_idx]
             print(f"in_pattern (next pattern for later): idx: {self.pattern_idx} to_note:{to_note} new_note:{new_note}")
             self.beat = lambda: self.play_from_to(to_note, new_note, in_pattern=True)
+        else:
+            if to_note is not None:
+                print('is not None', to_note)
+                self.beat = lambda: self.play_from_to(to_note, None)
+            else:
+                print('else ', to_note)
+                self.beat = self.beat_none
+        if (to_note is None) or (from_note is None):
+          from_note = None if not from_note else self.scale.indexOf(from_note)
+          return iso.PDict({
+            iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.scale),
+            iso.EVENT_DURATION: iso.PSequence([4], repeats=1),
+            # iso.EVENT_OCTAVE: 5
+            # iso.EVENT_DEGREE: xxxx
+        })
+        print('after_check')
+        # root_note = self.scale.indexOf(from_note-60)
+        # note = self.scale.indexOf(to_note-60)
+        root_note = self.scale.indexOf(from_note)
+        note = self.scale.indexOf(to_note)
+        interval = note - root_note
+        #print(f"{from_note=} {to_note=} {from_note-60=} {to_note-60=}  {root_note=} {note=} {interval=}")
+
+        rnd_pattern = self.patterns.get_random_pattern(interval) + root_note
+        len_pattern = len(rnd_pattern)-1
+
+        print('Pseq:', list(iso.PSequence(rnd_pattern, repeats=1)))
+        print('Pseq + Degree:', list(iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale)))
+        print('scale name:', self.scale.name)
+
+
+        return iso.PDict({
+            iso.EVENT_NOTE: iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale),
+            iso.EVENT_DURATION: iso.PSequence([(4 / len_pattern) - 0.000000000000002], repeats=len_pattern),
+            # iso.EVENT_OCTAVE: 5
+            # iso.EVENT_DEGREE: xxxx
+        })
+
+
+    @log_and_schedule
+    def play_from_to(self, from_note, to_note, in_pattern=False ):
+        print('---------------------')
+        print(f"in_pattern: {in_pattern} from_note:{from_note}, to_note: {to_note}")
+        # if  from_note == None:
+        #     return None
+        if in_pattern:
+            # self.scale = iso.Scale.chromatic
+            
+            from_note = self.last_note
+            to_note = self.note_queue.get()  # handle empty queue
+            self.last_note = to_note
+            new_note=to_note
+            print(f"in_pattern (next pattern for later):  from_note:{from_note} new_note:{new_note}")
+            self.beat = lambda: self.play_from_to(from_note, new_note, in_pattern=True)
         else:
             if to_note is not None:
                 print('is not None', to_note)
@@ -480,10 +534,13 @@ class Tracker:
 
     def pplay_queue(self):
         log_call()
+        print(1)
         from_note = self.last_note
         to_note = self.note_queue.get()  # handle empty queue
+        print(1)
         self.last_note = to_note
         print(f"from_note:{from_note} to_note:{to_note}")
+        print(1)
         self.beat = lambda: self.play_from_to(from_note, to_note, in_pattern=True)
         print("pplay_queue Done")
 
