@@ -113,14 +113,15 @@ def main():
     print(midi_notes_chain)
 
     # to load queue
-    dummy = [my_tracker.note_queue.put(note) for note in midi_notes_chain]
+    # dummy = [my_tracker.note_queue.put(note) for note in midi_notes_chain]
 
     print(sum(intervals_chain))
     flag_file = True
-    flag_file = False
+    # flag_file = False
 
     # my_tracker = Tracker(interval_array=intervals_chain, flag_file=flag_file)
     my_tracker = Tracker(midi_note_array=midi_notes_chain, note_array=notes_chain, flag_file=flag_file)
+    dummy = [my_tracker.note_queue.put(note) for note in midi_notes_chain]
     # patterns = Patterns()
     # my_tracker.metronome_start()
 
