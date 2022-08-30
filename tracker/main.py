@@ -153,3 +153,4 @@ print("scale name", iso.Scale.default.name)
 # iso.util.note_name_to_midi_note('C5')
 # Out[19]: 60
 
+# !jack_control start

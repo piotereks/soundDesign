@@ -152,7 +152,9 @@ class Tracker:
             filename = "xoutput.mid"
             self.midi_out = iso.MidiFileOutputDevice(filename)
         else:
-            self.midi_out = iso.MidiOutputDevice(device_name=self.name, send_clock=True)
+            # self.midi_out = iso.MidiOutputDevice(device_name=self.name, send_clock=True)
+            pass
+        self.midi_out = iso.DummyOutputDevice()
         # midi_out = iso.DummyOutputDevice()
         self.timeline = iso.Timeline(120, output_device=self.midi_out)
         self.timeline.background()  # use background ts()instead of run to enable live performing (async notes passing)
