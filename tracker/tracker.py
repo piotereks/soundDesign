@@ -184,9 +184,9 @@ class Tracker:
             print('check notes: ', list(notes[iso.EVENT_NOTE].copy()))
             # print('aft func')
             xxx = self.timeline.schedule(
-                notes,
-                replace=True,  # this is not working with version 0.1.1, only with github
-                name="blah"  # this is not working with version 0.1.1, only with github
+                notes
+                # ,replace=True,  # this is not working with version 0.1.1, only with github
+                # name="blah"  # this is not working with version 0.1.1, only with github
 
             )
             print('post sched')
@@ -226,12 +226,13 @@ class Tracker:
     def tracker_timeline(self):
         log_call()
         return self.timeline.schedule({
-            "action": lambda: self.beat(),
-            "duration": 4,
-            "quantize": 1
+            "action": lambda: self.beat()
+            # ,"duration": 4,
+            # "quantize": 1
         }
             , quantize=1
-            , remove_when_done=False)
+            , remove_when_done=False
+        )
 
     def ts(self):
         log_call()
@@ -457,6 +458,7 @@ class Tracker:
         print('Pseq:', list(iso.PSequence(rnd_pattern, repeats=1)))
         print('Pseq + Degree:', list(iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale)))
         print('scale name:', self.scale.name)
+        print('bef pdict')
 
 
         return iso.PDict({
@@ -511,7 +513,7 @@ class Tracker:
         print('Pseq:', list(iso.PSequence(rnd_pattern, repeats=1)))
         print('Pseq + Degree:', list(iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale)))
         print('scale name:', self.scale.name)
-
+        print('bef Pdict2')
 
         return iso.PDict({
             iso.EVENT_NOTE: iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale),

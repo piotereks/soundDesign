@@ -143,7 +143,7 @@ if __name__ == '__main__':
 #indexOf(self, note):
 #ts()""" Return the index of the given note within this scale. """
 
-print("scale name", iso.Scale.default.name)
+print("scalex name", iso.Scale.default.name)
 
 # check what is exact mapping between iso.Scale index, notes and midi notes.
 # yaml.dump(xxx, default_flow_style=None)
