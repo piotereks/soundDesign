@@ -487,7 +487,7 @@ class Tracker:
         #     return None
         if in_pattern:
             # self.scale = iso.Scale.chromatic
-            
+            print("if in_pattern")
             from_note = self.last_note
             to_note = self.note_queue.get()  # handle empty queue
             self.last_note = to_note
@@ -495,6 +495,7 @@ class Tracker:
             print(f"in_pattern (next pattern for later):  from_note:{from_note} new_note:{new_note}")
             self.beat = lambda: self.play_from_to(from_note, new_note, in_pattern=True)
         else:
+            print("else in_pattern")
             if to_note is not None:
                 print('is not None', to_note)
                 self.beat = lambda: self.play_from_to(to_note, None)
