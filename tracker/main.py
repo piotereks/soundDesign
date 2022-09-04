@@ -61,6 +61,17 @@ def sbpq():
 def sbft(note_from = 60, note_to = 64):
     my_tracker.beat = lambda: my_tracker.play_from_to(note_from, note_to)
 
+def rel_pq():
+    """
+    Reload Play queue
+    """
+    notes_chain = [1, 4, 4, 2, 3, 4, 11, 5, 1, 0]
+    # [63, 65, 65, 63, 63, 65, 70, 65, 63, 60]
+    midi_notes_chain = list(np.array(notes_chain) + 60)
+    print(midi_notes_chain)
+
+    # to load queue
+    dummy = [my_tracker.note_queue.put(note) for note in midi_notes_chain]
 
 def save_midi():
     my_tracker.midi_out.write()
@@ -147,7 +158,7 @@ if __name__ == '__main__':
 #indexOf(self, note):
 #ts()""" Return the index of the given note within this scale. """
 
-print("scalex name", iso.Scale.default.name)
+# print("scalex name", iso.Scale.default.name)
 
 # check what is exact mapping between iso.Scale index, notes and midi notes.
 # yaml.dump(xxx, default_flow_style=None)

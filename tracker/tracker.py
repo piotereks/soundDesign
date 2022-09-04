@@ -483,13 +483,15 @@ class Tracker:
     def play_from_to(self, from_note, to_note, in_pattern=False ):
         print('---------------------')
         print(f"in_pattern: {in_pattern} from_note:{from_note}, to_note: {to_note}")
+        print(f"{self.scale.name=}")
         # if  from_note == None:
         #     return None
         if in_pattern:
             # self.scale = iso.Scale.chromatic
             print("if in_pattern")
             from_note = self.last_note
-            to_note = self.note_queue.get()  # handle empty queue
+            to_note = None if self.note_queue.empty() else self.note_queue.get_nowait()
+            # to_note = self.note_queue.get_nowait()  # handle empty queue
             self.last_note = to_note
             new_note=to_note
             print(f"in_pattern (next pattern for later):  from_note:{from_note} new_note:{new_note}")
@@ -523,8 +525,8 @@ class Tracker:
 
         print('Pseq:', list(iso.PSequence(rnd_pattern, repeats=1)))
         print('Pseq + Degree:', list(iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale)))
-        print('scale name:', self.scale.name)
         print('bef Pdict2')
+        print('=====================')
 
         return iso.PDict({
             iso.EVENT_NOTE: iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale),
@@ -547,16 +549,26 @@ class Tracker:
         print("pplay_new Done")
 
 
-    def pplay_queue(self):
+    def pplay_queueX(self):
         log_call()
         print(1)
         from_note = self.last_note
-        to_note = self.note_queue.get_nowait()  # handle empty queue
+        to_note = None if self.note_queue.empty() else self.note_queue.get_nowait()
+        # if not self.note_queue.empty():
+        #     to_note = self.note_queue.get_nowait()
+        # else:
+        #     to_note = None
 
         print(1)
         self.last_note = to_note
         print(f"from_note:{from_note} to_note:{to_note}")
         print(1)
         self.beat = lambda: self.play_from_to(from_note, to_note, in_pattern=True)
+        print("pplay_queue Done")
+
+    def pplay_queue(self):
+        log_call()
+        print(1)
+        self.play_from_to(None, None, in_pattern=True)
         print("pplay_queue Done")
 
