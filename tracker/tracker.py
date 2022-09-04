@@ -11,7 +11,8 @@ from patterns import *
 import pprint
 from copy import deepcopy
 from queue import Queue
-
+import mido
+import math
 
 
 # global midi_out
@@ -22,8 +23,8 @@ global inside_timeline
 
 global IN_COLAB
 IN_COLAB = 'google.colab' in sys.modules
+NO_MIDI_OUT = mido.get_output_names() == [];
 
-import math
 
 # global beat
 
@@ -32,8 +33,6 @@ global my_tracker
 
 def log_call():
     print(inspect.stack()[1][3])
-
-
 
 
 
@@ -153,11 +152,12 @@ class Tracker:
     def init_timeline(self, midi_out_mode='dummy'):
         log_call()
         print(f" Device:{midi_out_mode}")
-        if midi_out_mode ==self.MIDI_OUT_FILE:
+        print(f"{NO_MIDI_OUT=}")
+        if midi_out_mode == self.MIDI_OUT_FILE:
             filename = "xoutput.mid"
             self.midi_out = iso.MidiFileOutputDevice(filename)
             print("file mode")
-        elif midi_out_mode ==self.MIDI_OUT_DEVICE:
+        elif midi_out_mode == self.MIDI_OUT_DEVICE and not NO_MIDI_OUT:
             self.midi_out = iso.MidiOutputDevice(device_name=self.name, send_clock=True)
             print("device mode")
         else:
