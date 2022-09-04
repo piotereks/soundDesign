@@ -51,6 +51,10 @@ def sbtp():
 def sbtn():
     my_tracker.pplay_new()
 
+def sbpq():
+    my_tracker.pplay_queue()
+
+
 # def sbft(note_from = 1, note_to = 10):
 #     my_tracker.beat = lambda: my_tracker.play_from_to(note_from, note_to)
 
@@ -116,18 +120,18 @@ def main():
     # dummy = [my_tracker.note_queue.put(note) for note in midi_notes_chain]
 
     print(sum(intervals_chain))
-    flag_file = True
-    # flag_file = False
+    # midi_out_flag = Tracker.MIDI_OUT_FILE
+    midi_out_flag = Tracker.MIDI_OUT_DEVICE
+    # midi_out_flag = Tracker.MIDI_OUT_DUMMY
 
-    # my_tracker = Tracker(interval_array=intervals_chain, flag_file=flag_file)
-    my_tracker = Tracker(midi_note_array=midi_notes_chain, note_array=notes_chain, flag_file=flag_file)
+    # my_tracker = Tracker(interval_array=intervals_chain, midi_out_flag=midi_out_flag)
+    my_tracker = Tracker(midi_note_array=midi_notes_chain, note_array=notes_chain, midi_out_mode=midi_out_flag)
     dummy = [my_tracker.note_queue.put(note) for note in midi_notes_chain]
     # patterns = Patterns()
     # my_tracker.metronome_start()
 
     # notepad_scale()
     # uuu=[iso.Scale([int(aaa) - 1 for aaa in xxx[1].split()[:-1]], xxx[2]) for xxx in notepad if xxx[0] == "Scale"]
-
 
 
 if __name__ == '__main__':

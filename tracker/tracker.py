@@ -38,6 +38,10 @@ def log_call():
 
 
 class Tracker:
+    MIDI_OUT_DUMMY = 0
+    MIDI_OUT_FILE = 1
+    MIDI_OUT_DEVICE = 2
+
     name = "Microsoft GS Wavetable Synth 0"
     scale = iso.Scale.major
     degree = 0
@@ -48,7 +52,7 @@ class Tracker:
     # name = "Virtual Midi"
 
     # name= "loopMIDI 6"
-    def __init__(self,interval_array=None, note_array=None,  midi_note_array=None,flag_file=False):
+    def __init__(self, interval_array=None, note_array=None, midi_note_array=None, midi_out_mode='dummy'):
         read_config_file_scales()
         my_beats = Beats()
         self.root_midi = [('C')]
@@ -108,7 +112,7 @@ class Tracker:
             73, 75, 74, 76, 75, 79]
 
         # self.init_timeline(True)
-        self.init_timeline(flag_file)
+        self.init_timeline(midi_out_mode)
         self.beat = self.beat_none
         # my_tracker.metronome_start()
         self.tmln = self.tracker_timeline()
@@ -146,15 +150,21 @@ class Tracker:
         print("init spa2:", self.pattern_array)
         print(list(self.pattern_array))
 
-    def init_timeline(self, file_flag=False):
+    def init_timeline(self, midi_out_mode='dummy'):
         log_call()
-        if file_flag:
+        print(f" Device:{midi_out_mode}")
+        if midi_out_mode ==self.MIDI_OUT_FILE:
             filename = "xoutput.mid"
             self.midi_out = iso.MidiFileOutputDevice(filename)
+            print("file mode")
+        elif midi_out_mode ==self.MIDI_OUT_DEVICE:
+            self.midi_out = iso.MidiOutputDevice(device_name=self.name, send_clock=True)
+            print("device mode")
         else:
-            # self.midi_out = iso.MidiOutputDevice(device_name=self.name, send_clock=True)
-            pass
-        self.midi_out = iso.DummyOutputDevice()
+            self.MIDI_OUT_DUMMY
+            self.midi_out = iso.DummyOutputDevice()
+            print("dummy mode")
+
         # midi_out = iso.DummyOutputDevice()
         self.timeline = iso.Timeline(120, output_device=self.midi_out)
         self.timeline.background()  # use background ts()instead of run to enable live performing (async notes passing)
@@ -227,7 +237,7 @@ class Tracker:
         log_call()
         return self.timeline.schedule({
             "action": lambda: self.beat()
-            # ,"duration": 4,
+            ,"duration": 4
             # "quantize": 1
         }
             , quantize=1
@@ -540,7 +550,8 @@ class Tracker:
         log_call()
         print(1)
         from_note = self.last_note
-        to_note = self.note_queue.get()  # handle empty queue
+        to_note = self.note_queue.get_nowait()  # handle empty queue
+
         print(1)
         self.last_note = to_note
         print(f"from_note:{from_note} to_note:{to_note}")

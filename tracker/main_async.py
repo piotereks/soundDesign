@@ -81,7 +81,7 @@ def main():
     flag_file = False
 
     # my_tracker = Tracker(interval_array=intervals_chain, flag_file=flag_file)
-    my_tracker = Tracker(midi_note_array=midi_notes_chain, note_array=notes_chain, flag_file=flag_file)
+    my_tracker = Tracker(midi_note_array=midi_notes_chain, note_array=notes_chain, midi_out_mode=flag_file)
     # patterns = Patterns()
     # my_tracker.metronome_start()
 
