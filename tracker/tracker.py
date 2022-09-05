@@ -568,7 +568,6 @@ class Tracker:
 
     def pplay_queue(self):
         log_call()
-        print(1)
         self.play_from_to(None, None, in_pattern=True)
         print("pplay_queue Done")
 
