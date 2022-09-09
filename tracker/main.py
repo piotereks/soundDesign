@@ -1,7 +1,10 @@
 from tracker import *
 from patterns import *
+from pynput import keyboard
 global IN_COLAB
 IN_COLAB = 'google.colab' in sys.modules
+
+
 
 def tracker_dec(func):
     def inner():
@@ -112,6 +115,39 @@ def dump_scales():
 # nice scales https://jguitar.com/scale/E/Ionian
 # nice scales https://jguitar.com/scale/E/Ionian
 
+
+def on_press(key):
+    try:
+        print('alphanumeric key {0} pressed'.format(
+            key.char))
+
+        midi_note = keys.index(key.char.lower())
+        my_tracker.note_queue.put(note)
+# "q2w3er5t6y7u8io0p-["
+# "Q2W3ER5T6Y7U8IO0P-["
+    except AttributeError:
+        print('special key {0} pressed'.format(
+            key))
+    print(f'key again {key=}')
+
+def on_release(key):
+    print('{0} released'.format(
+        key))
+    if key == keyboard.Key.esc:
+        # Stop listener
+        return False
+
+
+
+# ...or, in a non-blocking fashion:
+# listener = keyboard.Listener(
+#     on_press=on_press,
+#     on_release=on_release)
+# listener.start()
+# print('processing Done')
+
+
+
 def main():
     global my_tracker
     log_call()
@@ -138,11 +174,15 @@ def main():
     # my_tracker = Tracker(interval_array=intervals_chain, midi_out_flag=midi_out_flag)
     my_tracker = Tracker(midi_note_array=midi_notes_chain, note_array=notes_chain, midi_out_mode=midi_out_flag)
     dummy = [my_tracker.note_queue.put(note) for note in midi_notes_chain]
-    # patterns = Patterns()
-    # my_tracker.metronome_start()
+    keys = "q2w3er5t6y7ui9o0p[=]"
 
     # notepad_scale()
     # uuu=[iso.Scale([int(aaa) - 1 for aaa in xxx[1].split()[:-1]], xxx[2]) for xxx in notepad if xxx[0] == "Scale"]
+    # Collect events until released
+    with keyboard.Listener(
+            on_press=on_press,
+            on_release=on_release) as listener:
+        listener.join()
 
 
 if __name__ == '__main__':
