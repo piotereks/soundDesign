@@ -33,16 +33,17 @@ class Keyboard:
     @staticmethod
     def start_listerner(self):
         # Collect events until released
-        with keyboard.Listener(
-                on_press=self.on_press,
-                on_release=self.on_release) as listener:
-            listener.join()
+        # with keyboard.Listener(
+        #         on_press=self.on_press,
+        #         on_release=self.on_release) as listener:
+        #     listener.join()
 
         # ...or, in a non-blocking fashion:
-        # listener = keyboard.Listener(
-        #     on_press=on_press,
-        #     on_release=on_release)
-        # listener.start()
+        listener = keyboard.Listener(
+            on_press=self.on_press,
+            on_release=self.on_release)
+        listener.start()
+        print('listener started')
 
 def xxx(x):
     print("asdfadf1111-:", x)

@@ -91,16 +91,8 @@ class Tracker:
         print('note array2:', note_array)
         print('interval array2:', interval_array)
 
-        self.init_pattern_array()
-        # self.pattern_array = [my_beats.bt1, my_beats.bt_trip]
-        # self.pattern_array = [pattern.copy() for pattern in self.pattern_array]
-        # 67,69,68,70
-        # 63,66,59
-        # 67,69,68,70
-        # 76,78,77,79,78
-        # 73,75,74,76,75,79
-        # 67,69,68,70
-        # 73,75,74,76,75,79
+        # self.init_pattern_array()
+
         self.expected_array = [
             67, 69, 68, 70,
             63, 66, 59,
@@ -112,9 +104,12 @@ class Tracker:
 
         # self.init_timeline(True)
         self.init_timeline(midi_out_mode)
-        self.beat = self.beat_none
+        self.beat = self.play_from_to(None,None,in_pattern=True)
+        # self.play_from_to(None, None, in_pattern=True)
+        # self.beat = self.beat_none
         # my_tracker.metronome_start()
         self.tmln = self.tracker_timeline()
+
 
     def init_pattern_array(self):
         # print('scales:',iso.Scale.__dict__)
