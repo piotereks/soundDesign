@@ -186,23 +186,35 @@ def main():
 from tkinter import *
 from tkinter.ttk import *
 
+class Tk_GUI_app(Tk):
+
+    def __init__(self, *args, **kwargs):
+        Tk.__init__(self, *args, **kwargs)
+        self.counter = 0
+        # root_window = Tk()
+        self.geometry("450x300")
+
+        # tkvar = IntVar()
 
 
+        frame = Frame(self)
+        frame.pack()
 
+        self.bt_start_stop_text = 'Start'
 
+        bt_start_stop = Button(frame, text =self.bt_start_stop_text, command=self.cmd_start_stop())
+        bt_start_stop.pack()
+        self.labelX = Label(frame, text=str(counter))
 
-def cmd_start_stop():
-    global root_window
+        frame.tkraise()
 
-    global bt_start_stop_text
-    global bt_start_stop
-    global labelX
-    global counter
-    # print('asdfsd')
-    counter += 1
-    dir(labelX)
-    # labelX.config(text=str(counter))
-    bt_start_stop_text = 'Stop' if bt_start_stop_text == 'Start' else 'Stop'
+    def cmd_start_stop(self):
+
+        # print('asdfsd')
+        self.counter += 1
+        dir(self.labelX)
+        # labelX.config(text=str(counter))
+        self.bt_start_stop_text = 'Stop' if self.bt_start_stop_text == 'Start' else 'Stop'
 
 def gui_setup():
     global tkvar
@@ -213,33 +225,14 @@ def gui_setup():
     global labelX
     # global label_str
     # global_var = tk.IntVar(value=0)
-    counter = 0
-    root_window = Tk()
-    root_window.geometry("450x300")
-
-    # tkvar = IntVar()
-
-
-    frame = Frame(root_window)
-    frame.pack()
-
-    bt_start_stop_text = 'Start'
-
-    bt_start_stop = Button(frame, text =bt_start_stop_text, command=cmd_start_stop())
-    bt_start_stop.pack()
-    labelX = Label(frame, text=str(counter))
-
-
-
-    # Tkinter event loop
-    root_window.mainloop()
 
 global labelX
 if __name__ == '__main__':
     # print('Do we start?')
     # old_main()
-
-    gui_setup()
+    app = Tk_GUI_app()
+    app.mainloop()
+    # gui_setup()
     # main()
     print('Processing Done.')
 
