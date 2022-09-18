@@ -5,7 +5,6 @@ from keyboard import *
 global IN_COLAB
 IN_COLAB = 'google.colab' in sys.modules
 
-global label_str
 
 
 def tracker_dec(func):
@@ -182,64 +181,30 @@ def main():
     Keyboard(lambda note: test_put_queue(note))
     sbpq()
 
-# import tkinter
-from tkinter import *
-from tkinter.ttk import *
 
-
-
-
-
-
-def cmd_start_stop():
-    global root_window
-
-    global bt_start_stop_text
-    global bt_start_stop
-    global labelX
-    global counter
-    # print('asdfsd')
-    counter += 1
-    dir(labelX)
-    # labelX.config(text=str(counter))
-    bt_start_stop_text = 'Stop' if bt_start_stop_text == 'Start' else 'Stop'
-
-def gui_setup():
-    global tkvar
-    global root_window
-    global bt_start_stop_text
-    global bt_start_stop
-    global counter
-    global labelX
-    # global label_str
-    # global_var = tk.IntVar(value=0)
-    counter = 0
-    root_window = Tk()
-    root_window.geometry("450x300")
-
-    # tkvar = IntVar()
-
-
-    frame = Frame(root_window)
-    frame.pack()
-
-    bt_start_stop_text = 'Start'
-
-    bt_start_stop = Button(frame, text =bt_start_stop_text, command=cmd_start_stop())
-    bt_start_stop.pack()
-    labelX = Label(frame, text=str(counter))
-
-
-
-    # Tkinter event loop
-    root_window.mainloop()
-
-global labelX
 if __name__ == '__main__':
     # print('Do we start?')
     # old_main()
-
-    gui_setup()
-    # main()
+    main()
     print('Processing Done.')
 
+# This is the way to initialize additional scales
+# iso.Scale.xxx = iso.Scale([0,2,5,7],"xxx")
+# [(scale.name, scale.octave_size) for scale in iso.Scale.all()]
+
+# get(self, n):
+# """ Retrieve the n'th degree of this scale. """
+#indexOf(self, note):
+#ts()""" Return the index of the given note within this scale. """
+
+# print("scalex name", iso.Scale.default.name)
+
+# check what is exact mapping between iso.Scale index, notes and midi notes.
+# yaml.dump(xxx, default_flow_style=None)
+
+# iso.util.midi_note_to_note_name(60)
+# Out[18]: 'C4'
+# iso.util.note_name_to_midi_note('C5')
+# Out[19]: 60
+
+# !jack_control start

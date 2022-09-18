@@ -12,7 +12,7 @@ root.title("First_Program")
 
 # Label is what output will be
 # show on the window
-label = Label(root, text="Hello World !").pack()
+labelX = Label(root, text="Hello World !").pack()
 
 # calling mainloop method which is used
 # when your application is ready to run
