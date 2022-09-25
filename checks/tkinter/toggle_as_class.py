@@ -53,6 +53,8 @@ class ButtonApp(tk.Frame):
         # Create A Button
         self.on_button = tk.Button(self, image=self.on, bd=0,
                            command=self.switch)
+        # self.on_button = tk.Button(self,  text ="Blah", bd=0,
+        #                    command=self.switch)
         self.on_button.pack(pady=50)
 
     def show_frame(self, cont):
@@ -66,12 +68,14 @@ class ButtonApp(tk.Frame):
         # Determine is on or off
         if self.is_on:
             self.on_button.config(image=self.off)
+            # self.on_button.config(text="Buu")
             self.my_label.config(text="The Switch is Off@",
                             fg="grey")
             self.is_on = False
         else:
 
             self.on_button.config(image=self.on)
+            # self.on_button.config(text="hivyhyh")
             self.my_label.config(text="The Switch is On@", fg="green")
             self.is_on = True
 
