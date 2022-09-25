@@ -9,10 +9,10 @@ class ButtonApp(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
 
         # Add Title
-        tk.Tk.title('On/Off Switch!')
+        self.title('On/Off Switch!')
 
         # Add Geometry
-        tk.Tk.geometry("500x300")
+        self.geometry("500x300")
 
         # Keep track of the button state on/off
         # global is_on
@@ -31,7 +31,7 @@ class ButtonApp(tk.Tk):
         frame = StartPage(self.container, self)
         self.frames[StartPage] = frame
 
-        frame.grid(row=0, column=0, sticky="nsew")
+        # frame.grid(row=0, column=0, sticky="nsew")
 
 
         self.show_frame(StartPage)
@@ -51,8 +51,8 @@ class ButtonApp(tk.Tk):
         self.off = tk.PhotoImage(file="off.png")
 
         # Create A Button
-        self.on_button = tk.Button(self.container, image=on, bd=0,
-                           command=switch)
+        self.on_button = tk.Button(self.container, image=self.on, bd=0,
+                           command=self.switch)
         self.on_button.pack(pady=50)
 
     def show_frame(self, cont):
@@ -88,16 +88,3 @@ app.mainloop()
 
 
 
-
-
-# Define Our Images
-on = PhotoImage(file="on.png")
-off = PhotoImage(file="off.png")
-
-# Create A Button
-on_button = Button(root, image=on, bd=0,
-                   command=switch)
-on_button.pack(pady=50)
-
-# Execute Tkinter
-root.mainloop()
