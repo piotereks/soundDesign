@@ -51,11 +51,12 @@ class ButtonApp(tk.Frame):
         self.off = tk.PhotoImage(file="off.png")
 
         # Create A Button
-        self.on_button = tk.Button(self, image=self.on, bd=0,
-                           command=self.switch)
-        # self.on_button = tk.Button(self,  text ="Blah", bd=0,
+        # self.on_button = tk.Button(self, image=self.on, bd=0,
         #                    command=self.switch)
+        self.on_button = tk.Button(self,  text ="Blah", bd=0,background = "light blue",
+                           command=self.switch)
         self.on_button.pack(pady=50)
+        tk.Button()
 
     def show_frame(self, cont):
         frame = self.frames[cont]
