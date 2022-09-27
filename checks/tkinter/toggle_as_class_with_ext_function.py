@@ -19,22 +19,11 @@ class ButtonApp(tk.Frame):
         self.is_on = True
 
 
-        # self.container = tk.Frame(self)
-        # self.container.pack(side="top", fill="both", expand=True)
-        # self.container.grid_rowconfigure(0, weight=1)
-        # self.container.grid_columnconfigure(0, weight=1)
-        # self.container = tk.Frame(self)
         self.pack(side="top", fill="both", expand=True)
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
         self.__label__()
         self.__button__()
-
-        # self.frames = {}
-        # frame = StartPage(self.container, self)
-        # self.frames[StartPage] = frame
-        # # frame.grid(row=0, column=0, sticky="nsew")
-        # self.show_frame(StartPage)
 
     def __label__(self):
         # Create Label
@@ -50,17 +39,15 @@ class ButtonApp(tk.Frame):
         self.on = tk.PhotoImage(file="on.png")
         self.off = tk.PhotoImage(file="off.png")
 
-        # Create A Button
-        # self.on_button = tk.Button(self, image=self.on, bd=0,
-        #                    command=self.switch)
         self.on_button = tk.Button(self,  text ="Blah", bd=0,background = "light blue",
-                           command=self.switch)
+                           command=self.dummy_switch)
         self.on_button.pack(pady=50)
         tk.Button()
-
-    def show_frame(self, cont):
-        frame = self.frames[cont]
-        frame.tkraise()
+    def dummy_switch(self):
+        pass
+    # def show_frame(self, cont):
+    #     frame = self.frames[cont]
+    #     frame.tkraise()
 
     # Define our switch function
     def switch(self):
@@ -80,18 +67,29 @@ class ButtonApp(tk.Frame):
             self.my_label.config(text="The Switch is On@", fg="green")
             self.is_on = True
 
-# class StartPage(tk.Frame):
-#
-#     def __init__(self, parent, controller):
-#         tk.Frame.__init__(self, parent)
-#         label = tk.Label(self, text="Start Page")
-#         label.pack(pady=10, padx=10)
+def ext_switch(wrk_Tk):
+    # global is_on
 
+    # Determine is on or off
+    if wrk_Tk.is_on:
+        wrk_Tk.on_button.config(image=wrk_Tk.off)
+        # self.on_button.config(text="Buu")
+        wrk_Tk.my_label.config(text="The Switch is XOff@",
+                        fg="grey")
+        wrk_Tk.is_on = False
+    else:
+
+        wrk_Tk.on_button.config(image=wrk_Tk.on)
+        # self.on_button.config(text="hivyhyh")
+        wrk_Tk.my_label.config(text="The Switch is On@", fg="green")
+        wrk_Tk.is_on = True
 
 root = tk.Tk()
 root.geometry("500x300")
 root.title("Om/Off Toggle")
+
 app = ButtonApp(root)
+app.on_button.config(command= lambda : ext_switch(app))
 app.mainloop()
 
 
