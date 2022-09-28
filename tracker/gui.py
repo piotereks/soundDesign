@@ -15,6 +15,7 @@ class SoundDesignGui(ttk.Frame):
         # self.__label__()
         self.__button__()
 
+
     # def __label__(self):
     #     # Create Label
     #     self.my_label = tk.Label(self,
@@ -31,17 +32,30 @@ class SoundDesignGui(ttk.Frame):
 
         # self.on_button = tk.Button(self, text ="Blah", bd=0, background = "light blue",
         #                            command=self.dummy_command)
-        self.on_button = ttk.Button(self, text ="Blah", command=self.dummy_command)
+        # self.on_button = ttk.Button(self, text ="Blah", command=self.dummy_command)
+        # self.on_button = ttk.Button(self, text ="Blah", command=self.test_command)
+        # print('bef')
+        self.on_button = ttk.Button(self, text ="Blah", command=self.xxx_func)
+        self.xcallabble = lambda: print('callable')
 
+        # print('aft')
 
         self.on_button.pack(pady=50)
         # ttk.Button()
 
     def dummy_command(self):
+        print('dummy')
         pass
+    def xxx_func(self):
+        print('pressed')
+        self.xcallabble()
+        pass
+
     def test_command(self, func : callable):
+    # def test_command(self):
         print('before')
-        func()
+        # func()
+        self.xxx_func()
         print('after')
     # Define our switch function
     # def switch(self):
@@ -76,14 +90,19 @@ def ext_switch(appFrame):
         appFrame.on_button.config(text="hivyhyh")
         # appFrame.my_label.config(text="The Switch is On@", fg="green")
         appFrame.is_on = True
+
+def ext_pressed():
+    print('ext pressed')
 def main():
     root = tk.Tk()
     root.geometry("500x300")
     root.title("Om/Off Toggle")
 
     app = SoundDesignGui(root)
+    # app.xcallabble = lambda : ext_pressed()
+    app.xcallabble = lambda : ext_switch(app)
     # app.on_button.config(command= lambda : ext_switch(app))
-    app.on_button.config(command= lambda : app.test_command(lambda:ext_switch(app)))
+    # app.on_button.config(command= lambda : app.test_command(lambda:ext_switch(app)))
     app.mainloop()
 
 if __name__=="__main__":
