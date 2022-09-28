@@ -35,8 +35,8 @@ class SoundDesignGui(ttk.Frame):
         # self.on_button = ttk.Button(self, text ="Blah", command=self.dummy_command)
         # self.on_button = ttk.Button(self, text ="Blah", command=self.test_command)
         # print('bef')
-        self.on_button = ttk.Button(self, text ="Blah", command=self.xxx_func)
-        self.xcallabble = lambda: print('callable')
+        self.on_button = ttk.Button(self, text ="Blah", command=self.button_command)
+        self.button_command_ext = lambda: print('button_command_ext')
 
         # print('aft')
 
@@ -46,34 +46,33 @@ class SoundDesignGui(ttk.Frame):
     def dummy_command(self):
         print('dummy')
         pass
-    def xxx_func(self):
-        print('pressed')
-        self.xcallabble()
+    def button_command(self):
+        self.button_switch()
+        self.button_command_ext()
         pass
 
     def test_command(self, func : callable):
     # def test_command(self):
         print('before')
         # func()
-        self.xxx_func()
+        self.button_command()
         print('after')
     # Define our switch function
-    # def switch(self):
-    #     # global is_on
-    #
-    #     # Determine is on or off
-    #     if self.is_on:
-    #         # self.on_button.config(image=self.off)
-    #         self.on_button.config(text="Buu")
-    #         self.my_label.config(text="The Switch is Off@",
-    #                         fg="grey")
-    #         self.is_on = False
-    #     else:
-    #
-    #         # self.on_button.config(image=self.on)
-    #         self.on_button.config(text="hivyhyh")
-    #         self.my_label.config(text="The Switch is On@", fg="green")
-    #         self.is_on = True
+    def button_switch(self):
+        # global is_on
+
+        # Determine is on or off
+        if self.is_on:
+            # self.on_button.config(image=self.off)
+            self.on_button.config(text="Buu")
+            # self.my_label.config(text="The Switch is Off@", fg="grey")
+            self.is_on = False
+        else:
+
+            # self.on_button.config(image=self.on)
+            self.on_button.config(text="hivyhyh")
+            # self.my_label.config(text="The Switch is On@", fg="green")
+            self.is_on = True
 
 def ext_switch(appFrame):
     # global is_on
@@ -99,8 +98,9 @@ def main():
     root.title("Om/Off Toggle")
 
     app = SoundDesignGui(root)
-    # app.xcallabble = lambda : ext_pressed()
-    app.xcallabble = lambda : ext_switch(app)
+    app.button_command_ext = lambda : ext_pressed()
+
+    # app.button_command_ext = lambda : ext_switch(app)
     # app.on_button.config(command= lambda : ext_switch(app))
     # app.on_button.config(command= lambda : app.test_command(lambda:ext_switch(app)))
     app.mainloop()
