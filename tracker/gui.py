@@ -39,7 +39,10 @@ class SoundDesignGui(ttk.Frame):
 
     def dummy_command(self):
         pass
-
+    def test_command(self, func : callable):
+        print('before')
+        func()
+        print('after')
     # Define our switch function
     # def switch(self):
     #     # global is_on
@@ -79,7 +82,8 @@ def main():
     root.title("Om/Off Toggle")
 
     app = SoundDesignGui(root)
-    app.on_button.config(command= lambda : ext_switch(app))
+    # app.on_button.config(command= lambda : ext_switch(app))
+    app.on_button.config(command= lambda : app.test_command(lambda:ext_switch(app)))
     app.mainloop()
 
 if __name__=="__main__":
