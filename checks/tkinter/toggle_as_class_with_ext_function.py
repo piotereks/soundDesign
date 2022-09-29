@@ -71,18 +71,18 @@ def ext_switch(wrk_Tk):
     # global is_on
 
     # Determine is on or off
-    if wrk_Tk.is_on:
-        wrk_Tk.on_button.config(image=wrk_Tk.off)
+    if wrk_Tk.is_playing:
+        wrk_Tk.pp_button.config(image=wrk_Tk.off)
         # self.on_button.config(text="Buu")
         wrk_Tk.my_label.config(text="The Switch is XOff@",
                         fg="grey")
-        wrk_Tk.is_on = False
+        wrk_Tk.is_playing = False
     else:
 
-        wrk_Tk.on_button.config(image=wrk_Tk.on)
+        wrk_Tk.pp_button.config(image=wrk_Tk.on)
         # self.on_button.config(text="hivyhyh")
         wrk_Tk.my_label.config(text="The Switch is On@", fg="green")
-        wrk_Tk.is_on = True
+        wrk_Tk.is_playing = True
 
 root = tk.Tk()
 root.geometry("500x300")
