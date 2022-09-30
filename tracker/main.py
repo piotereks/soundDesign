@@ -1,11 +1,13 @@
 from tracker import *
 from patterns import *
+from gui import *
 from pynput import keyboard
 from keyboard import *
 global IN_COLAB
 IN_COLAB = 'google.colab' in sys.modules
-
 global label_str
+global app
+# app = None
 
 
 def tracker_dec(func):
@@ -92,7 +94,7 @@ def cmp():
     print('expected:\n', [y for x in my_tracker.pattern_array for y in list(x['note'])])
     print('played:\n', [x.note for x in my_tracker.midi_out.miditrack if x.type == 'note_on'])
 
-# speeding up and slowing down tempo when autoplay
+# speeding up and slowing down tempo when
 
 # These are work in progress debug functions
 def find_scale_dups():
@@ -173,66 +175,50 @@ def old_main():
     # Keyboard(lambda x : xxx(x))
     Keyboard(lambda note : test_put_queue(note))
 
+def ui_rand_scale():
+
+    my_tracker.scale = iso.Scale.random()
+    app.scale_name_text.set(my_tracker.scale.name)  # label should be changed also in sync, so it will go to timeline
+def run_gui():
+    global app
+    root = tk.Tk()
+    root.geometry("400x100")
+    root.title("Om/Off Toggle")
+
+    app = SoundDesignGui(root)
+    app.pp_btn_cmd_ext = lambda : play_pause()
+    app.scale_rnd_btn_cmd_ext = lambda : ui_rand_scale()
+    # app.scale_rnd_btn_cmd_ext = lambda : app.scale_name_text.set(datetime.datetime.now().strftime('_%H%M%S'))
+    # app.is_playing
+    # app.btn_cmd_ext = lambda : ext_switch(app)
+    # app.on_btn.config(command= lambda : ext_switch(app))
+    # app.on_btn.config(command= lambda : app.test_command(lambda:ext_switch(app)))
+    app.mainloop()
+
+
+def play_pause():
+    global app
+    if app.is_playing:
+        ts()
+    else:
+        tstart()
 
 def main():
+    global app
     global my_tracker
     log_call()
     midi_out_flag = Tracker.MIDI_OUT_DEVICE
     my_tracker = Tracker(midi_out_mode=midi_out_flag)
     Keyboard(lambda note: test_put_queue(note))
     sbpq()
-
-# import tkinter
-from tkinter import *
-from tkinter.ttk import *
-
-class Tk_GUI_app(Tk):
-
-    def __init__(self, *args, **kwargs):
-        Tk.__init__(self, *args, **kwargs)
-        self.counter = 0
-        # root_window = Tk()
-        self.geometry("450x300")
-
-        # tkvar = IntVar()
+    run_gui()
 
 
-        frame = Frame(self)
-        frame.pack()
 
-        self.bt_start_stop_text = 'Start'
-
-        bt_start_stop = Button(frame, text =self.bt_start_stop_text, command=self.cmd_start_stop())
-        bt_start_stop.pack()
-        self.labelX = Label(frame, text=str(counter))
-
-        frame.tkraise()
-
-    def cmd_start_stop(self):
-
-        # print('asdfsd')
-        self.counter += 1
-        dir(self.labelX)
-        # labelX.config(text=str(counter))
-        self.bt_start_stop_text = 'Stop' if self.bt_start_stop_text == 'Start' else 'Stop'
-
-def gui_setup():
-    global tkvar
-    global root_window
-    global bt_start_stop_text
-    global bt_start_stop
-    global counter
-    global labelX
-    # global label_str
-    # global_var = tk.IntVar(value=0)
-
-global labelX
 if __name__ == '__main__':
     # print('Do we start?')
     # old_main()
-    app = Tk_GUI_app()
-    app.mainloop()
-    # gui_setup()
-    # main()
+    main()
+
     print('Processing Done.')
 
