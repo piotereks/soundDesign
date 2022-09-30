@@ -28,6 +28,29 @@ class SoundDesignGui(ttk.Frame):
     #
     #     self.my_label.pack(pady=20)
 
+
+    def cmd_wrapper(func):
+        def inner(self, *args, **kwargs):
+            cmd_int = '__' + func.__name__ + '_cmd_int__'
+            cmd_ext = func.__name__ + '_cmd_ext'
+            cmd_full = func.__name__ + '_cmd'
+
+            locals()[cmd_int] = lambda: print(cmd_int)
+            locals()[cmd_ext] = lambda: print(cmd_ext)
+            locals()[cmd_full] = lambda: print(cmd_full)
+
+            def cmd(self_in):
+                print(cmd.__name__)
+                func_cmd_int = getattr(SoundDesignGui, cmd_int)
+                func_cmd_ext = getattr(SoundDesignGui, cmd_ext)
+                func_cmd_int()
+                func_cmd_ext()
+
+            func(self)
+            setattr(SoundDesignGui, cmd_full, cmd.__name__)
+        return inner
+
+
     def __pp_btn__(self):
         self.pp_btn_cmd_ext = lambda: print('pp_btn_cmd_ext')
 
@@ -64,10 +87,16 @@ class SoundDesignGui(ttk.Frame):
         self.scale_rnd_btn.pack(padx=4, pady=2, side='left', anchor='n')
         # ttk.Button()
 
+
+    @cmd_wrapper
     def __test_button__(self):
-        self.scale_rnd_btn = tk.Button(self, text ="xxx", command=lambda: dummy_command(self),
+
+        cmd_full = inspect.stack()[1][3] + '_cmd'
+        cmd_func = getattr(SoundDesignGui, cmd_full)
+        self.scale_rnd_btn = tk.Button(self, text ="xxx", command=lambda: cmd_func(self),
                                           height= 1, width=7)
         self.scale_rnd_btn.pack(padx=4, pady=2, side='left', anchor='n')
+
 
     def dummy_command(self):
         print('dummy')
