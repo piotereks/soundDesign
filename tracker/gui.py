@@ -13,8 +13,8 @@ class SoundDesignGui(ttk.Frame):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
         # self.__label__()
-        self.__button__()
-        self.__scale_rnd_button__()
+        self.__pp_btn__()
+        self.__scale_rnd_btn__()
 
 
     # def __label__(self):
@@ -26,73 +26,75 @@ class SoundDesignGui(ttk.Frame):
     #
     #     self.my_label.pack(pady=20)
 
-    def __button__(self):
+    def __pp_btn__(self):
+
+        self.pp_btn_cmd_ext = lambda: print('btn_cmd_ext')
+
+        def pp_btn_cmd_int(self_in):
+            self_in.__pp_btn_switch__()
+            self_in.pp_btn_cmd_ext()
+            pass
+
         # Define Our Images
         # self.on = tk.PhotoImage(file="on.png")
         # self.off = tk.PhotoImage(file="off.png")
-        self.pp_button = tk.Button(self, text ="Play", command=self.pp_button_command,
+        self.pp_btn = tk.Button(self, text ="Play", command=lambda: pp_btn_cmd_int(self),
                                    height= 1, width=3)
-        self.pp_button_command_ext = lambda: print('button_command_ext')
-
-        self.pp_button.pack(pady=2, side='left', anchor='nw')
+        self.pp_btn.pack(padx=3, pady=2, side='left', anchor='nw')
         # ttk.Button()
 
-    def __scale_rnd_button__(self):
-        # Define Our Images
-        # self.on = tk.PhotoImage(file="on.png")
-        # self.off = tk.PhotoImage(file="off.png")
-        self.scale_rnd_button = tk.Button(self, text ="scale rnd", command=self.dummy_command,
-                                          height= 1, width=7)
-        self.pp_button_command_ext = lambda: print('button_command_ext')
+    def __pp_btn_switch__(self):
+        # global is_on
 
-        self.scale_rnd_button.pack(padx=5, pady=2, side='left', anchor='n')
+        # Determine is on or off
+        if self.is_playing:
+            # self.on_btn.config(image=self.off)
+            self.pp_btn.config(text="Pause")
+            # self.my_label.config(text="The Switch is Off@", fg="grey")
+            self.is_playing = False
+        else:
+
+            # self.on_btn.config(image=self.on)
+            self.pp_btn.config(text="Play")
+            # self.my_label.config(text="The Switch is On@", fg="green")
+            self.is_playing = True
+
+
+    def __scale_rnd_btn__(self):
+        self.scale_rnd_btn = tk.Button(self, text ="scale rnd", command=self.dummy_command,
+                                          height= 1, width=7)
+        self.scale_rnd_btn_cmd_ext = lambda: print('btn_cmd_ext')
+
+        self.scale_rnd_btn.pack(padx=4, pady=2, side='left', anchor='n')
         # ttk.Button()
 
 
     def dummy_command(self):
         print('dummy')
         pass
-    def pp_button_command(self):
-        self.__pp_button_switch__()
-        self.pp_button_command_ext()
-        pass
+
 
     def test_command(self, func : callable):
     # def test_command(self):
         print('before')
         # func()
-        self.pp_button_command()
+        self.pp_btn_cmd()
         print('after')
     # Define our switch function
-    def __pp_button_switch__(self):
-        # global is_on
-
-        # Determine is on or off
-        if self.is_playing:
-            # self.on_button.config(image=self.off)
-            self.pp_button.config(text="Pause")
-            # self.my_label.config(text="The Switch is Off@", fg="grey")
-            self.is_playing = False
-        else:
-
-            # self.on_button.config(image=self.on)
-            self.pp_button.config(text="Play")
-            # self.my_label.config(text="The Switch is On@", fg="green")
-            self.is_playing = True
 
 def ext_switch(appFrame):
     # global is_on
 
     # Determine is on or off
     if appFrame.is_playing:
-        # appFrame.on_button.config(image=appFrame.off)
-        appFrame.pp_button.config(text="Buu")
+        # appFrame.on_btn.config(image=appFrame.off)
+        appFrame.pp_btn.config(text="Buu")
         # appFrame.my_label.config(text="The Switch is XOff@", fg="grey")
         appFrame.is_playing = False
     else:
 
-        # appFrame.on_button.config(image=appFrame.on)
-        appFrame.pp_button.config(text="hivyhyh")
+        # appFrame.on_btn.config(image=appFrame.on)
+        appFrame.pp_btn.config(text="hivyhyh")
         # appFrame.my_label.config(text="The Switch is On@", fg="green")
         appFrame.is_playing = True
 
@@ -104,11 +106,11 @@ def main():
     root.title("Om/Off Toggle")
 
     app = SoundDesignGui(root)
-    app.pp_button_command_ext = lambda : ext_pressed()
+    app.pp_btn_cmd_ext = lambda : ext_pressed()
 
-    # app.button_command_ext = lambda : ext_switch(app)
-    # app.on_button.config(command= lambda : ext_switch(app))
-    # app.on_button.config(command= lambda : app.test_command(lambda:ext_switch(app)))
+    # app.btn_cmd_ext = lambda : ext_switch(app)
+    # app.on_btn.config(command= lambda : ext_switch(app))
+    # app.on_btn.config(command= lambda : app.test_command(lambda:ext_switch(app)))
     app.mainloop()
 
 
