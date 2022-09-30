@@ -26,45 +26,40 @@ class SoundDesignGui(ttk.Frame):
     #
     #     self.my_label.pack(pady=20)
 
+
     def __pp_btn__(self):
+        self.pp_btn_cmd_ext = lambda: print('pp_btn_cmd_ext')
 
-        self.pp_btn_cmd_ext = lambda: print('btn_cmd_ext')
-
-        def pp_btn_cmd_int(self_in):
-            self_in.__pp_btn_switch__()
+        def __pp_btn_cmd__(self_in):
+            self_in.__pp_btn_switch_cmd_int__()
             self_in.pp_btn_cmd_ext()
             pass
 
-        # Define Our Images
-        # self.on = tk.PhotoImage(file="on.png")
-        # self.off = tk.PhotoImage(file="off.png")
-        self.pp_btn = tk.Button(self, text ="Play", command=lambda: pp_btn_cmd_int(self),
+        self.pp_btn = tk.Button(self, text ="Play", command=lambda: __pp_btn_cmd__(self),
                                    height= 1, width=3)
         self.pp_btn.pack(padx=3, pady=2, side='left', anchor='nw')
-        # ttk.Button()
 
-    def __pp_btn_switch__(self):
-        # global is_on
-
-        # Determine is on or off
+    def __pp_btn_switch_cmd_int__(self):
         if self.is_playing:
-            # self.on_btn.config(image=self.off)
             self.pp_btn.config(text="Pause")
-            # self.my_label.config(text="The Switch is Off@", fg="grey")
             self.is_playing = False
         else:
-
-            # self.on_btn.config(image=self.on)
             self.pp_btn.config(text="Play")
-            # self.my_label.config(text="The Switch is On@", fg="green")
             self.is_playing = True
 
 
     def __scale_rnd_btn__(self):
-        self.scale_rnd_btn = tk.Button(self, text ="scale rnd", command=self.dummy_command,
-                                          height= 1, width=7)
-        self.scale_rnd_btn_cmd_ext = lambda: print('btn_cmd_ext')
+        self.__scale_rnd_btn_cmd_int__ = lambda: print('__scale_rnd_btn_cmd_int__')
+        self.scale_rnd_btn_cmd_ext = lambda: print('scale_rnd_btn_cmd_ext')
 
+        def __scale_rnd_btn_cmd__(self_in):
+            self_in.__scale_rnd_btn_cmd_int__()
+            self_in.scale_rnd_btn_cmd_ext()
+            pass
+
+
+        self.scale_rnd_btn = tk.Button(self, text ="scale rnd", command=lambda: __scale_rnd_btn_cmd__(self),
+                                          height= 1, width=7)
         self.scale_rnd_btn.pack(padx=4, pady=2, side='left', anchor='n')
         # ttk.Button()
 
