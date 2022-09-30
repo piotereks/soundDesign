@@ -57,7 +57,7 @@ class SoundDesignGui(ttk.Frame):
         self.scale_rnd_btn_cmd_ext = lambda: print('scale_rnd_btn_cmd_ext')
 
         def __scale_rnd_btn_cmd__(self_in):
-            self_in.__scale_rnd_btn_cmd_int__()
+            # self_in.__scale_rnd_btn_cmd_int__()
             self_in.scale_rnd_btn_cmd_ext()
             pass
 
