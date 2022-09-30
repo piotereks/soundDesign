@@ -186,18 +186,18 @@ def run_gui():
     root.title("Om/Off Toggle")
 
     app = SoundDesignGui(root)
+
     app.pp_btn_cmd_ext = lambda : play_pause()
     app.scale_rnd_btn_cmd_ext = lambda : ui_rand_scale()
-    # app.scale_rnd_btn_cmd_ext = lambda : app.scale_name_text.set(datetime.datetime.now().strftime('_%H%M%S'))
-    # app.is_playing
-    # app.btn_cmd_ext = lambda : ext_switch(app)
-    # app.on_btn.config(command= lambda : ext_switch(app))
-    # app.on_btn.config(command= lambda : app.test_command(lambda:ext_switch(app)))
+    app.scale_name_text.set(my_tracker.scale.name)
+
     app.mainloop()
 
 
 def play_pause():
     global app
+    log_call()
+
     if app.is_playing:
         ts()
     else:
@@ -211,6 +211,7 @@ def main():
     my_tracker = Tracker(midi_out_mode=midi_out_flag)
     Keyboard(lambda note: test_put_queue(note))
     sbpq()
+    ts()
     run_gui()
 
 

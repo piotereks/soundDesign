@@ -9,7 +9,7 @@ class SoundDesignGui(ttk.Frame):
     def __init__(self, *args, **kwargs):
         ttk.Frame.__init__(self, *args, **kwargs)
 
-        self.is_playing = True
+        self.is_playing = False
 
         self.pack(side="top", fill="both", expand=True)
         self.grid_rowconfigure(0, weight=1)
@@ -33,8 +33,8 @@ class SoundDesignGui(ttk.Frame):
         self.pp_btn_cmd_ext = lambda: print('pp_btn_cmd_ext')
 
         def __pp_btn_cmd__(self_in):
-            self_in.__pp_btn_switch_cmd_int__()
             self_in.pp_btn_cmd_ext()
+            self_in.__pp_btn_switch_cmd_int__()
             pass
 
         self.pp_btn = tk.Button(self, text ="Play", command=lambda: __pp_btn_cmd__(self),
@@ -42,11 +42,13 @@ class SoundDesignGui(ttk.Frame):
         self.pp_btn.pack(padx=3, pady=2, side='left', anchor='nw')
 
     def __pp_btn_switch_cmd_int__(self):
+
         if self.is_playing:
-            self.pp_btn.config(text="Pause")
+            # when was playing change to paused (is playing False) state now
+            self.pp_btn.config(text="Play")
             self.is_playing = False
         else:
-            self.pp_btn.config(text="Play")
+            self.pp_btn.config(text="Pause")
             self.is_playing = True
 
 
@@ -63,8 +65,8 @@ class SoundDesignGui(ttk.Frame):
 
         self.scale_name_text = tk.StringVar()
         self.scale_name_text.set("scale name")
-        self.scale_rnd_btn = tk.Button(self, text ="scale rnd", command=lambda: __scale_rnd_btn_cmd__(self),
-                                          height= 1, width=7)
+        self.scale_rnd_btn = tk.Button(self, text ="rand() scale", command=lambda: __scale_rnd_btn_cmd__(self),
+                                          height= 1, width=8)
         self.scale_rnd_btn.pack(padx=3, pady=2, side='left', anchor='nw')
         self.scale_name_lbl = tk.Label(self, textvariable=self.scale_name_text, height= 1)
         self.scale_name_lbl.pack(padx=3, pady=8, side='left', anchor='nw')
@@ -75,31 +77,6 @@ class SoundDesignGui(ttk.Frame):
     def dummy_command(self):
         print('dummy')
         pass
-
-
-    # def test_command(self, func : callable):
-    # # def test_command(self):
-    #     print('before')
-    #     # func()
-    #     self.pp_btn_cmd()
-    #     print('after')
-
-
-# def ext_switch(appFrame):
-#     # global is_on
-#
-#     # Determine is on or off
-#     if appFrame.is_playing:
-#         # appFrame.on_btn.config(image=appFrame.off)
-#         appFrame.pp_btn.config(text="Buu")
-#         # appFrame.my_label.config(text="The Switch is XOff@", fg="grey")
-#         appFrame.is_playing = False
-#     else:
-#
-#         # appFrame.on_btn.config(image=appFrame.on)
-#         appFrame.pp_btn.config(text="hivyhyh")
-#         # appFrame.my_label.config(text="The Switch is On@", fg="green")
-#         appFrame.is_playing = True
 
 def ext_pressed():
     print('ext pressed')
