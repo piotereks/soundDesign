@@ -28,6 +28,7 @@ class SoundDesignGui(ttk.Frame):
     #
     #     self.my_label.pack(pady=20)
 
+
     def __pp_btn__(self):
         self.pp_btn_cmd_ext = lambda: print('pp_btn_cmd_ext')
 
@@ -76,29 +77,29 @@ class SoundDesignGui(ttk.Frame):
         pass
 
 
-    def test_command(self, func : callable):
-    # def test_command(self):
-        print('before')
-        # func()
-        self.pp_btn_cmd()
-        print('after')
-    # Define our switch function
+    # def test_command(self, func : callable):
+    # # def test_command(self):
+    #     print('before')
+    #     # func()
+    #     self.pp_btn_cmd()
+    #     print('after')
 
-def ext_switch(appFrame):
-    # global is_on
 
-    # Determine is on or off
-    if appFrame.is_playing:
-        # appFrame.on_btn.config(image=appFrame.off)
-        appFrame.pp_btn.config(text="Buu")
-        # appFrame.my_label.config(text="The Switch is XOff@", fg="grey")
-        appFrame.is_playing = False
-    else:
-
-        # appFrame.on_btn.config(image=appFrame.on)
-        appFrame.pp_btn.config(text="hivyhyh")
-        # appFrame.my_label.config(text="The Switch is On@", fg="green")
-        appFrame.is_playing = True
+# def ext_switch(appFrame):
+#     # global is_on
+#
+#     # Determine is on or off
+#     if appFrame.is_playing:
+#         # appFrame.on_btn.config(image=appFrame.off)
+#         appFrame.pp_btn.config(text="Buu")
+#         # appFrame.my_label.config(text="The Switch is XOff@", fg="grey")
+#         appFrame.is_playing = False
+#     else:
+#
+#         # appFrame.on_btn.config(image=appFrame.on)
+#         appFrame.pp_btn.config(text="hivyhyh")
+#         # appFrame.my_label.config(text="The Switch is On@", fg="green")
+#         appFrame.is_playing = True
 
 def ext_pressed():
     print('ext pressed')
