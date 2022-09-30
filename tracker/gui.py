@@ -1,4 +1,5 @@
 # Import Module
+import datetime
 import tkinter as tk
 # from tkinter.ttk import *
 import tkinter.ttk as ttk
@@ -16,7 +17,6 @@ class SoundDesignGui(ttk.Frame):
         # self.__label__()
         self.__pp_btn__()
         self.__scale_rnd_btn__()
-        self.__test_button__()
 
 
     # def __label__(self):
@@ -58,16 +58,18 @@ class SoundDesignGui(ttk.Frame):
             self_in.scale_rnd_btn_cmd_ext()
             pass
 
+        # datetime.datetime.now().strftime('_%H%M%S')
 
+        self.scale_name_text = tk.StringVar()
+        self.scale_name_text.set("scale name")
         self.scale_rnd_btn = tk.Button(self, text ="scale rnd", command=lambda: __scale_rnd_btn_cmd__(self),
                                           height= 1, width=7)
-        self.scale_rnd_btn.pack(padx=4, pady=2, side='left', anchor='n')
+        self.scale_rnd_btn.pack(padx=3, pady=2, side='left', anchor='nw')
+        self.scale_name_lbl = tk.Label(self, textvariable=self.scale_name_text, height= 1)
+        self.scale_name_lbl.pack(padx=3, pady=8, side='left', anchor='nw')
         # ttk.Button()
 
-    def __test_button__(self):
-        self.scale_rnd_btn = tk.Button(self, text ="xxx", command=lambda: dummy_command(self),
-                                          height= 1, width=7)
-        self.scale_rnd_btn.pack(padx=4, pady=2, side='left', anchor='n')
+        # self.__scale_rnd_btn_cmd_int__ = lambda: self.scale_name_text.set(datetime.datetime.now().strftime('_X_%H%M%S'))
 
     def dummy_command(self):
         print('dummy')
@@ -102,11 +104,12 @@ def ext_pressed():
     print('ext pressed')
 def main():
     root = tk.Tk()
-    root.geometry("500x300")
+    root.geometry("400x100")
     root.title("Om/Off Toggle")
 
     app = SoundDesignGui(root)
     app.pp_btn_cmd_ext = lambda : ext_pressed()
+    app.scale_rnd_btn_cmd_ext = lambda : app.scale_name_text.set(datetime.datetime.now().strftime('_%H%M%S'))
 
     # app.btn_cmd_ext = lambda : ext_switch(app)
     # app.on_btn.config(command= lambda : ext_switch(app))
