@@ -190,8 +190,12 @@ def run_gui():
     # my_tracker.scale_name_action = lambda : app.scale_name_text2.set(datetime.datetime.now().strftime('XXX_%H%M%S'))
     # my_tracker.scale_name_action = lambda : print('tutaj!')
     my_tracker.scale_name_action = lambda : app.scale_name_text2.set('set:' +my_tracker.scale.name)
-    app.mainloop()
+    my_tracker.check_notes_action = lambda : app.check_notes_lbl_text.set(my_tracker.check_notes)
 
+
+    # my_tracker.check_notes_action =
+    app.mainloop()
+# see for GUI layouts :https://www.pythonguis.com/faq/pack-place-and-grid-in-tkinter/
 
 def play_pause():
     global app

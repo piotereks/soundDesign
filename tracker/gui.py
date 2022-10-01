@@ -62,19 +62,26 @@ class SoundDesignGui(ttk.Frame):
             pass
 
         # datetime.datetime.now().strftime('_%H%M%S')
+        self.check_notes_lbl_text = tk.StringVar()
+        self.check_notes_lbl_text.set("check notes here")
+        self.check_notes_lbl = tk.Label(self, textvariable=self.check_notes_lbl_text, height= 1)
+        self.check_notes_lbl.pack(padx=3, pady=8, side='top', anchor='w')
 
-        self.scale_name_text = tk.StringVar()
-        self.scale_name_text.set("scale name")
-        self.scale_name_text2 = tk.StringVar()
-        self.scale_name_text2.set("scale name")
         self.scale_rnd_btn = tk.Button(self, text ="rand() scale", command=lambda: __scale_rnd_btn_cmd__(self),
                                           height= 1, width=8)
         self.scale_rnd_btn.pack(padx=3, pady=2, side='left', anchor='nw')
+
+        self.scale_name_text = tk.StringVar()
+        self.scale_name_text.set("scale name")
         self.scale_name_lbl = tk.Label(self, textvariable=self.scale_name_text, height= 1)
         self.scale_name_lbl.pack(padx=3, pady=8, side='left', anchor='nw')
 
+        self.scale_name_text2 = tk.StringVar()
+        self.scale_name_text2.set("scale name")
         self.scale_name_lbl2 = tk.Label(self, textvariable=self.scale_name_text2, height= 1)
         self.scale_name_lbl2.pack(padx=3, pady=8, side='left', anchor='nw')
+
+
 
         # ttk.Button()
 
@@ -110,6 +117,7 @@ if __name__=="__main__":
 Elements to place:
 * Start/Stop button
 * Randomize scale + labels with name
+^^^^ done
 
 * print current notes (+future bold on current)
 

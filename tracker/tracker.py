@@ -165,6 +165,8 @@ class Tracker:
         self.timeline.background()  # use background ts()instead of run to enable live performing (async notes passing)
 
 
+    def check_notes_action(self):
+        log_call()
 
     def log_and_schedule(func):
         def inner(self, *args, **kwargs):
@@ -188,7 +190,9 @@ class Tracker:
             # print('skip checked: ', skip)
             # if not skip:
             notes[iso.EVENT_NOTE] = iso.PMap(notes[iso.EVENT_NOTE], lambda midi_note: None if not midi_note else None if midi_note < 0 else None if midi_note > 127 else midi_note)
-            print('check notes: ', list(notes[iso.EVENT_NOTE].copy()))
+            self.check_notes=list(notes[iso.EVENT_NOTE].copy())
+            print('check notes: ', self.check_notes)
+            self.check_notes_action()
             # print('aft func')
             xxx = self.timeline.schedule(
                 notes
@@ -474,6 +478,8 @@ class Tracker:
             # iso.EVENT_OCTAVE: 5
             # iso.EVENT_DEGREE: xxxx
         })
+
+
     def scale_name_action(self):
         log_call()
 
