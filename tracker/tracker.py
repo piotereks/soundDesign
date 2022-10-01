@@ -474,13 +474,15 @@ class Tracker:
             # iso.EVENT_OCTAVE: 5
             # iso.EVENT_DEGREE: xxxx
         })
-
+    def scale_name_action(self):
+        log_call()
 
     @log_and_schedule
     def play_from_to(self, from_note, to_note, in_pattern=False ):
         print('---------------------')
         print(f"in_pattern: {in_pattern} from_note:{from_note}, to_note: {to_note}")
         print(f"{self.scale.name=}")
+        self.scale_name_action()
         # if  from_note == None:
         #     return None
         if in_pattern:

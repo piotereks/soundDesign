@@ -62,9 +62,6 @@ def sbpq():
     my_tracker.pplay_queue()
 
 
-# def sbft(note_from = 1, note_to = 10):
-#     my_tracker.beat = lambda: my_tracker.play_from_to(note_from, note_to)
-
 def sbft(note_from = 60, note_to = 64):
     my_tracker.beat = lambda: my_tracker.play_from_to(note_from, note_to)
 
@@ -178,19 +175,21 @@ def old_main():
 def ui_rand_scale():
 
     my_tracker.scale = iso.Scale.random()
-    app.scale_name_text.set(my_tracker.scale.name)  # label should be changed also in sync, so it will go to timeline
+    app.scale_name_text.set('req:' + my_tracker.scale.name)  # label should be changed also in sync, so it will go to timeline
 def run_gui():
     global app
     root = tk.Tk()
-    root.geometry("400x100")
+    # root.geometry("400x100")
     root.title("Om/Off Toggle")
 
     app = SoundDesignGui(root)
 
     app.pp_btn_cmd_ext = lambda : play_pause()
     app.scale_rnd_btn_cmd_ext = lambda : ui_rand_scale()
-    app.scale_name_text.set(my_tracker.scale.name)
-
+    app.scale_name_text.set('req:' +my_tracker.scale.name)
+    # my_tracker.scale_name_action = lambda : app.scale_name_text2.set(datetime.datetime.now().strftime('XXX_%H%M%S'))
+    # my_tracker.scale_name_action = lambda : print('tutaj!')
+    my_tracker.scale_name_action = lambda : app.scale_name_text2.set('set:' +my_tracker.scale.name)
     app.mainloop()
 
 

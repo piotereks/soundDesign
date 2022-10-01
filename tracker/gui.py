@@ -65,11 +65,17 @@ class SoundDesignGui(ttk.Frame):
 
         self.scale_name_text = tk.StringVar()
         self.scale_name_text.set("scale name")
+        self.scale_name_text2 = tk.StringVar()
+        self.scale_name_text2.set("scale name")
         self.scale_rnd_btn = tk.Button(self, text ="rand() scale", command=lambda: __scale_rnd_btn_cmd__(self),
                                           height= 1, width=8)
         self.scale_rnd_btn.pack(padx=3, pady=2, side='left', anchor='nw')
         self.scale_name_lbl = tk.Label(self, textvariable=self.scale_name_text, height= 1)
         self.scale_name_lbl.pack(padx=3, pady=8, side='left', anchor='nw')
+
+        self.scale_name_lbl2 = tk.Label(self, textvariable=self.scale_name_text2, height= 1)
+        self.scale_name_lbl2.pack(padx=3, pady=8, side='left', anchor='nw')
+
         # ttk.Button()
 
         # self.__scale_rnd_btn_cmd_int__ = lambda: self.scale_name_text.set(datetime.datetime.now().strftime('_X_%H%M%S'))
