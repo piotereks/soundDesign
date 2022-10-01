@@ -9,11 +9,19 @@ class SoundDesignGui(ttk.Frame):
     def __init__(self, *args, **kwargs):
         ttk.Frame.__init__(self, *args, **kwargs)
 
-        self.is_playing = False
-
         self.pack(side="top", fill="both", expand=True)
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
+
+        self.top_frame = ttk.Frame(self, width=400, height=200)
+        self.top_frame.pack(side='top', fill='both', padx=10, pady=5, expand=True)
+
+        self.mid_frame = ttk.Frame(self, width=450, height=300)
+        self.mid_frame.pack(side='top', fill='both', padx=10, pady=5, expand=True)
+
+        self.is_playing = False
+
+
         # self.__label__()
         self.__pp_btn__()
         self.__scale_rnd_btn__()
@@ -37,7 +45,7 @@ class SoundDesignGui(ttk.Frame):
             self_in.__pp_btn_switch_cmd_int__()
             pass
 
-        self.pp_btn = tk.Button(self, text ="Play", command=lambda: __pp_btn_cmd__(self),
+        self.pp_btn = tk.Button(self.top_frame, text ="Play", command=lambda: __pp_btn_cmd__(self),
                                    height= 1, width=3)
         self.pp_btn.pack(padx=3, pady=2, side='left', anchor='nw')
 
@@ -62,25 +70,25 @@ class SoundDesignGui(ttk.Frame):
             pass
 
         # datetime.datetime.now().strftime('_%H%M%S')
-        self.check_notes_lbl_text = tk.StringVar()
-        self.check_notes_lbl_text.set("check notes here")
-        self.check_notes_lbl = tk.Label(self, textvariable=self.check_notes_lbl_text, height= 1)
-        self.check_notes_lbl.pack(padx=3, pady=8, side='top', anchor='w')
 
-        self.scale_rnd_btn = tk.Button(self, text ="rand() scale", command=lambda: __scale_rnd_btn_cmd__(self),
+        self.scale_rnd_btn = tk.Button(self.top_frame, text ="rand() scale", command=lambda: __scale_rnd_btn_cmd__(self),
                                           height= 1, width=8)
         self.scale_rnd_btn.pack(padx=3, pady=2, side='left', anchor='nw')
 
         self.scale_name_text = tk.StringVar()
         self.scale_name_text.set("scale name")
-        self.scale_name_lbl = tk.Label(self, textvariable=self.scale_name_text, height= 1)
+        self.scale_name_lbl = tk.Label(self.top_frame, textvariable=self.scale_name_text, height= 1)
         self.scale_name_lbl.pack(padx=3, pady=8, side='left', anchor='nw')
 
         self.scale_name_text2 = tk.StringVar()
         self.scale_name_text2.set("scale name")
-        self.scale_name_lbl2 = tk.Label(self, textvariable=self.scale_name_text2, height= 1)
+        self.scale_name_lbl2 = tk.Label(self.top_frame, textvariable=self.scale_name_text2, height= 1)
         self.scale_name_lbl2.pack(padx=3, pady=8, side='left', anchor='nw')
 
+        self.check_notes_lbl_text = tk.StringVar()
+        self.check_notes_lbl_text.set("check notes here")
+        self.check_notes_lbl = tk.Label(self.mid_frame, textvariable=self.check_notes_lbl_text, height= 1)
+        self.check_notes_lbl.pack(padx=3, pady=8, side='top', anchor='w')
 
 
         # ttk.Button()
@@ -120,7 +128,7 @@ Elements to place:
 ^^^^ done
 
 * print current notes (+future bold on current)
-
+* future currnt notes to log (or rolling widget, but with some limited buffor)
 
 * print content of queue
 """
