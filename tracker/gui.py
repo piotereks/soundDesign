@@ -9,15 +9,27 @@ class SoundDesignGui(ttk.Frame):
     def __init__(self, *args, **kwargs):
         ttk.Frame.__init__(self, *args, **kwargs)
 
+
         self.pack(side="top", fill="both", expand=True)
+
         self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=4)
+
         self.grid_columnconfigure(0, weight=1)
 
-        self.top_frame = ttk.Frame(self, width=400, height=200)
-        self.top_frame.pack(side='top', fill='both', padx=10, pady=5, expand=True)
+        self.top_frame = tk.Frame(self, width=400, height=200)
+        self.top_frame.grid_columnconfigure(0, weight=1)
+        self.top_frame.grid_columnconfigure(1, weight=2)
+        # self.top_frame.pack(side='top', fill='both', padx=10, pady=5, expand=True)
+        self.top_frame.grid(row=0, column=0, padx=5, pady=5)
 
-        self.mid_frame = ttk.Frame(self, width=450, height=300)
-        self.mid_frame.pack(side='top', fill='both', padx=10, pady=5, expand=True)
+        self.top_right_frame = tk.Frame(self.top_frame, width=266, height=200)
+        self.top_right_frame.grid(row=0, column=1, padx=5, pady=5)
+
+        self.mid_frame = tk.Frame(self, width=450, height=300)
+        self.mid_frame.grid_columnconfigure(0, weight=1)
+        # self.mid_frame.pack(side='top', fill='both', padx=10, pady=5, expand=True)
+        self.mid_frame.grid(row=1, column=0, padx=5, pady=5)
 
         self.is_playing = False
 
@@ -47,7 +59,9 @@ class SoundDesignGui(ttk.Frame):
 
         self.pp_btn = tk.Button(self.top_frame, text ="Play", command=lambda: __pp_btn_cmd__(self),
                                    height= 1, width=3)
-        self.pp_btn.pack(padx=3, pady=2, side='left', anchor='nw')
+        # self.pp_btn.pack(padx=3, pady=2, side='left', anchor='nw')
+        self.pp_btn.grid(row=0, column=0, padx=5, pady=5)
+
 
     def __pp_btn_switch_cmd_int__(self):
 
@@ -71,24 +85,28 @@ class SoundDesignGui(ttk.Frame):
 
         # datetime.datetime.now().strftime('_%H%M%S')
 
-        self.scale_rnd_btn = tk.Button(self.top_frame, text ="rand() scale", command=lambda: __scale_rnd_btn_cmd__(self),
-                                          height= 1, width=8)
-        self.scale_rnd_btn.pack(padx=3, pady=2, side='left', anchor='nw')
+        self.scale_rnd_btn = tk.Button(self.top_right_frame, text ="rand() scale", command=lambda: __scale_rnd_btn_cmd__(self),
+                                       height= 1, width=8)
+        # self.scale_rnd_btn.grid(row=0, column=1, padx=5, pady=5, ipadx=10,sticky = 'w')
+        self.scale_rnd_btn.pack(padx=3, pady=2, side='left', anchor = 'w')
+
 
         self.scale_name_text = tk.StringVar()
         self.scale_name_text.set("scale name")
-        self.scale_name_lbl = tk.Label(self.top_frame, textvariable=self.scale_name_text, height= 1)
-        self.scale_name_lbl.pack(padx=3, pady=8, side='left', anchor='nw')
+        self.scale_name_lbl = tk.Label(self.top_right_frame, textvariable=self.scale_name_text, height= 1)
+        # self.scale_name_lbl.grid(row=0, column=1, padx=5, pady=5, ipadx=10)
+        self.scale_name_lbl.pack(padx=3, pady=2, side='left', anchor = 'w')
 
         self.scale_name_text2 = tk.StringVar()
         self.scale_name_text2.set("scale name")
-        self.scale_name_lbl2 = tk.Label(self.top_frame, textvariable=self.scale_name_text2, height= 1)
-        self.scale_name_lbl2.pack(padx=3, pady=8, side='left', anchor='nw')
+        self.scale_name_lbl2 = tk.Label(self.top_right_frame, textvariable=self.scale_name_text2, height= 1)
+        # self.scale_name_lbl2.grid(row=0, column=1, padx=5, pady=5, ipadx=10,sticky = 'e')
+        self.scale_name_lbl2.pack(padx=3, pady=2, side='left', anchor = 'w')
 
         self.check_notes_lbl_text = tk.StringVar()
         self.check_notes_lbl_text.set("check notes here")
         self.check_notes_lbl = tk.Label(self.mid_frame, textvariable=self.check_notes_lbl_text, height= 1)
-        self.check_notes_lbl.pack(padx=3, pady=8, side='top', anchor='w')
+        self.check_notes_lbl.grid(row=0, column=0, padx=5, pady=5)
 
 
         # ttk.Button()
@@ -127,8 +145,11 @@ Elements to place:
 * Randomize scale + labels with name
 ^^^^ done
 
-* print current notes (+future bold on current)
-* future currnt notes to log (or rolling widget, but with some limited buffor)
+* print current notes
+^^^^ done
+
+* (+future bold on current)
+* future current notes to log (or rolling widget, but with some limited buffor)
 
 * print content of queue
 """
