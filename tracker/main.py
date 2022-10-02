@@ -180,7 +180,7 @@ def run_gui():
     global app
     root = tk.Tk()
     root.geometry("400x100")
-    root.title("Om/Off Toggle")
+    root.title("soundDesign - pattern player")
 
     app = SoundDesignGui(root)
 
