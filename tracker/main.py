@@ -180,7 +180,7 @@ def run_gui():
     global app
     root = tk.Tk()
     root.geometry("600x400")
-    root.title("Om/Off Toggle")
+    root.title("soundDesign - pattern player")
 
     app = SoundDesignGui(root)
 
@@ -191,8 +191,7 @@ def run_gui():
     # my_tracker.scale_name_action = lambda : print('tutaj!')
     my_tracker.scale_name_action = lambda : app.scale_name_text2.set('set:' +my_tracker.scale.name)
     my_tracker.check_notes_action = lambda : app.check_notes_lbl_text.set(my_tracker.check_notes)
-    my_tracker.queue_content_action = lambda : app.queue_content_lbl_text.set('queue: '+str(my_tracker.get_queue_content()))
-    my_tracker.curr_notes_pair_action = lambda : app.curr_notes_pair_lbl_text.set('pair: ' + str(my_tracker.notes_pair))
+    my_tracker.queue_content_action = lambda : app.queue_content_lbl_text.set(my_tracker.get_queue_content())
 
     # my_tracker.check_notes_action =
     app.mainloop()
