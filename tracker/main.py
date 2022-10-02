@@ -179,7 +179,7 @@ def ui_rand_scale():
 def run_gui():
     global app
     root = tk.Tk()
-    # root.geometry("400x100")
+    root.geometry("400x100")
     root.title("Om/Off Toggle")
 
     app = SoundDesignGui(root)

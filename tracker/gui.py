@@ -17,7 +17,7 @@ class SoundDesignGui(ttk.Frame):
 
         self.grid_columnconfigure(0, weight=1)
 
-        self.top_frame = tk.Frame(self, width=400, height=200)
+        self.top_frame = tk.Frame(self, width=450, height=200)
         self.top_frame.grid_columnconfigure(0, weight=1)
         self.top_frame.grid_columnconfigure(1, weight=2)
         # self.top_frame.pack(side='top', fill='both', padx=10, pady=5, expand=True)
