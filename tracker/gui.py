@@ -5,6 +5,12 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import inspect
 
+class WrappingLabel(tk.Label):
+    '''a type of Label that automatically adjusts the wrap to the size'''
+    def __init__(self, master=None, **kwargs):
+        tk.Label.__init__(self, master, **kwargs)
+        self.bind('<Configure>', lambda e: self.config(wraplength=self.winfo_width(), width=self.winfo_width()))
+
 class SoundDesignGui(ttk.Frame):
     def __init__(self, *args, **kwargs):
         ttk.Frame.__init__(self, *args, **kwargs)
@@ -13,26 +19,32 @@ class SoundDesignGui(ttk.Frame):
         self.pack(side="top", fill="both", expand=True)
 
         self.grid_rowconfigure(0, weight=1)
-        self.grid_rowconfigure(1, weight=4)
+        self.grid_rowconfigure(1, weight=2)
+        self.grid_rowconfigure(2, weight=3)
+        self.grid_rowconfigure(3, weight=1)
 
         self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=2)
+        self.grid_columnconfigure(2, weight=2)
+        self.grid_columnconfigure(3, weight=2)
 
-        self.top_frame = tk.Frame(self, width=450, height=200)
-        self.top_frame.grid_columnconfigure(0, weight=1)
-        self.top_frame.grid_columnconfigure(1, weight=2)
-        # self.top_frame.pack(side='top', fill='both', padx=10, pady=5, expand=True)
-        self.top_frame.grid(row=0, column=0, padx=5, pady=5)
+        # self.top_frame = tk.Frame(self, width=450, height=200, bg ="green")
+        # self.top_frame.grid_columnconfigure(0, weight=1)
+        # self.top_frame.grid_columnconfigure(1, weight=2)
+        # # self.top_frame.pack(side='top', fill='both', padx=10, pady=5, expand=True)
+        # self.top_frame.grid(row=0, column=0, padx=5, pady=5)
+        #
+        # self.top_right_frame = tk.Frame(self.top_frame, width=266, height=200)
+        # self.top_right_frame.grid(row=0, column=1, padx=5, pady=5)
 
-        self.top_right_frame = tk.Frame(self.top_frame, width=266, height=200)
-        self.top_right_frame.grid(row=0, column=1, padx=5, pady=5)
-
-        self.mid_frame = tk.Frame(self, width=450, height=300)
-        self.mid_frame.grid_rowconfigure(0, weight=1)
-        self.mid_frame.grid_rowconfigure(1, weight=1)
-
-        self.mid_frame.grid_columnconfigure(0, weight=1)
-        # self.mid_frame.pack(side='top', fill='both', padx=10, pady=5, expand=True)
-        self.mid_frame.grid(row=1, column=0, padx=5, pady=5)
+        # self.mid_frame = tk.Frame(self, width=450, height=300, bg ="yellow")
+        # self.mid_frame.grid_rowconfigure(0, weight=1)
+        # self.mid_frame.grid_rowconfigure(1, weight=3)
+        #
+        # self.mid_frame.grid_columnconfigure(0, weight=1)
+        # # self.mid_frame.pack(side='top', fill='both', padx=10, pady=5, expand=True)
+        # self.mid_frame.grid(row=1, column=0, padx=5, pady=5)
+        # self.test_frame = tk.Frame(self, padx=10, pady=5, bg ="blue")
 
         self.is_playing = False
 
@@ -60,10 +72,10 @@ class SoundDesignGui(ttk.Frame):
             self_in.__pp_btn_switch_cmd_int__()
             pass
 
-        self.pp_btn = tk.Button(self.top_frame, text ="Play", command=lambda: __pp_btn_cmd__(self),
+        self.pp_btn = tk.Button(self, text ="Play", command=lambda: __pp_btn_cmd__(self),
                                    height= 1, width=3)
         # self.pp_btn.pack(padx=3, pady=2, side='left', anchor='nw')
-        self.pp_btn.grid(row=0, column=0, padx=5, pady=5)
+        self.pp_btn.grid(row=0, column=0, padx=5, pady=5,sticky = 'W')
 
 
     def __pp_btn_switch_cmd_int__(self):
@@ -88,35 +100,42 @@ class SoundDesignGui(ttk.Frame):
 
         # datetime.datetime.now().strftime('_%H%M%S')
 
-        self.scale_rnd_btn = tk.Button(self.top_right_frame, text ="rand() scale", command=lambda: __scale_rnd_btn_cmd__(self),
+        self.scale_rnd_btn = tk.Button(self, text ="rand() scale", command=lambda: __scale_rnd_btn_cmd__(self),
                                        height= 1, width=8)
-        # self.scale_rnd_btn.grid(row=0, column=1, padx=5, pady=5, ipadx=10,sticky = 'w')
-        self.scale_rnd_btn.pack(padx=3, pady=2, side='left', anchor = 'w')
+        self.scale_rnd_btn.grid(row=0, column=1, padx=5, pady=5, ipadx=10,sticky = 'W')
+        # self.scale_rnd_btn.pack(padx=3, pady=2, side='left', anchor = 'w')
 
 
         self.scale_name_text = tk.StringVar()
         self.scale_name_text.set("scale name")
-        self.scale_name_lbl = tk.Label(self.top_right_frame, textvariable=self.scale_name_text, height= 1)
-        # self.scale_name_lbl.grid(row=0, column=1, padx=5, pady=5, ipadx=10)
-        self.scale_name_lbl.pack(padx=3, pady=2, side='left', anchor = 'w')
+        self.scale_name_lbl = tk.Label(self, textvariable=self.scale_name_text, height= 1)
+        self.scale_name_lbl.grid(row=0, column=2, padx=5, pady=5, ipadx=10,sticky = 'WE')
+        # self.scale_name_lbl.pack(padx=3, pady=2, side='left', anchor = 'w')
 
         self.scale_name_text2 = tk.StringVar()
         self.scale_name_text2.set("scale name")
-        self.scale_name_lbl2 = tk.Label(self.top_right_frame, textvariable=self.scale_name_text2, height= 1)
-        # self.scale_name_lbl2.grid(row=0, column=1, padx=5, pady=5, ipadx=10,sticky = 'e')
-        self.scale_name_lbl2.pack(padx=3, pady=2, side='left', anchor = 'w')
+        self.scale_name_lbl2 = tk.Label(self, textvariable=self.scale_name_text2, height= 1)
+        self.scale_name_lbl2.grid(row=0, column=3, padx=5, pady=5, ipadx=10,sticky = 'WE')
+        # self.scale_name_lbl2.pack(padx=3, pady=2, side='left', anchor = 'w')
+
+        self.curr_notes_pair_lbl_text = tk.StringVar()
+        self.curr_notes_pair_lbl_text.set("curr_notes_pair_lbl_text")
+        self.curr_notes_pair_lbl = tk.Label(self, textvariable=self.curr_notes_pair_lbl_text, height= 1)
+        self.curr_notes_pair_lbl.grid(row=1, column=0, columnspan=2, padx=5, pady=5, sticky='E')
 
         self.queue_content_lbl_text = tk.StringVar()
         self.queue_content_lbl_text.set("queue_content_lbl_text")
-        self.queue_content_lbl = tk.Label(self.mid_frame, textvariable=self.queue_content_lbl_text, height= 1)
-        self.queue_content_lbl.grid(row=0, column=0, padx=5, pady=5)
+        self.queue_content_lbl = tk.Label(self, textvariable=self.queue_content_lbl_text, height= 1)
+        self.queue_content_lbl.grid(row=1, column=2, columnspan=2, padx=5, pady=5, sticky='W')
 
+        # self.test_frame.grid(row=2, column=0, columnspan=4, rowspan=2, padx=5, pady=5)
         self.check_notes_lbl_text = tk.StringVar()
         self.check_notes_lbl_text.set("check notes here")
-        self.check_notes_lbl = tk.Label(self.mid_frame, textvariable=self.check_notes_lbl_text, height= 1)
-        self.check_notes_lbl.grid(row=1, column=0, padx=5, pady=5)
-
-
+        # self.check_notes_lbl = WrappingLabel(self.test_frame, textvariable=self.check_notes_lbl_text, height= 4)
+        self.check_notes_lbl = WrappingLabel(self, textvariable=self.check_notes_lbl_text, height= 4)
+        self.check_notes_lbl.grid(row=2, column=0, columnspan=4, rowspan=2, padx=5, pady=5)
+        # self.check_notes_lbl.pack(fill='both', padx=10, pady=5, expand=True )
+        # .pack(side='top', fill='both', padx=10, pady=5, expand=True)
         # ttk.Button()
 
         # self.__scale_rnd_btn_cmd_int__ = lambda: self.scale_name_text.set(datetime.datetime.now().strftime('_X_%H%M%S'))

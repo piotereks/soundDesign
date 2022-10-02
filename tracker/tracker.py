@@ -486,6 +486,10 @@ class Tracker:
     def queue_content_action(self):
         log_call()
 
+    def curr_notes_pair_action(self):
+        log_call()
+
+
     def get_queue_content(self):
         return 'empty' if self.note_queue.empty() else list(self.note_queue.queue)
 
@@ -529,6 +533,8 @@ class Tracker:
             else:
                 print('else ', to_note)
                 self.beat = self.beat_none
+        self.notes_pair=(from_note,to_note)
+        self.curr_notes_pair_action()
         if (to_note is None) or (from_note is None):
           from_note = None if not from_note else self.scale.indexOf(from_note)
           return iso.PDict({
