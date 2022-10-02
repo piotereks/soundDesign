@@ -27,6 +27,9 @@ class SoundDesignGui(ttk.Frame):
         self.top_right_frame.grid(row=0, column=1, padx=5, pady=5)
 
         self.mid_frame = tk.Frame(self, width=450, height=300)
+        self.mid_frame.grid_rowconfigure(0, weight=1)
+        self.mid_frame.grid_rowconfigure(1, weight=1)
+
         self.mid_frame.grid_columnconfigure(0, weight=1)
         # self.mid_frame.pack(side='top', fill='both', padx=10, pady=5, expand=True)
         self.mid_frame.grid(row=1, column=0, padx=5, pady=5)
@@ -103,10 +106,15 @@ class SoundDesignGui(ttk.Frame):
         # self.scale_name_lbl2.grid(row=0, column=1, padx=5, pady=5, ipadx=10,sticky = 'e')
         self.scale_name_lbl2.pack(padx=3, pady=2, side='left', anchor = 'w')
 
+        self.queue_content_lbl_text = tk.StringVar()
+        self.queue_content_lbl_text.set("queue_content_lbl_text")
+        self.queue_content_lbl = tk.Label(self.mid_frame, textvariable=self.queue_content_lbl_text, height= 1)
+        self.queue_content_lbl.grid(row=0, column=0, padx=5, pady=5)
+
         self.check_notes_lbl_text = tk.StringVar()
         self.check_notes_lbl_text.set("check notes here")
         self.check_notes_lbl = tk.Label(self.mid_frame, textvariable=self.check_notes_lbl_text, height= 1)
-        self.check_notes_lbl.grid(row=0, column=0, padx=5, pady=5)
+        self.check_notes_lbl.grid(row=1, column=0, padx=5, pady=5)
 
 
         # ttk.Button()
@@ -121,7 +129,7 @@ def ext_pressed():
     print('ext pressed')
 def main():
     root = tk.Tk()
-    root.geometry("400x100")
+    root.geometry("400x250")
     root.title("Om/Off Toggle")
 
     app = SoundDesignGui(root)

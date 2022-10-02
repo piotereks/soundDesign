@@ -65,7 +65,7 @@ class Tracker:
         self.patterns = Patterns()
         self.root_note = 0
         self.last_note = None
-        self.note_queue = Queue()
+        self.note_queue = Queue(maxsize = 16)
         # self.root_note = None
         self.pattern_idx = 0
         # self.pattern_array = None
@@ -483,6 +483,25 @@ class Tracker:
     def scale_name_action(self):
         log_call()
 
+    def queue_content_action(self):
+        log_call()
+
+    def get_queue_content(self):
+        return 'empty' if self.note_queue.empty() else list(self.note_queue.queue)
+
+
+    def put_to_queue(self, note):
+
+        if not self.note_queue.full():
+            self.note_queue.put(note)
+            self. queue_content_action()
+
+    def get_from_queue(self):
+
+        note = None if self.note_queue.empty() else self.note_queue.get_nowait()
+        self.queue_content_action()
+        return note
+
     @log_and_schedule
     def play_from_to(self, from_note, to_note, in_pattern=False ):
         print('---------------------')
@@ -495,7 +514,8 @@ class Tracker:
             # self.scale = iso.Scale.chromatic
             print("if in_pattern")
             from_note = self.last_note
-            to_note = None if self.note_queue.empty() else self.note_queue.get_nowait()
+            # to_note = None if self.note_queue.empty() else self.note_queue.get_nowait()
+            to_note = self.get_from_queue()
             # to_note = self.note_queue.get_nowait()  # handle empty queue
             self.last_note = to_note
             new_note=to_note
@@ -558,7 +578,8 @@ class Tracker:
         log_call()
         print(1)
         from_note = self.last_note
-        to_note = None if self.note_queue.empty() else self.note_queue.get_nowait()
+        # to_note = None if self.note_queue.empty() else self.note_queue.get_nowait()
+        to_note = self.get_from_queue()
         # if not self.note_queue.empty():
         #     to_note = self.note_queue.get_nowait()
         # else:

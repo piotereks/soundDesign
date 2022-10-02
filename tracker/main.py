@@ -128,8 +128,8 @@ def dump_scales():
 
 def test_put_queue(note):
     print('test_put_queue: ',note)
-    my_tracker.note_queue.put(note)
-
+    # my_tracker.note_queue.put(note)
+    my_tracker.put_to_queue(note)
 
 
 def old_main():
@@ -191,7 +191,7 @@ def run_gui():
     # my_tracker.scale_name_action = lambda : print('tutaj!')
     my_tracker.scale_name_action = lambda : app.scale_name_text2.set('set:' +my_tracker.scale.name)
     my_tracker.check_notes_action = lambda : app.check_notes_lbl_text.set(my_tracker.check_notes)
-
+    my_tracker.queue_content_action = lambda : app.queue_content_lbl_text.set(my_tracker.get_queue_content())
 
     # my_tracker.check_notes_action =
     app.mainloop()
