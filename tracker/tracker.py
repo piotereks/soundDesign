@@ -507,7 +507,7 @@ class Tracker:
         return note
 
     @log_and_schedule
-    def play_from_to(self, from_note, to_note, in_pattern=False ):
+    def play_from_to_old2(self, from_note, to_note, in_pattern=False ):
         print('---------------------')
         print(f"in_pattern: {in_pattern} from_note:{from_note}, to_note: {to_note}")
         print(f"{self.scale.name=}")
@@ -565,6 +565,70 @@ class Tracker:
             # iso.EVENT_OCTAVE: 5
             # iso.EVENT_DEGREE: xxxx
         })
+
+    @log_and_schedule
+    def play_from_to(self, from_note, to_note, in_pattern=False ):
+        print('---------------------')
+        print(f"in_pattern: {in_pattern} from_note:{from_note}, to_note: {to_note}")
+        print(f"{self.scale.name=}")
+        self.scale_name_action()
+        # if  from_note == None:
+        #     return None
+        if in_pattern:
+            # self.scale = iso.Scale.chromatic
+            print("if in_pattern")
+            from_note = self.last_note
+            # to_note = None if self.note_queue.empty() else self.note_queue.get_nowait()
+            to_note = self.get_from_queue()
+            if not from_note and to_note:
+                from_note = to_note
+                to_note = self.get_from_queue()
+            # to_note = self.note_queue.get_nowait()  # handle empty queue
+            self.last_note = to_note
+            new_note=to_note
+            print(f"in_pattern (next pattern for later):  from_note:{from_note} new_note:{new_note}")
+            self.beat = lambda: self.play_from_to(from_note, new_note, in_pattern=True)
+        else:
+            print("else in_pattern")
+            if to_note is not None:
+                print('is not None', to_note)
+                self.beat = lambda: self.play_from_to(to_note, None)
+            else:
+                print('else ', to_note)
+                self.beat = self.beat_none
+        self.notes_pair=(from_note,to_note)
+        self.curr_notes_pair_action()
+        if (to_note is None) or (from_note is None):
+          from_note = None if not from_note else self.scale.indexOf(from_note)
+          return iso.PDict({
+            iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.scale),
+            iso.EVENT_DURATION: iso.PSequence([4], repeats=1),
+            # iso.EVENT_OCTAVE: 5
+            # iso.EVENT_DEGREE: xxxx
+        })
+        print('after_check')
+        # root_note = self.scale.indexOf(from_note-60)
+        # note = self.scale.indexOf(to_note-60)
+        root_note = self.scale.indexOf(from_note)
+        note = self.scale.indexOf(to_note)
+        interval = note - root_note
+        #print(f"{from_note=} {to_note=} {from_note-60=} {to_note-60=}  {root_note=} {note=} {interval=}")
+
+        rnd_pattern = self.patterns.get_random_pattern(interval) + root_note
+        len_pattern = len(rnd_pattern)-1
+
+        print('Pseq:', list(iso.PSequence(rnd_pattern, repeats=1)))
+        print('Pseq + Degree:', list(iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale)))
+        print('bef Pdict2')
+        print('=====================')
+
+        return iso.PDict({
+            iso.EVENT_NOTE: iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale),
+            iso.EVENT_DURATION: iso.PSequence([(4 / len_pattern) - 0.000000000000002], repeats=len_pattern),
+            # iso.EVENT_OCTAVE: 5
+            # iso.EVENT_DEGREE: xxxx
+        })
+
 
     def pplay_new(self):
         log_call()
