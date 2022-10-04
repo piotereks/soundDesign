@@ -162,8 +162,8 @@ class Tracker:
 
         # midi_out = iso.DummyOutputDevice()
         self.timeline = iso.Timeline(120, output_device=self.midi_out)
-        self.timeline.background()  # use background ts()instead of run to enable live performing (async notes passing)
-
+        # self.timeline.background()  # use background ts()instead of run to enable live performing (async notes passing)
+        # self.tstart()
 
     def check_notes_action(self):
         log_call()

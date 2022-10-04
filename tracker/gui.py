@@ -47,10 +47,12 @@ class SoundDesignGui(ttk.Frame):
         # self.test_frame = tk.Frame(self, padx=10, pady=5, bg ="blue")
 
         self.is_playing = False
+        self.metro_on = False
 
 
         # self.__label__()
         self.__pp_btn__()
+        self.__metro_btn__()
         self.__scale_rnd_btn__()
 
 
@@ -62,6 +64,28 @@ class SoundDesignGui(ttk.Frame):
     #                      font=("Helvetica", 32))
     #
     #     self.my_label.pack(pady=20)
+
+    def __metro_btn__(self):
+        self.metro_btn_cmd_ext = lambda: print('metro_btn_cmd_ext')
+
+        def __metro_btn_cmd__(self_in):
+            self_in.metro_btn_cmd_ext()
+            self_in.__metro_btn_switch_cmd_int__()
+            pass
+        self.metro_btn = tk.Radiobutton(self, text ="Metro On", command=lambda: __metro_btn_cmd__(self),
+                                   height= 1, value=self.metro_on)
+        # self.pp_btn.pack(padx=3, pady=2, side='left', anchor='nw')
+        self.metro_btn.grid(row=0, column=4, padx=5, pady=5,sticky = 'W')
+
+    def __metro_btn_switch_cmd_int__(self):
+
+        if self.metro_on:
+            # when was playing change to paused (is playing False) state now
+            self.metro_btn.config(text="Metro On")
+            self.metro_on = False
+        else:
+            self.metro_btn.config(text="Metro Off")
+            self.metro_on = True
 
 
     def __pp_btn__(self):
@@ -121,12 +145,12 @@ class SoundDesignGui(ttk.Frame):
         self.curr_notes_pair_lbl_text = tk.StringVar()
         self.curr_notes_pair_lbl_text.set("curr_notes_pair_lbl_text")
         self.curr_notes_pair_lbl = tk.Label(self, textvariable=self.curr_notes_pair_lbl_text, height= 1)
-        self.curr_notes_pair_lbl.grid(row=1, column=0, columnspan=2, padx=5, pady=5, sticky='E')
+        self.curr_notes_pair_lbl.grid(row=1, column=0, columnspan=1, padx=5, pady=5, sticky='E')
 
         self.queue_content_lbl_text = tk.StringVar()
         self.queue_content_lbl_text.set("queue_content_lbl_text")
         self.queue_content_lbl = tk.Label(self, textvariable=self.queue_content_lbl_text, height= 1)
-        self.queue_content_lbl.grid(row=1, column=2, columnspan=2, padx=5, pady=5, sticky='W')
+        self.queue_content_lbl.grid(row=1, column=1, columnspan=3, padx=5, pady=5, sticky='W')
 
         # self.test_frame.grid(row=2, column=0, columnspan=4, rowspan=2, padx=5, pady=5)
         self.check_notes_lbl_text = tk.StringVar()
@@ -168,6 +192,9 @@ if __name__=="__main__":
 
 """
 Elements to place:
+* metronome start/stop (ensure sync) - change to radio
+
+
 * Start/Stop button
 * Randomize scale + labels with name
 ^^^^ done
@@ -179,4 +206,5 @@ Elements to place:
 * future current notes to log (or rolling widget, but with some limited buffor)
 
 * print content of queue
+^^^ done
 """
