@@ -253,7 +253,33 @@ class Tracker:
         log_call()
         self.timeline.background()
 
+    def metro_start_stop(self, start):
+        print(start)
+        print(start.get())
+        if start.get() == 1:
+            self.metronome_start()
+        else:
+            self.metronome_stop()
+        pass
+
     def metronome_start(self):
+        log_call()
+        # gap = 34
+        self.metronome_audio = self.timeline.schedule({
+            "action" : lambda : print('XXXXXXXXXXXXXXX'),
+            # "note": iso.PSequence([1, 5, 5, 5]) +gap,
+            # "note": iso.PSequence([82, 69, 69, 69]) ,
+            "note": iso.PSequence([32, 37, 37, 37]),
+            # "note" : iso.PSeries(1,1),
+            "duration": 1,
+            "channel": 9,
+            "amplitude": iso.PSequence([55, 45, 45, 45]),
+            # "quantize": 1
+        }
+            , quantize=1
+            , remove_when_done=False)
+
+    def Xmetronome_start(self):
         log_call()
         # gap = 34
         self.metronome_audio = self.timeline.schedule({
@@ -270,9 +296,12 @@ class Tracker:
             , remove_when_done=False)
 
     def metronome_stop(self):
+        import pprint
         log_call()
         # gap = 34
-        self.metronome_audio.stop()
+        pprint.pprint(dir(self.metronome_audio))
+
+
 
     @log_and_schedule
     def pplay(self):

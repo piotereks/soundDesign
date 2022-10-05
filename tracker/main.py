@@ -176,6 +176,9 @@ def ui_rand_scale():
 
     my_tracker.scale = iso.Scale.random()
     app.scale_name_text.set('req:' + my_tracker.scale.name)  # label should be changed also in sync, so it will go to timeline
+
+
+
 def run_gui():
     global app
     root = tk.Tk()
@@ -183,6 +186,8 @@ def run_gui():
     root.title("soundDesign - pattern player")
 
     app = SoundDesignGui(root)
+
+    app.metro_btn_cmd_ext = lambda: my_tracker.metro_start_stop(app.metro_on)
 
     app.pp_btn_cmd_ext = lambda : play_pause()
     app.scale_rnd_btn_cmd_ext = lambda : ui_rand_scale()

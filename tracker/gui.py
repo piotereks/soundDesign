@@ -70,23 +70,16 @@ class SoundDesignGui(ttk.Frame):
 
         def __metro_btn_cmd__(self_in):
             self_in.metro_btn_cmd_ext()
-            self_in.__metro_btn_switch_cmd_int__()
+            # self_in.__metro_btn_switch_cmd_int__()
             pass
-        self.metro_btn = tk.Radiobutton(self, text ="Metro On", command=lambda: __metro_btn_cmd__(self),
-                                   height= 1, value=self.metro_on)
-        # self.pp_btn.pack(padx=3, pady=2, side='left', anchor='nw')
-        self.metro_btn.grid(row=0, column=4, padx=5, pady=5,sticky = 'W')
+        self.metro_on = tk.IntVar()
+        self.metro_btn = tk.Checkbutton(self, text="Metronome",
+                                        variable=self.metro_on,
+                                        onvalue=1, offvalue=0, height=2, width=10,
+                                        command=lambda: __metro_btn_cmd__(self))
 
-    def __metro_btn_switch_cmd_int__(self):
 
-        if self.metro_on:
-            # when was playing change to paused (is playing False) state now
-            self.metro_btn.config(text="Metro On")
-            self.metro_on = False
-        else:
-            self.metro_btn.config(text="Metro Off")
-            self.metro_on = True
-
+        self.metro_btn.grid(row=0, column=4, padx=5, pady=5, sticky ='W')
 
     def __pp_btn__(self):
         self.pp_btn_cmd_ext = lambda: print('pp_btn_cmd_ext')
