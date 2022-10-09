@@ -222,6 +222,7 @@ def main():
     # sbpq()
     # ts()  # make by  default not starting
     run_gui()
+    ts()
 
 
 

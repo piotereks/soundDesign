@@ -138,19 +138,19 @@ class SoundDesignGui(ttk.Frame):
         self.curr_notes_pair_lbl_text = tk.StringVar()
         self.curr_notes_pair_lbl_text.set("curr_notes_pair_lbl_text")
         self.curr_notes_pair_lbl = tk.Label(self, textvariable=self.curr_notes_pair_lbl_text, height= 1)
-        self.curr_notes_pair_lbl.grid(row=1, column=0, columnspan=1, padx=5, pady=5, sticky='E')
+        self.curr_notes_pair_lbl.grid(row=2, column=0, columnspan=1, padx=5, pady=5, sticky='E')
 
         self.queue_content_lbl_text = tk.StringVar()
         self.queue_content_lbl_text.set("queue_content_lbl_text")
         self.queue_content_lbl = tk.Label(self, textvariable=self.queue_content_lbl_text, height= 1)
-        self.queue_content_lbl.grid(row=1, column=1, columnspan=3, padx=5, pady=5, sticky='W')
+        self.queue_content_lbl.grid(row=1, column=0, columnspan=3, padx=5, pady=5, sticky='W')
 
         # self.test_frame.grid(row=2, column=0, columnspan=4, rowspan=2, padx=5, pady=5)
         self.check_notes_lbl_text = tk.StringVar()
         self.check_notes_lbl_text.set("check notes here")
         # self.check_notes_lbl = WrappingLabel(self.test_frame, textvariable=self.check_notes_lbl_text, height= 4)
         self.check_notes_lbl = WrappingLabel(self, textvariable=self.check_notes_lbl_text, height= 4)
-        self.check_notes_lbl.grid(row=2, column=0, columnspan=4, rowspan=2, padx=5, pady=5)
+        self.check_notes_lbl.grid(row=3, column=0, columnspan=4, rowspan=2, padx=5, pady=5)
         # self.check_notes_lbl.pack(fill='both', padx=10, pady=5, expand=True )
         # .pack(side='top', fill='both', padx=10, pady=5, expand=True)
         # ttk.Button()
@@ -166,7 +166,7 @@ def ext_pressed():
 def main():
     root = tk.Tk()
     root.geometry("400x250")
-    root.title("Om/Off Toggle")
+    root.title("On/Off Toggle")
 
     app = SoundDesignGui(root)
     app.pp_btn_cmd_ext = lambda : ext_pressed()

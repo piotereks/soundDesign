@@ -105,10 +105,12 @@ class Tracker:
         # self.init_timeline(True)
         self.init_timeline(midi_out_mode)
         self.beat = lambda : self.play_from_to(None,None,in_pattern=True)
+        self.metro_beat = lambda : print('metro_beat init')
         # self.play_from_to(None, None, in_pattern=True)
         # self.beat = self.beat_none
         # my_tracker.metronome_start()
         self.tmln = self.tracker_timeline()
+        self.metro = self.metro_timeline()
 
 
     def init_pattern_array(self):
@@ -225,14 +227,23 @@ class Tracker:
         return  iso.PDict({
             iso.EVENT_NOTE:iso.PSequence([1, 3, 2, 4, 3, 5], repeats=1) + 66})
 
-    @log_and_schedule
-    def beat_none(self):
-        return iso.PDict({
-            iso.EVENT_NOTE:iso.PSequence([None], repeats=4)})
+    # @log_and_schedule
+    # def beat_none(self):
+    #     return iso.PDict({
+    #         iso.EVENT_NOTE:iso.PSequence([None], repeats=4)})
 
 
 
-
+    def metro_timeline(self):
+        log_call()
+        return self.timeline.schedule({
+            "action": lambda: self.metro_beat()
+            ,"duration": 4
+            # "quantize": 1
+        }
+            , quantize=1
+            , remove_when_done=False
+        )
 
     def tracker_timeline(self):
         log_call()
@@ -253,53 +264,110 @@ class Tracker:
         log_call()
         self.timeline.background()
 
+        # @log_and_schedule
+
+    def metro_none(self):
+        log_call()
+        xxx = self.timeline.schedule({
+            # "action" : lambda : print('XXXXXXXXXXXXXXX'),
+            # "note": iso.PSequence([1, 5, 5, 5]) +gap,
+            # "note": iso.PSequence([82, 69, 69, 69]) ,
+            iso.EVENT_NOTE: iso.PSequence([None], repeats=1),
+            # "note" : iso.PSeries(1,1),
+            "duration": 1,
+            "channel": 9,
+            # "quantize": 1
+        }
+            , quantize=1
+            , remove_when_done=True)
+
+        # @log_and_schedule
+
+    def metro_play(self):
+        log_call()
+        xxx = self.timeline.schedule({
+            # "action" : lambda : print('XXXXXXXXXXXXXXX'),
+            # "note": iso.PSequence([1, 5, 5, 5]) +gap,
+            # "note": iso.PSequence([82, 69, 69, 69]) ,
+            "note": iso.PSequence([32, 37, 37, 37], repeats=1),
+            # "note" : iso.PSeries(1,1),
+            "duration": 1,
+            "channel": 9,
+            "amplitude": iso.PSequence([55, 45, 45, 45],  repeats=1),
+            # "quantize": 1
+        }
+            , quantize=1
+            , remove_when_done=True)
+
     def metro_start_stop(self, start):
+        print('iiiiiiiiiiiiiiiiiiiiiii')
         print(start)
         print(start.get())
         if start.get() == 1:
-            self.metronome_start()
+            print('-----------metro on-----------------')
+            # self.metro_beat = lambda : print ('metro_play')
+            self.metro_beat = self.metro_play
+            # self.metro_beat = lambda: self.beat1()
         else:
-            self.metronome_stop()
+            print('-----------metro off-----------------')
+            # self.metro_beat = lambda : print ('metro_none')
+            self.metro_beat = self.metro_none
+            # self.metro_beat = lambda: self.beat2()
         pass
 
-    def metronome_start(self):
-        log_call()
-        # gap = 34
-        self.metronome_audio = self.timeline.schedule({
-            "action" : lambda : print('XXXXXXXXXXXXXXX'),
-            # "note": iso.PSequence([1, 5, 5, 5]) +gap,
-            # "note": iso.PSequence([82, 69, 69, 69]) ,
-            "note": iso.PSequence([32, 37, 37, 37]),
-            # "note" : iso.PSeries(1,1),
-            "duration": 1,
-            "channel": 9,
-            "amplitude": iso.PSequence([55, 45, 45, 45]),
-            # "quantize": 1
-        }
-            , quantize=1
-            , remove_when_done=False)
-
-    def Xmetronome_start(self):
-        log_call()
-        # gap = 34
-        self.metronome_audio = self.timeline.schedule({
-            # "note": iso.PSequence([1, 5, 5, 5]) +gap,
-            # "note": iso.PSequence([82, 69, 69, 69]) ,
-            "note": iso.PSequence([32, 37, 37, 37]),
-            # "note" : iso.PSeries(1,1),
-            "duration": 1,
-            "channel": 9,
-            "amplitude": iso.PSequence([55, 45, 45, 45]),
-            # "quantize": 1
-        }
-            , quantize=1
-            , remove_when_done=False)
-
-    def metronome_stop(self):
-        import pprint
-        log_call()
-        # gap = 34
-        pprint.pprint(dir(self.metronome_audio))
+    # def metronome_start(self):
+    #     log_call()
+    #     # gap = 34
+    #     self.metronome_audio_txt = self.timeline.schedule({
+    #         "action" : lambda : print('XXXXXXXXXXXXXXX'),
+    #         # "note": iso.PSequence([1, 5, 5, 5]) +gap,
+    #         # "note": iso.PSequence([82, 69, 69, 69]) ,
+    #         "note": iso.PSequence([32, 37, 37, 37]),
+    #         # "note" : iso.PSeries(1,1),
+    #         "duration": 1,
+    #         "channel": 9,
+    #         "amplitude": iso.PSequence([55, 45, 45, 45]),
+    #         # "quantize": 1
+    #     }
+    #         , quantize=1
+    #         , remove_when_done=False)
+    #     self.metronome_audio = self.timeline.schedule({
+    #         # "action" : lambda : print('XXXXXXXXXXXXXXX'),
+    #         # "note": iso.PSequence([1, 5, 5, 5]) +gap,
+    #         # "note": iso.PSequence([82, 69, 69, 69]) ,
+    #         "note": iso.PSequence([32, 37, 37, 37]),
+    #         # "note" : iso.PSeries(1,1),
+    #         "duration": 1,
+    #         "channel": 9,
+    #         "amplitude": iso.PSequence([55, 45, 45, 45]),
+    #         # "quantize": 1
+    #     }
+    #         , quantize=1
+    #         , remove_when_done=False)
+    #
+    #
+    #
+    # def Xmetronome_start(self):
+    #     log_call()
+    #     # gap = 34
+    #     self.metronome_audio = self.timeline.schedule({
+    #         # "note": iso.PSequence([1, 5, 5, 5]) +gap,
+    #         # "note": iso.PSequence([82, 69, 69, 69]) ,
+    #         "note": iso.PSequence([32, 37, 37, 37]),
+    #         # "note" : iso.PSeries(1,1),
+    #         "duration": 1,
+    #         "channel": 9,
+    #         "amplitude": iso.PSequence([55, 45, 45, 45]),
+    #         # "quantize": 1
+    #     }
+    #         , quantize=1
+    #         , remove_when_done=False)
+    #
+    # def metronome_stop(self):
+    #     import pprint
+    #     log_call()
+    #     # gap = 34
+    #     # pprint.pprint(dir(self.metronome_audio))
 
 
 
@@ -457,56 +525,7 @@ class Tracker:
 
 
 
-    @log_and_schedule
-    def play_from_to_old(self, from_note, to_note, in_pattern=False ):
-        print(f"in_pattern: {in_pattern}")
-        # if  from_note == None:
-        #     return None
-        if in_pattern:
-            # self.scale = iso.Scale.chromatic
-            self.pattern_idx += 1
-            self.pattern_idx %= len(self.pattern_array)
-            new_note=self.midi_note_array[self.pattern_idx]
-            print(f"in_pattern (next pattern for later): idx: {self.pattern_idx} to_note:{to_note} new_note:{new_note}")
-            self.beat = lambda: self.play_from_to(to_note, new_note, in_pattern=True)
-        else:
-            if to_note is not None:
-                print('is not None', to_note)
-                self.beat = lambda: self.play_from_to(to_note, None)
-            else:
-                print('else ', to_note)
-                self.beat = self.beat_none
-        if (to_note is None) or (from_note is None):
-          from_note = None if not from_note else self.scale.indexOf(from_note)
-          return iso.PDict({
-            iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.scale),
-            iso.EVENT_DURATION: iso.PSequence([4], repeats=1),
-            # iso.EVENT_OCTAVE: 5
-            # iso.EVENT_DEGREE: xxxx
-        })
-        print('after_check')
-        # root_note = self.scale.indexOf(from_note-60)
-        # note = self.scale.indexOf(to_note-60)
-        root_note = self.scale.indexOf(from_note)
-        note = self.scale.indexOf(to_note)
-        interval = note - root_note
-        #print(f"{from_note=} {to_note=} {from_note-60=} {to_note-60=}  {root_note=} {note=} {interval=}")
 
-        rnd_pattern = self.patterns.get_random_pattern(interval) + root_note
-        len_pattern = len(rnd_pattern)-1
-
-        print('Pseq:', list(iso.PSequence(rnd_pattern, repeats=1)))
-        print('Pseq + Degree:', list(iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale)))
-        print('scale name:', self.scale.name)
-        print('bef pdict')
-
-
-        return iso.PDict({
-            iso.EVENT_NOTE: iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale),
-            iso.EVENT_DURATION: iso.PSequence([(4 / len_pattern) - 0.000000000000002], repeats=len_pattern),
-            # iso.EVENT_OCTAVE: 5
-            # iso.EVENT_DEGREE: xxxx
-        })
 
 
     def scale_name_action(self):
@@ -535,65 +554,6 @@ class Tracker:
         self.queue_content_action()
         return note
 
-    @log_and_schedule
-    def play_from_to_old2(self, from_note, to_note, in_pattern=False ):
-        print('---------------------')
-        print(f"in_pattern: {in_pattern} from_note:{from_note}, to_note: {to_note}")
-        print(f"{self.scale.name=}")
-        self.scale_name_action()
-        # if  from_note == None:
-        #     return None
-        if in_pattern:
-            # self.scale = iso.Scale.chromatic
-            print("if in_pattern")
-            from_note = self.last_note
-            # to_note = None if self.note_queue.empty() else self.note_queue.get_nowait()
-            to_note = self.get_from_queue()
-            # to_note = self.note_queue.get_nowait()  # handle empty queue
-            self.last_note = to_note
-            new_note=to_note
-            print(f"in_pattern (next pattern for later):  from_note:{from_note} new_note:{new_note}")
-            self.beat = lambda: self.play_from_to(from_note, new_note, in_pattern=True)
-        else:
-            print("else in_pattern")
-            if to_note is not None:
-                print('is not None', to_note)
-                self.beat = lambda: self.play_from_to(to_note, None)
-            else:
-                print('else ', to_note)
-                self.beat = self.beat_none
-        self.notes_pair=(from_note,to_note)
-        self.curr_notes_pair_action()
-        if (to_note is None) or (from_note is None):
-          from_note = None if not from_note else self.scale.indexOf(from_note)
-          return iso.PDict({
-            iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.scale),
-            iso.EVENT_DURATION: iso.PSequence([4], repeats=1),
-            # iso.EVENT_OCTAVE: 5
-            # iso.EVENT_DEGREE: xxxx
-        })
-        print('after_check')
-        # root_note = self.scale.indexOf(from_note-60)
-        # note = self.scale.indexOf(to_note-60)
-        root_note = self.scale.indexOf(from_note)
-        note = self.scale.indexOf(to_note)
-        interval = note - root_note
-        #print(f"{from_note=} {to_note=} {from_note-60=} {to_note-60=}  {root_note=} {note=} {interval=}")
-
-        rnd_pattern = self.patterns.get_random_pattern(interval) + root_note
-        len_pattern = len(rnd_pattern)-1
-
-        print('Pseq:', list(iso.PSequence(rnd_pattern, repeats=1)))
-        print('Pseq + Degree:', list(iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale)))
-        print('bef Pdict2')
-        print('=====================')
-
-        return iso.PDict({
-            iso.EVENT_NOTE: iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale),
-            iso.EVENT_DURATION: iso.PSequence([(4 / len_pattern) - 0.000000000000002], repeats=len_pattern),
-            # iso.EVENT_OCTAVE: 5
-            # iso.EVENT_DEGREE: xxxx
-        })
 
     @log_and_schedule
     def play_from_to(self, from_note, to_note, in_pattern=False ):
@@ -672,24 +632,6 @@ class Tracker:
         # print(f"{self.midi_note_array=} {self.pattern_idx=}")
         print("pplay_new Done")
 
-
-    def pplay_queueX(self):
-        log_call()
-        print(1)
-        from_note = self.last_note
-        # to_note = None if self.note_queue.empty() else self.note_queue.get_nowait()
-        to_note = self.get_from_queue()
-        # if not self.note_queue.empty():
-        #     to_note = self.note_queue.get_nowait()
-        # else:
-        #     to_note = None
-
-        print(1)
-        self.last_note = to_note
-        print(f"from_note:{from_note} to_note:{to_note}")
-        print(1)
-        self.beat = lambda: self.play_from_to(from_note, to_note, in_pattern=True)
-        print("pplay_queue Done")
 
     def pplay_queue(self):
         log_call()
