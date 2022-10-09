@@ -15,28 +15,28 @@ import mido
 import math
 
 
+# <editor-fold desc="Init section">
 # global midi_out
-global timeline
-global tline1
-global tline2
-global inside_timeline
+# global timeline
+# global tline1
+# global tline2
+# global inside_timeline
 
 global IN_COLAB
 IN_COLAB = 'google.colab' in sys.modules
 NO_MIDI_OUT = mido.get_output_names() == [];
-
-
-# global beat
 
 global my_tracker
 
 
 def log_call():
     print(inspect.stack()[1][3])
+# </editor-fold>
 
 
 
 class Tracker:
+    # <editor-fold desc="Class init functions">
     MIDI_OUT_DUMMY = 0
     MIDI_OUT_FILE = 1
     MIDI_OUT_DEVICE = 2
@@ -112,7 +112,6 @@ class Tracker:
         self.tmln = self.tracker_timeline()
         self.metro = self.metro_timeline()
 
-
     def init_pattern_array(self):
         # print('scales:',iso.Scale.__dict__)
         # print('scales2:',iso.Scale['chromatic'])
@@ -166,9 +165,7 @@ class Tracker:
         self.timeline = iso.Timeline(120, output_device=self.midi_out)
         # self.timeline.background()  # use background ts()instead of run to enable live performing (async notes passing)
         # self.tstart()
-
-    def check_notes_action(self):
-        log_call()
+    # </editor-fold>
 
     def log_and_schedule(func):
         def inner(self, *args, **kwargs):
@@ -206,17 +203,7 @@ class Tracker:
 
         return inner
 
-    @log_and_schedule
-    def beat_test(self):
-
-        notes = iso.PDict({
-            iso.EVENT_NOTE: iso.PSequence(range(-10, 10), repeats=1),
-            iso.EVENT_DURATION: 1/5,
-            iso.EVENT_OCTAVE: 5
-            # iso.EVENT_DEGREE: xxxx
-        })
-        return notes
-
+    # <editor-fold desc="Base beat functions">
     @log_and_schedule
     def beat1(self):
         return iso.PDict({
@@ -227,13 +214,14 @@ class Tracker:
         return  iso.PDict({
             iso.EVENT_NOTE:iso.PSequence([1, 3, 2, 4, 3, 5], repeats=1) + 66})
 
-    # @log_and_schedule
-    # def beat_none(self):
-    #     return iso.PDict({
-    #         iso.EVENT_NOTE:iso.PSequence([None], repeats=4)})
+    @log_and_schedule
+    def beat_none(self):
+        return iso.PDict({
+            iso.EVENT_NOTE: iso.PSequence([None], repeats=4)})
+    # </editor-fold>
 
 
-
+    # <editor-fold desc="Metro functions">
     def metro_timeline(self):
         log_call()
         return self.timeline.schedule({
@@ -244,27 +232,6 @@ class Tracker:
             , quantize=1
             , remove_when_done=False
         )
-
-    def tracker_timeline(self):
-        log_call()
-        return self.timeline.schedule({
-            "action": lambda: self.beat()
-            ,"duration": 4
-            # "quantize": 1
-        }
-            , quantize=1
-            , remove_when_done=False
-        )
-
-    def ts(self):
-        log_call()
-        self.timeline.stop()
-
-    def tstart(self):
-        log_call()
-        self.timeline.background()
-
-        # @log_and_schedule
 
     def metro_none(self):
         log_call()
@@ -300,9 +267,6 @@ class Tracker:
             , remove_when_done=True)
 
     def metro_start_stop(self, start):
-        print('iiiiiiiiiiiiiiiiiiiiiii')
-        print(start)
-        print(start.get())
         if start.get() == 1:
             print('-----------metro on-----------------')
             # self.metro_beat = lambda : print ('metro_play')
@@ -314,62 +278,63 @@ class Tracker:
             self.metro_beat = self.metro_none
             # self.metro_beat = lambda: self.beat2()
         pass
+    # </editor-fold>
 
-    # def metronome_start(self):
-    #     log_call()
-    #     # gap = 34
-    #     self.metronome_audio_txt = self.timeline.schedule({
-    #         "action" : lambda : print('XXXXXXXXXXXXXXX'),
-    #         # "note": iso.PSequence([1, 5, 5, 5]) +gap,
-    #         # "note": iso.PSequence([82, 69, 69, 69]) ,
-    #         "note": iso.PSequence([32, 37, 37, 37]),
-    #         # "note" : iso.PSeries(1,1),
-    #         "duration": 1,
-    #         "channel": 9,
-    #         "amplitude": iso.PSequence([55, 45, 45, 45]),
-    #         # "quantize": 1
-    #     }
-    #         , quantize=1
-    #         , remove_when_done=False)
-    #     self.metronome_audio = self.timeline.schedule({
-    #         # "action" : lambda : print('XXXXXXXXXXXXXXX'),
-    #         # "note": iso.PSequence([1, 5, 5, 5]) +gap,
-    #         # "note": iso.PSequence([82, 69, 69, 69]) ,
-    #         "note": iso.PSequence([32, 37, 37, 37]),
-    #         # "note" : iso.PSeries(1,1),
-    #         "duration": 1,
-    #         "channel": 9,
-    #         "amplitude": iso.PSequence([55, 45, 45, 45]),
-    #         # "quantize": 1
-    #     }
-    #         , quantize=1
-    #         , remove_when_done=False)
-    #
-    #
-    #
-    # def Xmetronome_start(self):
-    #     log_call()
-    #     # gap = 34
-    #     self.metronome_audio = self.timeline.schedule({
-    #         # "note": iso.PSequence([1, 5, 5, 5]) +gap,
-    #         # "note": iso.PSequence([82, 69, 69, 69]) ,
-    #         "note": iso.PSequence([32, 37, 37, 37]),
-    #         # "note" : iso.PSeries(1,1),
-    #         "duration": 1,
-    #         "channel": 9,
-    #         "amplitude": iso.PSequence([55, 45, 45, 45]),
-    #         # "quantize": 1
-    #     }
-    #         , quantize=1
-    #         , remove_when_done=False)
-    #
-    # def metronome_stop(self):
-    #     import pprint
-    #     log_call()
-    #     # gap = 34
-    #     # pprint.pprint(dir(self.metronome_audio))
+    # <editor-fold desc="Gui actions">
+    def check_notes_action(self):
+        log_call()
 
+    def scale_name_action(self):
+        log_call()
 
+    def queue_content_action(self):
+        log_call()
+
+    def curr_notes_pair_action(self):
+        log_call()
+    # </editor-fold>
+
+    # <editor-fold desc="Queue functions">
+    def get_queue_content(self):
+        return 'empty' if self.note_queue.empty() else list(self.note_queue.queue)
+
+    def put_to_queue(self, note):
+
+        if not self.note_queue.full():
+            self.note_queue.put(note)
+            self. queue_content_action()
+
+    def get_from_queue(self):
+
+        note = None if self.note_queue.empty() else self.note_queue.get_nowait()
+        self.queue_content_action()
+        return note
+    # </editor-fold>
+
+    # <editor-fold desc="play functions">
+
+    # <editor-fold desc="play definitions">
+    def tracker_timeline(self):
+        log_call()
+        return self.timeline.schedule({
+            "action": lambda: self.beat()
+            ,"duration": 4
+            # "quantize": 1
+        }
+            , quantize=1
+            , remove_when_done=False
+        )
+
+    def ts(self):
+        log_call()
+        self.timeline.stop()
+
+    def tstart(self):
+        log_call()
+        self.timeline.background()
+
+        # @log_and_schedule
+    # </editor-fold>
 
     @log_and_schedule
     def pplay(self):
@@ -442,118 +407,6 @@ class Tracker:
 
         print("pplay - END")
         return notes
-
-    @log_and_schedule
-    def pplay_newX(self):
-
-        if self.pattern_idx == 0:
-            self.scale = iso.Scale.random()
-            print('scale:', self.scale.name, list(self.scale.semitones))
-        print("self.midi_note_array2:", self.midi_note_array)
-        print("self.midi_note_array2 cvt:",
-              [self.scale.get(self.scale.indexOf(midi_note)) for midi_note in self.midi_note_array])
-
-        if self.midi_note_array:
-            # this is to denominate midi notes to indexes of elements of scale
-            mod_midi_note_array = [self.midi_note_array[-1]] + self.midi_note_array + [self.midi_note_array[0]]
-            print("mod_midi_note_array:", mod_midi_note_array)
-            # print("function check: ",self.play_from_to(mod_midi_note_array[self.pattern_idx],mod_midi_note_array[self.pattern_idx+1], in_pattern = True))
-            # return self.play_from_to(mod_midi_note_array[self.pattern_idx],mod_midi_note_array[self.pattern_idx+1], in_pattern = True), True
-            # note = mod_midi_note_array[self.pattern_idx+1] - 60  # 60 is midi number of C in 5th Octave
-            self.root_note = self.scale.indexOf(mod_midi_note_array[self.pattern_idx])
-            note = mod_midi_note_array[self.pattern_idx + 1]  # 60 is midi number of C in 5th Octave
-
-            print('n1:', note, self.root_note)
-            # remember that this function is calculating notes which are not from scale
-            # as note with midi code 1 less
-            note = self.scale.indexOf(note)
-            # note_prev = self.scale.indexOf(note_prev)
-            print('n1:', note, self.root_note)
-            interval = note - self.root_note
-            print('interval:', interval, self.interval_array[self.pattern_idx])
-        else:
-            interval = self.interval_array[self.pattern_idx]
-
-        rnd_pattern = self.patterns.get_random_pattern(interval) + self.root_note
-        print('grp:', interval, rnd_pattern)
-        len_rnd_pattern = len(rnd_pattern) - 1
-        # print('gsp2:', interval, len_rnd_pattern, iso.PSequence(rnd_pattern[:-1]))
-        # base not converted notes pattern
-        beat = iso.PDict({
-            "note": iso.PSequence(rnd_pattern, repeats=1),
-            # "duration": 1/len_rnd_pattern
-            "duration": iso.PSequence([(4 / len_rnd_pattern) - 0.000000000000002], repeats=len_rnd_pattern)
-        })
-        print("before conversion:", list(beat["note"]), list(beat["duration"]))
-        self.pattern_array[self.pattern_idx] = beat
-        self.root_note = rnd_pattern[-1]
-        # self.root_note = self.scale.get(rnd_pattern[-1])  # <-- this conversion is wrong
-        print('new root note:', self.root_note)
-
-        self.pattern_array[self.pattern_idx].reset()
-
-        # Degree conversion here with scale
-        converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.scale)
-        # converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.key) # is this vaiid usage?
-        notes = iso.PDict({
-            iso.EVENT_NOTE: converted_note,
-            iso.EVENT_DURATION: self.pattern_array[self.pattern_idx]['duration'],
-            # iso.EVENT_OCTAVE: 5
-            # iso.EVENT_DEGREE: xxxx
-        })
-        print(f'converted with scale {self.scale.name}:', list(converted_note))
-        self.pattern_array[self.pattern_idx].reset()
-
-        self.pattern_idx += 1
-        self.pattern_idx %= len(self.pattern_array)
-        self.pattern_array[self.pattern_idx].reset()
-        self.tmln.event_stream['duration'] = math.ceil(sum(self.pattern_array[self.pattern_idx]['duration']))
-        self.pattern_array[self.pattern_idx].reset()
-
-        print("pplay - END")
-        return notes
-
-    @log_and_schedule
-    def beat2(self):
-        return  iso.PDict({
-            iso.EVENT_NOTE:iso.PSequence([1, 3, 2, 4, 3, 5], repeats=1) + 66})
-
-    @log_and_schedule
-    def beat_none(self):
-        return iso.PDict({
-            iso.EVENT_NOTE: iso.PSequence([None], repeats=4)})
-
-
-
-
-
-
-    def scale_name_action(self):
-        log_call()
-
-    def queue_content_action(self):
-        log_call()
-
-    def curr_notes_pair_action(self):
-        log_call()
-
-
-    def get_queue_content(self):
-        return 'empty' if self.note_queue.empty() else list(self.note_queue.queue)
-
-
-    def put_to_queue(self, note):
-
-        if not self.note_queue.full():
-            self.note_queue.put(note)
-            self. queue_content_action()
-
-    def get_from_queue(self):
-
-        note = None if self.note_queue.empty() else self.note_queue.get_nowait()
-        self.queue_content_action()
-        return note
-
 
     @log_and_schedule
     def play_from_to(self, from_note, to_note, in_pattern=False ):
@@ -637,4 +490,5 @@ class Tracker:
         log_call()
         self.play_from_to(None, None, in_pattern=True)
         print("pplay_queue Done")
+    # </editor-fold>
 

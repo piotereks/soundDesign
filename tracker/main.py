@@ -10,6 +10,7 @@ global app
 # app = None
 
 
+# <editor-fold desc="Interactive simplification functions">
 def tracker_dec(func):
     def inner():
         global my_tracker
@@ -19,11 +20,9 @@ def tracker_dec(func):
         new_func()
     return inner
 
-
 @tracker_dec
 def ts():
     pass
-
 
 @tracker_dec
 def tstart():
@@ -61,10 +60,23 @@ def sbtn():
 def sbpq():
     my_tracker.pplay_queue()
 
+def rs():
+    rand_scale()
+
+
+def save_midi():
+    my_tracker.midi_out.write()
+
+def rand_scale():
+    my_tracker.scale = iso.Scale.random()
+
 
 def sbft(note_from = 60, note_to = 64):
     my_tracker.beat = lambda: my_tracker.play_from_to(note_from, note_to)
 
+# </editor-fold>
+
+# <editor-fold desc="wrk functions">
 def rel_pq():
     """
     Reload Play queue
@@ -77,55 +89,10 @@ def rel_pq():
     # to load queue
     dummy = [my_tracker.note_queue.put(note) for note in midi_notes_chain]
 
-def save_midi():
-    my_tracker.midi_out.write()
-
-def rand_scale():
-    my_tracker.scale = iso.Scale.random()
-
-def rs():
-    rand_scale()
-
 def cmp():
     # print('expected:\n', my_tracker.expected_array)
     print('expected:\n', [y for x in my_tracker.pattern_array for y in list(x['note'])])
     print('played:\n', [x.note for x in my_tracker.midi_out.miditrack if x.type == 'note_on'])
-
-# speeding up and slowing down tempo when
-
-# These are work in progress debug functions
-def find_scale_dups():
-    import itertools
-    # cmp_scales = [(set(prd[0][1].semitones), set(prd[1][1].semitones)) for prd in itertools.product(enumerate(iso.Scale.all()), enumerate(iso.Scale.all()))
-    #               if prd[0][0] > prd[1][0]]
-    cmp_scales = [(prd[0][1].name, set(prd[0][1].semitones), prd[1][1].name, set(prd[1][1].semitones)) for prd in itertools.product(enumerate(iso.Scale.all()), enumerate(iso.Scale.all()))
-                  if prd[0][0] > prd[1][0] and set(prd[0][1].semitones) == set(prd[1][1].semitones)]
-    for cscale in cmp_scales:
-        print(cscale)
-
-    # for i, scale in enumerate(iso.Scale.all()):
-    #     print(i,scale)
-    # p.itertools.product(iso.scales.all())
-    # [(x.name, x.semitones) for x in iso.Scale.all()]
-
-def dump_scales():
-    all_scales=[(scale.semitones, scale.name ) for scale in iso.Scale.all()]
-    all_scales_sorted =sorted(all_scales, key=lambda i: i[0])
-    print(*all_scales_sorted, sep='\n')
-
-# nice scales https://jguitar.com/scale/E/Ionian
-# nice scales https://jguitar.com/scale/E/Ionian
-
-
-
-
-# ...or, in a non-blocking fashion:
-# listener = keyboard.Listener(
-#     on_press=on_press,
-#     on_release=on_release)
-# listener.start()
-# print('processing Done')
-
 def test_put_queue(note):
     print('test_put_queue: ',note)
     # my_tracker.note_queue.put(note)
@@ -171,12 +138,52 @@ def old_main():
     sbft(None,None)
     # Keyboard(lambda x : xxx(x))
     Keyboard(lambda note : test_put_queue(note))
+# These are work in progress debug functions
+def find_scale_dups():
+    import itertools
+    # cmp_scales = [(set(prd[0][1].semitones), set(prd[1][1].semitones)) for prd in itertools.product(enumerate(iso.Scale.all()), enumerate(iso.Scale.all()))
+    #               if prd[0][0] > prd[1][0]]
+    cmp_scales = [(prd[0][1].name, set(prd[0][1].semitones), prd[1][1].name, set(prd[1][1].semitones)) for prd in itertools.product(enumerate(iso.Scale.all()), enumerate(iso.Scale.all()))
+                  if prd[0][0] > prd[1][0] and set(prd[0][1].semitones) == set(prd[1][1].semitones)]
+    for cscale in cmp_scales:
+        print(cscale)
+
+    # for i, scale in enumerate(iso.Scale.all()):
+    #     print(i,scale)
+    # p.itertools.product(iso.scales.all())
+    # [(x.name, x.semitones) for x in iso.Scale.all()]
+
+def dump_scales():
+    all_scales=[(scale.semitones, scale.name ) for scale in iso.Scale.all()]
+    all_scales_sorted =sorted(all_scales, key=lambda i: i[0])
+    print(*all_scales_sorted, sep='\n')
+
+# </editor-fold>
+
+
+# ...or, in a non-blocking fashion:
+# listener = keyboard.Listener(
+#     on_press=on_press,
+#     on_release=on_release)
+# listener.start()
+# print('processing Done')
+
+
 
 def ui_rand_scale():
 
     my_tracker.scale = iso.Scale.random()
     app.scale_name_text.set('req:' + my_tracker.scale.name)  # label should be changed also in sync, so it will go to timeline
 
+
+def play_pause():
+    global app
+    log_call()
+
+    if app.is_playing:
+        ts()
+    else:
+        tstart()
 
 
 def run_gui():
@@ -209,15 +216,6 @@ def run_gui():
 
 # see for GUI layouts :https://www.pythonguis.com/faq/pack-place-and-grid-in-tkinter/
 
-def play_pause():
-    global app
-    log_call()
-
-    if app.is_playing:
-        ts()
-    else:
-        tstart()
-
 def main():
     global app
     global my_tracker
@@ -239,3 +237,6 @@ if __name__ == '__main__':
 
     print('Processing Done.')
 
+"""
+nice scales https://jguitar.com/scale/E/Ionian
+"""
