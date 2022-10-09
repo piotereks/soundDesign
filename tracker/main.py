@@ -201,6 +201,12 @@ def run_gui():
 
     # my_tracker.check_notes_action =
     app.mainloop()
+    #clearnup gui functions to prevent gui exceptions after its closing
+    my_tracker.scale_name_action = lambda : print(None)
+    my_tracker.check_notes_action = lambda : print(None)
+    my_tracker.queue_content_action = lambda : print(None)
+    my_tracker.curr_notes_pair_action = lambda : print(None)
+
 # see for GUI layouts :https://www.pythonguis.com/faq/pack-place-and-grid-in-tkinter/
 
 def play_pause():
