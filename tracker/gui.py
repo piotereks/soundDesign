@@ -25,6 +25,8 @@ class SoundDesignGui(ttk.Frame):
         self.grid_rowconfigure(1, weight=2)
         self.grid_rowconfigure(2, weight=3)
         self.grid_rowconfigure(3, weight=1)
+        self.grid_rowconfigure(4, weight=1)
+        self.grid_rowconfigure(5, weight=1)
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=2)
@@ -76,6 +78,26 @@ class SoundDesignGui(ttk.Frame):
         # self.pp_btn.pack(padx=3, pady=2, side='left', anchor='nw')
         self.pp_btn.grid(row=0, column=0, padx=5, pady=5,sticky = 'W')
 
+    def __scale_combo__(self):
+        self.__sscale_combo_cmd_int__ = lambda: print('_sscale_combo_cmd_int__')
+        self.scale_combo_cmd_ext = lambda: print('scale_combo_cmd_ext')
+        def __scale_combo_cmd__(self_in):
+            # self_in.__scale_combo_cmd_int__()
+            self_in.scale_combo_cmd_ext()
+            pass
+        # self.scale_combo = tk.Button(self, text ="rand() scale", command=lambda: __scale_combo_cmd__(self),
+        #                                height= 1, width=8)
+
+        self.scale_combo  = ttk.Combobox(self,
+            # state="readonly",
+            values=["Python", "C", "C++", "Java"],
+            postcommand=lambda : print('scale postcommand'),
+            command=lambda: __scale_combo_cmd__(self)
+
+        )
+        self.scale_combo.grid(row=5, column=0, padx=5, pady=5, ipadx=10,sticky = 'W')
+        self.scale_combo.set('gurusuruz')
+        print(self.scale_combo.get())
 
     def __scale_rnd_btn__(self):
         self.__scale_rnd_btn_cmd_int__ = lambda: print('__scale_rnd_btn_cmd_int__')
