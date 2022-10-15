@@ -57,10 +57,10 @@ class SoundDesignGui(ttk.Frame):
         self.scale_combo.grid(row=row, column=col , padx=5, pady=5, ipadx=10,sticky = 'W')
         col += 1
 
-        self.scale_name_lbl.grid(row=row, column=col, padx=5, pady=5, ipadx=10,sticky = 'WE')
-        col += 1
+        # self.scale_name_lbl.grid(row=row, column=col, padx=5, pady=5, ipadx=10,sticky = 'WE')
+        # col += 1
 
-        self.scale_name_lbl2.grid(row=row, column=col, padx=5, pady=5, ipadx=10,sticky = 'WE')
+        self.scale_name_lbl2.grid(row=row, column=col, padx=5, pady=5, sticky = 'W')
         col +=1
 
         row+=1
@@ -142,7 +142,7 @@ class SoundDesignGui(ttk.Frame):
             pass
 
         self.pp_btn = tk.Button(self, text ="Play", command=lambda: __pp_btn_cmd__(self),
-                                   height= 1, width=3)
+                                   height= 1, width=10)
         # self.pp_btn.pack(padx=3, pady=2, side='left', anchor='nw')
 
     def __scale_combo__(self):
@@ -152,14 +152,12 @@ class SoundDesignGui(ttk.Frame):
             # self_in.__scale_combo_cmd_int__()
             self_in.scale_combo_cmd_ext()
             pass
-        # self.scale_combo = tk.Button(self, text ="rand() scale", command=lambda: __scale_combo_cmd__(self),
-        #                                height= 1, width=8)
 
         self.scale_combo  = ttk.Combobox(self,
             # state="readonly",
             values=["Python", "C", "C++", "Java"],
             postcommand=lambda : print('scale postcommand')
-            # ,command=lambda: __scale_combo_cmd__(self)
+            ,width=10
         )
         # self.scale_combo.set('gurusuruz')
         print(self.scale_combo.get())
@@ -173,22 +171,19 @@ class SoundDesignGui(ttk.Frame):
             self_in.scale_rnd_btn_cmd_ext()
             pass
 
-        # datetime.datetime.now().strftime('_%H%M%S')
 
         self.scale_rnd_btn = tk.Button(self, text ="rand() scale", command=lambda: __scale_rnd_btn_cmd__(self),
                                        height= 1, width=8)
-        # self.scale_rnd_btn.pack(padx=3, pady=2, side='left', anchor = 'w')
 
 
-        self.scale_name_text = tk.StringVar()
-        self.scale_name_text.set("scale name")
-        self.scale_name_lbl = tk.Label(self, textvariable=self.scale_name_text, height= 1)
-        # self.scale_name_lbl.pack(padx=3, pady=2, side='left', anchor = 'w')
+
+        # self.scale_name_text = tk.StringVar()
+        # self.scale_name_text.set("scale name")
+        # self.scale_name_lbl = tk.Label(self, textvariable=self.scale_name_text, height= 1)
 
         self.scale_name_text2 = tk.StringVar()
         self.scale_name_text2.set("scale name")
-        self.scale_name_lbl2 = tk.Label(self, textvariable=self.scale_name_text2, height= 1)
-        # self.scale_name_lbl2.pack(padx=3, pady=2, side='left', anchor = 'w')
+        self.scale_name_lbl2 = tk.Label(self, textvariable=self.scale_name_text2, height= 1, width=10)
 
     def __notes_and_queue__(self):
         self.curr_notes_pair_lbl_text = tk.StringVar()

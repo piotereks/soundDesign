@@ -175,19 +175,13 @@ def dump_scales():
 def ui_rand_scale():
 
     my_tracker.scale = iso.Scale.random()
-    app.scale_name_text.set('req:' + my_tracker.scale.name)  # label should be changed also in sync, so it will go to timeline
+    # app.scale_name_text.set('req:' + my_tracker.scale.name)  # label should be changed also in sync, so it will go to timeline
     app.scale_combo.set(my_tracker.scale.name)
 
 def set_scale(event):
-    print('aaaaaaa: ' + str(my_tracker.scale))
-    # print('bbbbbbb: ' + str(my_tracker.scale.name))
-    # print('xxxxxxx: ' + app.scale_combo.get() )
-    # print('uuuu:', dir(my_tracker.scale))
-    xxxx  = [scale for scale in iso.Scale.all() if scale.name ==app.scale_combo.get()]
-    my_tracker.scale = xxxx[0]
-    print('yyyyyyy: ' + str(xxxx[0]))
-    # print('uuuu2:', dir(xxxx))
-    print('cccccccc')
+    # xxxx  = [scale for scale in iso.Scale.all() if scale.name ==app.scale_combo.get()]
+    # my_tracker.scale = xxxx[0]
+    my_tracker.scale = [scale for scale in iso.Scale.all() if scale.name == app.scale_combo.get()][0]
 
 
 
@@ -211,11 +205,11 @@ def run_gui():
 
     app.metro_btn_cmd_ext = lambda: my_tracker.metro_start_stop(app.metro_on)
     app.loop_queue_chk_cmd_ext = lambda : my_tracker.loop_play_queue_action(app.loop_queue_on.get())
-
+    my_tracker.loopq = app.loop_queue_on.get()
 
     app.pp_btn_cmd_ext = lambda : play_pause()
     app.scale_rnd_btn_cmd_ext = lambda : ui_rand_scale()
-    app.scale_name_text.set('req:' +my_tracker.scale.name)
+    # app.scale_name_text.set('req:' +my_tracker.scale.name)
     app.scale_combo['values'] = sorted([scale.name for scale in iso.Scale.all()])
     app.scale_combo.set(my_tracker.scale.name)
     app.scale_combo.bind("<<ComboboxSelected>>", set_scale)
