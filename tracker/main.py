@@ -189,7 +189,7 @@ def play_pause():
 def run_gui():
     global app
     root = tk.Tk()
-    root.geometry("600x400")
+    root.geometry("800x600")
     root.title("soundDesign - pattern player")
 
     app = SoundDesignGui(root)
