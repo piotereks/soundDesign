@@ -1,3 +1,5 @@
+import isobar
+
 from tracker import *
 from patterns import *
 from gui import *
@@ -174,6 +176,19 @@ def ui_rand_scale():
 
     my_tracker.scale = iso.Scale.random()
     app.scale_name_text.set('req:' + my_tracker.scale.name)  # label should be changed also in sync, so it will go to timeline
+    app.scale_combo.set(my_tracker.scale.name)
+
+def set_scale(event):
+    print('aaaaaaa: ' + str(my_tracker.scale))
+    # print('bbbbbbb: ' + str(my_tracker.scale.name))
+    # print('xxxxxxx: ' + app.scale_combo.get() )
+    # print('uuuu:', dir(my_tracker.scale))
+    xxxx  = [scale for scale in iso.Scale.all() if scale.name ==app.scale_combo.get()]
+    my_tracker.scale = xxxx[0]
+    print('yyyyyyy: ' + str(xxxx[0]))
+    # print('uuuu2:', dir(xxxx))
+    print('cccccccc')
+
 
 
 def play_pause():
@@ -194,28 +209,22 @@ def run_gui():
 
     app = SoundDesignGui(root)
 
-    x = 1
-    # x = app.loop_queue_on
-    # my_tracker.loopq = x
-    # print('xxxx1:' + str(my_tracker.loopq.get()))
-    # app.loop_queue_on.set(1)
-    # print('xxxx2:' + str(my_tracker.loopq.get()))
-
     app.metro_btn_cmd_ext = lambda: my_tracker.metro_start_stop(app.metro_on)
     app.loop_queue_chk_cmd_ext = lambda : my_tracker.loop_play_queue_action(app.loop_queue_on.get())
 
-    # app.loop_queue_on  loop_queue_on
-    # my_tracker.loop_play_queue_action = lambda x : my_tracker.loopq = 1
+
     app.pp_btn_cmd_ext = lambda : play_pause()
     app.scale_rnd_btn_cmd_ext = lambda : ui_rand_scale()
     app.scale_name_text.set('req:' +my_tracker.scale.name)
-    # my_tracker.scale_name_action = lambda : app.scale_name_text2.set(datetime.datetime.now().strftime('XXX_%H%M%S'))
-    # my_tracker.scale_name_action = lambda : print('tutaj!')
+    app.scale_combo['values'] = sorted([scale.name for scale in iso.Scale.all()])
+    app.scale_combo.set(my_tracker.scale.name)
+    app.scale_combo.bind("<<ComboboxSelected>>", set_scale)
+    # combo.bind("<<ComboboxSelected>>", selection_changed)
+
     my_tracker.scale_name_action = lambda : app.scale_name_text2.set('set:' +my_tracker.scale.name)
     my_tracker.check_notes_action = lambda : app.check_notes_lbl_text.set(my_tracker.check_notes)
     my_tracker.queue_content_action = lambda : app.queue_content_lbl_text.set('queue: '+str(my_tracker.get_queue_content()))
     my_tracker.curr_notes_pair_action = lambda : app.curr_notes_pair_lbl_text.set('from to: '+str(my_tracker.notes_pair))
-
 
     # my_tracker.check_notes_action =
     app.mainloop()
@@ -235,6 +244,8 @@ def main():
     log_call()
     midi_out_flag = Tracker.MIDI_OUT_DEVICE
     my_tracker = Tracker(midi_out_mode=midi_out_flag)
+
+
     Keyboard(lambda note: test_put_queue(note))
     # sbpq()
     # ts()  # make by  default not starting
@@ -247,7 +258,6 @@ if __name__ == '__main__':
     # print('Do we start?')
     # old_main()
     main()
-
     print('Processing Done.')
 
 """

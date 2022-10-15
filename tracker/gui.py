@@ -4,6 +4,8 @@ import tkinter as tk
 # from tkinter.ttk import *
 import tkinter.ttk as ttk
 import inspect
+from typing import Callable
+
 
 class WrappingLabel(tk.Label):
     '''a type of Label that automatically adjusts the wrap to the size'''
@@ -12,6 +14,9 @@ class WrappingLabel(tk.Label):
         self.bind('<Configure>', lambda e: self.config(wraplength=self.winfo_width(), width=self.winfo_width()))
 
 class SoundDesignGui(ttk.Frame):
+    # scale_rnd_btn_cmd_ext: Callable[[], None]
+    scale_rnd_btn_cmd_ext: None
+
     def __init__(self, *args, **kwargs):
 
         self.is_playing = False
