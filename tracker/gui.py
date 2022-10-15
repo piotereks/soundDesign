@@ -39,17 +39,44 @@ class SoundDesignGui(ttk.Frame):
         self.__scale_combo__()
 
         # <editor-fold desc="Description">
-        self.pp_btn.grid(row=0, column=0, padx=5, pady=5,sticky = 'W')
-        self.scale_rnd_btn.grid(row=0, column=1, padx=5, pady=5, ipadx=10,sticky = 'W')
-        self.scale_combo.grid(row=0, column=2, padx=5, pady=5, ipadx=10,sticky = 'W')
-        self.scale_name_lbl.grid(row=0, column=3, padx=5, pady=5, ipadx=10,sticky = 'WE')
-        self.scale_name_lbl2.grid(row=0, column=4, padx=5, pady=5, ipadx=10,sticky = 'WE')
-        b=a=a+1
-        self.metro_btn.grid(row=1, column=0, padx=5, pady=5, sticky ='W')
-        self.curr_notes_pair_lbl.grid(row=1, column=1, columnspan=1, padx=5, pady=5, sticky='E')
-        self.queue_content_lbl.grid(row=1, column=2, columnspan=4, padx=5, pady=5, sticky='W')
+        col = 0
+        row = 0
 
-        self.check_notes_lbl.grid(row=3, column=0, columnspan=5, rowspan=2, padx=5, pady=5)
+        self.pp_btn.grid(row=row, column= col , padx=5, pady=5,sticky = 'W')
+        col += 1
+
+        self.scale_rnd_btn.grid(row=row, column= col, padx=5, pady=5, ipadx=10,sticky = 'W')
+        col += 1
+
+        self.scale_combo.grid(row=row, column=col , padx=5, pady=5, ipadx=10,sticky = 'W')
+        col += 1
+
+        self.scale_name_lbl.grid(row=row, column=col, padx=5, pady=5, ipadx=10,sticky = 'WE')
+        col += 1
+
+        self.scale_name_lbl2.grid(row=row, column=col, padx=5, pady=5, ipadx=10,sticky = 'WE')
+        col +=1
+
+        row+=1
+        col = 0
+
+        self.metro_btn.grid(row=row, column=col, padx=5, pady=5, sticky ='W')
+        col += 1
+
+        colsp = 1
+        self.curr_notes_pair_lbl.grid(row=row, column=col, columnspan=colsp, padx=5, pady=5, sticky='E')
+        col += colsp
+
+        colsp =4
+        self.queue_content_lbl.grid(row=row, column=col, columnspan=colsp, padx=5, pady=5, sticky='W')
+        col += colsp
+
+        row+=1
+        col = 0
+
+        colsp = 5
+        self.check_notes_lbl.grid(row=row, column=col, columnspan=colsp, rowspan=2, padx=5, pady=5)
+        col += colsp
 
         # </editor-fold>
 
