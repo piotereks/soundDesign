@@ -194,8 +194,18 @@ def run_gui():
 
     app = SoundDesignGui(root)
 
-    app.metro_btn_cmd_ext = lambda: my_tracker.metro_start_stop(app.metro_on)
+    x = 1
+    # x = app.loop_queue_on
+    # my_tracker.loopq = x
+    # print('xxxx1:' + str(my_tracker.loopq.get()))
+    # app.loop_queue_on.set(1)
+    # print('xxxx2:' + str(my_tracker.loopq.get()))
 
+    app.metro_btn_cmd_ext = lambda: my_tracker.metro_start_stop(app.metro_on)
+    app.loop_queue_chk_cmd_ext = lambda : my_tracker.loop_play_queue_action(app.loop_queue_on.get())
+
+    # app.loop_queue_on  loop_queue_on
+    # my_tracker.loop_play_queue_action = lambda x : my_tracker.loopq = 1
     app.pp_btn_cmd_ext = lambda : play_pause()
     app.scale_rnd_btn_cmd_ext = lambda : ui_rand_scale()
     app.scale_name_text.set('req:' +my_tracker.scale.name)
@@ -206,6 +216,7 @@ def run_gui():
     my_tracker.queue_content_action = lambda : app.queue_content_lbl_text.set('queue: '+str(my_tracker.get_queue_content()))
     my_tracker.curr_notes_pair_action = lambda : app.curr_notes_pair_lbl_text.set('from to: '+str(my_tracker.notes_pair))
 
+
     # my_tracker.check_notes_action =
     app.mainloop()
     #clearnup gui functions to prevent gui exceptions after its closing
@@ -213,6 +224,8 @@ def run_gui():
     my_tracker.check_notes_action = lambda : print(None)
     my_tracker.queue_content_action = lambda : print(None)
     my_tracker.curr_notes_pair_action = lambda : print(None)
+    my_tracker.loop_play_queue_action = lambda : print(None)
+
 
 # see for GUI layouts :https://www.pythonguis.com/faq/pack-place-and-grid-in-tkinter/
 

@@ -54,6 +54,7 @@ class Tracker:
     def __init__(self, interval_array=None, note_array=None, midi_note_array=None, midi_out_mode='dummy'):
         read_config_file_scales()
         my_beats = Beats()
+        self.loopq = None
         self.root_midi = [('C')]
         self.midi_out = None
         self.track = None
@@ -281,6 +282,12 @@ class Tracker:
     # </editor-fold>
 
     # <editor-fold desc="Gui actions">
+    def loop_play_queue_action(self, flag):
+        if flag == 0:
+            self.loopq = False
+        else:
+            self.loopq = True
+
     def check_notes_action(self):
         log_call()
 
@@ -307,6 +314,9 @@ class Tracker:
     def get_from_queue(self):
 
         note = None if self.note_queue.empty() else self.note_queue.get_nowait()
+        print(f"{self.loopq=}")
+        if self.loopq:
+            self.put_to_queue(note)
         self.queue_content_action()
         return note
     # </editor-fold>

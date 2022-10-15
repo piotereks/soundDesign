@@ -37,6 +37,7 @@ class SoundDesignGui(ttk.Frame):
         self.__scale_rnd_btn__()
         self.__notes_and_queue__()
         self.__scale_combo__()
+        self.__loop_queue_chk__()
 
         # <editor-fold desc="Description">
         col = 0
@@ -63,6 +64,12 @@ class SoundDesignGui(ttk.Frame):
         self.metro_btn.grid(row=row, column=col, padx=5, pady=5, sticky ='W')
         col += 1
 
+        row+=1
+        col = 0
+
+        self.loop_queue_chk.grid(row=row, column=col, padx=5, pady=5, sticky ='W')
+        col += 1
+
         colsp = 1
         self.curr_notes_pair_lbl.grid(row=row, column=col, columnspan=colsp, padx=5, pady=5, sticky='E')
         col += colsp
@@ -80,11 +87,27 @@ class SoundDesignGui(ttk.Frame):
 
         # </editor-fold>
 
+    def __loop_queue_chk__(self):
+        self.loop_queue_chk_cmd_ext = lambda: print('loop_queue_chk_cmd_ext')
+
+        def __loop_queue_chk_cmd__(self_in):
+            self_in.loop_queue_chk_cmd_ext()
+            # self_in.__loop_queue_chk_switch_cmd_int__()
+            pass
+        self.loop_queue_on = tk.IntVar(self, 1)  # Default on
+
+        self.loop_queue_chk = tk.Checkbutton(self, text="Loop Q",
+                                        variable=self.loop_queue_on,
+                                        onvalue=1, offvalue=0, height=2, width=10,
+                                        command=lambda: __loop_queue_chk_cmd__(self))
+
+
     def __metro_btn__(self):
         self.metro_btn_cmd_ext = lambda: print('metro_btn_cmd_ext')
 
         def __metro_btn_cmd__(self_in):
             self_in.metro_btn_cmd_ext()
+            # print('metro value:' ,self.metro_on.get())
             # self_in.__metro_btn_switch_cmd_int__()
             pass
         self.metro_on = tk.IntVar()
