@@ -48,7 +48,7 @@ class SoundDesignGui(ttk.Frame):
         col = 0
         row = 0
 
-        self.pp_btn.grid(row=row, column= col , padx=5, pady=5,sticky = 'W')
+        self.pp_btn.grid(row=row, column= col , padx=5, pady=5,sticky = 'w')
         col += 1
 
         self.scale_rnd_btn.grid(row=row, column= col, padx=5, pady=5, ipadx=10,sticky = 'W')
@@ -66,13 +66,13 @@ class SoundDesignGui(ttk.Frame):
         row+=1
         col = 0
 
-        self.metro_btn.grid(row=row, column=col, padx=5, pady=5, sticky ='W')
+        self.metro_btn.grid(row=row, column=col, padx=5, pady=5, sticky ='w')
         col += 1
 
         row+=1
         col = 0
 
-        self.loop_queue_chk.grid(row=row, column=col, padx=5, pady=5, sticky ='W')
+        self.loop_queue_chk.grid(row=row, column=col, padx=5, pady=5, sticky ='w')
         col += 1
 
         colsp = 1
