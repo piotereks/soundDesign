@@ -156,7 +156,7 @@ class SoundDesignGui(ttk.Frame):
         self.scale_combo  = ttk.Combobox(self,
             state="readonly",
             values=["Python", "C", "C++", "Java"],
-            postcommand=lambda : print('scale postcommand')
+            postcommand=lambda: print('scale postcommand')
             ,width=25
         )
         # self.scale_combo.set('gurusuruz')
@@ -207,8 +207,8 @@ def main():
     root.title("On/Off Toggle")
 
     app = SoundDesignGui(root)
-    app.pp_btn_cmd_ext = lambda : ext_pressed()
-    app.scale_rnd_btn_cmd_ext = lambda : app.scale_name_text.set(datetime.datetime.now().strftime('_%H%M%S'))
+    app.pp_btn_cmd_ext = lambda: ext_pressed()
+    app.scale_rnd_btn_cmd_ext = lambda: app.scale_name_text.set(datetime.datetime.now().strftime('_%H%M%S'))
 
 
     app.mainloop()

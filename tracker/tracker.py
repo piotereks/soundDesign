@@ -105,8 +105,8 @@ class Tracker:
 
         # self.init_timeline(True)
         self.init_timeline(midi_out_mode)
-        self.beat = lambda : self.play_from_to(None,None,in_pattern=True)
-        self.metro_beat = lambda : print('metro_beat init')
+        self.beat = lambda: self.play_from_to(None,None,in_pattern=True)
+        self.metro_beat = lambda: print('metro_beat init')
         # self.play_from_to(None, None, in_pattern=True)
         # self.beat = self.beat_none
         # my_tracker.metronome_start()
@@ -237,7 +237,7 @@ class Tracker:
     def metro_none(self):
         log_call()
         xxx = self.timeline.schedule({
-            # "action" : lambda : print('XXXXXXXXXXXXXXX'),
+            # "action" : lambda: print('XXXXXXXXXXXXXXX'),
             # "note": iso.PSequence([1, 5, 5, 5]) +gap,
             # "note": iso.PSequence([82, 69, 69, 69]) ,
             iso.EVENT_NOTE: iso.PSequence([None], repeats=1),
@@ -254,7 +254,7 @@ class Tracker:
     def metro_play(self):
         log_call()
         xxx = self.timeline.schedule({
-            # "action" : lambda : print('XXXXXXXXXXXXXXX'),
+            # "action" : lambda: print('XXXXXXXXXXXXXXX'),
             # "note": iso.PSequence([1, 5, 5, 5]) +gap,
             # "note": iso.PSequence([82, 69, 69, 69]) ,
             "note": iso.PSequence([32, 37, 37, 37], repeats=1),
@@ -270,12 +270,12 @@ class Tracker:
     def metro_start_stop(self, start):
         if start.get() == 1:
             print('-----------metro on-----------------')
-            # self.metro_beat = lambda : print ('metro_play')
+            # self.metro_beat = lambda: print ('metro_play')
             self.metro_beat = self.metro_play
             # self.metro_beat = lambda: self.beat1()
         else:
             print('-----------metro off-----------------')
-            # self.metro_beat = lambda : print ('metro_none')
+            # self.metro_beat = lambda: print ('metro_none')
             self.metro_beat = self.metro_none
             # self.metro_beat = lambda: self.beat2()
         pass

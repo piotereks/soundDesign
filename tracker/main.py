@@ -204,30 +204,30 @@ def run_gui():
     app = SoundDesignGui(root)
 
     app.metro_btn_cmd_ext = lambda: my_tracker.metro_start_stop(app.metro_on)
-    app.loop_queue_chk_cmd_ext = lambda : my_tracker.loop_play_queue_action(app.loop_queue_on.get())
+    app.loop_queue_chk_cmd_ext = lambda: my_tracker.loop_play_queue_action(app.loop_queue_on.get())
     my_tracker.loopq = app.loop_queue_on.get()
 
-    app.pp_btn_cmd_ext = lambda : play_pause()
-    app.scale_rnd_btn_cmd_ext = lambda : ui_rand_scale()
+    app.pp_btn_cmd_ext = lambda: play_pause()
+    app.scale_rnd_btn_cmd_ext = lambda: ui_rand_scale()
     # app.scale_name_text.set('req:' +my_tracker.scale.name)
     app.scale_combo['values'] = sorted([scale.name for scale in iso.Scale.all()])
     app.scale_combo.set(my_tracker.scale.name)
     app.scale_combo.bind("<<ComboboxSelected>>", set_scale)
     # combo.bind("<<ComboboxSelected>>", selection_changed)
 
-    my_tracker.scale_name_action = lambda : app.scale_set_name_txt.set('set:' + my_tracker.scale.name)
-    my_tracker.check_notes_action = lambda : app.check_notes_lbl_text.set(my_tracker.check_notes)
-    my_tracker.queue_content_action = lambda : app.queue_content_lbl_text.set('queue: '+str(my_tracker.get_queue_content()))
-    my_tracker.curr_notes_pair_action = lambda : app.curr_notes_pair_lbl_text.set('from to: '+str(my_tracker.notes_pair))
+    my_tracker.scale_name_action = lambda: app.scale_set_name_txt.set('set:' + my_tracker.scale.name)
+    my_tracker.check_notes_action = lambda: app.check_notes_lbl_text.set(my_tracker.check_notes)
+    my_tracker.queue_content_action = lambda: app.queue_content_lbl_text.set('queue: '+str(my_tracker.get_queue_content()))
+    my_tracker.curr_notes_pair_action = lambda: app.curr_notes_pair_lbl_text.set('from to: '+str(my_tracker.notes_pair))
 
     # my_tracker.check_notes_action =
     app.mainloop()
     #clearnup gui functions to prevent gui exceptions after its closing
-    my_tracker.scale_name_action = lambda : print(None)
-    my_tracker.check_notes_action = lambda : print(None)
-    my_tracker.queue_content_action = lambda : print(None)
-    my_tracker.curr_notes_pair_action = lambda : print(None)
-    my_tracker.loop_play_queue_action = lambda : print(None)
+    my_tracker.scale_name_action = lambda: print(None)
+    my_tracker.check_notes_action = lambda: print(None)
+    my_tracker.queue_content_action = lambda: print(None)
+    my_tracker.curr_notes_pair_action = lambda: print(None)
+    my_tracker.loop_play_queue_action = lambda: print(None)
 
 
 # see for GUI layouts :https://www.pythonguis.com/faq/pack-place-and-grid-in-tkinter/
