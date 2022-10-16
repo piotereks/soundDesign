@@ -33,8 +33,8 @@ class SoundDesignGui(ttk.Frame):
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
-        self.grid_columnconfigure(2, weight=1)
-        self.grid_columnconfigure(3, weight=1)
+        self.grid_columnconfigure(2, weight=3)
+        self.grid_columnconfigure(3, weight=3)
         # </editor-fold>
 
         self.__pp_btn__()
@@ -51,16 +51,16 @@ class SoundDesignGui(ttk.Frame):
         self.pp_btn.grid(row=row, column= col , padx=5, pady=5,sticky = 'w')
         col += 1
 
-        self.scale_rnd_btn.grid(row=row, column= col, padx=5, pady=5, ipadx=10,sticky = 'W')
+        self.scale_rnd_btn.grid(row=row, column= col, padx=5, pady=5,sticky = 'W')
         col += 1
 
-        self.scale_combo.grid(row=row, column=col , padx=5, pady=5, ipadx=10,sticky = 'W')
+        self.scale_combo.grid(row=row, column=col , padx=5, pady=5, sticky = 'W')
         col += 1
 
         # self.scale_name_lbl.grid(row=row, column=col, padx=5, pady=5, ipadx=10,sticky = 'WE')
         # col += 1
 
-        self.scale_name_lbl2.grid(row=row, column=col, padx=5, pady=5, sticky = 'W')
+        self.scale_set_name_lbl.grid(row=row, column=col,  pady=5, sticky ='W')
         col +=1
 
         row+=1
@@ -154,10 +154,10 @@ class SoundDesignGui(ttk.Frame):
             pass
 
         self.scale_combo  = ttk.Combobox(self,
-            # state="readonly",
+            state="readonly",
             values=["Python", "C", "C++", "Java"],
             postcommand=lambda : print('scale postcommand')
-            ,width=10
+            ,width=25
         )
         # self.scale_combo.set('gurusuruz')
         print(self.scale_combo.get())
@@ -181,9 +181,9 @@ class SoundDesignGui(ttk.Frame):
         # self.scale_name_text.set("scale name")
         # self.scale_name_lbl = tk.Label(self, textvariable=self.scale_name_text, height= 1)
 
-        self.scale_name_text2 = tk.StringVar()
-        self.scale_name_text2.set("scale name")
-        self.scale_name_lbl2 = tk.Label(self, textvariable=self.scale_name_text2, height= 1, width=10)
+        self.scale_set_name_txt = tk.StringVar()
+        self.scale_set_name_txt.set("scale name")
+        self.scale_set_name_lbl = tk.Label(self, textvariable=self.scale_set_name_txt, height= 1, width=25)
 
     def __notes_and_queue__(self):
         self.curr_notes_pair_lbl_text = tk.StringVar()
@@ -221,19 +221,12 @@ if __name__=="__main__":
 
 """
 Elements to place:
-* metronome start/stop (ensure sync) - change to radio
-
-
-* Start/Stop button
-* Randomize scale + labels with name
-^^^^ done
-
-* print current notes
-^^^^ done
-
+* select scale key (dropdown) + rand key
 * (+future bold on current)
 * future current notes to log (or rolling widget, but with some limited buffor)
 
-* print content of queue
-^^^ done
+* Align elements so they do not skip, when resize
+* readonly combo
+
+* rewrite functions to bind events
 """

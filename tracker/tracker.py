@@ -315,7 +315,7 @@ class Tracker:
 
         note = None if self.note_queue.empty() else self.note_queue.get_nowait()
         print(f"{self.loopq=}")
-        if self.loopq:
+        if self.loopq and note is not None:
             self.put_to_queue(note)
         self.queue_content_action()
         return note

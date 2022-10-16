@@ -18,7 +18,7 @@ def tracker_dec(func):
         global my_tracker
         # print(func.__name__)
         new_func = getattr(my_tracker, func.__name__)
-        print('new func: ',new_func)
+        # print('new func: ',new_func)
         new_func()
     return inner
 
@@ -215,7 +215,7 @@ def run_gui():
     app.scale_combo.bind("<<ComboboxSelected>>", set_scale)
     # combo.bind("<<ComboboxSelected>>", selection_changed)
 
-    my_tracker.scale_name_action = lambda : app.scale_name_text2.set('set:' +my_tracker.scale.name)
+    my_tracker.scale_name_action = lambda : app.scale_set_name_txt.set('set:' + my_tracker.scale.name)
     my_tracker.check_notes_action = lambda : app.check_notes_lbl_text.set(my_tracker.check_notes)
     my_tracker.queue_content_action = lambda : app.queue_content_lbl_text.set('queue: '+str(my_tracker.get_queue_content()))
     my_tracker.curr_notes_pair_action = lambda : app.curr_notes_pair_lbl_text.set('from to: '+str(my_tracker.notes_pair))
