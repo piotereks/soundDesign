@@ -42,9 +42,10 @@ class Tracker:
     MIDI_OUT_DEVICE = 2
 
     name = "Microsoft GS Wavetable Synth 0"
-    scale = iso.Scale.major
+
+
+
     degree = 0
-    key = iso.Key("C", "major")
 
     # name = "Bome Virtual MIDI Port 2"
     # name = "Bome Virtual MIDI Port 4"
@@ -54,8 +55,10 @@ class Tracker:
     def __init__(self, interval_array=None, note_array=None, midi_note_array=None, midi_out_mode='dummy'):
         read_config_file_scales()
         my_beats = Beats()
+        self.scale = iso.Scale.major
+        self.key = iso.Key("C5", "major")
         self.loopq = None
-        self.root_midi = [('C')]
+        self.root_midi = [('C')]  #TODO check what is root_midi used for
         self.midi_out = None
         self.track = None
         log_call()
@@ -114,9 +117,6 @@ class Tracker:
         self.metro = self.metro_timeline()
 
     def init_pattern_array(self):
-        # print('scales:',iso.Scale.__dict__)
-        # print('scales2:',iso.Scale['chromatic'])
-
         self.pattern_array = []
         patterns = Patterns()
         print('======')
@@ -309,13 +309,14 @@ class Tracker:
 
         if not self.note_queue.full():
             self.note_queue.put(note)
-            self. queue_content_action()
+            self.queue_content_action()
 
     def get_from_queue(self):
 
         note = None if self.note_queue.empty() else self.note_queue.get_nowait()
         print(f"{self.loopq=}")
-        if self.loopq and note is not None:
+        if self.loopq and note is not None:  #TODO fix queue loop it loops , but to_note, note always from note.
+            print(f'note {note} back to queue')
             self.put_to_queue(note)
         self.queue_content_action()
         return note
@@ -348,12 +349,6 @@ class Tracker:
 
     @log_and_schedule
     def pplay(self):
-
-        # if self.pattern_idx == 0:
-        #     self.scale = iso.Scale.random()
-        #     print('scale:', self.scale.name, list(self.scale.semitones))
-        #     # note_prev = self.scale.get(self.root_note) + 60 # 60 is midi number of C in 5th Octave
-
         # if not initialize:
         # key = iso.Key("C", "major")
         print("self.midi_note_array2:", self.midi_note_array)
@@ -398,7 +393,7 @@ class Tracker:
         self.pattern_array[self.pattern_idx].reset()
 
         # Degree conversion here with scale
-        converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.scale)
+        converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.scale)  #TODO extend scale
         # converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.key) # is this vaiid usage?
         notes = iso.PDict({
             iso.EVENT_NOTE: converted_note,
@@ -422,8 +417,9 @@ class Tracker:
     def play_from_to(self, from_note, to_note, in_pattern=False ):
         print('---------------------')
         print(f"in_pattern: {in_pattern} from_note:{from_note}, to_note: {to_note}")
-        print(f"{self.scale.name=}")
-        self.scale_name_action()
+        print(f"{self.scale.name=}, key={iso.Note.names[self.key.tonic%12]}")
+        # print(f"{self.scale.name=}, {self.key.tonic=}")
+        self.scale_name_action()   #TODO extend scale
         # if  from_note == None:
         #     return None
         if in_pattern:
@@ -432,6 +428,10 @@ class Tracker:
             from_note = self.last_note
             # to_note = None if self.note_queue.empty() else self.note_queue.get_nowait()
             to_note = self.get_from_queue()
+            # if self.loopq and note is not None:
+            #     print(f'note {note} back to queue')
+            #     self.put_to_queue(note)
+
             if not from_note and to_note:
                 from_note = to_note
                 to_note = self.get_from_queue()
@@ -457,12 +457,12 @@ class Tracker:
             iso.EVENT_DURATION: iso.PSequence([4], repeats=1),
             # iso.EVENT_OCTAVE: 5
             # iso.EVENT_DEGREE: xxxx
-        })
+        })   #TODO extend scale
         print('after_check')
         # root_note = self.scale.indexOf(from_note-60)
         # note = self.scale.indexOf(to_note-60)
-        root_note = self.scale.indexOf(from_note)
-        note = self.scale.indexOf(to_note)
+        root_note = self.scale.indexOf(from_note)  #TODO extend scale
+        note = self.scale.indexOf(to_note) #TODO extend scale
         interval = note - root_note
         #print(f"{from_note=} {to_note=} {from_note-60=} {to_note-60=}  {root_note=} {note=} {interval=}")
 
@@ -479,7 +479,7 @@ class Tracker:
             iso.EVENT_DURATION: iso.PSequence([(4 / len_pattern) - 0.000000000000002], repeats=len_pattern),
             # iso.EVENT_OCTAVE: 5
             # iso.EVENT_DEGREE: xxxx
-        })
+        })  #TODO extend scale
 
 
     def pplay_new(self):

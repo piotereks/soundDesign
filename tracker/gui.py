@@ -4,6 +4,7 @@ import tkinter as tk
 # from tkinter.ttk import *
 import tkinter.ttk as ttk
 import inspect
+import random
 from typing import Callable
 
 
@@ -29,12 +30,13 @@ class SoundDesignGui(ttk.Frame):
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
         self.grid_rowconfigure(2, weight=1)
-        self.grid_rowconfigure(3, weight=1)
+        self.grid_rowconfigure(3, weight=5)
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
-        self.grid_columnconfigure(2, weight=3)
-        self.grid_columnconfigure(3, weight=3)
+        self.grid_columnconfigure(2, weight=1)
+        self.grid_columnconfigure(3, weight=1)
+        self.grid_columnconfigure(3, weight=4)
         # </editor-fold>
 
         self.__pp_btn__()
@@ -43,6 +45,7 @@ class SoundDesignGui(ttk.Frame):
         self.__notes_and_queue__()
         self.__scale_combo__()
         self.__loop_queue_chk__()
+        self.__keys__rad_btn__()
 
         # <editor-fold desc="Description">
         col = 0
@@ -65,8 +68,13 @@ class SoundDesignGui(ttk.Frame):
 
         row+=1
         col = 0
+        colsp=5
+        self.keys_frm.grid(row=row, column=col, columnspan=colsp,  pady=5, sticky='N')
 
-        self.metro_btn.grid(row=row, column=col, padx=5, pady=5, sticky ='w')
+        row+=1
+        col = 0
+
+        self.metro_btn.grid(row=row, column=col, padx=5, pady=5, sticky ='wn')
         col += 1
 
         row+=1
@@ -121,12 +129,47 @@ class SoundDesignGui(ttk.Frame):
                                         onvalue=1, offvalue=0, height=2, width=10,
                                         command=lambda: __metro_btn_cmd__(self))
 
+    def __keys__rad_btn__(self):
+        def __key_rnd_btn__(self_in):
+            self.__key_rnd_btn_cmd_int__ = lambda: print('__key_rnd_btn_cmd_int__')
+            self.key_rnd_btn_cmd_ext = lambda: print('key_rnd_btn_cmd_ext')
+
+            def __key_rnd_btn_cmd__(self_in_2):
+                # self_in.__key_rnd_btn_cmd_int__()
+                self.keys_group.set(random.choice(names))
+                self.key_rnd_btn_cmd_ext()
+                pass
+
+            self.key_rnd_btn = tk.Button(self_in, text ="rnd key", command=lambda: __key_rnd_btn_cmd__(self),
+                                           height= 1, width=8)
+
+        self.__key_radio_cmd_int__ = lambda: print('__key_radio_cmd_int__')
+        self.key_radio_cmd_ext = lambda: print('key_radio_cmd_ext')
+
+        def __key_radio_cmd__(self_in):
+            # self_in.__key_radio_cmd_int__()
+            self_in.key_radio_cmd_ext()
+            pass
+
+        names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+        self.keys_frm = ttk.Frame(self)
+        __key_rnd_btn__(self.keys_frm)
+        self.key_rnd_btn.grid(row=0, column=0, padx=10)
+        label = ttk.Label(self.keys_frm, text='keys:').grid(row=0, column=1, ipadx=2)
+        self.keys_group = tk.StringVar(self.keys_frm, names[0])
+
+        for (value, text) in enumerate(names):
+            ttk.Radiobutton(self.keys_frm, text=text, variable=self.keys_group,
+                            value=text, command=lambda: __key_radio_cmd__(self) ).grid(row=0, column=value+2, padx=2)
+
+
+
 
 
     def __pp_btn__(self):
         self.pp_btn_cmd_ext = lambda: print('pp_btn_cmd_ext')
 
-        def __pp_btn_switch_cmd_int__(self):
+        def __pp_btn_switch_cmd_int__():
 
             if self.is_playing:
                 # when was playing change to paused (is playing False) state now
@@ -136,12 +179,12 @@ class SoundDesignGui(ttk.Frame):
                 self.pp_btn.config(text="Pause")
                 self.is_playing = True
 
-        def __pp_btn_cmd__(self_in):
-            self_in.pp_btn_cmd_ext()
-            __pp_btn_switch_cmd_int__(self)
+        def __pp_btn_cmd__():
+            self.pp_btn_cmd_ext()
+            __pp_btn_switch_cmd_int__()
             pass
 
-        self.pp_btn = tk.Button(self, text ="Play", command=lambda: __pp_btn_cmd__(self),
+        self.pp_btn = tk.Button(self, text ="Play", command=lambda: __pp_btn_cmd__(),
                                    height= 1, width=10)
         # self.pp_btn.pack(padx=3, pady=2, side='left', anchor='nw')
 
@@ -172,7 +215,7 @@ class SoundDesignGui(ttk.Frame):
             pass
 
 
-        self.scale_rnd_btn = tk.Button(self, text ="rand() scale", command=lambda: __scale_rnd_btn_cmd__(self),
+        self.scale_rnd_btn = tk.Button(self, text ="rnd scale", command=lambda: __scale_rnd_btn_cmd__(self),
                                        height= 1, width=8)
 
 

@@ -193,6 +193,13 @@ def play_pause():
         ts()
     else:
         tstart()
+    pass
+
+
+def keys_scale_action(key, scale):
+    log_call()
+    my_tracker.key = iso.Key(key, scale)
+    pass
 
 
 def run_gui():
@@ -202,6 +209,10 @@ def run_gui():
     root.title("soundDesign - pattern player")
 
     app = SoundDesignGui(root)
+
+
+    app.key_rnd_btn_cmd_ext = lambda: keys_scale_action(app.keys_group.get(), my_tracker.scale)
+    app.key_radio_cmd_ext = lambda: keys_scale_action(app.keys_group.get(), my_tracker.scale)
 
     app.metro_btn_cmd_ext = lambda: my_tracker.metro_start_stop(app.metro_on)
     app.loop_queue_chk_cmd_ext = lambda: my_tracker.loop_play_queue_action(app.loop_queue_on.get())
@@ -214,6 +225,7 @@ def run_gui():
     app.scale_combo.set(my_tracker.scale.name)
     app.scale_combo.bind("<<ComboboxSelected>>", set_scale)
     # combo.bind("<<ComboboxSelected>>", selection_changed)
+
 
     my_tracker.scale_name_action = lambda: app.scale_set_name_txt.set('set:' + my_tracker.scale.name)
     my_tracker.check_notes_action = lambda: app.check_notes_lbl_text.set(my_tracker.check_notes)
