@@ -417,7 +417,7 @@ class Tracker:
     def play_from_to(self, from_note, to_note, in_pattern=False ):
         print('---------------------')
         print(f"in_pattern: {in_pattern} from_note:{from_note}, to_note: {to_note}")
-        print(f"{self.scale.name=}, key={iso.Note.names[self.key.tonic%12]}, {self.key.scale}")
+        print(f"{self.scale.name=}, key={iso.Note.names[self.key.tonic%12]}, {self.key.scale=}")
         # print(f"{self.scale.name=}, {self.key.tonic=}")
         self.scale_name_action()   #TODO extend scale
         # if  from_note == None:
