@@ -56,9 +56,9 @@ class Tracker:
         read_config_file_scales()
         my_beats = Beats()
         self.scale = iso.Scale.major
-        self.key = iso.Key("C5", "major")
+        self.key = iso.Key("C", "major")
         self.loopq = None
-        self.root_midi = [('C')]  #TODO check what is root_midi used for
+        # self.root_midi = [('C')]  #TODO check what is root_midi used for
         self.midi_out = None
         self.track = None
         log_call()
@@ -393,8 +393,8 @@ class Tracker:
         self.pattern_array[self.pattern_idx].reset()
 
         # Degree conversion here with scale
-        converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.scale)  #TODO extend scale
-        # converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.key) # is this vaiid usage?
+        # converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.scale)  #TODO extend scale
+        converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.key) # is this vaiid usage?
         notes = iso.PDict({
             iso.EVENT_NOTE: converted_note,
             iso.EVENT_DURATION: self.pattern_array[self.pattern_idx]['duration'],
@@ -417,7 +417,7 @@ class Tracker:
     def play_from_to(self, from_note, to_note, in_pattern=False ):
         print('---------------------')
         print(f"in_pattern: {in_pattern} from_note:{from_note}, to_note: {to_note}")
-        print(f"{self.scale.name=}, key={iso.Note.names[self.key.tonic%12]}")
+        print(f"{self.scale.name=}, key={iso.Note.names[self.key.tonic%12]}, {self.key.scale}")
         # print(f"{self.scale.name=}, {self.key.tonic=}")
         self.scale_name_action()   #TODO extend scale
         # if  from_note == None:
@@ -453,7 +453,8 @@ class Tracker:
         if (to_note is None) or (from_note is None):
           from_note = None if not from_note else self.scale.indexOf(from_note)
           return iso.PDict({
-            iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.scale),
+            # iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.scale),
+            iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.key),
             iso.EVENT_DURATION: iso.PSequence([4], repeats=1),
             # iso.EVENT_OCTAVE: 5
             # iso.EVENT_DEGREE: xxxx
@@ -470,12 +471,14 @@ class Tracker:
         len_pattern = len(rnd_pattern)-1
 
         print('Pseq:', list(iso.PSequence(rnd_pattern, repeats=1)))
-        print('Pseq + Degree:', list(iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale)))
+        print('Pseq + Degree - scale:', list(iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale)))
+        print('Pseq + Degree - key:', list(iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.key)))
         print('bef Pdict2')
         print('=====================')
 
         return iso.PDict({
-            iso.EVENT_NOTE: iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale),
+            # iso.EVENT_NOTE: iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale),
+            iso.EVENT_NOTE: iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.key),
             iso.EVENT_DURATION: iso.PSequence([(4 / len_pattern) - 0.000000000000002], repeats=len_pattern),
             # iso.EVENT_OCTAVE: 5
             # iso.EVENT_DEGREE: xxxx
