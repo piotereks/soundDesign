@@ -36,7 +36,7 @@ class SoundDesignGui(ttk.Frame):
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=1)
         self.grid_columnconfigure(3, weight=1)
-        self.grid_columnconfigure(3, weight=4)
+        self.grid_columnconfigure(4, weight=4)
         # </editor-fold>
 
         self.__pp_btn__()

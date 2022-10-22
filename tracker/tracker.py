@@ -69,6 +69,8 @@ class Tracker:
         self.patterns = Patterns()
         self.root_note = 0
         self.last_note = None
+        self.last_from_note = None
+        self.notes_pair =(None,None)
         self.note_queue = Queue(maxsize = 16)
         # self.root_note = None
         self.pattern_idx = 0
@@ -115,6 +117,11 @@ class Tracker:
         # my_tracker.metronome_start()
         self.tmln = self.tracker_timeline()
         self.metro = self.metro_timeline()
+
+    # def set_scale(self,scale):
+    #     self.scale = scale
+    #     # self.key.scale = scale
+    #     self.key = iso.Key (self.key.tonic, scale )
 
     def init_pattern_array(self):
         self.pattern_array = []
@@ -304,6 +311,18 @@ class Tracker:
     # <editor-fold desc="Queue functions">
     def get_queue_content(self):
         return 'empty' if self.note_queue.empty() else list(self.note_queue.queue)
+        # return 'empty' if self.note_queue.empty() else xxx
+
+    def get_queue_pair(self):
+        v_queue = list(self.note_queue.queue)
+        if len(v_queue) >= 2:
+            return v_queue[0], v_queue[1]
+        elif len(v_queue) == 1:
+            return v_queue[0], None
+        else:
+            return None, None
+
+
 
     def put_to_queue(self, note):
 
@@ -315,9 +334,12 @@ class Tracker:
 
         note = None if self.note_queue.empty() else self.note_queue.get_nowait()
         print(f"{self.loopq=}")
-        if self.loopq and note is not None:  #TODO fix queue loop it loops , but to_note, note always from note.
-            print(f'note {note} back to queue')
-            self.put_to_queue(note)
+        # if self.loopq and self.last_from_note is not None:
+        #     # print(f'note {note} back to queue')
+        #     # self.put_to_queue(note)
+        #     print(f'note {self.last_from_note=} back to queue')
+        #     self.put_to_queue(self.last_from_note)
+
         self.queue_content_action()
         return note
     # </editor-fold>
@@ -417,29 +439,41 @@ class Tracker:
     def play_from_to(self, from_note, to_note, in_pattern=False ):
         print('---------------------')
         print(f"in_pattern: {in_pattern} from_note:{from_note}, to_note: {to_note}")
-        print(f"{self.scale.name=}, key={iso.Note.names[self.key.tonic%12]}, {self.key.scale=}")
+        print(f"{self.scale.name=}, key={iso.Note.names[self.key.tonic%12]}, {self.key.scale.name=}")
         # print(f"{self.scale.name=}, {self.key.tonic=}")
         self.scale_name_action()   #TODO extend scale
         # if  from_note == None:
         #     return None
         if in_pattern:
+            if self.loopq and self.last_from_note is not None:
+                # print(f'note {note} back to queue')
+                # self.put_to_queue(note)
+                print(f'note {self.last_from_note=} back to queue')
+                self.put_to_queue(self.last_from_note)
+
+            from_note, to_note = self.get_queue_pair()
+            if self.loopq and not to_note:
+                to_note=from_note
             # self.scale = iso.Scale.chromatic
             print("if in_pattern")
-            from_note = self.last_note
+            from_notex = self.last_note
             # to_note = None if self.note_queue.empty() else self.note_queue.get_nowait()
-            to_note = self.get_from_queue()
+            # to_notex = self.get_from_queue()
             # if self.loopq and note is not None:
             #     print(f'note {note} back to queue')
             #     self.put_to_queue(note)
 
-            if not from_note and to_note:
-                from_note = to_note
-                to_note = self.get_from_queue()
+            # if not from_note and to_note:
+                # from_notex = to_note
+                # to_notex = self.get_from_queue()
             # to_note = self.note_queue.get_nowait()  # handle empty queue
-            self.last_note = to_note
+            self.last_notex = to_note
             new_note=to_note
-            print(f"in_pattern (next pattern for later):  from_note:{from_note} new_note:{new_note}")
-            self.beat = lambda: self.play_from_to(from_note, new_note, in_pattern=True)
+            # print(f"in_pattern (next pattern for later):  from_note:{from_note} new_note:{new_note}")
+            # self.beat = lambda: self.play_from_to(from_note, new_note, in_pattern=True)
+            print(f"in_pattern (next pattern for later):  from_note:{from_note} new_note:{to_note}")
+            self.beat = lambda: self.play_from_to(from_note, to_note, in_pattern=True)
+            dummy_var = self.get_from_queue()
         else:
             print("else in_pattern")
             if to_note is not None:
@@ -450,6 +484,7 @@ class Tracker:
                 self.beat = self.beat_none
         self.notes_pair=(from_note,to_note)
         self.curr_notes_pair_action()
+        self.last_from_note=from_note
         if (to_note is None) or (from_note is None):
           from_note = None if not from_note else self.scale.indexOf(from_note)
           return iso.PDict({
@@ -462,9 +497,8 @@ class Tracker:
         print('after_check')
         # root_note = self.scale.indexOf(from_note-60)
         # note = self.scale.indexOf(to_note-60)
-        root_note = self.scale.indexOf(from_note)  #TODO extend scale
-        note = self.scale.indexOf(to_note) #TODO extend scale
-        interval = note - root_note
+        root_note = self.scale.indexOf(from_note-self.key.tonic%12)
+        note = self.scale.indexOf(to_note-self.key.tonic%12)
         #print(f"{from_note=} {to_note=} {from_note-60=} {to_note-60=}  {root_note=} {note=} {interval=}")
 
         rnd_pattern = self.patterns.get_random_pattern(interval) + root_note

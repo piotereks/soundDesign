@@ -175,13 +175,17 @@ def dump_scales():
 def ui_rand_scale():
 
     my_tracker.scale = iso.Scale.random()
+    my_tracker.key = iso.Key(my_tracker.key.tonic, my_tracker.scale)
     # app.scale_name_text.set('req:' + my_tracker.scale.name)  # label should be changed also in sync, so it will go to timeline
     app.scale_combo.set(my_tracker.scale.name)
 
 def set_scale(event):
     # xxxx  = [scale for scale in iso.Scale.all() if scale.name ==app.scale_combo.get()]
     # my_tracker.scale = xxxx[0]
-    my_tracker.scale = [scale for scale in iso.Scale.all() if scale.name == app.scale_combo.get()][0]
+    scale_obj =  iso.Scale.byname(app.scale_combo.get())
+    # my_tracker.scale = [scale for scale in iso.Scale.all() if scale.name == app.scale_combo.get()][0]
+    my_tracker.scale = scale_obj
+    my_tracker.key = iso.Key(my_tracker.key.tonic, scale_obj)
 
 
 
@@ -198,7 +202,9 @@ def play_pause():
 
 def keys_scale_action(key, scale):
     log_call()
-    my_tracker.key = iso.Key(key, scale)
+    scale_obj = iso.Scale.byname(scale)
+    my_tracker.key = iso.Key(key,  scale_obj)
+    my_tracker.scale = scale_obj
     pass
 
 
@@ -210,9 +216,8 @@ def run_gui():
 
     app = SoundDesignGui(root)
 
-
-    app.key_rnd_btn_cmd_ext = lambda: keys_scale_action(app.keys_group.get(), my_tracker.scale)
-    app.key_radio_cmd_ext = lambda: keys_scale_action(app.keys_group.get(), my_tracker.scale)
+    app.key_rnd_btn_cmd_ext = lambda: keys_scale_action(app.keys_group.get(), my_tracker.scale.name)
+    app.key_radio_cmd_ext = lambda: keys_scale_action(app.keys_group.get(), my_tracker.scale.name)
 
     app.metro_btn_cmd_ext = lambda: my_tracker.metro_start_stop(app.metro_on)
     app.loop_queue_chk_cmd_ext = lambda: my_tracker.loop_play_queue_action(app.loop_queue_on.get())

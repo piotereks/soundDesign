@@ -38,17 +38,6 @@ def read_config_file_scales():
         for name in scale['name']:
             new_scale = iso.Scale(scale['semitones'],name)
 
-    # TODO:
-    # Modify creating scales so that there is one scale, but may have many names
-    # (but is that important?) maybe only for random functions
-
-    # print(self.patterns_config)
-    # print(self.patterns_config['play_over'])
-    # self.patterns = list(map(lambda x: np.array(x['pattern']), self.patterns_config['play_over']['patterns']))
-    # print('after list')
-
-    # pprint.pprint(self.patterns_config)
-
 
 iso.util.midi_note_to_note_name = midi_note_to_note_name  #Overwrite original function
 # wrong semitones
