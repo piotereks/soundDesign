@@ -273,4 +273,13 @@ Elements to place:
 * combo - is it possible with search?
 
 * rewrite functions to bind events
+
+Play functions
+* duration patterns
+* velocity patterna
+* different modes of play (not only random)  - (later make it selectable)
+    * shortest way (by my self or via existing function)
+    * fixed length 
+    * different lengths (combined)
+    *      
 """
