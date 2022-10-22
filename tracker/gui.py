@@ -264,12 +264,13 @@ if __name__=="__main__":
 
 """
 Elements to place:
-* select scale key (dropdown) + rand key
+* select scale key (dropdown) + rand key - done
 * (+future bold on current)
 * future current notes to log (or rolling widget, but with some limited buffor)
 
 * Align elements so they do not skip, when resize
-* readonly combo
+* readonly combo - done
+* combo - is it possible with search?
 
 * rewrite functions to bind events
 """
