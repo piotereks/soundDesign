@@ -45,7 +45,7 @@ class Tracker:
 
 
 
-    degree = 0
+    # degree = 0
 
     # name = "Bome Virtual MIDI Port 2"
     # name = "Bome Virtual MIDI Port 4"
@@ -55,7 +55,7 @@ class Tracker:
     def __init__(self, interval_array=None, note_array=None, midi_note_array=None, midi_out_mode='dummy'):
         read_config_file_scales()
         my_beats = Beats()
-        self.scale = iso.Scale.major
+        # self.scale = iso.Scale.major  - replaced by key, and scale always can be referred as self.key.scale
         self.key = iso.Key("C", "major")
         self.loopq = None
         # self.root_midi = [('C')]  #TODO check what is root_midi used for
@@ -374,7 +374,8 @@ class Tracker:
         # if not initialize:
         # key = iso.Key("C", "major")
         print("self.midi_note_array2:", self.midi_note_array)
-        print("self.midi_note_array2 cvt:", [self.scale.get(self.scale.indexOf(midi_note)) for midi_note in self.midi_note_array])
+        # print("self.midi_note_array2 cvt:", [self.scale.get(self.scale.indexOf(midi_note)) for midi_note in self.midi_note_array])
+        print("self.midi_note_array2 cvt:", [self.key.scale.get(self.key.scale.indexOf(midi_note)) for midi_note in self.midi_note_array])
 
         if self.midi_note_array:
             # this is to denominate midi notes to indexes of elements of scale
@@ -382,13 +383,13 @@ class Tracker:
             print("mod_midi_note_array:", mod_midi_note_array)
 
             # note = mod_midi_note_array[self.pattern_idx+1] - 60  # 60 is midi number of C in 5th Octave
-            self.root_note = self.scale.indexOf(mod_midi_note_array[self.pattern_idx])
+            self.root_note = self.key.scale.indexOf(mod_midi_note_array[self.pattern_idx])
             note = mod_midi_note_array[self.pattern_idx+1]  # 60 is midi number of C in 5th Octave
 
             print('n1:',note,self.root_note)
             # remember that this function is calculating notes which are not from scale
             # as note with midi code 1 less
-            note = self.scale.indexOf(note)
+            note = self.key.scale.indexOf(note)
             # note_prev = self.scale.indexOf(note_prev)
             print('n1:',note,self.root_note)
             interval = note - self.root_note
@@ -423,7 +424,7 @@ class Tracker:
             # iso.EVENT_OCTAVE: 5
             # iso.EVENT_DEGREE: xxxx
         })
-        print(f'converted with scale {self.scale.name}:', list(converted_note))
+        print(f'converted with scale {self.key.scale.name}:', list(converted_note))
         self.pattern_array[self.pattern_idx].reset()
 
         self.pattern_idx += 1
@@ -439,7 +440,7 @@ class Tracker:
     def play_from_to(self, from_note, to_note, in_pattern=False ):
         print('---------------------')
         print(f"in_pattern: {in_pattern} from_note:{from_note}, to_note: {to_note}")
-        print(f"{self.scale.name=}, key={iso.Note.names[self.key.tonic%12]}, {self.key.scale.name=}")
+        print(f"{self.key.scale.name=}, key={iso.Note.names[self.key.tonic%12]}, {self.key.scale.name=}")
         # print(f"{self.scale.name=}, {self.key.tonic=}")
         self.scale_name_action()   #TODO extend scale
         # if  from_note == None:
@@ -486,7 +487,7 @@ class Tracker:
         self.curr_notes_pair_action()
         self.last_from_note=from_note
         if (to_note is None) or (from_note is None):
-          from_note = None if not from_note else self.scale.indexOf(from_note)
+          from_note = None if not from_note else self.key.scale.indexOf(from_note)
           return iso.PDict({
             # iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.scale),
             iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.key),
@@ -497,15 +498,16 @@ class Tracker:
         print('after_check')
         # root_note = self.scale.indexOf(from_note-60)
         # note = self.scale.indexOf(to_note-60)
-        root_note = self.scale.indexOf(from_note-self.key.tonic%12)
-        note = self.scale.indexOf(to_note-self.key.tonic%12)
+        root_note = self.key.scale.indexOf(from_note-self.key.tonic%12)
+        note = self.key.scale.indexOf(to_note-self.key.tonic%12)
+        interval = note - root_note
         #print(f"{from_note=} {to_note=} {from_note-60=} {to_note-60=}  {root_note=} {note=} {interval=}")
 
         rnd_pattern = self.patterns.get_random_pattern(interval) + root_note
         len_pattern = len(rnd_pattern)-1
 
         print('Pseq:', list(iso.PSequence(rnd_pattern, repeats=1)))
-        print('Pseq + Degree - scale:', list(iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale)))
+        print('Pseq + Degree - scale:', list(iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.key.scale)))
         print('Pseq + Degree - key:', list(iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.key)))
         print('bef Pdict2')
         print('=====================')

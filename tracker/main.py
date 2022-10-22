@@ -70,8 +70,8 @@ def save_midi():
     my_tracker.midi_out.write()
 
 def rand_scale():
-    my_tracker.scale = iso.Scale.random()
-
+    # my_tracker.scale = iso.Scale.random()
+    my_tracker.key = iso.Key(iso.key.tonic, iso.Scale.random())
 
 def sbft(note_from = 60, note_to = 64):
     my_tracker.beat = lambda: my_tracker.play_from_to(note_from, note_to)
@@ -174,17 +174,18 @@ def dump_scales():
 
 def ui_rand_scale():
 
-    my_tracker.scale = iso.Scale.random()
-    my_tracker.key = iso.Key(my_tracker.key.tonic, my_tracker.scale)
+    my_tracker.key = iso.Key(my_tracker.key.tonic, iso.Scale.random())
+    # my_tracker.scale = iso.Scale.random()
+    # my_tracker.key = iso.Key(my_tracker.key.tonic, my_tracker.scale)
     # app.scale_name_text.set('req:' + my_tracker.scale.name)  # label should be changed also in sync, so it will go to timeline
-    app.scale_combo.set(my_tracker.scale.name)
+    app.scale_combo.set(my_tracker.key.scale.name)
 
 def set_scale(event):
     # xxxx  = [scale for scale in iso.Scale.all() if scale.name ==app.scale_combo.get()]
     # my_tracker.scale = xxxx[0]
     scale_obj =  iso.Scale.byname(app.scale_combo.get())
     # my_tracker.scale = [scale for scale in iso.Scale.all() if scale.name == app.scale_combo.get()][0]
-    my_tracker.scale = scale_obj
+    # my_tracker.scale = scale_obj
     my_tracker.key = iso.Key(my_tracker.key.tonic, scale_obj)
 
 
@@ -204,8 +205,7 @@ def keys_scale_action(key, scale):
     log_call()
     scale_obj = iso.Scale.byname(scale)
     my_tracker.key = iso.Key(key,  scale_obj)
-    my_tracker.scale = scale_obj
-    pass
+    # my_tracker.scale = scale_obj
 
 
 def run_gui():
@@ -216,8 +216,10 @@ def run_gui():
 
     app = SoundDesignGui(root)
 
-    app.key_rnd_btn_cmd_ext = lambda: keys_scale_action(app.keys_group.get(), my_tracker.scale.name)
-    app.key_radio_cmd_ext = lambda: keys_scale_action(app.keys_group.get(), my_tracker.scale.name)
+    # app.key_rnd_btn_cmd_ext = lambda: keys_scale_action(app.keys_group.get(), my_tracker.scale.name)
+    # app.key_radio_cmd_ext = lambda: keys_scale_action(app.keys_group.get(), my_tracker.scale.name)
+    app.key_rnd_btn_cmd_ext = lambda: keys_scale_action(app.keys_group.get(), my_tracker.key.scale.name)
+    app.key_radio_cmd_ext = lambda: keys_scale_action(app.keys_group.get(), my_tracker.key.scale.name)
 
     app.metro_btn_cmd_ext = lambda: my_tracker.metro_start_stop(app.metro_on)
     app.loop_queue_chk_cmd_ext = lambda: my_tracker.loop_play_queue_action(app.loop_queue_on.get())
@@ -227,12 +229,14 @@ def run_gui():
     app.scale_rnd_btn_cmd_ext = lambda: ui_rand_scale()
     # app.scale_name_text.set('req:' +my_tracker.scale.name)
     app.scale_combo['values'] = sorted([scale.name for scale in iso.Scale.all()])
-    app.scale_combo.set(my_tracker.scale.name)
+    # app.scale_combo.set(my_tracker.scale.name)
+    app.scale_combo.set(my_tracker.key.scale.name)
+
     app.scale_combo.bind("<<ComboboxSelected>>", set_scale)
     # combo.bind("<<ComboboxSelected>>", selection_changed)
 
 
-    my_tracker.scale_name_action = lambda: app.scale_set_name_txt.set('set:' + my_tracker.scale.name)
+    my_tracker.scale_name_action = lambda: app.scale_set_name_txt.set('set:' + my_tracker.key.scale.name)
     my_tracker.check_notes_action = lambda: app.check_notes_lbl_text.set(my_tracker.check_notes)
     my_tracker.queue_content_action = lambda: app.queue_content_lbl_text.set('queue: '+str(my_tracker.get_queue_content()))
     my_tracker.curr_notes_pair_action = lambda: app.curr_notes_pair_lbl_text.set('from to: '+str(my_tracker.notes_pair))
