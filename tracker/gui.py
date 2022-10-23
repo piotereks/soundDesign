@@ -30,13 +30,16 @@ class SoundDesignGui(ttk.Frame):
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
         self.grid_rowconfigure(2, weight=1)
-        self.grid_rowconfigure(3, weight=5)
+        self.grid_rowconfigure(3, weight=1)
+        self.grid_rowconfigure(4, weight=1)
+        self.grid_rowconfigure(5, weight=3)
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=1)
         self.grid_columnconfigure(3, weight=1)
-        self.grid_columnconfigure(4, weight=4)
+        self.grid_columnconfigure(4, weight=1)
+        self.grid_columnconfigure(5, weight=1)
         # </editor-fold>
 
         self.__pp_btn__()
@@ -91,11 +94,18 @@ class SoundDesignGui(ttk.Frame):
         self.queue_content_lbl.grid(row=row, column=col, columnspan=colsp, padx=5, pady=5, sticky='W')
         col += colsp
 
+        row += 1
+        col = 0
+        colsp =4
+        self.fullq_content_lbl.grid(row=row, column=col, columnspan=colsp, padx=5, pady=1, sticky='N')
+        col += colsp
+
+
         row+=1
         col = 0
 
         colsp = 5
-        self.check_notes_lbl.grid(row=row, column=col, columnspan=colsp, rowspan=2, padx=5, pady=5)
+        self.check_notes_lbl.grid(row=row, column=col, columnspan=colsp, rowspan=2, padx=5, pady=1, sticky='N')
         col += colsp
 
         # </editor-fold>
@@ -237,9 +247,13 @@ class SoundDesignGui(ttk.Frame):
         self.queue_content_lbl_text.set("queue_content_lbl_text")
         self.queue_content_lbl = tk.Label(self, textvariable=self.queue_content_lbl_text, height= 1)
 
+        self.fullq_content_lbl_text = tk.StringVar()
+        self.fullq_content_lbl_text.set("fullq_content_lbl_text")
+        self.fullq_content_lbl = tk.Label(self, textvariable=self.fullq_content_lbl_text, height= 1)
+
         self.check_notes_lbl_text = tk.StringVar()
         self.check_notes_lbl_text.set("check notes here")
-        self.check_notes_lbl = WrappingLabel(self, textvariable=self.check_notes_lbl_text, height= 4)
+        self.check_notes_lbl = WrappingLabel(self, textvariable=self.check_notes_lbl_text, height= 3)
 
 
 def ext_pressed():

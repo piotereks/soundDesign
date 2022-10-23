@@ -70,7 +70,8 @@ class Tracker:
         self.root_note = 0
         self.last_note = None
         self.last_from_note = None
-        self.notes_pair =(None,None)
+        self.notes_pair =[None,None]
+        self.queue_content_wrk = None
         self.note_queue = Queue(maxsize = 16)
         # self.root_note = None
         self.pattern_idx = 0
@@ -306,12 +307,29 @@ class Tracker:
 
     def curr_notes_pair_action(self):
         log_call()
+
+    def fullq_content_action(self):
+        log_call()
+
     # </editor-fold>
 
     # <editor-fold desc="Queue functions">
     def get_queue_content(self):
         return 'empty' if self.note_queue.empty() else list(self.note_queue.queue)
         # return 'empty' if self.note_queue.empty() else xxx
+
+    def get_queue_content_full(self):
+        # queue_v = list(['bbbb'])
+        queue_v = []
+
+
+        print(f"{self.notes_pair[0]=} {queue_v}")
+        if self.notes_pair[0]:
+            queue_v += list([self.notes_pair[0]])
+        if not self.note_queue.empty():
+            queue_v += list(self.note_queue.queue)
+        return 'Empty' if not queue_v else queue_v
+
 
     def get_queue_pair(self):
         v_queue = list(self.note_queue.queue)
@@ -324,11 +342,13 @@ class Tracker:
 
 
 
-    def put_to_queue(self, note):
+    def put_to_queue(self, note, q_action = True):
 
         if not self.note_queue.full():
             self.note_queue.put(note)
-            self.queue_content_action()
+            if q_action:
+                self.queue_content_action()
+                self.fullq_content_action()
 
     def get_from_queue(self):
 
@@ -341,6 +361,7 @@ class Tracker:
         #     self.put_to_queue(self.last_from_note)
 
         self.queue_content_action()
+        self.fullq_content_action()
         return note
     # </editor-fold>
 
@@ -450,11 +471,13 @@ class Tracker:
                 # print(f'note {note} back to queue')
                 # self.put_to_queue(note)
                 print(f'note {self.last_from_note=} back to queue')
-                self.put_to_queue(self.last_from_note)
+                self.put_to_queue(self.last_from_note, q_action=False)
 
             from_note, to_note = self.get_queue_pair()
             if self.loopq and not to_note:
-                to_note=from_note
+                to_note=from_note  # TODO add put to queue
+                self.put_to_queue(from_note)
+            # self.scale = iso.Scale.chromatic
             # self.scale = iso.Scale.chromatic
             print("if in_pattern")
             from_notex = self.last_note
@@ -483,8 +506,10 @@ class Tracker:
             else:
                 print('else ', to_note)
                 self.beat = self.beat_none
-        self.notes_pair=(from_note,to_note)
-        self.curr_notes_pair_action()
+        self.notes_pair=[from_note,to_note]
+        self.queue_content_wrk = [from_note,to_note] + [' ']+ list(self.get_queue_content())
+        self.curr_notes_pair_action()  #TODO action
+        self.fullq_content_action()
         self.last_from_note=from_note
         if (to_note is None) or (from_note is None):
           from_note = None if not from_note else self.key.scale.indexOf(from_note)
