@@ -1,0 +1,5 @@
+isobar==0.1.1
+mido==1.2.10
+numpy==1.23.4
+pynput==1.7.6
+PyYAML==6.0
