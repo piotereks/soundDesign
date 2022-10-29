@@ -534,18 +534,19 @@ class Tracker:
         interval = note - root_note
         #print(f"{from_note=} {to_note=} {from_note-60=} {to_note-60=}  {root_note=} {note=} {interval=}")
 
-        rnd_pattern = self.patterns.get_random_pattern(interval) + root_note
-        len_pattern = len(rnd_pattern)-1
+        # pattern_notes = self.patterns.get_random_pattern(interval) + root_note
+        pattern_notes = self.patterns.get_pattern(interval) + root_note
+        len_pattern = len(pattern_notes)-1
 
-        print('Pseq:', list(iso.PSequence(rnd_pattern, repeats=1)))
-        print('Pseq + Degree - scale:', list(iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.key.scale)))
-        print('Pseq + Degree - key:', list(iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.key)))
+        print('Pseq:', list(iso.PSequence(pattern_notes, repeats=1)))
+        print('Pseq + Degree - scale:', list(iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key.scale)))
+        print('Pseq + Degree - key:', list(iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key)))
         print('bef Pdict2')
         print('=====================')
 
         return iso.PDict({
-            # iso.EVENT_NOTE: iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.scale),
-            iso.EVENT_NOTE: iso.PDegree(iso.PSequence(rnd_pattern, repeats=1), self.key),
+            # iso.EVENT_NOTE: iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.scale),
+            iso.EVENT_NOTE: iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key),
             iso.EVENT_DURATION: iso.PSequence([(4 / len_pattern) - 0.000000000000002], repeats=len_pattern),
             # iso.EVENT_OCTAVE: 5
             # iso.EVENT_DEGREE: xxxx

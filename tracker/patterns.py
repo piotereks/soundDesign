@@ -12,7 +12,7 @@ class Patterns:
     def __init__(self):
         self.__read_config_file__()
         self.pattern_size_for_interval = self.__init_pattern_size_for_interval__()
-
+        self.get_pattern = self.get_random_pattern
 
     @staticmethod
     def __init_pattern_size_for_interval__():
@@ -67,6 +67,7 @@ class Patterns:
     def get_random_pattern(self, interval):
 
       return random.choice(self.get_suitable_pattern(interval))
+
 
 
     def __read_config_file__(self):
