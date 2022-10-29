@@ -341,8 +341,8 @@ if __name__=="__main__":
 
 """
 Elements to place:
-* tempo knob
-* dropdown for play functions
+* tempo knob - done
+* dropdown for play functions - gui done, engine not
 * save midi functionality on exit
 
 * select scale key (dropdown) + rand key - done
