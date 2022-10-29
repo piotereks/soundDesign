@@ -189,6 +189,9 @@ def set_scale(event):
     my_tracker.key = iso.Key(my_tracker.key.tonic, scale_obj)
 
 
+def set_play_func(event):
+    # print(event.__dict__)
+    pass
 
 def play_pause():
     global app
@@ -214,6 +217,10 @@ def run_gui():
     root.geometry("800x600")
     root.title("soundDesign - pattern player")
 
+    # for t in range(600,0,-1):
+    #     print(f"xx: {t}")
+    #     my_tracker.set_tempo(t)
+
     app = SoundDesignGui(root)
 
     # app.key_rnd_btn_cmd_ext = lambda: keys_scale_action(app.keys_group.get(), my_tracker.scale.name)
@@ -234,7 +241,10 @@ def run_gui():
 
     app.scale_combo.bind("<<ComboboxSelected>>", set_scale)
     # combo.bind("<<ComboboxSelected>>", selection_changed)
-
+    app.play_func_combo.bind("<<ComboboxSelected>>", set_play_func)
+    app.tempo_h_scale_cmd_ext = lambda  tempo :  my_tracker.set_tempo(tempo)
+    app.set_scale(app.tempo_h_scale, from_=40, to=300, value=120)
+    # app.set_scale(app.tempo_h_scale, from_=33, to=77)
 
     my_tracker.scale_name_action = lambda: app.scale_set_name_txt.set('set:' + my_tracker.key.scale.name)
     my_tracker.check_notes_action = lambda: app.check_notes_lbl_text.set(my_tracker.check_notes)
@@ -243,6 +253,7 @@ def run_gui():
     # my_tracker.curr_notes_pair_action = lambda: app.curr_notes_pair_lbl_text.set('from to: '+str(my_tracker.notes_pair))
     my_tracker.curr_notes_pair_action = lambda: app.curr_notes_pair_lbl_text.set('from to: '+str(my_tracker.notes_pair))
     my_tracker.fullq_content_action = lambda: app.fullq_content_lbl_text.set('full queue: '+str(my_tracker.get_queue_content_full()))
+
 
     # print('---------------------'+ str(a_list))
     # my_tracker.check_notes_action =

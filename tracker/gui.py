@@ -42,13 +42,16 @@ class SoundDesignGui(ttk.Frame):
         self.grid_columnconfigure(5, weight=1)
         # </editor-fold>
 
-        self.__pp_btn__()
-        self.__metro_btn__()
-        self.__scale_rnd_btn__()
-        self.__notes_and_queue__()
-        self.__scale_combo__()
-        self.__loop_queue_chk__()
-        self.__keys__rad_btn__()
+        self.__pp_btn_init__()
+        self.__metro_btn_init__()
+        self.__scale_rnd_btn_init__()
+        self.__notes_and_queue_init__()
+        self.__scale_combo_init__()
+        self.__loop_queue_chk_init__()
+        self.__keys__rad_btn_init__()
+        self.__tempo_h_scale_init__()
+        self.__play_func_combo_init__()
+
 
         # <editor-fold desc="Description">
         col = 0
@@ -77,7 +80,13 @@ class SoundDesignGui(ttk.Frame):
         row+=1
         col = 0
 
-        self.metro_btn.grid(row=row, column=col, padx=5, pady=5, sticky ='wn')
+        self.metro_rad.grid(row=row, column=col, padx=5, pady=5, sticky ='wn')
+        col += 1
+
+        self.tempo_frm.grid(row=row, column=col, padx=5, pady=5, sticky ='wn')
+        col += 1
+
+        self.play_funct_frm.grid(row=row, column=col, padx=5, pady=5, sticky ='wn')
         col += 1
 
         row+=1
@@ -110,7 +119,7 @@ class SoundDesignGui(ttk.Frame):
 
         # </editor-fold>
 
-    def __loop_queue_chk__(self):
+    def __loop_queue_chk_init__(self):
         self.loop_queue_chk_cmd_ext = lambda: print('loop_queue_chk_cmd_ext')
 
         def __loop_queue_chk_cmd__(self_in):
@@ -125,7 +134,7 @@ class SoundDesignGui(ttk.Frame):
                                         command=lambda: __loop_queue_chk_cmd__(self))
 
 
-    def __metro_btn__(self):
+    def __metro_btn_init__(self):
         self.metro_btn_cmd_ext = lambda: print('metro_btn_cmd_ext')
 
         def __metro_btn_cmd__(self_in):
@@ -134,12 +143,12 @@ class SoundDesignGui(ttk.Frame):
             # self_in.__metro_btn_switch_cmd_int__()
             pass
         self.metro_on = tk.IntVar()
-        self.metro_btn = tk.Checkbutton(self, text="Metronome",
+        self.metro_rad = tk.Checkbutton(self, text="Metronome",
                                         variable=self.metro_on,
                                         onvalue=1, offvalue=0, height=2, width=10,
                                         command=lambda: __metro_btn_cmd__(self))
 
-    def __keys__rad_btn__(self):
+    def __keys__rad_btn_init__(self):
         def __key_rnd_btn__(self_in):
             self.__key_rnd_btn_cmd_int__ = lambda: print('__key_rnd_btn_cmd_int__')
             self.key_rnd_btn_cmd_ext = lambda: print('key_rnd_btn_cmd_ext')
@@ -176,7 +185,7 @@ class SoundDesignGui(ttk.Frame):
 
 
 
-    def __pp_btn__(self):
+    def __pp_btn_init__(self):
         self.pp_btn_cmd_ext = lambda: print('pp_btn_cmd_ext')
 
         def __pp_btn_switch_cmd_int__():
@@ -198,8 +207,8 @@ class SoundDesignGui(ttk.Frame):
                                    height= 1, width=10)
         # self.pp_btn.pack(padx=3, pady=2, side='left', anchor='nw')
 
-    def __scale_combo__(self):
-        self.__sscale_combo_cmd_int__ = lambda: print('_sscale_combo_cmd_int__')
+    def __scale_combo_init__(self):
+        self.__sscale_combo_cmd_int__ = lambda: print('__scale_combo_cmd_int__')
         self.scale_combo_cmd_ext = lambda: print('scale_combo_cmd_ext')
         def __scale_combo_cmd__(self_in):
             # self_in.__scale_combo_cmd_int__()
@@ -215,20 +224,27 @@ class SoundDesignGui(ttk.Frame):
         # self.scale_combo.set('gurusuruz')
         print(self.scale_combo.get())
 
-    def __scale_rnd_btn__(self):
-        self.__scale_rnd_btn_cmd_int__ = lambda: print('__scale_rnd_btn_cmd_int__')
+
+    def __scale_rnd_btn_init__(self):
+        # self.__scale_rnd_btn_cmd_int__ = lambda: print('__scale_rnd_btn_cmd_int__')
         self.scale_rnd_btn_cmd_ext = lambda: print('scale_rnd_btn_cmd_ext')
 
-        def __scale_rnd_btn_cmd__(self_in):
+        def __scale_rnd_btn_cmd__():
             # self_in.__scale_rnd_btn_cmd_int__()
-            self_in.scale_rnd_btn_cmd_ext()
+            self.scale_rnd_btn_cmd_ext()
             pass
 
 
-        self.scale_rnd_btn = tk.Button(self, text ="rnd scale", command=lambda: __scale_rnd_btn_cmd__(self),
+        self.scale_rnd_btn = tk.Button(self, text ="rnd scale", command=lambda: __scale_rnd_btn_cmd__(),
                                        height= 1, width=8)
 
-
+        # def __pp_btn_cmd__():
+        #     self.pp_btn_cmd_ext()
+        #     __pp_btn_switch_cmd_int__()
+        #     pass
+        #
+        # self.pp_btn = tk.Button(self, text ="Play", command=lambda: __pp_btn_cmd__(),
+        #                            height= 1, width=10)
 
         # self.scale_name_text = tk.StringVar()
         # self.scale_name_text.set("scale name")
@@ -238,7 +254,7 @@ class SoundDesignGui(ttk.Frame):
         self.scale_set_name_txt.set("scale name")
         self.scale_set_name_lbl = tk.Label(self, textvariable=self.scale_set_name_txt, height= 1, width=25)
 
-    def __notes_and_queue__(self):
+    def __notes_and_queue_init__(self):
         self.curr_notes_pair_lbl_text = tk.StringVar()
         self.curr_notes_pair_lbl_text.set("curr_notes_pair_lbl_text")
         self.curr_notes_pair_lbl = tk.Label(self, textvariable=self.curr_notes_pair_lbl_text, height= 1)
@@ -255,6 +271,53 @@ class SoundDesignGui(ttk.Frame):
         self.check_notes_lbl_text.set("check notes here")
         self.check_notes_lbl = WrappingLabel(self, textvariable=self.check_notes_lbl_text, height= 3)
 
+    def __tempo_h_scale_init__(self):
+        self.tempo_h_scale_cmd_ext = lambda x: print('tempo_h_scale_cmd_ext')
+
+        def __tempo_h_scale_switch_cmd_int__(position):
+            print("__tempo_h_scale_switch_cmd_int__")
+
+
+        def __tempo_h_scale_cmd__(position):
+            # print(position)
+            self.tempo_h_scale_cmd_ext(position)
+            # __tempo_h_scale_switch_cmd_int__(position)
+            pass
+        self.tempo_frm = ttk.Frame(self)
+        # tempo_val = tk.DoubleVar()
+        # tempo_val.set(50)
+        self.tempo_h_scale = tk.Scale(self.tempo_frm, command=lambda pos: __tempo_h_scale_cmd__(pos),
+                                      #variable=tempo_val,
+                   from_=1, to=100, orient=tk.HORIZONTAL)
+        self.tempo_h_scale.set(22)
+        self.tempo_h_scale.pack(side="top")
+
+        print(self.tempo_h_scale.config)
+
+    def set_scale(self, scale : ttk.Scale, from_=None, to=None, value=None):
+        if from_:
+            scale.config(from_=from_)
+        if to:
+            scale.config(to= to)
+        if value:
+            scale.set(value)
+
+    def __play_func_combo_init__(self):
+        self.play_funct_frm = ttk.Frame(self)
+
+        self.play_func_combo_lbl = tk.Label(self.play_funct_frm, text="play func", height=1)
+        self.play_func_combo_lbl.pack(side="top")
+
+        self.play_func_combo = ttk.Combobox(self.play_funct_frm,
+            state="readonly",
+            values=["func1", "func2", "func3", "func4"],
+            postcommand=lambda: print('play func postcommand')
+            ,width=25
+        )
+        self.play_func_combo.set("func1")
+        self.play_func_combo.pack(side="top")
+
+
 
 def ext_pressed():
     print('ext pressed')
@@ -265,7 +328,7 @@ def main():
 
     app = SoundDesignGui(root)
     app.pp_btn_cmd_ext = lambda: ext_pressed()
-    app.scale_rnd_btn_cmd_ext = lambda: app.scale_name_text.set(datetime.datetime.now().strftime('_%H%M%S'))
+    app.scale_rnd_btn_cmd_ext = lambda: app.scale_set_name_txt.set(datetime.datetime.now().strftime('_%H%M%S'))
 
 
     app.mainloop()
@@ -278,9 +341,13 @@ if __name__=="__main__":
 
 """
 Elements to place:
+* tempo knob
+* dropdown for play functions
+* save midi functionality on exit
+
 * select scale key (dropdown) + rand key - done
 * (+future bold on current)
-* future current notes to log (or rolling widget, but with some limited buffor)
+* future current notes to log (or rolling widget, but with some limited buffer)
 
 * Align elements so they do not skip, when resize
 * readonly combo - done

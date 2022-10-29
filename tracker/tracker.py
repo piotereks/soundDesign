@@ -379,6 +379,12 @@ class Tracker:
             , remove_when_done=False
         )
 
+    def set_tempo(self, new_tempo):
+        log_call()
+        print(f"b_read tempo: {self.timeline.get_tempo()=}, {new_tempo=}")
+        self.timeline.set_tempo(int(new_tempo))
+        print(f"a_read tempo: {self.timeline.get_tempo()=}, {new_tempo=}")
+
     def ts(self):
         log_call()
         self.timeline.stop()
