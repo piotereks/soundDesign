@@ -67,7 +67,8 @@ def rs():
 
 
 def save_midi():
-    my_tracker.midi_out.write()
+    my_tracker.save_midi()
+    # my_tracker.midi_out.write()
 
 def rand_scale():
     # my_tracker.scale = iso.Scale.random()
@@ -121,9 +122,9 @@ def old_main():
 
     print(sum(intervals_chain))
     # midi_out_flag = Tracker.MIDI_OUT_FILE
-    midi_out_flag = Tracker.MIDI_OUT_DEVICE
+    # midi_out_flag = Tracker.MIDI_OUT_DEVICE
     # midi_out_flag = Tracker.MIDI_OUT_DUMMY
-    midi_out_flag = Tracker.MIDI_OUT_MIX_FILE_DEVICE
+
 
     # my_tracker = Tracker(interval_array=intervals_chain, midi_out_flag=midi_out_flag)
     my_tracker = Tracker(midi_note_array=midi_notes_chain, note_array=notes_chain, midi_out_mode=midi_out_flag)
@@ -229,6 +230,9 @@ def run_gui():
     app.loop_queue_chk_cmd_ext = lambda: my_tracker.loop_play_queue_action(app.loop_queue_on.get())
     my_tracker.loopq = app.loop_queue_on.get()
 
+    app.save_midi_btn_cmd_ext = lambda: save_midi()
+    # app.play_func_rnd_btn_cmd_ext = lambda : print(None)  # to be replaced by real action
+
     app.pp_btn_cmd_ext = lambda: play_pause()
     app.scale_rnd_btn_cmd_ext = lambda: ui_rand_scale()
     # app.scale_name_text.set('req:' +my_tracker.scale.name)
@@ -261,7 +265,7 @@ def run_gui():
     my_tracker.queue_content_action = lambda: print(None)
     my_tracker.curr_notes_pair_action = lambda: print(None)
     my_tracker.loop_play_queue_action = lambda: print(None)
-
+    my_tracker.fullq_content_action = lambda: print(None)
 
 # see for GUI layouts :https://www.pythonguis.com/faq/pack-place-and-grid-in-tkinter/
 
@@ -269,7 +273,9 @@ def main():
     global app
     global my_tracker
     log_call()
-    midi_out_flag = Tracker.MIDI_OUT_DEVICE
+    # midi_out_flag = Tracker.MIDI_OUT_DEVICE
+    midi_out_flag = Tracker.MIDI_OUT_MIX_FILE_DEVICE
+    # midi_out_flag = Tracker.MIDI_OUT_FILE
     my_tracker = Tracker(midi_out_mode=midi_out_flag)
 
 
@@ -278,6 +284,7 @@ def main():
     # ts()  # make by  default not starting
     run_gui()
     ts()
+    save_midi()
 
 
 

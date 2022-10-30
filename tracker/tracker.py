@@ -13,6 +13,8 @@ from copy import deepcopy
 from queue import Queue
 import mido
 import math
+import shutil
+from datetime import datetime
 
 
 # <editor-fold desc="Init section">
@@ -33,7 +35,47 @@ class FileOut(iso.MidiFileOutputDevice, iso.MidiOutputDevice):
         iso.MidiFileOutputDevice.__init__(self, filename=filename)
         iso.MidiOutputDevice.__init__(self, device_name=device_name, send_clock=send_clock, virtual=virtual)
 
-    pass
+    def all_notes_off(self):
+        iso.MidiFileOutputDevice.all_notes_off(self)
+        iso.MidiOutputDevice.all_notes_off(self)
+
+    def control(self, control, value, channel):
+        iso.MidiFileOutputDevice.control(self, control=control, value=value, channel=channel)
+        iso.MidiOutputDevice.control(self, control=control, value=value, channel=channel)
+
+    def note_off(self,  note, channel):
+        iso.MidiFileOutputDevice.note_off(self, note=note, channel=channel)
+        iso.MidiOutputDevice.note_off(self, note=note, channel=channel)
+
+    def note_on(self, note, velocity, channel):
+        iso.MidiFileOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
+        iso.MidiOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
+
+    def program_change(self, program, channel):
+        iso.MidiFileOutputDevice.program_change(self, program=program, channel=channel)
+        iso.MidiOutputDevice.program_change(self, program=program, channel=channel)
+
+    def start(self):
+        iso.MidiFileOutputDevice.start(self)
+        iso.MidiOutputDevice.start(self)
+
+    def stop(self):
+        iso.MidiFileOutputDevice.stop(self)
+        iso.MidiOutputDevice.stop(self)
+
+    def tick(self):
+        iso.MidiFileOutputDevice.tick(self)
+        iso.MidiOutputDevice.tick(self)
+
+    # def write(self):
+    #     iso.MidiFileOutputDevice.write(self)
+
+
+    # def ticks_per_beat(self):
+    #     iso.MidiFileOutputDevice.ticks_per_beat
+    #         ticks_per_beat(self, *args, **kwargs)
+    #     iso.MidiOutputDevice.ticks_per_beat(self, *args, **kwargs)
+
 # self.midi_out = iso.MidiFileOutputDevice(filename)
 # print("file mode")
 # elif midi_out_mode == self.MIDI_OUT_DEVICE and not NO_MIDI_OUT:
@@ -67,7 +109,7 @@ class Tracker:
     # name = "Virtual Midi"
 
     # name= "loopMIDI 6"
-    def __init__(self, interval_array=None, note_array=None, midi_note_array=None, midi_out_mode='dummy'):
+    def __init__(self, interval_array=None, note_array=None, midi_note_array=None, midi_out_mode='dummy', filename="saved_midi_files\\xoutput.mid"):
         read_config_file_scales()
         my_beats = Beats()
         # self.scale = iso.Scale.major  - replaced by key, and scale always can be referred as self.key.scale
@@ -76,6 +118,7 @@ class Tracker:
         # self.root_midi = [('C')]  #TODO check what is root_midi used for
         self.midi_out = None
         self.track = None
+        self.filename = filename
         log_call()
         self.beat_count = 0
         self.diff_time = 0
@@ -88,6 +131,7 @@ class Tracker:
         self.notes_pair =[None,None]
         self.queue_content_wrk = None
         self.note_queue = Queue(maxsize = 16)
+
         # self.root_note = None
         self.pattern_idx = 0
         # self.pattern_array = None
@@ -169,11 +213,16 @@ class Tracker:
         print("init spa2:", self.pattern_array)
         print(list(self.pattern_array))
 
+    def save_midi(self):
+        date = datetime.now().strftime('%Y%m%d%H%M%S')
+        self.midi_out.write()
+        shutil.copy(self.filename, f"{self.filename.split('.')[0]}_{date}.mid")
+
     def init_timeline(self, midi_out_mode='dummy'):
         log_call()
         print(f" Device:{midi_out_mode}")
         print(f"{NO_MIDI_OUT=}")
-        filename = "xoutput.mid"
+        filename = self.filename
 
         if midi_out_mode == self.MIDI_OUT_FILE:
             self.midi_out = iso.MidiFileOutputDevice(filename)
@@ -182,7 +231,8 @@ class Tracker:
             self.midi_out = iso.MidiOutputDevice(device_name=self.name, send_clock=True)
             print("device mode")
         elif midi_out_mode ==  self.MIDI_OUT_MIX_FILE_DEVICE:
-            self.midi_out = FileOut(filename=filename, device_name=self.name, send_clock=True, virtual=True)
+            self.midi_out = FileOut(filename=filename, device_name=self.name, send_clock=True)
+            # self.midi_out = FileOut(filename=filename, device_name=self.name, send_clock=True, virtual=True)
             print("device mode")
         else:
             self.MIDI_OUT_DUMMY

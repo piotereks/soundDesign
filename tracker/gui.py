@@ -51,7 +51,8 @@ class SoundDesignGui(ttk.Frame):
         self.__keys__rad_btn_init__()
         self.__tempo_h_scale_init__()
         self.__play_func_combo_init__()
-
+        self.__save_midi_btn_init__()
+        # self.__play_func_midi_btn_init__()
 
         # <editor-fold desc="Description">
         col = 0
@@ -59,6 +60,10 @@ class SoundDesignGui(ttk.Frame):
 
         self.pp_btn.grid(row=row, column= col , padx=5, pady=5,sticky = 'w')
         col += 1
+
+        self.save_midi_btn.grid(row=row, column= col , padx=5, pady=5,sticky = 'w')
+        col += 1
+
 
         self.scale_rnd_btn.grid(row=row, column= col, padx=5, pady=5,sticky = 'W')
         col += 1
@@ -86,7 +91,8 @@ class SoundDesignGui(ttk.Frame):
         self.tempo_frm.grid(row=row, column=col, padx=5, pady=5, sticky ='wn')
         col += 1
 
-        self.play_funct_frm.grid(row=row, column=col, padx=5, pady=5, sticky ='wn')
+        colsp = 2
+        self.play_funct_frm.grid(row=row, column=col, columnspan=colsp, padx=5, pady=5, sticky ='wn')
         col += 1
 
         row+=1
@@ -303,10 +309,24 @@ class SoundDesignGui(ttk.Frame):
             scale.set(value)
 
     def __play_func_combo_init__(self):
+        # self.__play_func_rnd_btn_cmd_int__ = lambda: print('__play_func_rnd_btn_cmd_int__')
+        self.play_func_rnd_btn_cmd_ext = lambda: print('play_func_rnd_btn_cmd_ext')
+
+        def __play_func_rnd_btn_cmd__():
+            # self_in.__play_func_rnd_btn_cmd_int__()
+            self.play_func_rnd_btn_cmd_ext()
+            pass
+
         self.play_funct_frm = ttk.Frame(self)
 
+        self.play_func_rnd_btn = tk.Button(self.play_funct_frm, text="rnd func", command=lambda: __play_func_rnd_btn_cmd__(),
+                                           height=1, width=6)
+        self.play_func_rnd_btn.grid(column=0, row=0, ipady=5)
+        # self.play_func_midi_btn.pack(side="top")
+
         self.play_func_combo_lbl = tk.Label(self.play_funct_frm, text="play func", height=1)
-        self.play_func_combo_lbl.pack(side="top")
+        # self.play_func_combo_lbl.pack(side="top")
+        self.play_func_combo_lbl.grid(column=1, row=0)
 
         self.play_func_combo = ttk.Combobox(self.play_funct_frm,
             state="readonly",
@@ -315,7 +335,23 @@ class SoundDesignGui(ttk.Frame):
             ,width=25
         )
         self.play_func_combo.set("func1")
-        self.play_func_combo.pack(side="top")
+        # self.play_func_combo.pack(side="top")
+        self.play_func_combo.grid(column=1, row=1, sticky="e")
+
+
+
+    def __save_midi_btn_init__(self):
+        # self.__save_midi_btn_cmd_int__ = lambda: print('__save_midi_btn_cmd_int__')
+        self.save_midi_btn_cmd_ext = lambda: print('save_midi_btn_cmd_ext')
+
+        def __save_midi_btn_cmd__():
+            # self_in.__save_midi_btn_cmd_int__()
+            self.save_midi_btn_cmd_ext()
+            pass
+
+
+        self.save_midi_btn = tk.Button(self, text ="Save", command=lambda: __save_midi_btn_cmd__(),
+                                       height= 1, width=8)
 
 
 
