@@ -172,13 +172,22 @@ def old_main():
     # Keyboard(lambda x : xxx(x))
     Keyboard(lambda note : test_put_queue(note))
 
+def kb_stop():
+    kb.stop_listener()
+
+def kb_start():
+    kb.start_listener()
+
 
 def main():
     global my_tracker
+    global kb
     log_call()
-    midi_out_flag = Tracker.MIDI_OUT_DEVICE
+    # midi_out_flag = Tracker.MIDI_OUT_DEVICE
+    midi_out_flag = Tracker.MIDI_OUT_FILE
+
     my_tracker = Tracker(midi_out_mode=midi_out_flag)
-    Keyboard(lambda note: test_put_queue(note))
+    kb=Keyboard(lambda note: test_put_queue(note))
     sbpq()
 
 

@@ -123,6 +123,7 @@ def old_main():
     # midi_out_flag = Tracker.MIDI_OUT_FILE
     midi_out_flag = Tracker.MIDI_OUT_DEVICE
     # midi_out_flag = Tracker.MIDI_OUT_DUMMY
+    midi_out_flag = Tracker.MIDI_OUT_MIX_FILE_DEVICE
 
     # my_tracker = Tracker(interval_array=intervals_chain, midi_out_flag=midi_out_flag)
     my_tracker = Tracker(midi_note_array=midi_notes_chain, note_array=notes_chain, midi_out_mode=midi_out_flag)
@@ -181,11 +182,7 @@ def ui_rand_scale():
     app.scale_combo.set(my_tracker.key.scale.name)
 
 def set_scale(event):
-    # xxxx  = [scale for scale in iso.Scale.all() if scale.name ==app.scale_combo.get()]
-    # my_tracker.scale = xxxx[0]
     scale_obj =  iso.Scale.byname(app.scale_combo.get())
-    # my_tracker.scale = [scale for scale in iso.Scale.all() if scale.name == app.scale_combo.get()][0]
-    # my_tracker.scale = scale_obj
     my_tracker.key = iso.Key(my_tracker.key.tonic, scale_obj)
 
 

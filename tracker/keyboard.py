@@ -9,7 +9,8 @@ class Keyboard:
         self.play_keys = "q2w3er5t6y7ui9o0p[=]"
         self.func_on_note = function
         # self.func_on_note()
-        self.start_listerner(self)
+        # self.start_listerner(self)
+        self.start_kb_listener(self)
 
     def on_press(self, key):
         if not self.prev_key:
@@ -31,7 +32,7 @@ class Keyboard:
             return False
 
     @staticmethod
-    def start_listerner(self):
+    def start_kb_listener(self):
         # Collect events until released
         # with keyboard.Listener(
         #         on_press=self.on_press,
@@ -39,11 +40,20 @@ class Keyboard:
         #     listener.join()
 
         # ...or, in a non-blocking fashion:
-        listener = keyboard.Listener(
+        self.listener = keyboard.Listener(
             on_press=self.on_press,
             on_release=self.on_release)
-        listener.start()
+        self.listener.start()
         print('listener started')
+
+
+    def stop_listener(self):
+        self.listener.stop()
+
+    def start_listener(self):
+        self.listener.start()
+
+
 
 def xxx(x):
     print("asdfadf1111-:", x)

@@ -26,6 +26,19 @@ global IN_COLAB
 IN_COLAB = 'google.colab' in sys.modules
 NO_MIDI_OUT = mido.get_output_names() == [];
 
+
+class FileOut(iso.MidiFileOutputDevice, iso.MidiOutputDevice):
+
+    def __init__(self, filename, device_name, send_clock, virtual=False):
+        iso.MidiFileOutputDevice.__init__(self, filename=filename)
+        iso.MidiOutputDevice.__init__(self, device_name=device_name, send_clock=send_clock, virtual=virtual)
+
+    pass
+# self.midi_out = iso.MidiFileOutputDevice(filename)
+# print("file mode")
+# elif midi_out_mode == self.MIDI_OUT_DEVICE and not NO_MIDI_OUT:
+# self.midi_out = iso.MidiOutputDevice(device_name=self.name, send_clock=True)
+
 global my_tracker
 
 
@@ -40,6 +53,8 @@ class Tracker:
     MIDI_OUT_DUMMY = 0
     MIDI_OUT_FILE = 1
     MIDI_OUT_DEVICE = 2
+    MIDI_OUT_MIX_FILE_DEVICE = 3
+
 
     name = "Microsoft GS Wavetable Synth 0"
 
@@ -158,12 +173,16 @@ class Tracker:
         log_call()
         print(f" Device:{midi_out_mode}")
         print(f"{NO_MIDI_OUT=}")
+        filename = "xoutput.mid"
+
         if midi_out_mode == self.MIDI_OUT_FILE:
-            filename = "xoutput.mid"
             self.midi_out = iso.MidiFileOutputDevice(filename)
             print("file mode")
         elif midi_out_mode == self.MIDI_OUT_DEVICE and not NO_MIDI_OUT:
             self.midi_out = iso.MidiOutputDevice(device_name=self.name, send_clock=True)
+            print("device mode")
+        elif midi_out_mode ==  self.MIDI_OUT_MIX_FILE_DEVICE:
+            self.midi_out = FileOut(filename=filename, device_name=self.name, send_clock=True, virtual=True)
             print("device mode")
         else:
             self.MIDI_OUT_DUMMY
