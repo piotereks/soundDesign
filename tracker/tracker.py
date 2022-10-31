@@ -5,6 +5,7 @@ from isobar_fixes import *
 # one time init    (this is the best to used globals)
 # One time is sufficient, so basically this may be repeated
 
+import os
 import inspect
 from beats import *
 from patterns import *
@@ -109,7 +110,9 @@ class Tracker:
     # name = "Virtual Midi"
 
     # name= "loopMIDI 6"
-    def __init__(self, interval_array=None, note_array=None, midi_note_array=None, midi_out_mode='dummy', filename="saved_midi_files\\xoutput.mid"):
+    def __init__(self, interval_array=None, note_array=None, midi_note_array=None, midi_out_mode='dummy',
+                 filename=os.path.join("saved_midi_files","xoutput.mid")):
+
         read_config_file_scales()
         my_beats = Beats()
         # self.scale = iso.Scale.major  - replaced by key, and scale always can be referred as self.key.scale
@@ -231,7 +234,7 @@ class Tracker:
             self.midi_out = iso.MidiOutputDevice(device_name=self.name, send_clock=True)
             print("device mode")
         elif midi_out_mode ==  self.MIDI_OUT_MIX_FILE_DEVICE:
-            self.midi_out = FileOut(filename=filename, device_name=self.name, send_clock=True)
+            self.midi_out = FileOut(filename=filename, device_name=self.name, send_clock=True, virtual = NO_MIDI_OUT)
             # self.midi_out = FileOut(filename=filename, device_name=self.name, send_clock=True, virtual=True)
             print("device mode")
         else:
