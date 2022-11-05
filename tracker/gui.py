@@ -377,18 +377,18 @@ if __name__=="__main__":
 
 """
 Elements to place:
-* tempo knob - done
 * dropdown for play functions - gui done, engine not
-* save midi functionality on exit (or on play pause)
+* bold the note played (optional)
+* tempo is not written to file (probably)  - ignore this
 
+* tempo knob - done
+* save midi functionality on exit (or on play pause) - done
 * select scale key (dropdown) + rand key - done
-* (+future bold on current)
 * future current notes to log (or rolling widget, but with some limited buffer)
 
 * Align elements so they do not skip, when resize
 * readonly combo - done
 * combo - is it possible with search? - skip
-
 * rewrite functions to bind events  - not all tk object do have it
 
 Play functions
