@@ -379,8 +379,8 @@ if __name__=="__main__":
 Elements to place:
 * dropdown for play functions - gui done, engine not
 * bold the note played (optional)
-* tempo is not written to file (probably)  - ignore this
 
+* tempo is not written to file (probably)  - set_tempo MetaMessage have been added to file.
 * tempo knob - done
 * save midi functionality on exit (or on play pause) - done
 * select scale key (dropdown) + rand key - done

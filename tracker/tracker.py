@@ -16,6 +16,7 @@ import mido
 import math
 import shutil
 from datetime import datetime
+# import mido
 
 
 # <editor-fold desc="Init section">
@@ -454,7 +455,9 @@ class Tracker:
     def set_tempo(self, new_tempo):
         log_call()
         print(f"b_read tempo: {self.timeline.get_tempo()=}, {new_tempo=}")
+        # self.timeline.set_tempo(int(new_tempo))
         self.timeline.set_tempo(int(new_tempo))
+        self.midi_out.miditrack.append(mido.MetaMessage('set_tempo',tempo=mido.bpm2tempo(int(new_tempo)), time=0))
         print(f"a_read tempo: {self.timeline.get_tempo()=}, {new_tempo=}")
 
     def ts(self):
