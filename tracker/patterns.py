@@ -13,6 +13,8 @@ class Patterns:
         self.__read_config_file__()
         self.pattern_size_for_interval = self.__init_pattern_size_for_interval__()
         self.get_pattern = self.get_random_pattern
+        self.get_pattern = self.get_path_pattern
+        # self.get_pattern = self.get_one_note_pattern
 
     @staticmethod
     def __init_pattern_size_for_interval__():
@@ -65,10 +67,15 @@ class Patterns:
         return suitable_patterns
 
     def get_random_pattern(self, interval):
+        return random.choice(self.get_suitable_pattern(interval))
 
-      return random.choice(self.get_suitable_pattern(interval))
 
+    def get_one_note_pattern(self, interval):
+        return np.array([0, interval])
 
+    def get_path_pattern(self, interval):
+
+        return np.array([0,0]) if interval == 0 else np.arange(0, interval, np.sign(interval))
 
     def __read_config_file__(self):
         # print('reading config')
@@ -88,7 +95,12 @@ class Patterns:
 
 
 def main():
+    global ptrn
     ptrn = Patterns()
+    print(ptrn.get_random_pattern(5))
+    print(ptrn.get_one_note_pattern(5))
+    print(ptrn.get_suitable_pattern(5))
+
 
 
 

@@ -610,6 +610,7 @@ class Tracker:
         #print(f"{from_note=} {to_note=} {from_note-60=} {to_note-60=}  {root_note=} {note=} {interval=}")
 
         # pattern_notes = self.patterns.get_random_pattern(interval) + root_note
+        print(f"{self.patterns.get_pattern(interval)=}")
         pattern_notes = self.patterns.get_pattern(interval) + root_note
         len_pattern = len(pattern_notes)-1
 

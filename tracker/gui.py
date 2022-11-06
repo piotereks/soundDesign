@@ -360,7 +360,7 @@ def ext_pressed():
 def main():
     root = tk.Tk()
     root.geometry("800x600")
-    root.title("On/Off Toggle")
+    root.title("Sound Design GUI")
 
     app = SoundDesignGui(root)
     app.pp_btn_cmd_ext = lambda: ext_pressed()
@@ -378,6 +378,12 @@ if __name__=="__main__":
 """
 Elements to place:
 * dropdown for play functions - gui done, engine not
+* think over about how pause impacts file (is there a pause in timeline)?
+* pause happening on and end of beat?
+* adding meta information to midi file (with changes of scale)
+* register what options are done (as meta)
+* think about patterns that do reflect scale
+
 * bold the note played (optional)
 
 * tempo is not written to file (probably)  - set_tempo MetaMessage have been added to file.
