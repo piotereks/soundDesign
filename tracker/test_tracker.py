@@ -12,8 +12,8 @@ ptrn = Patterns()
 # pprint.pprint(ptrn.patterns_config['play_over']['patterns'])
 # print(list(map(lambda x : x['pattern'],ptrn.patterns_config['play_over']['patterns'])))
 interval = 3
-print('gsp:', interval, ptrn.get_suitable_pattern(interval))
-print('gsp:', -interval, ptrn.get_suitable_pattern(-interval))
+print('gsp:', interval, ptrn.all_suitable_patterns(interval))
+print('gsp:', -interval, ptrn.all_suitable_patterns(-interval))
 
 interval = 3
 print('grp:', interval, ptrn.get_random_pattern(interval))

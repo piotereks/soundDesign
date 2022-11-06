@@ -172,6 +172,12 @@ def dump_scales():
 # listener.start()
 # print('processing Done')
 
+def rand_play_funct():
+    selected_function=random.choice(my_tracker.patterns.pattern_methods_list)
+    # my_tracker.patterns.get_pattern.__name__ = selected_function
+    my_tracker.patterns.get_pattern = getattr(my_tracker.patterns, selected_function)
+    app.play_func_combo.set(selected_function)
+
 
 
 def ui_rand_scale():
@@ -188,8 +194,9 @@ def set_scale(event):
 
 
 def set_play_func(event):
-    # print(event.__dict__)
-    pass
+    # my_tracker.patterns.get_pattern.__name__ = app.play_func_combo.get()
+    my_tracker.patterns.get_pattern = getattr(my_tracker.patterns, app.play_func_combo.get())
+
 
 def play_pause():
     global app
@@ -230,19 +237,24 @@ def run_gui():
     app.loop_queue_chk_cmd_ext = lambda: my_tracker.loop_play_queue_action(app.loop_queue_on.get())
     my_tracker.loopq = app.loop_queue_on.get()
 
+    app.play_func_rnd_btn_cmd_ext = lambda: rand_play_funct()
+    #app.play_func_combo_ext = lambda: rand_play_funct()
+    app.play_func_combo['values'] = my_tracker.patterns.pattern_methods_list
+    app.play_func_combo.set(my_tracker.patterns.pattern_methods_list[0])
+    app.play_func_combo.bind("<<ComboboxSelected>>", set_play_func)
+
     app.save_midi_btn_cmd_ext = lambda: save_midi()
-    # app.play_func_rnd_btn_cmd_ext = lambda : print(None)  # to be replaced by real action
+
 
     app.pp_btn_cmd_ext = lambda: play_pause()
-    app.scale_rnd_btn_cmd_ext = lambda: ui_rand_scale()
-    # app.scale_name_text.set('req:' +my_tracker.scale.name)
-    app.scale_combo['values'] = sorted([scale.name for scale in iso.Scale.all()])
-    # app.scale_combo.set(my_tracker.scale.name)
-    app.scale_combo.set(my_tracker.key.scale.name)
 
+    app.scale_rnd_btn_cmd_ext = lambda: ui_rand_scale()
+    app.scale_combo['values'] = sorted([scale.name for scale in iso.Scale.all()])
+    app.scale_combo.set(my_tracker.key.scale.name)
     app.scale_combo.bind("<<ComboboxSelected>>", set_scale)
+
     # combo.bind("<<ComboboxSelected>>", selection_changed)
-    app.play_func_combo.bind("<<ComboboxSelected>>", set_play_func)
+
     app.tempo_h_scale_cmd_ext = lambda  tempo :  my_tracker.set_tempo(tempo)
     app.set_scale(app.tempo_h_scale, from_=40, to=300, value=120)
     # app.set_scale(app.tempo_h_scale, from_=33, to=77)

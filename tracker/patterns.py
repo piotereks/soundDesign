@@ -5,16 +5,31 @@ import yaml
 import pprint
 
 import sys
+import re
+from typing import Callable
+
 global IN_COLAB
 IN_COLAB = 'google.colab' in sys.modules
 
 class Patterns:
+
     def __init__(self):
         self.__read_config_file__()
         self.pattern_size_for_interval = self.__init_pattern_size_for_interval__()
-        self.get_pattern = self.get_random_pattern
-        self.get_pattern = self.get_path_pattern
+        # self.get_pattern = self.get_path_pattern
+        self.pattern_methods_list = self.__list_get_pattern_methods__()
+        self.get_pattern = getattr(self, self.pattern_methods_list[0])
+
+        # Callable[[], None]
         # self.get_pattern = self.get_one_note_pattern
+
+        # new_func = getattr(my_tracker, func.__name__)
+        # new_func()
+
+
+    def __list_get_pattern_methods__(self):
+        get_patt_search = re.compile('^get_.*_pattern$')
+        return [x for x in dir(self) if get_patt_search.search(x)]
 
     @staticmethod
     def __init_pattern_size_for_interval__():
@@ -27,10 +42,26 @@ class Patterns:
         pattern_size_for_interval = [{x} for x in range(max_range)]
         for x, y in filt_range:
             pattern_size_for_interval[x * y].add(x)
-        # print(pattern_size_for_interval)
+        print(pattern_size_for_interval)
         # pattern_size_for_interval[2]
         return pattern_size_for_interval
 
+
+    def __read_config_file__(self):
+        # print('reading config')
+        config_file = 'reviewed_pattern_cfg.yaml'
+        if IN_COLAB:
+            config_file = '/content/SoundDesign/tracker/' + config_file
+
+        with open(config_file, 'r') as file:
+            # with open('reviewed_pattern_cfg.yaml', 'r') as file:
+            self.patterns_config = yaml.safe_load(file)
+        # print(self.patterns_config)
+        # print(self.patterns_config['play_over'])
+        self.patterns = list(map(lambda x: np.array(x['pattern']), self.patterns_config['play_over']['patterns']))
+        # print('after list')
+
+        # pprint.pprint(self.patterns_config)
 
     @staticmethod
     def multiply_pattern(pattern, mult):
@@ -49,7 +80,7 @@ class Patterns:
             res_pattern = np.append(res_pattern, add_pattern)
         return res_pattern  # [:-1]
 
-    def get_suitable_pattern(self, interval):
+    def all_suitable_patterns(self, interval):
         # if interval==0:
         #   return None
         sign = np.sign(interval)
@@ -66,40 +97,36 @@ class Patterns:
         # print('sp for n:',suitable_patterns)
         return suitable_patterns
 
+# <editor-fold desc="get pattern functions">
     def get_random_pattern(self, interval):
-        return random.choice(self.get_suitable_pattern(interval))
+        return random.choice(self.all_suitable_patterns(interval))
 
 
     def get_one_note_pattern(self, interval):
         return np.array([0, interval])
 
+
     def get_path_pattern(self, interval):
-
         return np.array([0,0]) if interval == 0 else np.arange(0, interval, np.sign(interval))
+    # </editor-fold>
 
-    def __read_config_file__(self):
-        # print('reading config')
-        config_file = 'reviewed_pattern_cfg.yaml'
-        if IN_COLAB:
-          config_file = '/content/SoundDesign/tracker/'+config_file
-          
-        with open(config_file, 'r') as file:
-        # with open('reviewed_pattern_cfg.yaml', 'r') as file:
-            self.patterns_config = yaml.safe_load(file)
-        # print(self.patterns_config)
-        # print(self.patterns_config['play_over'])
-        self.patterns = list(map(lambda x: np.array(x['pattern']), self.patterns_config['play_over']['patterns']))
-        # print('after list')
 
-        # pprint.pprint(self.patterns_config)
+
+
 
 
 def main():
     global ptrn
     ptrn = Patterns()
-    print(ptrn.get_random_pattern(5))
-    print(ptrn.get_one_note_pattern(5))
-    print(ptrn.get_suitable_pattern(5))
+    # print(ptrn.get_random_pattern(5))
+    # print(ptrn.get_one_note_pattern(5))
+    # print(ptrn.all_suitable_patterns(5))
+    import pprint
+    # get_patt_search = re.compile('^get.*pattern$')
+    # pprint.pprint([x for x in dir(Patterns) if get_patt_search.search(x)])
+    # ptrn.list_get_pattern_methods()
+    print(ptrn.pattern_methods_list)
+    print(ptrn.get_pattern(5))
 
 
 
