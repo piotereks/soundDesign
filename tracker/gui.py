@@ -378,6 +378,7 @@ if __name__=="__main__":
 """
 Elements to place:
 * dropdown for play functions - gui done, engine not
+* hotkeys to rand functions
 * think over about how pause impacts file (is there a pause in timeline)?
 * pause happening on and end of beat?
 * adding meta information to midi file (with changes of scale)

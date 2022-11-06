@@ -173,11 +173,12 @@ def dump_scales():
 # print('processing Done')
 
 def rand_play_funct():
-    selected_function=random.choice(my_tracker.patterns.pattern_methods_list)
+    selected_function=random.choice(my_tracker.patterns.pattern_methods_short_list)
     # my_tracker.patterns.get_pattern.__name__ = selected_function
-    my_tracker.patterns.get_pattern = getattr(my_tracker.patterns, selected_function)
+    my_tracker.patterns.get_pattern = getattr(my_tracker.patterns, 'get_'+selected_function+'_pattern' )
     app.play_func_combo.set(selected_function)
-
+    # my_tracker.patterns.get_pattern = getattr(my_tracker.patterns,
+    #                                           'get_'+app.play_func_combo.get()+'_pattern')
 
 
 def ui_rand_scale():
@@ -195,7 +196,8 @@ def set_scale(event):
 
 def set_play_func(event):
     # my_tracker.patterns.get_pattern.__name__ = app.play_func_combo.get()
-    my_tracker.patterns.get_pattern = getattr(my_tracker.patterns, app.play_func_combo.get())
+    my_tracker.patterns.get_pattern = getattr(my_tracker.patterns,
+                                              'get_'+app.play_func_combo.get()+'_pattern')
 
 
 def play_pause():
@@ -239,8 +241,10 @@ def run_gui():
 
     app.play_func_rnd_btn_cmd_ext = lambda: rand_play_funct()
     #app.play_func_combo_ext = lambda: rand_play_funct()
-    app.play_func_combo['values'] = my_tracker.patterns.pattern_methods_list
-    app.play_func_combo.set(my_tracker.patterns.pattern_methods_list[0])
+    # app.play_func_combo['values'] = my_tracker.patterns.pattern_methods_list
+    # app.play_func_combo.set(my_tracker.patterns.pattern_methods_list[0])
+    app.play_func_combo['values'] = my_tracker.patterns.pattern_methods_short_list
+    app.play_func_combo.set(my_tracker.patterns.pattern_methods_short_list[0])
     app.play_func_combo.bind("<<ComboboxSelected>>", set_play_func)
 
     app.save_midi_btn_cmd_ext = lambda: save_midi()

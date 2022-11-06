@@ -18,8 +18,9 @@ class Patterns:
         self.pattern_size_for_interval = self.__init_pattern_size_for_interval__()
         # self.get_pattern = self.get_path_pattern
         self.pattern_methods_list = self.__list_get_pattern_methods__()
+        self.pattern_methods_short_list  = [re.sub('get_(.*)_pattern', '\g<1>', method) for method in self.__list_get_pattern_methods__()]
         self.get_pattern = getattr(self, self.pattern_methods_list[0])
-
+        # re.sub('abc(.*)xyz', '\g<1>', 'abcdefprstuwxyz')
         # Callable[[], None]
         # self.get_pattern = self.get_one_note_pattern
 
