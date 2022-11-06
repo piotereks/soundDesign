@@ -43,7 +43,7 @@ class Patterns:
         pattern_size_for_interval = [{x} for x in range(max_range)]
         for x, y in filt_range:
             pattern_size_for_interval[x * y].add(x)
-        print(pattern_size_for_interval)
+        # print(pattern_size_for_interval)
         # pattern_size_for_interval[2]
         return pattern_size_for_interval
 

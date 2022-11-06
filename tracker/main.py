@@ -3,7 +3,7 @@ import isobar
 from tracker import *
 from patterns import *
 from gui import *
-from pynput import keyboard
+# from pynput import keyboard
 from keyboard import *
 global IN_COLAB
 IN_COLAB = 'google.colab' in sys.modules
@@ -70,9 +70,9 @@ def save_midi():
     my_tracker.save_midi()
     # my_tracker.midi_out.write()
 
-def rand_scale():
-    # my_tracker.scale = iso.Scale.random()
-    my_tracker.key = iso.Key(iso.key.tonic, iso.Scale.random())
+# def xxxrand_scale():
+#     # my_tracker.scale = iso.Scale.random()
+#     my_tracker.key = iso.Key(iso.key.tonic, iso.Scale.random())
 
 def sbft(note_from = 60, note_to = 64):
     my_tracker.beat = lambda: my_tracker.play_from_to(note_from, note_to)
@@ -96,7 +96,7 @@ def cmp():
     # print('expected:\n', my_tracker.expected_array)
     print('expected:\n', [y for x in my_tracker.pattern_array for y in list(x['note'])])
     print('played:\n', [x.note for x in my_tracker.midi_out.miditrack if x.type == 'note_on'])
-def test_put_queue(note):
+def put_in_queue(note):
     print('test_put_queue: ',note)
     # my_tracker.note_queue.put(note)
     my_tracker.put_to_queue(note)
@@ -141,7 +141,7 @@ def old_main():
     #     listener.join()
     sbft(None,None)
     # Keyboard(lambda x : xxx(x))
-    Keyboard(lambda note : test_put_queue(note))
+    Keyboard(lambda note : put_in_queue(note))
 # These are work in progress debug functions
 def find_scale_dups():
     import itertools
@@ -181,12 +181,17 @@ def rand_play_funct():
     app.play_func_combo.set(selected_function)
     my_tracker.patterns.set_pattern_function(selected_function)
 
-def ui_rand_scale():
+def metro_on_off():
+    app.metro_on.set((app.metro_on.get())+1%2)
+    my_tracker.metro_start_stop(app.metro_on)
 
+def rand_key():
+    app.keys_group.set(random.choice(app.names))
+    keys_scale_action(app.keys_group.get(), my_tracker.key.scale.name)
+
+
+def rand_scale():
     my_tracker.key = iso.Key(my_tracker.key.tonic, iso.Scale.random())
-    # my_tracker.scale = iso.Scale.random()
-    # my_tracker.key = iso.Key(my_tracker.key.tonic, my_tracker.scale)
-    # app.scale_name_text.set('req:' + my_tracker.scale.name)  # label should be changed also in sync, so it will go to timeline
     app.scale_combo.set(my_tracker.key.scale.name)
 
 def set_scale(event):
@@ -231,8 +236,7 @@ def run_gui():
 
     app = SoundDesignGui(root)
 
-    # app.key_rnd_btn_cmd_ext = lambda: keys_scale_action(app.keys_group.get(), my_tracker.scale.name)
-    # app.key_radio_cmd_ext = lambda: keys_scale_action(app.keys_group.get(), my_tracker.scale.name)
+
     app.key_rnd_btn_cmd_ext = lambda: keys_scale_action(app.keys_group.get(), my_tracker.key.scale.name)
     app.key_radio_cmd_ext = lambda: keys_scale_action(app.keys_group.get(), my_tracker.key.scale.name)
 
@@ -241,37 +245,43 @@ def run_gui():
     my_tracker.loopq = app.loop_queue_on.get()
 
     app.play_func_rnd_btn_cmd_ext = lambda: rand_play_funct()
-    #app.play_func_combo_ext = lambda: rand_play_funct()
-    # app.play_func_combo['values'] = my_tracker.patterns.pattern_methods_list
-    # app.play_func_combo.set(my_tracker.patterns.pattern_methods_list[0])
     app.play_func_combo['values'] = my_tracker.patterns.pattern_methods_short_list
     app.play_func_combo.set(my_tracker.patterns.pattern_methods_short_list[0])
     app.play_func_combo.bind("<<ComboboxSelected>>", set_play_func)
-    # set_pattern_function
+
 
     app.save_midi_btn_cmd_ext = lambda: save_midi()
 
 
     app.pp_btn_cmd_ext = lambda: play_pause()
 
-    app.scale_rnd_btn_cmd_ext = lambda: ui_rand_scale()
+    app.scale_rnd_btn_cmd_ext = lambda: rand_scale()
     app.scale_combo['values'] = sorted([scale.name for scale in iso.Scale.all()])
     app.scale_combo.set(my_tracker.key.scale.name)
     app.scale_combo.bind("<<ComboboxSelected>>", set_scale)
 
-    # combo.bind("<<ComboboxSelected>>", selection_changed)
 
     app.tempo_h_scale_cmd_ext = lambda  tempo :  my_tracker.set_tempo(tempo)
     app.set_scale(app.tempo_h_scale, from_=40, to=300, value=120)
-    # app.set_scale(app.tempo_h_scale, from_=33, to=77)
+
 
     my_tracker.scale_name_action = lambda: app.scale_set_name_txt.set('set:' + my_tracker.key.scale.name)
     my_tracker.check_notes_action = lambda: app.check_notes_lbl_text.set(my_tracker.check_notes)
-    # my_tracker.queue_content_action = lambda: app.queue_content_lbl_text.set('queue: '+str(my_tracker.get_queue_content()) ))
-    my_tracker.queue_content_action = lambda: app.queue_content_lbl_text.set('queue: '+str(my_tracker.get_queue_content()) + ' from to: '+str(my_tracker.notes_pair))
-    # my_tracker.curr_notes_pair_action = lambda: app.curr_notes_pair_lbl_text.set('from to: '+str(my_tracker.notes_pair))
+    my_tracker.queue_content_action = lambda: app.queue_content_lbl_text.set('queue: '+str(my_tracker.get_queue_content())
+                                            + ' from to: '+str(my_tracker.notes_pair))
     my_tracker.curr_notes_pair_action = lambda: app.curr_notes_pair_lbl_text.set('from to: '+str(my_tracker.notes_pair))
     my_tracker.fullq_content_action = lambda: app.fullq_content_lbl_text.set('full queue: '+str(my_tracker.get_queue_content_full()))
+
+    keyboard.key_z_function = lambda : app.pp_btn_cmd()
+    # keyboard.key_space_function = lambda : play_pause()
+    keyboard.key_x_function = lambda: metro_on_off()
+    keyboard.key_c_function = lambda : print("key c")
+    keyboard.key_v_function = lambda : print("key v")
+    keyboard.key_b_function = lambda : rand_scale()
+    keyboard.key_n_function = lambda : rand_key()
+    # keyboard.key_n_function = lambda : print("keyx n")
+    keyboard.key_m_function = lambda : rand_play_funct()
+
 
 
     # print('---------------------'+ str(a_list))
@@ -290,6 +300,7 @@ def run_gui():
 def main():
     global app
     global my_tracker
+    global keyboard
     log_call()
     # midi_out_flag = Tracker.MIDI_OUT_DEVICE
     midi_out_flag = Tracker.MIDI_OUT_MIX_FILE_DEVICE
@@ -297,7 +308,7 @@ def main():
     my_tracker = Tracker(midi_out_mode=midi_out_flag)
 
 
-    Keyboard(lambda note: test_put_queue(note))
+    keyboard = Keyboard(lambda note: put_in_queue(note))
     # sbpq()
     # ts()  # make by  default not starting
     run_gui()

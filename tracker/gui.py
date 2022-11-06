@@ -161,7 +161,7 @@ class SoundDesignGui(ttk.Frame):
 
             def __key_rnd_btn_cmd__(self_in_2):
                 # self_in.__key_rnd_btn_cmd_int__()
-                self.keys_group.set(random.choice(names))
+                self.keys_group.set(random.choice(self.names))
                 self.key_rnd_btn_cmd_ext()
                 pass
 
@@ -176,14 +176,14 @@ class SoundDesignGui(ttk.Frame):
             self_in.key_radio_cmd_ext()
             pass
 
-        names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+        self.names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
         self.keys_frm = ttk.Frame(self)
         __key_rnd_btn__(self.keys_frm)
         self.key_rnd_btn.grid(row=0, column=0, padx=10)
         label = ttk.Label(self.keys_frm, text='keys:').grid(row=0, column=1, ipadx=2)
-        self.keys_group = tk.StringVar(self.keys_frm, names[0])
+        self.keys_group = tk.StringVar(self.keys_frm, self.names[0])
 
-        for (value, text) in enumerate(names):
+        for (value, text) in enumerate(self.names):
             ttk.Radiobutton(self.keys_frm, text=text, variable=self.keys_group,
                             value=text, command=lambda: __key_radio_cmd__(self) ).grid(row=0, column=value+2, padx=2)
 
@@ -193,6 +193,7 @@ class SoundDesignGui(ttk.Frame):
 
     def __pp_btn_init__(self):
         self.pp_btn_cmd_ext = lambda: print('pp_btn_cmd_ext')
+
 
         def __pp_btn_switch_cmd_int__():
 
@@ -209,8 +210,9 @@ class SoundDesignGui(ttk.Frame):
             __pp_btn_switch_cmd_int__()
             pass
 
+        self.pp_btn_cmd = __pp_btn_cmd__
         self.pp_btn = tk.Button(self, text ="Play", command=lambda: __pp_btn_cmd__(),
-                                   height= 1, width=10)
+                                height= 1, width=10)
         # self.pp_btn.pack(padx=3, pady=2, side='left', anchor='nw')
 
     def __scale_combo_init__(self):

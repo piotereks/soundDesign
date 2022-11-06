@@ -9,6 +9,7 @@ import os
 import inspect
 from beats import *
 from patterns import *
+from log_call import *
 import pprint
 from copy import deepcopy
 from queue import Queue
@@ -86,8 +87,8 @@ class FileOut(iso.MidiFileOutputDevice, iso.MidiOutputDevice):
 global my_tracker
 
 
-def log_call():
-    print(inspect.stack()[1][3])
+# def log_call():
+#     print(inspect.stack()[1][3])
 # </editor-fold>
 
 
@@ -610,7 +611,7 @@ class Tracker:
         #print(f"{from_note=} {to_note=} {from_note-60=} {to_note-60=}  {root_note=} {note=} {interval=}")
 
         # pattern_notes = self.patterns.get_random_pattern(interval) + root_note
-        print(f"{self.patterns.get_pattern(interval)=}")
+        # print(f"{self.patterns.get_pattern(interval)=}")
         pattern_notes = self.patterns.get_pattern(interval) + root_note
         len_pattern = len(pattern_notes)-1
 
