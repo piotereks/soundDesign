@@ -379,16 +379,30 @@ if __name__=="__main__":
 
 """
 Elements to place:
-* dropdown for play functions - gui done, engine not
-* hotkeys to rand functions
+
 * think over about how pause impacts file (is there a pause in timeline)?
-* pause happening on and end of beat?
+* pause happening on and end of beat? no - not decided what to do
 * adding meta information to midi file (with changes of scale)
 * register what options are done (as meta)
+
+* separate midi channel and midi track for metronome. 
+   - not possile with this package, all functions would need to be modified
+
+MidiMeta 
+key_signature 
+A A#m Ab Abm Am B Bb Bbm Bm C C# C#m Cb Cm D D#m Db Dm E Eb Ebm Em F F# F#m Fm G G#m Gb Gm
+marker
+lyrics
+instrument_name
+text
+
 * think about patterns that do reflect scale
 
 * bold the note played (optional)
 
+
+* dropdown for play functions - done
+* hotkeys to rand functions - done
 * tempo is not written to file (probably)  - set_tempo MetaMessage have been added to file.
 * tempo knob - done
 * save midi functionality on exit (or on play pause) - done
