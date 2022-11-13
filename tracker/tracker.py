@@ -31,6 +31,11 @@ global IN_COLAB
 IN_COLAB = 'google.colab' in sys.modules
 NO_MIDI_OUT = mido.get_output_names() == [];
 
+global MULTI_TRACK
+MULTI_TRACK = True
+MULTI_TRACK = False
+
+# class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
 class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
 
 
@@ -45,6 +50,8 @@ class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
         self.channel_track=[0]
         self.time = 0
         self.last_event_time = 0
+
+
 
     def extra_track(self, channel=None):
         if channel:
@@ -84,6 +91,15 @@ class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
             self.last_event_time = self.time
 
 
+
+if not MULTI_TRACK:
+    class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
+        pass
+
+
+    # def __init__(self, filename):
+    #     super.__init__(self, filename=filename)
+
 # class FileOut(iso.MidiFileOutputDevice, iso.MidiOutputDevice):
 class FileOut(MidiFileManyTracksOutputDevice, iso.MidiOutputDevice):
 
@@ -92,46 +108,55 @@ class FileOut(MidiFileManyTracksOutputDevice, iso.MidiOutputDevice):
         MidiFileManyTracksOutputDevice.__init__(self, filename=filename)
         iso.MidiOutputDevice.__init__(self, device_name=device_name, send_clock=send_clock, virtual=virtual)
 
-    def all_notes_off(self):
-        # iso.MidiFileOutputDevice.all_notes_off(self)
-        MidiFileManyTracksOutputDevice.all_notes_off(self)
-        iso.MidiOutputDevice.all_notes_off(self)
-
-    def control(self, control, value, channel):
-        # iso.MidiFileOutputDevice.control(self, control=control, value=value, channel=channel)
-        MidiFileManyTracksOutputDevice.control(self, control=control, value=value, channel=channel)
-        iso.MidiOutputDevice.control(self, control=control, value=value, channel=channel)
-
-    def note_off(self,  note, channel):
-        # iso.MidiFileOutputDevice.note_off(self, note=note, channel=channel)
-        MidiFileManyTracksOutputDevice.note_off(self, note=note, channel=channel)
-        iso.MidiOutputDevice.note_off(self, note=note, channel=channel)
-
-    def note_on(self, note, velocity, channel):
-        print(f"----------------{channel=}")
-        # iso.MidiFileOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
-        MidiFileManyTracksOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
-        iso.MidiOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
-
-    def program_change(self, program, channel):
-        # iso.MidiFileOutputDevice.program_change(self, program=program, channel=channel)
-        MidiFileManyTracksOutputDevice.program_change(self, program=program, channel=channel)
-        iso.MidiOutputDevice.program_change(self, program=program, channel=channel)
-
-    def start(self):
-        # iso.MidiFileOutputDevice.start(self)
-        MidiFileManyTracksOutputDevice.start(self)
-        iso.MidiOutputDevice.start(self)
-
-    def stop(self):
-        # iso.MidiFileOutputDevice.stop(self)
-        MidiFileManyTracksOutputDevice.stop(self)
-        iso.MidiOutputDevice.stop(self)
-
-    def tick(self):
-        # iso.MidiFileOutputDevice.tick(self)
-        MidiFileManyTracksOutputDevice.tick(self)
-        iso.MidiOutputDevice.tick(self)
+    # def all_notes_off(self):
+    #     # iso.MidiFileOutputDevice.all_notes_off(self)
+    #     # MidiFileManyTracksOutputDevice.all_notes_off(self)
+    #     # iso.MidiOutputDevice.all_notes_off(self)
+    #     super().all_notes_off()
+    #
+    # def control(self, control, value, channel):
+    #     # iso.MidiFileOutputDevice.control(self, control=control, value=value, channel=channel)
+    #     # MidiFileManyTracksOutputDevice.control(self, control=control, value=value, channel=channel)
+    #     # iso.MidiOutputDevice.control(self, control=control, value=value, channel=channel)
+    #     super().control(control=control, value=value, channel=channel)
+    #
+    # def note_off(self,  note, channel):
+    #     # iso.MidiFileOutputDevice.note_off(self, note=note, channel=channel)
+    #     # MidiFileManyTracksOutputDevice.note_off(self, note=note, channel=channel)
+    #     # iso.MidiOutputDevice.note_off(self, note=note, channel=channel)
+    #     super().note_off(note=note, channel=channel)
+    #
+    # def note_on(self, note, velocity, channel):
+    #     print(f"----------------{channel=}")
+    #     # iso.MidiFileOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
+    #     # MidiFileManyTracksOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
+    #     # iso.MidiOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
+    #     super().note_on(note=note, velocity=velocity, channel=channel)
+    #
+    # def program_change(self, program, channel):
+    #     # iso.MidiFileOutputDevice.program_change(self, program=program, channel=channel)
+    #     # MidiFileManyTracksOutputDevice.program_change(self, program=program, channel=channel)
+    #     # iso.MidiOutputDevice.program_change(self, program=program, channel=channel)
+    #     super().program_change(program=program, channel=channel)
+    #
+    #
+    # def start(self):
+    #     # iso.MidiFileOutputDevice.start(self)
+    #     # MidiFileManyTracksOutputDevice.start(self)
+    #     # iso.MidiOutputDevice.start(self)
+    #     super().start()
+    #
+    # def stop(self):
+    #     # iso.MidiFileOutputDevice.stop(self)
+    #     # MidiFileManyTracksOutputDevice.stop(self)
+    #     # iso.MidiOutputDevice.stop(self)
+    #     super().stop()
+    #
+    # def tick(self):
+    #     # iso.MidiFileOutputDevice.tick(self)
+    #     # MidiFileManyTracksOutputDevice.tick(self)
+    #     # iso.MidiOutputDevice.tick(self)
+    #     super().tick()
 
     # def write(self):
     #     iso.MidiFileOutputDevice.write(self)
@@ -307,6 +332,7 @@ class Tracker:
             self.midi_out = iso.DummyOutputDevice()
             print("dummy mode")
 
+        print(f"----------- {MULTI_TRACK=}")
         # midi_out = iso.DummyOutputDevice()
         self.timeline = iso.Timeline(120, output_device=self.midi_out)
         # self.timeline.background()  # use background ts()instead of run to enable live performing (async notes passing)
@@ -370,7 +396,8 @@ class Tracker:
     # <editor-fold desc="Metro functions">
     def metro_timeline(self):
         log_call()
-        self.midi_out.extra_track(9)  # for percussion channel 10 (or 9 when counting from 0).
+        if MULTI_TRACK:
+            self.midi_out.extra_track(9)  # for percussion channel 10 (or 9 when counting from 0).
         return self.timeline.schedule({
             "action": lambda: self.metro_beat()
             ,"duration": 4
