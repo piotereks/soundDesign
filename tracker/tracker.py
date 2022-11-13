@@ -51,7 +51,9 @@ class FileOut(iso.MidiFileOutputDevice, iso.MidiOutputDevice):
         iso.MidiOutputDevice.note_off(self, note=note, channel=channel)
 
     def note_on(self, note, velocity, channel):
-        iso.MidiFileOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
+        print(f"----------------{channel=}")
+        if channel!=9:  # percussion from metronome
+            iso.MidiFileOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
         iso.MidiOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
 
     def program_change(self, program, channel):
