@@ -31,45 +31,106 @@ global IN_COLAB
 IN_COLAB = 'google.colab' in sys.modules
 NO_MIDI_OUT = mido.get_output_names() == [];
 
+class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
 
-class FileOut(iso.MidiFileOutputDevice, iso.MidiOutputDevice):
+
+    def __init__(self, filename):
+        self.filename = filename
+        self.midifile = mido.MidiFile()
+        self.miditrack = [mido.MidiTrack()]
+        # self.midifile.tracks.append(self.miditrack)
+        for track in self.miditrack:
+            self.midifile.tracks.append(track)
+        # [self.midifile.tracks.append(track) for track in self.miditrack]
+        self.channel_track=[0]
+        self.time = 0
+        self.last_event_time = 0
+
+    def extra_track(self, channel=None):
+        if channel:
+            if not [x for x in self.channel_track if x == channel]:
+                track=mido.MidiTrack()
+                self.miditrack.append(track)
+                self.midifile.tracks.append(track)
+                self.channel_track.append(channel)
+
+
+    def note_on(self, note=60, velocity=64, channel=0):
+        #------------------------------------------------------------------------
+        # avoid rounding errors
+        #------------------------------------------------------------------------
+        try:
+            track = self.channel_track.index(channel)
+        except:
+            track = 0
+        print(f"----------------track var: {channel=} {track=}")
+        if track >= 0:
+            print(f"------------note on: {track=}, {note=}, {channel=}")
+            dt = self.time - self.last_event_time
+            dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
+            self.miditrack[track].append(mido.Message('note_on', note=note, velocity=velocity, channel=channel, time=dt_ticks))
+            self.last_event_time = self.time
+
+    def note_off(self, note=60, channel=0):
+        try:
+            track = self.channel_track.index(channel)
+        except:
+            track = 0
+        if track >= 0:
+            print(f"------------note on: {track=}, {note=}, {channel=}")
+            dt = self.time - self.last_event_time
+            dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
+            self.miditrack[track].append(mido.Message('note_off', note=note, channel=channel, time=dt_ticks))
+            self.last_event_time = self.time
+
+
+# class FileOut(iso.MidiFileOutputDevice, iso.MidiOutputDevice):
+class FileOut(MidiFileManyTracksOutputDevice, iso.MidiOutputDevice):
 
     def __init__(self, filename, device_name, send_clock, virtual=False):
-        iso.MidiFileOutputDevice.__init__(self, filename=filename)
+        # iso.MidiFileOutputDevice.__init__(self, filename=filename)
+        MidiFileManyTracksOutputDevice.__init__(self, filename=filename)
         iso.MidiOutputDevice.__init__(self, device_name=device_name, send_clock=send_clock, virtual=virtual)
 
     def all_notes_off(self):
-        iso.MidiFileOutputDevice.all_notes_off(self)
+        # iso.MidiFileOutputDevice.all_notes_off(self)
+        MidiFileManyTracksOutputDevice.all_notes_off(self)
         iso.MidiOutputDevice.all_notes_off(self)
 
     def control(self, control, value, channel):
-        iso.MidiFileOutputDevice.control(self, control=control, value=value, channel=channel)
+        # iso.MidiFileOutputDevice.control(self, control=control, value=value, channel=channel)
+        MidiFileManyTracksOutputDevice.control(self, control=control, value=value, channel=channel)
         iso.MidiOutputDevice.control(self, control=control, value=value, channel=channel)
 
     def note_off(self,  note, channel):
-        iso.MidiFileOutputDevice.note_off(self, note=note, channel=channel)
+        # iso.MidiFileOutputDevice.note_off(self, note=note, channel=channel)
+        MidiFileManyTracksOutputDevice.note_off(self, note=note, channel=channel)
         iso.MidiOutputDevice.note_off(self, note=note, channel=channel)
 
     def note_on(self, note, velocity, channel):
         print(f"----------------{channel=}")
-        if channel!=9:  # percussion from metronome
-            iso.MidiFileOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
+        # iso.MidiFileOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
+        MidiFileManyTracksOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
         iso.MidiOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
 
     def program_change(self, program, channel):
-        iso.MidiFileOutputDevice.program_change(self, program=program, channel=channel)
+        # iso.MidiFileOutputDevice.program_change(self, program=program, channel=channel)
+        MidiFileManyTracksOutputDevice.program_change(self, program=program, channel=channel)
         iso.MidiOutputDevice.program_change(self, program=program, channel=channel)
 
     def start(self):
-        iso.MidiFileOutputDevice.start(self)
+        # iso.MidiFileOutputDevice.start(self)
+        MidiFileManyTracksOutputDevice.start(self)
         iso.MidiOutputDevice.start(self)
 
     def stop(self):
-        iso.MidiFileOutputDevice.stop(self)
+        # iso.MidiFileOutputDevice.stop(self)
+        MidiFileManyTracksOutputDevice.stop(self)
         iso.MidiOutputDevice.stop(self)
 
     def tick(self):
-        iso.MidiFileOutputDevice.tick(self)
+        # iso.MidiFileOutputDevice.tick(self)
+        MidiFileManyTracksOutputDevice.tick(self)
         iso.MidiOutputDevice.tick(self)
 
     # def write(self):
@@ -309,6 +370,7 @@ class Tracker:
     # <editor-fold desc="Metro functions">
     def metro_timeline(self):
         log_call()
+        self.midi_out.extra_track(9)  # for percussion channel 10 (or 9 when counting from 0).
         return self.timeline.schedule({
             "action": lambda: self.metro_beat()
             ,"duration": 4
