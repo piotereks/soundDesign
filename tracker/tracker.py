@@ -43,13 +43,18 @@ class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
         self.filename = filename
         self.midifile = mido.MidiFile()
         self.miditrack = [mido.MidiTrack()]
-        # self.midifile.tracks.append(self.miditrack)
-        for track in self.miditrack:
-            self.midifile.tracks.append(track)
+        self.midifile.tracks.append(self.miditrack[0])
+        # for track in self.miditrack:
+        #     self.midifile.tracks.append(track)
         # [self.midifile.tracks.append(track) for track in self.miditrack]
-        self.channel_track=[0]
-        self.time = 0
-        self.last_event_time = 0
+        self.channel_track = []
+        self.channel_track.append(0)
+        # self.time = 0
+        # self.last_event_time = 0
+        self.time = []
+        self.time.append(0)
+        self.last_event_time = []
+        self.last_event_time.append(0)
 
 
 
@@ -60,37 +65,55 @@ class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
                 self.miditrack.append(track)
                 self.midifile.tracks.append(track)
                 self.channel_track.append(channel)
+                self.time.append(0)
+                self.last_event_time.append(0)
 
+    def get_channel_track(self, channel=0):
+        try:
+            track = self.channel_track.index(channel)
+        except:
+            track = 0
+        return track
 
     def note_on(self, note=60, velocity=64, channel=0):
         #------------------------------------------------------------------------
         # avoid rounding errors
         #------------------------------------------------------------------------
-        try:
-            track = self.channel_track.index(channel)
-        except:
-            track = 0
+        track = self.get_channel_track(channel)
         print(f"----------------track var: {channel=} {track=}")
         if track >= 0:
             print(f"------------note on: {track=}, {note=}, {channel=}")
-            dt = self.time - self.last_event_time
+            dt = self.time[track] - self.last_event_time[track]
             dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
             self.miditrack[track].append(mido.Message('note_on', note=note, velocity=velocity, channel=channel, time=dt_ticks))
-            self.last_event_time = self.time
+            self.last_event_time[track] = self.time[track]
 
     def note_off(self, note=60, channel=0):
-        try:
-            track = self.channel_track.index(channel)
-        except:
-            track = 0
+        track = self.get_channel_track(channel)
         if track >= 0:
             print(f"------------note on: {track=}, {note=}, {channel=}")
-            dt = self.time - self.last_event_time
+            dt = self.time[track] - self.last_event_time[track]
             dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
             self.miditrack[track].append(mido.Message('note_off', note=note, channel=channel, time=dt_ticks))
-            self.last_event_time = self.time
+            self.last_event_time[track] = self.time[track]
 
 
+    def tick(self):
+        # for time in self.time:
+        #     time += 1.0 / self.ticks_per_beat
+        self.time = list(map(lambda x : x + (1.0 / self.ticks_per_beat), self.time))
+
+        pass
+
+
+# def addition(n):
+#     return n + n
+#
+#
+# # We double all numbers using map()
+# numbers = (1, 2, 3, 4)
+# result = map(addition, numbers)
+# print(list(result))
 
 if not MULTI_TRACK:
     class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
