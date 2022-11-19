@@ -416,10 +416,38 @@ text
 
 Play functions
 * duration patterns
-* velocity patterna
+* velocity patterns
 * different modes of play (not only random)  - (later make it selectable)
     * shortest way (by my self or via existing function)
     * fixed length 
     * different lengths (combined)
     *      
+
+Meta Message Types
+
+text (0x01)
+Attribute	Values	Default
+text	string	‘’
+General “Text” Meta Message. Can be used for any text based data.
+
+
+track_name (0x03)
+Attribute	Values	Default
+name	string	‘’
+Stores a MIDI track’s name.
+
+marker (0x06)
+Attribute	Values	Default
+text	string	‘’
+Marks a point of interest in a MIDI file. Can be used as the marker for the beginning of a verse, solo, etc.
+
+key_signature (0x59)
+Attribute	Values	Default
+key	‘C’, ‘F#m’, …	‘C’
+Valid values: A A#m Ab Abm Am B Bb Bbm Bm C C# C#m Cb Cm D D#m Db Dm E Eb Ebm Em F F# F#m Fm G G#m Gb Gm
+
+Note: the mode attribute was removed in 1.1.5. Instead, an ‘m’ is appended to minor keys.
+
+
+
 """

@@ -172,39 +172,86 @@ def dump_scales():
 # listener.start()
 # print('processing Done')
 
-def rand_play_funct():
-    selected_function=random.choice(my_tracker.patterns.pattern_methods_short_list)
-    # my_tracker.patterns.get_pattern.__name__ = selected_function
-    # my_tracker.patterns.get_pattern = getattr(my_tracker.patterns, 'get_'+selected_function+'_pattern' )
-    # my_tracker.patterns.get_pattern = getattr(my_tracker.patterns,
-    #                                           'get_'+app.play_func_combo.get()+'_pattern')
-    app.play_func_combo.set(selected_function)
-    my_tracker.patterns.set_pattern_function(selected_function)
 
 def metro_on_off():
+    log_call()
     app.metro_on.set((app.metro_on.get())+1%2)
     my_tracker.metro_start_stop(app.metro_on)
 
+
+def rand_play_funct():
+    log_call()
+    # selected_function=random.choice(my_tracker.patterns.pattern_methods_short_list)
+    # print( set(my_tracker.patterns.pattern_methods_short_list) )
+    # print(  set([app.play_func_combo.get()]))
+    # print( set(my_tracker.patterns.pattern_methods_short_list) - set([app.play_func_combo.get()]))
+    selected_function=random.choice(
+        list(set(my_tracker.patterns.pattern_methods_short_list) - set([app.play_func_combo.get()]))
+    )
+    app.play_func_combo.set(selected_function)
+    my_tracker.patterns.set_pattern_function(selected_function)
+    # my_tracker.midi_out.miditrack.append(mido.MetaMessage('text', text=f"funcR: {app.play_func_combo.get()}"))
+    my_tracker.meta_func(func=app.play_func_combo.get())
+
+
+
 def rand_key():
-    app.keys_group.set(random.choice(app.names))
+    log_call()
+    # app.keys_group.set(random.choice(app.names))
+    app.keys_group.set(random.choice(
+        list(set(app.names)-set([app.keys_group.get()]))
+        ))
     keys_scale_action(app.keys_group.get(), my_tracker.key.scale.name)
+    my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
+    # my_tracker.midi_out.miditrack.append(mido.MetaMessage('text', text=f"keyR: {app.keys_group.get()}-{app.scale_combo.get()}"))
+    # my_tracker.midi_out.miditrack.append(mido.MetaMessage('key_signature', key=app.keys_group.get()))
 
 
 def rand_scale():
-    my_tracker.key = iso.Key(my_tracker.key.tonic, iso.Scale.random())
+    log_call()
+    all_scales=[scale.name for scale in iso.Scale.all()]
+    random_scale = random.choice(list(set(all_scales)-set([my_tracker.key.scale.name])))
+    # my_tracker.key = iso.Key(my_tracker.key.tonic, iso.Scale.random())
+    my_tracker.key = iso.Key(my_tracker.key.tonic, random_scale)
+    # app.keys_group.set(random.choice(
+    #     set(app.names)-set(app.keys_group.get())
+    #     ))
+
     app.scale_combo.set(my_tracker.key.scale.name)
+    # my_tracker.midi_out.miditrack.append(mido.MetaMessage('text', text=f"scaleR: {app.keys_group.get()}-{app.scale_combo.get()}"))
+    my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
+
 
 def set_scale(event):
+    log_call()
     scale_obj =  iso.Scale.byname(app.scale_combo.get())
     my_tracker.key = iso.Key(my_tracker.key.tonic, scale_obj)
+    # my_tracker.midi_out.miditrack.append(mido.MetaMessage('text', text=f"scale: {app.keys_group.get()}-{app.scale_combo.get()}"))
+    my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
+
+
+def set_key():
+    log_call()
+    keys_scale_action(app.keys_group.get(), my_tracker.key.scale.name)
+    # my_tracker.midi_out.miditrack.append(mido.MetaMessage('text', text=f"key: }"))
+    my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
+    print(f"{app.keys_group.get()}")
 
 
 def set_play_func(event):
+    log_call()
     # my_tracker.patterns.get_pattern.__name__ = app.play_func_combo.get()
     # my_tracker.patterns.get_pattern = getattr(my_tracker.patterns,
     #                                           'get_'+app.play_func_combo.get()+'_pattern')
     my_tracker.patterns.set_pattern_function(app.play_func_combo.get())
+    # my_tracker.midi_out.miditrack.append(mido.MetaMessage('text', text=f"func: {app.play_func_combo.get()}"))
+    my_tracker.meta_func(func=app.play_func_combo.get())
 
+
+def set_tempo(tempo):
+    log_call()
+    my_tracker.set_tempo(tempo)
+    my_tracker.meta_tempo(tempo=tempo)
 
 def play_pause():
     global app
@@ -237,8 +284,10 @@ def run_gui():
     app = SoundDesignGui(root)
 
 
-    app.key_rnd_btn_cmd_ext = lambda: keys_scale_action(app.keys_group.get(), my_tracker.key.scale.name)
-    app.key_radio_cmd_ext = lambda: keys_scale_action(app.keys_group.get(), my_tracker.key.scale.name)
+    # app.key_rnd_btn_cmd_ext = lambda: keys_scale_action(app.keys_group.get(), my_tracker.key.scale.name)
+    # app.key_radio_cmd_ext = lambda: keys_scale_action(app.keys_group.get(), my_tracker.key.scale.name)
+    app.key_rnd_btn_cmd_ext = lambda: set_key()
+    app.key_radio_cmd_ext = lambda: set_key()
 
     app.metro_btn_cmd_ext = lambda: my_tracker.metro_start_stop(app.metro_on)
     app.loop_queue_chk_cmd_ext = lambda: my_tracker.loop_play_queue_action(app.loop_queue_on.get())
@@ -261,7 +310,7 @@ def run_gui():
     app.scale_combo.bind("<<ComboboxSelected>>", set_scale)
 
 
-    app.tempo_h_scale_cmd_ext = lambda  tempo :  my_tracker.set_tempo(tempo)
+    app.tempo_h_scale_cmd_ext = lambda  tempo :  set_tempo(tempo)
     app.set_scale(app.tempo_h_scale, from_=40, to=300, value=120)
 
 

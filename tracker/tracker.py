@@ -292,7 +292,7 @@ class Tracker:
         # self.beat = self.beat_none
         # my_tracker.metronome_start()
         self.tmln = self.tracker_timeline()
-        self.metro = self.metro_timeline()
+        self.metro = self.metro_timeline
 
     # def set_scale(self,scale):
     #     self.scale = scale
@@ -417,6 +417,7 @@ class Tracker:
 
 
     # <editor-fold desc="Metro functions">
+
     def metro_timeline(self):
         log_call()
         if MULTI_TRACK:
@@ -574,6 +575,23 @@ class Tracker:
         self.timeline.set_tempo(int(new_tempo))
         self.midi_out.miditrack.append(mido.MetaMessage('set_tempo',tempo=mido.bpm2tempo(int(new_tempo)), time=0))
         print(f"a_read tempo: {self.timeline.get_tempo()=}, {new_tempo=}")
+
+
+    def write_mid_text_meta(self, message):
+        self.midi_out.miditrack.append(mido.MetaMessage('text',text=message, time=0))
+
+
+    def meta_key_scale(self, key, scale):
+        self.write_mid_text_meta(f"scale:{key}-{scale}")
+
+
+    def meta_func(self,func):
+        self.write_mid_text_meta(f"func:{func}")
+
+
+    def meta_tempo(self,tempo):
+        self.write_mid_text_meta(f"tempo:{tempo}")
+
 
     def ts(self):
         log_call()

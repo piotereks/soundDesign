@@ -29,6 +29,9 @@ def direct_midi_play():
     for msg in mid:
         if msg.is_meta:
             print(msg)
+        else:
+            pass
+            # print(msg)
         # print(msg.__dict__)
         # print(f'{msg.is_cc()=};{msg.is_meta=};{msg.is_realtime=}')
         # print(msg)
