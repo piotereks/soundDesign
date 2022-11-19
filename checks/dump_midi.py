@@ -31,7 +31,7 @@ def direct_midi_play():
             print(msg)
         else:
             pass
-            # print(msg)
+            print(msg)
         # print(msg.__dict__)
         # print(f'{msg.is_cc()=};{msg.is_meta=};{msg.is_realtime=}')
         # print(msg)

@@ -384,6 +384,8 @@ Elements to place:
 * pause happening on and end of beat? no - not decided what to do
 * adding meta information to midi file (with changes of scale)
 * register what options are done (as meta)
+* @property for key/scale, play func
+* add sync for key/scale, play func changes
 
 * separate midi channel and midi track for metronome. 
    - not possile with this package, all functions would need to be modified

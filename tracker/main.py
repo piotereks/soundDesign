@@ -181,10 +181,6 @@ def metro_on_off():
 
 def rand_play_funct():
     log_call()
-    # selected_function=random.choice(my_tracker.patterns.pattern_methods_short_list)
-    # print( set(my_tracker.patterns.pattern_methods_short_list) )
-    # print(  set([app.play_func_combo.get()]))
-    # print( set(my_tracker.patterns.pattern_methods_short_list) - set([app.play_func_combo.get()]))
     selected_function=random.choice(
         list(set(my_tracker.patterns.pattern_methods_short_list) - set([app.play_func_combo.get()]))
     )
