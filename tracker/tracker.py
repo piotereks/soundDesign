@@ -771,7 +771,17 @@ class Tracker:
 
         # pattern_notes = self.patterns.get_random_pattern(interval) + root_note
         # print(f"{self.patterns.get_pattern(interval)=}")
+
         pattern_notes = self.patterns.get_pattern(interval) + root_note
+        # pattern_notes = self.patterns.get_pattern(interval)
+        # print(f"{type(pattern_notes)=}")
+        # if type(pattern_notes) == 'numpy.ndarray':
+        #     pattern_notes = pattern_notes + root_note
+        # elif type(pattern_notes) == 'dict':
+        #     pattern_notes[iso.EVENT_NOTE]=pattern_notes[iso.EVENT_NOTE]+root_note
+        # else:
+        #     raise Exception("No notes returned!!!")
+
         len_pattern = len(pattern_notes)-1
 
         print('Pseq:', list(iso.PSequence(pattern_notes, repeats=1)))
