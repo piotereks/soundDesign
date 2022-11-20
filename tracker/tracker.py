@@ -769,20 +769,70 @@ class Tracker:
         interval = note - root_note
         #print(f"{from_note=} {to_note=} {from_note-60=} {to_note-60=}  {root_note=} {note=} {interval=}")
 
-        # pattern_notes = self.patterns.get_random_pattern(interval) + root_note
+        # pattern = self.patterns.get_random_pattern(interval) + root_note
         # print(f"{self.patterns.get_pattern(interval)=}")
 
-        pattern_notes = self.patterns.get_pattern(interval) + root_note
-        # pattern_notes = self.patterns.get_pattern(interval)
-        # print(f"{type(pattern_notes)=}")
-        # if type(pattern_notes) == 'numpy.ndarray':
-        #     pattern_notes = pattern_notes + root_note
-        # elif type(pattern_notes) == 'dict':
-        #     pattern_notes[iso.EVENT_NOTE]=pattern_notes[iso.EVENT_NOTE]+root_note
-        # else:
-        #     raise Exception("No notes returned!!!")
+        # pattern = self.patterns.get_pattern(interval) + root_note
+        pattern = self.patterns.get_pattern(interval)
 
-        len_pattern = len(pattern_notes)-1
+
+        print(f"type of pattern: {type(pattern)=}, {isinstance(pattern, np.ndarray)}")
+
+        pattern_amplitude = np.array(None)
+        pattern_gate = np.array(None)
+        pattern_duration = np.array(None)
+        if isinstance(pattern, np.ndarray):
+            pattern_notes = pattern
+        elif isinstance(pattern, dict):
+            pattern_notes = pattern[iso.EVENT_NOTE]
+            pattern_amplitude = pattern.get(iso.EVENT_AMPLITUDE)
+            # if not isinstance(pattern_amplitude,np.ndarray):
+            #     pattern_amplitude = np.array(None)
+            pattern_gate = pattern.get(iso.EVENT_GATE)
+            # if not isinstance(pattern_gate,np.ndarray):
+            #     pattern_gate = np.array(None)
+            pattern_duration = pattern.get(iso.EVENT_DURATION)
+            # if not isinstance(pattern_duration,np.ndarray):
+            #     pattern_duration = np.array(None)
+
+
+        elif not pattern:
+            pattern_notes = None
+        else:
+            raise Exception("No notes returned!!!")
+
+        pattern_notes+=root_note
+        pattern_notes = pattern_notes[:-1]
+        len_pattern = len(pattern_notes)
+        print(f"----debug----{pattern_notes} {len_pattern=}")
+        # len_pattern = len(pattern_notes)-1
+        # len_pattern = len(pattern_notes)
+
+        if not isinstance(pattern_duration, np.ndarray):
+            pattern_duration = np.array(None)
+            # pattern_duration = np.repeat((4 / len_pattern) - 0.000000000000002, len_pattern)
+            pattern_duration = np.repeat(1.5, len_pattern)
+
+        if not isinstance(pattern_amplitude, np.ndarray):
+            pattern_amplitude = np.array([64])
+
+        if not isinstance(pattern_gate, np.ndarray):
+            pattern_gate = np.array([1])
+        if pattern_duration.size<len_pattern:
+            # pattern_duration = np.repeat(pattern_duration, int(len_pattern/pattern_duration.size)+1)
+            pattern_mult = np.tile(pattern_duration,(int(len_pattern/pattern_duration.size)+1, 1))
+            pattern_duration = pattern_mult.reshape(pattern_mult.shape[0]*pattern_mult.shape[1])
+
+        pattern_duration = pattern_duration[:len_pattern]
+
+        pattern_duration = 4*pattern_duration/pattern_duration.sum()-0.000000000000002
+
+        #recalculate/normalize duration - base is now 4 (could be different in future)
+        # pattern_duration_sum=pattern_duration.sum()
+        # 6 * 4/6
+
+
+        print(f"{pattern_duration=}")
 
         print('Pseq:', list(iso.PSequence(pattern_notes, repeats=1)))
         print('Pseq + Degree - scale:', list(iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key.scale)))
@@ -791,9 +841,12 @@ class Tracker:
         print('=====================')
 
         return iso.PDict({
-            # iso.EVENT_NOTE: iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.scale),
+            # iso.EVENT_NOTE: iso.PDegree(iso.PSequence(pattern, repeats=1), self.scale),
             iso.EVENT_NOTE: iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key),
-            iso.EVENT_DURATION: iso.PSequence([(4 / len_pattern) - 0.000000000000002], repeats=len_pattern),
+            # iso.EVENT_DURATION: iso.PSequence([(4 / len_pattern) - 0.000000000000002], repeats=len_pattern),
+            iso.EVENT_DURATION: iso.PSequence(pattern_duration, repeats=len_pattern),
+            iso.EVENT_AMPLITUDE: iso.PSequence(pattern_amplitude)
+            ,iso.EVENT_GATE: iso.PSequence(pattern_gate)
             # iso.EVENT_OCTAVE: 5
             # iso.EVENT_DEGREE: xxxx
         })  #TODO extend scale

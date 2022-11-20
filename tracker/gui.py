@@ -383,6 +383,10 @@ Elements to place:
 * think over about how pause impacts file (is there a pause in timeline)?
 * pause happening on and end of beat? no - not decided what to do
 * @property for key/scale, play func??  think over
+* implement duration (balanced/normalized)
+* cap on amplitude
+* amplitude (do I need to loop it myself if it is too short? rather not but check).
+* implement rests
 
 * separate midi channel and midi track for metronome. 
    - not possile with this package, all functions would need to be modified
