@@ -108,7 +108,7 @@ class Patterns:
 
 
     def get_path_pattern(self, interval):
-        return np.array([0,0]) if interval == 0 else np.arange(0, interval, np.sign(interval))
+        return np.array([0,0]) if interval == 0 else np.arange(0, interval+np.sign(interval), np.sign(interval))
     # </editor-fold>
 
     def set_pattern_function(self, function_name ):
