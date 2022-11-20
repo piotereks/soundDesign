@@ -230,6 +230,7 @@ class Tracker:
         my_beats = Beats()
         # self.scale = iso.Scale.major  - replaced by key, and scale always can be referred as self.key.scale
         self.key = iso.Key("C", "major")
+        self.prev_key = None
         self.loopq = None
         # self.root_midi = [('C')]  #TODO check what is root_midi used for
         self.midi_out = None
@@ -241,6 +242,7 @@ class Tracker:
         self.prev_time = 0
         self.timeline = None
         self.patterns = Patterns()
+        self.prev_get_pattern_name = None
         self.root_note = 0
         self.last_note = None
         self.last_from_note = None
@@ -677,6 +679,31 @@ class Tracker:
         print(f"in_pattern: {in_pattern} from_note:{from_note}, to_note: {to_note}")
         print(f"{self.key.scale.name=}, key={iso.Note.names[self.key.tonic%12]}, {self.key.scale.name=}")
         # print(f"{self.scale.name=}, {self.key.tonic=}")
+
+        # self.prev_get_pattern
+        # self.patterns.get_pattern
+        # self.prev_key
+        # self.key.scale.name
+        # self.key.tonic
+
+        if self.prev_get_pattern_name != self.patterns.get_pattern.__name__:
+            # self.meta_func(func=f"prev:{self.prev_get_pattern_name}")
+            self.meta_func(func=f"curr:{self.patterns.get_pattern.__name__}")
+            # pass
+        if (not self.prev_key and self.key) \
+            or self.prev_key != self.key:
+            # if self.prev_key:
+            #     self.meta_key_scale(key=f"prev: {self.prev_key.tonic}", scale=self.prev_key.scale.name)
+
+            self.meta_key_scale(key=f"curr: {self.key.tonic}", scale=self.key.scale.name)
+
+        self.prev_key = self.key
+        print(f"============={self.prev_get_pattern_name=} {self.patterns.get_pattern.__name__=}")
+        self.prev_get_pattern_name = self.patterns.get_pattern.__name__
+        # my_tracker.meta_func(func=app.play_func_combo.get())
+        # my_tracker.meta_key_scale(key=app.keys_group.get(), scale=app.scale_combo.get())
+
+
         self.scale_name_action()   #TODO extend scale
         # if  from_note == None:
         #     return None

@@ -1,0 +1,1320 @@
+/home/piotereks/PycharmProjects/soundDesign/venv/bin/python3.10 /home/piotereks/PycharmProjects/soundDesign/tracker/main.py
+main
+__init__
+note array: None
+interval array: None
+self.midi_note_array: None
+note array2: None
+interval array2: None
+init_timeline
+ Device:3
+NO_MIDI_OUT=True
+device mode
+----------- MULTI_TRACK=False
+tracker_timeline
+listener started
+
+<bound method Misc.configure of <tkinter.Scale object .!sounddesigngui.!frame2.!scale>>
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=120, new_tempo='120'
+a_read tempo: self.timeline.get_tempo()=120, new_tempo='120'
+alphanumeric key q pressed
+test_put_queue:  60
+self.notes_pair[0]=None []
+'q' released
+alphanumeric key e pressed
+test_put_queue:  64
+self.notes_pair[0]=None []
+'e' released
+alphanumeric key u pressed
+test_put_queue:  71
+self.notes_pair[0]=None []
+'u' released
+alphanumeric key t pressed
+test_put_queue:  67
+self.notes_pair[0]=None []
+'t' released
+alphanumeric key z pressed
+play_pause
+tstart
+inner
+play_from_to
+play_from_to diff:0, timeXX: 0, 0 beat: 1
+
+---------------------
+in_pattern: True from_note:None, to_note: None
+self.key.scale.name='major', key=C, self.key.scale.name='major'
+=============self.prev_get_pattern_name=None self.patterns.get_pattern.__name__='get_one_note_pattern'
+if in_pattern
+in_pattern (next pattern for later):  from_note:60 new_note:64
+self.loopq=1
+self.notes_pair[0]=None []
+self.notes_pair[0]=60 []
+after_check
+Pseq: [35, 37]
+Pseq + Degree - scale: [60, 64]
+Pseq + Degree - key: [60, 64]
+bef Pdict2
+=====================
+check notes:  [60, 64]
+post sched
+Clock: Timer overflowed (late by 0.033s)
+'z' released
+inner
+play_from_to
+play_from_to diff:3.999999999999933, timeXX: 3.999999999999933, 4 beat: 2
+
+---------------------
+in_pattern: True from_note:60, to_note: 64
+self.key.scale.name='major', key=C, self.key.scale.name='major'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=60 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:64 new_note:71
+self.loopq=1
+self.notes_pair[0]=60 []
+self.notes_pair[0]=64 []
+after_check
+Pseq: [37, 41]
+Pseq + Degree - scale: [64, 71]
+Pseq + Degree - key: [64, 71]
+bef Pdict2
+=====================
+check notes:  [64, 71]
+post sched
+Clock: Timer overflowed (late by 0.027s)
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=120, new_tempo='128'
+a_read tempo: self.timeline.get_tempo()=128, new_tempo='128'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=128, new_tempo='132'
+a_read tempo: self.timeline.get_tempo()=132, new_tempo='132'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=132, new_tempo='136'
+a_read tempo: self.timeline.get_tempo()=136, new_tempo='136'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=136, new_tempo='139'
+a_read tempo: self.timeline.get_tempo()=139, new_tempo='139'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=139, new_tempo='143'
+a_read tempo: self.timeline.get_tempo()=143, new_tempo='143'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=143, new_tempo='159'
+a_read tempo: self.timeline.get_tempo()=159, new_tempo='159'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=159, new_tempo='174'
+a_read tempo: self.timeline.get_tempo()=174, new_tempo='174'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=174, new_tempo='189'
+a_read tempo: self.timeline.get_tempo()=189, new_tempo='189'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=189, new_tempo='201'
+a_read tempo: self.timeline.get_tempo()=201, new_tempo='201'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=201, new_tempo='216'
+a_read tempo: self.timeline.get_tempo()=216, new_tempo='216'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=216, new_tempo='220'
+a_read tempo: self.timeline.get_tempo()=220, new_tempo='220'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=220, new_tempo='224'
+a_read tempo: self.timeline.get_tempo()=224, new_tempo='224'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=224, new_tempo='227'
+a_read tempo: self.timeline.get_tempo()=227, new_tempo='227'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=227, new_tempo='231'
+a_read tempo: self.timeline.get_tempo()=231, new_tempo='231'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=231, new_tempo='235'
+a_read tempo: self.timeline.get_tempo()=235, new_tempo='235'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=235, new_tempo='243'
+a_read tempo: self.timeline.get_tempo()=243, new_tempo='243'
+inner
+play_from_to
+play_from_to diff:3.999999999999773, timeXX: 7.999999999999706, 8 beat: 3
+
+---------------------
+in_pattern: True from_note:64, to_note: 71
+self.key.scale.name='major', key=C, self.key.scale.name='major'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=64 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:71 new_note:67
+self.loopq=1
+self.notes_pair[0]=64 []
+self.notes_pair[0]=71 []
+after_check
+Pseq: [41, 39]
+Pseq + Degree - scale: [71, 67]
+Pseq + Degree - key: [71, 67]
+bef Pdict2
+=====================
+check notes:  [71, 67]
+post sched
+Clock: Timer overflowed (late by 0.029s)
+inner
+play_from_to
+play_from_to diff:3.9999999999997735, timeXX: 11.99999999999948, 12 beat: 4
+
+---------------------
+in_pattern: True from_note:71, to_note: 67
+self.key.scale.name='major', key=C, self.key.scale.name='major'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=71 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:67 new_note:60
+self.loopq=1
+self.notes_pair[0]=71 []
+self.notes_pair[0]=67 []
+after_check
+Pseq: [39, 35]
+Pseq + Degree - scale: [67, 60]
+Pseq + Degree - key: [67, 60]
+bef Pdict2
+=====================
+check notes:  [67, 60]
+post sched
+Clock: Timer overflowed (late by 0.029s)
+inner
+play_from_to
+play_from_to diff:3.9999999999997726, timeXX: 15.999999999999252, 16 beat: 1
+
+---------------------
+in_pattern: True from_note:67, to_note: 60
+self.key.scale.name='major', key=C, self.key.scale.name='major'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=67 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:60 new_note:64
+self.loopq=1
+self.notes_pair[0]=67 []
+self.notes_pair[0]=60 []
+after_check
+Pseq: [35, 37]
+Pseq + Degree - scale: [60, 64]
+Pseq + Degree - key: [60, 64]
+bef Pdict2
+=====================
+check notes:  [60, 64]
+Clock: Timer overflowed (late by 0.037s)
+post sched
+alphanumeric key b pressed
+rand_scale
+'b' released
+inner
+play_from_to
+play_from_to diff:4.0000000000031815, timeXX: 20.000000000002434, 20 beat: 2
+
+---------------------
+in_pattern: True from_note:60, to_note: 64
+self.key.scale.name='7 mod', key=C, self.key.scale.name='7 mod'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=60 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:64 new_note:71
+self.loopq=1
+self.notes_pair[0]=60 []
+self.notes_pair[0]=64 []
+alphanumeric key b pressed
+rand_scale
+after_check
+Pseq: [32, 35]
+Pseq + Degree - scale: [64, 71]
+Pseq + Degree - key: [64, 71]
+bef Pdict2
+=====================
+check notes:  [64, 71]
+post sched
+Clock: Timer overflowed (late by 0.030s)
+'b' released
+alphanumeric key b pressed
+rand_scale
+'b' released
+inner
+play_from_to
+play_from_to diff:4.000000000003183, timeXX: 24.000000000005617, 24 beat: 3
+
+---------------------
+in_pattern: True from_note:64, to_note: 71
+self.key.scale.name='japanese up', key=C, self.key.scale.name='japanese up'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=64 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:71 new_note:67
+self.loopq=1
+self.notes_pair[0]=64 []
+self.notes_pair[0]=71 []
+after_check
+Pseq: [29, 28]
+Pseq + Degree - scale: [70, 67]
+Pseq + Degree - key: [70, 67]
+bef Pdict2
+=====================
+check notes:  [70, 67]
+post sched
+Clock: Timer overflowed (late by 0.023s)
+alphanumeric key n pressed
+rand_key
+keys_scale_action
+'n' released
+inner
+play_from_to
+play_from_to diff:4.000000000003183, timeXX: 28.0000000000088, 28 beat: 4
+
+---------------------
+in_pattern: True from_note:71, to_note: 67
+self.key.scale.name='japanese up', key=E, self.key.scale.name='japanese up'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=71 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:67 new_note:60
+self.loopq=1
+self.notes_pair[0]=71 []
+self.notes_pair[0]=67 []
+Clock: Timer overflowed (late by 0.032s)
+after_check
+Pseq: [27, 24]
+Pseq + Degree - scale: [65, 58]
+Pseq + Degree - key: [69, 62]
+bef Pdict2
+=====================
+check notes:  [69, 62]
+post sched
+alphanumeric key n pressed
+rand_key
+keys_scale_action
+'n' released
+alphanumeric key n pressed
+rand_key
+keys_scale_action
+'n' released
+alphanumeric key b pressed
+rand_scale
+'b' released
+alphanumeric key n pressed
+rand_key
+keys_scale_action
+inner
+play_from_to
+play_from_to diff:4.00000000000318, timeXX: 32.00000000001198, 32 beat: 1
+
+---------------------
+in_pattern: True from_note:67, to_note: 60
+self.key.scale.name='bebop dominant', key=B, self.key.scale.name='bebop dominant'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=67 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:60 new_note:64
+self.loopq=1
+self.notes_pair[0]=67 []
+self.notes_pair[0]=60 []
+after_check
+Pseq: [33, 35]
+Pseq + Degree - scale: [50, 53]
+Pseq + Degree - key: [61, 64]
+bef Pdict2
+=====================
+check notes:  [61, 64]
+'n' released
+post sched
+Clock: Timer overflowed (late by 0.028s)
+alphanumeric key n pressed
+rand_key
+keys_scale_action
+'n' released
+alphanumeric key b pressed
+rand_scale
+'b' released
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 36.00000000000834, 36 beat: 2
+
+---------------------
+in_pattern: True from_note:60, to_note: 64
+self.key.scale.name='minor melodic up', key=D#, self.key.scale.name='minor melodic up'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=60 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:64 new_note:71
+self.loopq=1
+self.notes_pair[0]=60 []
+self.notes_pair[0]=64 []
+Clock: Timer overflowed (late by 0.032s)
+after_check
+Pseq: [36, 40]
+Pseq + Degree - scale: [62, 69]
+Pseq + Degree - key: [65, 72]
+bef Pdict2
+=====================
+check notes:  [65, 72]
+post sched
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 40.000000000004704, 40 beat: 3
+
+---------------------
+in_pattern: True from_note:64, to_note: 71
+self.key.scale.name='minor melodic up', key=D#, self.key.scale.name='minor melodic up'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=64 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:71 new_note:67
+self.loopq=1
+self.notes_pair[0]=64 []
+self.notes_pair[0]=71 []
+after_check
+Pseq: [40, 38]
+Pseq + Degree - scale: [69, 65]
+Pseq + Degree - key: [72, 68]
+bef Pdict2
+=====================
+check notes:  [72, 68]
+post sched
+Clock: Timer overflowed (late by 0.031s)
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 44.000000000001066, 44 beat: 4
+
+---------------------
+in_pattern: True from_note:71, to_note: 67
+self.key.scale.name='minor melodic up', key=D#, self.key.scale.name='minor melodic up'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=71 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:67 new_note:60
+self.loopq=1
+self.notes_pair[0]=71 []
+alphanumeric key n pressed
+rand_key
+self.notes_pair[0]=67 []
+keys_scale_action
+after_check
+Pseq: [33, 29]
+Pseq + Degree - scale: [57, 50]
+Pseq + Degree - key: [67, 60]
+bef Pdict2
+=====================
+check notes:  [67, 60]
+post sched
+Clock: Timer overflowed (late by 0.053s)
+'n' released
+alphanumeric key n pressed
+rand_key
+keys_scale_action
+'n' released
+alphanumeric key n pressed
+rand_key
+keys_scale_action
+'n' released
+'b' released
+alphanumeric key b pressed
+rand_scale
+'b' released
+alphanumeric key b pressed
+rand_scale
+'b' released
+alphanumeric key b pressed
+rand_scale
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 47.99999999999743, 48 beat: 1
+
+---------------------
+in_pattern: True from_note:67, to_note: 60
+self.key.scale.name='majorPenta', key=D, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=67 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:60 new_note:64
+self.loopq=1
+self.notes_pair[0]=67 []
+self.notes_pair[0]=60 []
+after_check
+Pseq: [24, 26]
+Pseq + Degree - scale: [57, 62]
+Pseq + Degree - key: [59, 64]
+bef Pdict2
+=====================
+check notes:  [59, 64]
+post sched
+'b' released
+alphanumeric key n pressed
+rand_key
+keys_scale_action
+'n' released
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 51.99999999999379, 52 beat: 2
+
+---------------------
+in_pattern: True from_note:60, to_note: 64
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=60 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:64 new_note:71
+self.loopq=1
+self.notes_pair[0]=60 []
+self.notes_pair[0]=64 []
+after_check
+Pseq: [24, 28]
+Pseq + Degree - scale: [57, 67]
+Pseq + Degree - key: [63, 73]
+bef Pdict2
+=====================
+check notes:  [63, 73]
+post sched
+Clock: Timer overflowed (late by 0.029s)
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 55.99999999999015, 56 beat: 3
+
+---------------------
+in_pattern: True from_note:64, to_note: 71
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=64 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:71 new_note:67
+self.loopq=1
+self.notes_pair[0]=64 []
+self.notes_pair[0]=71 []
+after_check
+Pseq: [28, 26]
+Pseq + Degree - scale: [67, 62]
+Pseq + Degree - key: [73, 68]
+bef Pdict2
+=====================
+check notes:  [73, 68]
+post sched
+Clock: Timer overflowed (late by 0.031s)
+alphanumeric key m pressed
+rand_play_funct
+'m' released
+alphanumeric key m pressed
+rand_play_funct
+'m' released
+alphanumeric key m pressed
+rand_play_funct
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 59.999999999986514, 60 beat: 4
+
+---------------------
+in_pattern: True from_note:71, to_note: 67
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_random_pattern'
+note self.last_from_note=71 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:67 new_note:60
+self.loopq=1
+self.notes_pair[0]=71 []
+self.notes_pair[0]=67 []
+after_check
+Pseq: [26, 25, 27, 25, 24, 26, 24, 23, 25, 23]
+Pseq + Degree - scale: [62, 60, 64, 60, 57, 62, 57, 55, 60, 55]
+Pseq + Degree - key: [68, 66, 70, 66, 63, 68, 63, 61, 66, 61]
+bef Pdict2
+=====================
+check notes:  [68, 66, 70, 66, 63, 68, 63, 61, 66, 61]
+post sched
+Clock: Timer overflowed (late by 0.034s)
+'m' released
+alphanumeric key m pressed
+rand_play_funct
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 63.999999999982876, 64 beat: 1
+
+---------------------
+in_pattern: True from_note:67, to_note: 60
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_random_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=67 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:60 new_note:64
+self.loopq=1
+self.notes_pair[0]=67 []
+self.notes_pair[0]=60 []
+after_check
+Pseq: [23, 24]
+Pseq + Degree - scale: [55, 57]
+Pseq + Degree - key: [61, 63]
+bef Pdict2
+=====================
+check notes:  [61, 63]
+post sched
+'m' released
+alphanumeric key m pressed
+rand_play_funct
+'m' released
+alphanumeric key m pressed
+rand_play_funct
+'m' released
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 67.99999999997924, 68 beat: 2
+
+---------------------
+in_pattern: True from_note:60, to_note: 64
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=60 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:64 new_note:71
+self.loopq=1
+self.notes_pair[0]=60 []
+self.notes_pair[0]=64 []
+after_check
+Pseq: [24, 28]
+Pseq + Degree - scale: [57, 67]
+Pseq + Degree - key: [63, 73]
+bef Pdict2
+=====================
+check notes:  [63, 73]
+Clock: Timer overflowed (late by 0.034s)
+post sched
+alphanumeric key m pressed
+rand_play_funct
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 71.9999999999756, 72 beat: 3
+
+---------------------
+in_pattern: True from_note:64, to_note: 71
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_path_pattern'
+note self.last_from_note=64 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:71 new_note:67
+self.loopq=1
+self.notes_pair[0]=64 []
+self.notes_pair[0]=71 []
+after_check
+Pseq: [28, 27]
+Pseq + Degree - scale: [67, 64]
+Pseq + Degree - key: [73, 70]
+bef Pdict2
+=====================
+check notes:  [73, 70]
+post sched
+Clock: Timer overflowed (late by 0.027s)
+'m' released
+alphanumeric key m pressed
+rand_play_funct
+'m' released
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 75.99999999997196, 76 beat: 4
+
+---------------------
+in_pattern: True from_note:71, to_note: 67
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_path_pattern' self.patterns.get_pattern.__name__='get_random_pattern'
+note self.last_from_note=71 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:67 new_note:60
+self.loopq=1
+self.notes_pair[0]=71 []
+self.notes_pair[0]=67 []
+after_check
+Pseq: [26, 25, 26, 25, 24, 25, 24, 23, 24, 23]
+Pseq + Degree - scale: [62, 60, 62, 60, 57, 60, 57, 55, 57, 55]
+Pseq + Degree - key: [68, 66, 68, 66, 63, 66, 63, 61, 63, 61]
+bef Pdict2
+=====================
+check notes:  [68, 66, 68, 66, 63, 66, 63, 61, 63, 61]
+Clock: Timer overflowed (late by 0.029s)
+post sched
+alphanumeric key m pressed
+rand_play_funct
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 79.99999999996832, 80 beat: 1
+
+---------------------
+in_pattern: True from_note:67, to_note: 60
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_random_pattern' self.patterns.get_pattern.__name__='get_path_pattern'
+note self.last_from_note=67 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:60 new_note:64
+self.loopq=1
+self.notes_pair[0]=67 []
+self.notes_pair[0]=60 []
+Traceback (most recent call last):
+  File "/home/piotereks/PycharmProjects/soundDesign/venv/lib/python3.10/site-packages/isobar/timeline/track.py", line 219, in perform_event
+    event.action(**event.args)
+  File "/home/piotereks/PycharmProjects/soundDesign/tracker/tracker.py", line 565, in <lambda>
+    "action": lambda: self.beat()
+  File "/home/piotereks/PycharmProjects/soundDesign/tracker/tracker.py", line 740, in <lambda>
+    self.beat = lambda: self.play_from_to(from_note, to_note, in_pattern=True)
+  File "/home/piotereks/PycharmProjects/soundDesign/tracker/tracker.py", line 380, in inner
+    notes = func(self, *args, **kwargs)
+  File "/home/piotereks/PycharmProjects/soundDesign/tracker/tracker.py", line 786, in play_from_to
+    iso.EVENT_DURATION: iso.PSequence([(4 / len_pattern) - 0.000000000000002], repeats=len_pattern),
+ZeroDivisionError: division by zero
+Clock: Timer overflowed (late by 0.031s)
+after_check
+Pseq: [23]
+Pseq + Degree - scale: [55]
+Pseq + Degree - key: [61]
+bef Pdict2
+=====================
+Exception when handling scheduled action: division by zero
+'m' released
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 83.99999999996469, 84 beat: 2
+
+---------------------
+in_pattern: True from_note:60, to_note: 64
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_path_pattern' self.patterns.get_pattern.__name__='get_path_pattern'
+note self.last_from_note=60 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:64 new_note:71
+self.loopq=1
+self.notes_pair[0]=60 []
+self.notes_pair[0]=64 []
+after_check
+Pseq: [24, 25, 26, 27]
+Pseq + Degree - scale: [57, 60, 62, 64]
+Pseq + Degree - key: [63, 66, 68, 70]
+bef Pdict2
+=====================
+check notes:  [63, 66, 68, 70]
+post sched
+Clock: Timer overflowed (late by 0.023s)
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 87.99999999996105, 88 beat: 3
+
+---------------------
+in_pattern: True from_note:64, to_note: 71
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_path_pattern' self.patterns.get_pattern.__name__='get_path_pattern'
+note self.last_from_note=64 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:71 new_note:67
+self.loopq=1
+self.notes_pair[0]=64 []
+self.notes_pair[0]=71 []
+after_check
+Pseq: [28, 27]
+Pseq + Degree - scale: [67, 64]
+Pseq + Degree - key: [73, 70]
+bef Pdict2
+=====================
+check notes:  [73, 70]
+post sched
+alphanumeric key m pressed
+rand_play_funct
+'m' released
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 91.99999999995741, 92 beat: 4
+
+---------------------
+in_pattern: True from_note:71, to_note: 67
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_path_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=71 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:67 new_note:60
+self.loopq=1
+self.notes_pair[0]=71 []
+self.notes_pair[0]=67 []
+after_check
+Pseq: [26, 23]
+Pseq + Degree - scale: [62, 55]
+Pseq + Degree - key: [68, 61]
+bef Pdict2
+=====================
+check notes:  [68, 61]
+Clock: Timer overflowed (late by 0.034s)
+post sched
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 95.99999999995377, 96 beat: 1
+
+---------------------
+in_pattern: True from_note:67, to_note: 60
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=67 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:60 new_note:64
+self.loopq=1
+self.notes_pair[0]=67 []
+self.notes_pair[0]=60 []
+after_check
+Pseq: [23, 24]
+Pseq + Degree - scale: [55, 57]
+Pseq + Degree - key: [61, 63]
+bef Pdict2
+=====================
+check notes:  [61, 63]
+post sched
+Clock: Timer overflowed (late by 0.039s)
+alphanumeric key m pressed
+rand_play_funct
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 99.99999999995013, 100 beat: 2
+
+---------------------
+in_pattern: True from_note:60, to_note: 64
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_path_pattern'
+'m' released
+note self.last_from_note=60 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:64 new_note:71
+self.loopq=1
+self.notes_pair[0]=60 []
+self.notes_pair[0]=64 []
+Clock: Timer overflowed (late by 0.028s)
+after_check
+Pseq: [24, 25, 26, 27]
+Pseq + Degree - scale: [57, 60, 62, 64]
+Pseq + Degree - key: [63, 66, 68, 70]
+bef Pdict2
+=====================
+check notes:  [63, 66, 68, 70]
+post sched
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 103.9999999999465, 104 beat: 3
+
+---------------------
+in_pattern: True from_note:64, to_note: 71
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_path_pattern' self.patterns.get_pattern.__name__='get_path_pattern'
+note self.last_from_note=64 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:71 new_note:67
+self.loopq=1
+self.notes_pair[0]=64 []
+self.notes_pair[0]=71 []
+after_check
+Pseq: [28, 27]
+Pseq + Degree - scale: [67, 64]
+Pseq + Degree - key: [73, 70]
+bef Pdict2
+=====================
+check notes:  [73, 70]
+post sched
+Clock: Timer overflowed (late by 0.036s)
+alphanumeric key m pressed
+rand_play_funct
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 107.99999999994286, 108 beat: 4
+
+---------------------
+in_pattern: True from_note:71, to_note: 67
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_path_pattern' self.patterns.get_pattern.__name__='get_random_pattern'
+note self.last_from_note=71 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:67 new_note:60
+self.loopq=1
+self.notes_pair[0]=71 []
+self.notes_pair[0]=67 []
+after_check
+Pseq: [26, 25, 25, 24, 24, 23, 23]
+Pseq + Degree - scale: [62, 60, 60, 57, 57, 55, 55]
+Pseq + Degree - key: [68, 66, 66, 63, 63, 61, 61]
+bef Pdict2
+=====================
+check notes:  [68, 66, 66, 63, 63, 61, 61]
+post sched
+'m' released
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 111.99999999993922, 112 beat: 1
+
+---------------------
+in_pattern: True from_note:67, to_note: 60
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_random_pattern' self.patterns.get_pattern.__name__='get_random_pattern'
+note self.last_from_note=67 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:60 new_note:64
+self.loopq=1
+self.notes_pair[0]=67 []
+self.notes_pair[0]=60 []
+after_check
+Pseq: [23, 24, 24]
+Pseq + Degree - scale: [55, 57, 57]
+Pseq + Degree - key: [61, 63, 63]
+bef Pdict2
+=====================
+check notes:  [61, 63, 63]
+post sched
+Clock: Timer overflowed (late by 0.037s)
+alphanumeric key m pressed
+rand_play_funct
+'m' released
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 115.99999999993558, 116 beat: 2
+
+---------------------
+in_pattern: True from_note:60, to_note: 64
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_random_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=60 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:64 new_note:71
+self.loopq=1
+self.notes_pair[0]=60 []
+self.notes_pair[0]=64 []
+after_check
+Pseq: [24, 28]
+Pseq + Degree - scale: [57, 67]
+Pseq + Degree - key: [63, 73]
+bef Pdict2
+=====================
+check notes:  [63, 73]
+post sched
+Clock: Timer overflowed (late by 0.029s)
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 119.99999999993194, 120 beat: 3
+
+---------------------
+in_pattern: True from_note:64, to_note: 71
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=64 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:71 new_note:67
+self.loopq=1
+self.notes_pair[0]=64 []
+self.notes_pair[0]=71 []
+after_check
+Pseq: [28, 26]
+Pseq + Degree - scale: [67, 62]
+Pseq + Degree - key: [73, 68]
+bef Pdict2
+=====================
+check notes:  [73, 68]
+post sched
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 123.9999999999283, 124 beat: 4
+
+---------------------
+in_pattern: True from_note:71, to_note: 67
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=71 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:67 new_note:60
+self.loopq=1
+self.notes_pair[0]=71 []
+self.notes_pair[0]=67 []
+after_check
+Pseq: [26, 23]
+Pseq + Degree - scale: [62, 55]
+Pseq + Degree - key: [68, 61]
+bef Pdict2
+=====================
+check notes:  [68, 61]
+post sched
+Clock: Timer overflowed (late by 0.031s)
+alphanumeric key m pressed
+rand_play_funct
+'m' released
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 127.99999999992467, 128 beat: 1
+
+---------------------
+in_pattern: True from_note:67, to_note: 60
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_path_pattern'
+note self.last_from_note=67 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:60 new_note:64
+self.loopq=1
+self.notes_pair[0]=67 []
+self.notes_pair[0]=60 []
+after_check
+Pseq: [23]
+Pseq + Degree - scale: [55]
+Pseq + Degree - key: [61]
+bef Pdict2
+=====================
+Exception when handling scheduled action: division by zero
+Traceback (most recent call last):
+  File "/home/piotereks/PycharmProjects/soundDesign/venv/lib/python3.10/site-packages/isobar/timeline/track.py", line 219, in perform_event
+    event.action(**event.args)
+  File "/home/piotereks/PycharmProjects/soundDesign/tracker/tracker.py", line 565, in <lambda>
+    "action": lambda: self.beat()
+  File "/home/piotereks/PycharmProjects/soundDesign/tracker/tracker.py", line 740, in <lambda>
+    self.beat = lambda: self.play_from_to(from_note, to_note, in_pattern=True)
+  File "/home/piotereks/PycharmProjects/soundDesign/tracker/tracker.py", line 380, in inner
+    notes = func(self, *args, **kwargs)
+  File "/home/piotereks/PycharmProjects/soundDesign/tracker/tracker.py", line 786, in play_from_to
+    iso.EVENT_DURATION: iso.PSequence([(4 / len_pattern) - 0.000000000000002], repeats=len_pattern),
+ZeroDivisionError: division by zero
+alphanumeric key m pressed
+rand_play_funct
+inner
+play_from_to
+play_from_to diff:3.9999999999963762, timeXX: 131.99999999992104, 132 beat: 2
+
+---------------------
+in_pattern: True from_note:60, to_note: 64
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_path_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=60 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:64 new_note:71
+self.loopq=1
+self.notes_pair[0]=60 []
+self.notes_pair[0]=64 []
+after_check
+Pseq: [24, 28]
+Pseq + Degree - scale: [57, 67]
+Pseq + Degree - key: [63, 73]
+bef Pdict2
+=====================
+check notes:  [63, 73]
+Clock: Timer overflowed (late by 0.033s)
+post sched
+'m' released
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 135.9999999999174, 136 beat: 3
+
+---------------------
+in_pattern: True from_note:64, to_note: 71
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_one_note_pattern'
+note self.last_from_note=64 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:71 new_note:67
+self.loopq=1
+self.notes_pair[0]=64 []
+self.notes_pair[0]=71 []
+after_check
+Pseq: [28, 26]
+Pseq + Degree - scale: [67, 62]
+Pseq + Degree - key: [73, 68]
+bef Pdict2
+=====================
+check notes:  [73, 68]
+post sched
+Clock: Timer overflowed (late by 0.034s)
+alphanumeric key m pressed
+rand_play_funct
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 139.99999999991377, 140 beat: 4
+
+---------------------
+in_pattern: True from_note:71, to_note: 67
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_one_note_pattern' self.patterns.get_pattern.__name__='get_path_pattern'
+note self.last_from_note=71 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:67 new_note:60
+self.loopq=1
+self.notes_pair[0]=71 []
+self.notes_pair[0]=67 []
+after_check
+Pseq: [26, 25, 24]
+Pseq + Degree - scale: [62, 60, 57]
+Pseq + Degree - key: [68, 66, 63]
+bef Pdict2
+=====================
+check notes:  [68, 66, 63]
+post sched
+Clock: Timer overflowed (late by 0.037s)
+'m' released
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 143.99999999991013, 144 beat: 1
+
+---------------------
+in_pattern: True from_note:67, to_note: 60
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_path_pattern' self.patterns.get_pattern.__name__='get_path_pattern'
+note self.last_from_note=67 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:60 new_note:64
+self.loopq=1
+self.notes_pair[0]=67 []
+self.notes_pair[0]=60 []
+after_check
+Pseq: [23]
+Pseq + Degree - scale: [55]
+Pseq + Degree - key: [61]
+bef Pdict2
+=====================
+Exception when handling scheduled action: division by zero
+Traceback (most recent call last):
+  File "/home/piotereks/PycharmProjects/soundDesign/venv/lib/python3.10/site-packages/isobar/timeline/track.py", line 219, in perform_event
+    event.action(**event.args)
+  File "/home/piotereks/PycharmProjects/soundDesign/tracker/tracker.py", line 565, in <lambda>
+    "action": lambda: self.beat()
+  File "/home/piotereks/PycharmProjects/soundDesign/tracker/tracker.py", line 740, in <lambda>
+    self.beat = lambda: self.play_from_to(from_note, to_note, in_pattern=True)
+  File "/home/piotereks/PycharmProjects/soundDesign/tracker/tracker.py", line 380, in inner
+    notes = func(self, *args, **kwargs)
+  File "/home/piotereks/PycharmProjects/soundDesign/tracker/tracker.py", line 786, in play_from_to
+    iso.EVENT_DURATION: iso.PSequence([(4 / len_pattern) - 0.000000000000002], repeats=len_pattern),
+ZeroDivisionError: division by zero
+Clock: Timer overflowed (late by 0.037s)
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 147.9999999999065, 148 beat: 2
+
+---------------------
+in_pattern: True from_note:60, to_note: 64
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_path_pattern' self.patterns.get_pattern.__name__='get_path_pattern'
+note self.last_from_note=60 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:64 new_note:71
+self.loopq=1
+self.notes_pair[0]=60 []
+self.notes_pair[0]=64 []
+after_check
+Pseq: [24, 25, 26, 27]
+Pseq + Degree - scale: [57, 60, 62, 64]
+Pseq + Degree - key: [63, 66, 68, 70]
+bef Pdict2
+=====================
+check notes:  [63, 66, 68, 70]
+post sched
+Clock: Timer overflowed (late by 0.028s)
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 151.99999999990285, 152 beat: 3
+
+---------------------
+in_pattern: True from_note:64, to_note: 71
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_path_pattern' self.patterns.get_pattern.__name__='get_path_pattern'
+note self.last_from_note=64 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:71 new_note:67
+self.loopq=1
+self.notes_pair[0]=64 []
+self.notes_pair[0]=71 []
+after_check
+Pseq: [28, 27]
+Pseq + Degree - scale: [67, 64]
+Pseq + Degree - key: [73, 70]
+bef Pdict2
+=====================
+check notes:  [73, 70]
+Clock: Timer overflowed (late by 0.034s)
+post sched
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 155.99999999989922, 156 beat: 4
+
+---------------------
+in_pattern: True from_note:71, to_note: 67
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_path_pattern' self.patterns.get_pattern.__name__='get_path_pattern'
+note self.last_from_note=71 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:67 new_note:60
+self.loopq=1
+self.notes_pair[0]=71 []
+self.notes_pair[0]=67 []
+after_check
+Pseq: [26, 25, 24]
+Pseq + Degree - scale: [62, 60, 57]
+Pseq + Degree - key: [68, 66, 63]
+bef Pdict2
+=====================
+check notes:  [68, 66, 63]
+Clock: Timer overflowed (late by 0.031s)
+post sched
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 159.99999999989558, 160 beat: 1
+
+---------------------
+in_pattern: True from_note:67, to_note: 60
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_path_pattern' self.patterns.get_pattern.__name__='get_path_pattern'
+note self.last_from_note=67 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:60 new_note:64
+self.loopq=1
+Traceback (most recent call last):
+  File "/home/piotereks/PycharmProjects/soundDesign/venv/lib/python3.10/site-packages/isobar/timeline/track.py", line 219, in perform_event
+    event.action(**event.args)
+  File "/home/piotereks/PycharmProjects/soundDesign/tracker/tracker.py", line 565, in <lambda>
+    "action": lambda: self.beat()
+  File "/home/piotereks/PycharmProjects/soundDesign/tracker/tracker.py", line 740, in <lambda>
+    self.beat = lambda: self.play_from_to(from_note, to_note, in_pattern=True)
+  File "/home/piotereks/PycharmProjects/soundDesign/tracker/tracker.py", line 380, in inner
+    notes = func(self, *args, **kwargs)
+  File "/home/piotereks/PycharmProjects/soundDesign/tracker/tracker.py", line 786, in play_from_to
+    iso.EVENT_DURATION: iso.PSequence([(4 / len_pattern) - 0.000000000000002], repeats=len_pattern),
+ZeroDivisionError: division by zero
+self.notes_pair[0]=67 []
+self.notes_pair[0]=60 []
+after_check
+Pseq: [23]
+Pseq + Degree - scale: [55]
+Pseq + Degree - key: [61]
+bef Pdict2
+=====================
+Exception when handling scheduled action: division by zero
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=243, new_tempo='239'
+a_read tempo: self.timeline.get_tempo()=239, new_tempo='239'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=239, new_tempo='235'
+a_read tempo: self.timeline.get_tempo()=235, new_tempo='235'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=235, new_tempo='231'
+a_read tempo: self.timeline.get_tempo()=231, new_tempo='231'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=231, new_tempo='227'
+a_read tempo: self.timeline.get_tempo()=227, new_tempo='227'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=227, new_tempo='224'
+a_read tempo: self.timeline.get_tempo()=224, new_tempo='224'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=224, new_tempo='220'
+a_read tempo: self.timeline.get_tempo()=220, new_tempo='220'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=220, new_tempo='216'
+a_read tempo: self.timeline.get_tempo()=216, new_tempo='216'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=216, new_tempo='212'
+a_read tempo: self.timeline.get_tempo()=212, new_tempo='212'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=212, new_tempo='208'
+a_read tempo: self.timeline.get_tempo()=208, new_tempo='208'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=208, new_tempo='204'
+a_read tempo: self.timeline.get_tempo()=204, new_tempo='204'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=204, new_tempo='201'
+a_read tempo: self.timeline.get_tempo()=201, new_tempo='201'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=201, new_tempo='197'
+a_read tempo: self.timeline.get_tempo()=197, new_tempo='197'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=197, new_tempo='193'
+a_read tempo: self.timeline.get_tempo()=193, new_tempo='193'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=193, new_tempo='189'
+a_read tempo: self.timeline.get_tempo()=189, new_tempo='189'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=189, new_tempo='181'
+a_read tempo: self.timeline.get_tempo()=181, new_tempo='181'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=181, new_tempo='178'
+a_read tempo: self.timeline.get_tempo()=178, new_tempo='178'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=178, new_tempo='174'
+a_read tempo: self.timeline.get_tempo()=174, new_tempo='174'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=174, new_tempo='170'
+a_read tempo: self.timeline.get_tempo()=170, new_tempo='170'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=170, new_tempo='166'
+a_read tempo: self.timeline.get_tempo()=166, new_tempo='166'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=166, new_tempo='162'
+a_read tempo: self.timeline.get_tempo()=162, new_tempo='162'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=162, new_tempo='159'
+a_read tempo: self.timeline.get_tempo()=159, new_tempo='159'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=159, new_tempo='155'
+a_read tempo: self.timeline.get_tempo()=155, new_tempo='155'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=155, new_tempo='151'
+a_read tempo: self.timeline.get_tempo()=151, new_tempo='151'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=151, new_tempo='147'
+a_read tempo: self.timeline.get_tempo()=147, new_tempo='147'
+set_tempo
+set_tempo
+b_read tempo: self.timeline.get_tempo()=147, new_tempo='143'
+a_read tempo: self.timeline.get_tempo()=143, new_tempo='143'
+inner
+play_from_to
+play_from_to diff:3.999999999996362, timeXX: 163.99999999989194, 164 beat: 2
+
+---------------------
+in_pattern: True from_note:60, to_note: 64
+self.key.scale.name='majorPenta', key=F#, self.key.scale.name='majorPenta'
+=============self.prev_get_pattern_name='get_path_pattern' self.patterns.get_pattern.__name__='get_path_pattern'
+note self.last_from_note=60 back to queue
+if in_pattern
+in_pattern (next pattern for later):  from_note:64 new_note:71
+self.loopq=1
+self.notes_pair[0]=60 []
+self.notes_pair[0]=64 []
+after_check
+Pseq: [24, 25, 26, 27]
+Pseq + Degree - scale: [57, 60, 62, 64]
+Pseq + Degree - key: [63, 66, 68, 70]
+bef Pdict2
+=====================
+check notes:  [63, 66, 68, 70]
+post sched
+Clock: Timer overflowed (late by 0.028s)
+ts
+Processing Done.
+
+Process finished with exit code 0

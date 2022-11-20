@@ -382,10 +382,7 @@ Elements to place:
 
 * think over about how pause impacts file (is there a pause in timeline)?
 * pause happening on and end of beat? no - not decided what to do
-* adding meta information to midi file (with changes of scale)
-* register what options are done (as meta)
-* @property for key/scale, play func
-* add sync for key/scale, play func changes
+* @property for key/scale, play func??  think over
 
 * separate midi channel and midi track for metronome. 
    - not possile with this package, all functions would need to be modified
@@ -402,6 +399,9 @@ text
 
 * bold the note played (optional)
 
+* adding meta information to midi file (with changes of scale) - done
+* register what options are done (as meta) - scale, key and function done.
+* add sync for key/scale, play func changes - done in sync manner
 
 * dropdown for play functions - done
 * hotkeys to rand functions - done

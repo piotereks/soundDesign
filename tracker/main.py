@@ -187,7 +187,7 @@ def rand_play_funct():
     app.play_func_combo.set(selected_function)
     my_tracker.patterns.set_pattern_function(selected_function)
     # my_tracker.midi_out.miditrack.append(mido.MetaMessage('text', text=f"funcR: {app.play_func_combo.get()}"))
-    my_tracker.meta_func(func=app.play_func_combo.get())
+    # my_tracker.meta_func(func=app.play_func_combo.get())
 
 
 
@@ -198,9 +198,7 @@ def rand_key():
         list(set(app.names)-set([app.keys_group.get()]))
         ))
     keys_scale_action(app.keys_group.get(), my_tracker.key.scale.name)
-    my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
-    # my_tracker.midi_out.miditrack.append(mido.MetaMessage('text', text=f"keyR: {app.keys_group.get()}-{app.scale_combo.get()}"))
-    # my_tracker.midi_out.miditrack.append(mido.MetaMessage('key_signature', key=app.keys_group.get()))
+    # my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
 
 
 def rand_scale():
@@ -214,24 +212,21 @@ def rand_scale():
     #     ))
 
     app.scale_combo.set(my_tracker.key.scale.name)
-    # my_tracker.midi_out.miditrack.append(mido.MetaMessage('text', text=f"scaleR: {app.keys_group.get()}-{app.scale_combo.get()}"))
-    my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
+    # my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
 
 
 def set_scale(event):
     log_call()
     scale_obj =  iso.Scale.byname(app.scale_combo.get())
     my_tracker.key = iso.Key(my_tracker.key.tonic, scale_obj)
-    # my_tracker.midi_out.miditrack.append(mido.MetaMessage('text', text=f"scale: {app.keys_group.get()}-{app.scale_combo.get()}"))
-    my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
+    # my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
 
 
 def set_key():
     log_call()
     keys_scale_action(app.keys_group.get(), my_tracker.key.scale.name)
-    # my_tracker.midi_out.miditrack.append(mido.MetaMessage('text', text=f"key: }"))
-    my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
-    print(f"{app.keys_group.get()}")
+    # my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
+    # print(f"{app.keys_group.get()}")
 
 
 def set_play_func(event):
@@ -241,7 +236,7 @@ def set_play_func(event):
     #                                           'get_'+app.play_func_combo.get()+'_pattern')
     my_tracker.patterns.set_pattern_function(app.play_func_combo.get())
     # my_tracker.midi_out.miditrack.append(mido.MetaMessage('text', text=f"func: {app.play_func_combo.get()}"))
-    my_tracker.meta_func(func=app.play_func_combo.get())
+    # my_tracker.meta_func(func=app.play_func_combo.get())
 
 
 def set_tempo(tempo):
