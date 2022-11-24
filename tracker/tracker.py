@@ -21,11 +21,7 @@ from datetime import datetime
 
 
 # <editor-fold desc="Init section">
-# global midi_out
-# global timeline
-# global tline1
-# global tline2
-# global inside_timeline
+
 
 global IN_COLAB
 IN_COLAB = 'google.colab' in sys.modules
@@ -106,14 +102,6 @@ class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
         pass
 
 
-# def addition(n):
-#     return n + n
-#
-#
-# # We double all numbers using map()
-# numbers = (1, 2, 3, 4)
-# result = map(addition, numbers)
-# print(list(result))
 
 if not MULTI_TRACK:
     class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
@@ -223,11 +211,13 @@ class Tracker:
     # name = "Virtual Midi"
 
     # name= "loopMIDI 6"
-    def __init__(self, interval_array=None, note_array=None, midi_note_array=None, midi_out_mode='dummy',
+    def __init__(self,
+                 # interval_array=None, note_array=None, midi_note_array=None,
+                 midi_out_mode='dummy',
                  filename=os.path.join("saved_midi_files","xoutput.mid")):
 
         read_config_file_scales()
-        my_beats = Beats()
+        # my_beats = Beats()
         # self.scale = iso.Scale.major  - replaced by key, and scale always can be referred as self.key.scale
         self.key = iso.Key("C", "major")
         self.prev_key = None
@@ -250,41 +240,41 @@ class Tracker:
         self.queue_content_wrk = None
         self.note_queue = Queue(maxsize = 16)
 
-        # self.root_note = None
-        self.pattern_idx = 0
-        # self.pattern_array = None
-        self.pattern_array = [my_beats.bt1, my_beats.bt3, my_beats.bt1,
-                              my_beats.bt_trip, my_beats.bt2, my_beats.bt1_2, my_beats.bt2]
-        # if note_array:
-        self.interval_array = []
-        print('note array:', note_array)
-        print('interval array:', interval_array)
-        self.midi_note_array = midi_note_array
-        print("self.midi_note_array:", self.midi_note_array)
-        if note_array:
-            for index, note in enumerate(note_array + [note_array[0]]) or []:
-                # print('index,note:', index, note)
-                if index > 0:
-                    # print('note - note_array[index-1]:', note - note_array[index-1])
-                    self.interval_array.append(note - note_array[index - 1])
-                else:
-                    self.interval_array.append(note)
-        else:
-            self.interval_array = interval_array
 
-        print('note array2:', note_array)
-        print('interval array2:', interval_array)
+        self.pattern_idx = 0
+
+        # self.pattern_array = [my_beats.bt1, my_beats.bt3, my_beats.bt1,
+        #                       my_beats.bt_trip, my_beats.bt2, my_beats.bt1_2, my_beats.bt2]
+        # if note_array:
+        # self.interval_array = []
+        # print('note array:', note_array)
+        # print('interval array:', interval_array)
+        # self.midi_note_array = midi_note_array
+        # print("self.midi_note_array:", self.midi_note_array)
+        # if note_array:
+        #     for index, note in enumerate(note_array + [note_array[0]]) or []:
+        #         # print('index,note:', index, note)
+        #         if index > 0:
+        #             # print('note - note_array[index-1]:', note - note_array[index-1])
+        #             self.interval_array.append(note - note_array[index - 1])
+        #         else:
+        #             self.interval_array.append(note)
+        # else:
+        #     self.interval_array = interval_array
+        #
+        # print('note array2:', note_array)
+        # print('interval array2:', interval_array)
 
         # self.init_pattern_array()
 
-        self.expected_array = [
-            67, 69, 68, 70,
-            63, 66, 59,
-            67, 69, 68, 70,
-            76, 78, 77, 79, 78,
-            73, 75, 74, 76, 75, 79,
-            67, 69, 68, 70,
-            73, 75, 74, 76, 75, 79]
+        # self.expected_array = [
+        #     67, 69, 68, 70,
+        #     63, 66, 59,
+        #     67, 69, 68, 70,
+        #     76, 78, 77, 79, 78,
+        #     73, 75, 74, 76, 75, 79,
+        #     67, 69, 68, 70,
+        #     73, 75, 74, 76, 75, 79]
 
         # self.init_timeline(True)
         self.init_timeline(midi_out_mode)
@@ -301,35 +291,35 @@ class Tracker:
     #     # self.key.scale = scale
     #     self.key = iso.Key (self.key.tonic, scale )
 
-    def init_pattern_array(self):
-        self.pattern_array = []
-        patterns = Patterns()
-        print('======')
-        root_note = self.interval_array[0]
-        print("self.interval_array", self.interval_array)
-        for interval in self.interval_array[1:]:
-            # print('gsp:', interval, patterns.get_random_pattern(interval))
-            # print('pre gsp:', interval, root_note)
-            rnd_pattern = patterns.get_random_pattern(interval) + root_note
-            print('------')
-            print('gsp:', interval, root_note, rnd_pattern)
-            # print('gsp2:', interval, iso.PSequence(rnd_pattern))
-            len_rnd_pattern = len(rnd_pattern) - 1
-            notes_seq = iso.PSequence(rnd_pattern[:-1], repeats=1)
-            print('gsp2:', interval, len_rnd_pattern, list(notes_seq.copy()))
-            beat = iso.PDict({
-                "note": notes_seq,
-                # "duration": 1/len_rnd_pattern
-                "duration": iso.PSequence([(4 / len_rnd_pattern) - 0.000000000000002], repeats=len_rnd_pattern)
-            })
-            # print("beat:", beat.note, beat.duration)
-            print("beatx:", list(beat["note"]), list(beat["duration"]))
-            # print("beatx:", list(beat["note"]))
-            self.pattern_array.append(beat)
-            root_note = rnd_pattern[-1]
-            print(f"root note:{root_note}")
-        print("init spa2:", self.pattern_array)
-        print(list(self.pattern_array))
+    # def init_pattern_array(self):
+    #     self.pattern_array = []
+    #     patterns = Patterns()
+    #     print('======')
+    #     root_note = self.interval_array[0]
+    #     print("self.interval_array", self.interval_array)
+    #     for interval in self.interval_array[1:]:
+    #         # print('gsp:', interval, patterns.get_random_pattern(interval))
+    #         # print('pre gsp:', interval, root_note)
+    #         rnd_pattern = patterns.get_random_pattern(interval) + root_note
+    #         print('------')
+    #         print('gsp:', interval, root_note, rnd_pattern)
+    #         # print('gsp2:', interval, iso.PSequence(rnd_pattern))
+    #         len_rnd_pattern = len(rnd_pattern) - 1
+    #         notes_seq = iso.PSequence(rnd_pattern[:-1], repeats=1)
+    #         print('gsp2:', interval, len_rnd_pattern, list(notes_seq.copy()))
+    #         beat = iso.PDict({
+    #             "note": notes_seq,
+    #             # "duration": 1/len_rnd_pattern
+    #             "duration": iso.PSequence([(4 / len_rnd_pattern) - 0.000000000000002], repeats=len_rnd_pattern)
+    #         })
+    #         # print("beat:", beat.note, beat.duration)
+    #         print("beatx:", list(beat["note"]), list(beat["duration"]))
+    #         # print("beatx:", list(beat["note"]))
+    #         self.pattern_array.append(beat)
+    #         root_note = rnd_pattern[-1]
+    #         print(f"root note:{root_note}")
+    #     print("init spa2:", self.pattern_array)
+    #     print(list(self.pattern_array))
 
     def save_midi(self):
         date = datetime.now().strftime('%Y%m%d%H%M%S')
@@ -606,72 +596,6 @@ class Tracker:
         # @log_and_schedule
     # </editor-fold>
 
-    @log_and_schedule
-    def pplay(self):
-        # if not initialize:
-        # key = iso.Key("C", "major")
-        print("self.midi_note_array2:", self.midi_note_array)
-        # print("self.midi_note_array2 cvt:", [self.scale.get(self.scale.indexOf(midi_note)) for midi_note in self.midi_note_array])
-        print("self.midi_note_array2 cvt:", [self.key.scale.get(self.key.scale.indexOf(midi_note)) for midi_note in self.midi_note_array])
-
-        if self.midi_note_array:
-            # this is to denominate midi notes to indexes of elements of scale
-            mod_midi_note_array = [self.midi_note_array[-1]] + self.midi_note_array+[self.midi_note_array[0]]
-            print("mod_midi_note_array:", mod_midi_note_array)
-
-            # note = mod_midi_note_array[self.pattern_idx+1] - 60  # 60 is midi number of C in 5th Octave
-            self.root_note = self.key.scale.indexOf(mod_midi_note_array[self.pattern_idx])
-            note = mod_midi_note_array[self.pattern_idx+1]  # 60 is midi number of C in 5th Octave
-
-            print('n1:',note,self.root_note)
-            # remember that this function is calculating notes which are not from scale
-            # as note with midi code 1 less
-            note = self.key.scale.indexOf(note)
-            # note_prev = self.scale.indexOf(note_prev)
-            print('n1:',note,self.root_note)
-            interval = note - self.root_note
-            print('interval:', interval, self.interval_array[self.pattern_idx])
-        else:
-            interval = self.interval_array[self.pattern_idx]
-
-        rnd_pattern = self.patterns.get_random_pattern(interval) + self.root_note
-        print('grp:', interval, rnd_pattern)
-        len_rnd_pattern = len(rnd_pattern) - 1
-        # print('gsp2:', interval, len_rnd_pattern, iso.PSequence(rnd_pattern[:-1]))
-        # base not converted notes pattern
-        beat = iso.PDict({
-            "note": iso.PSequence(rnd_pattern, repeats=1),
-            # "duration": 1/len_rnd_pattern
-            "duration": iso.PSequence([(4 / len_rnd_pattern) - 0.000000000000002], repeats=len_rnd_pattern)
-        })
-        print("before conversion:", list(beat["note"]), list(beat["duration"]))
-        self.pattern_array[self.pattern_idx] = beat
-        self.root_note = rnd_pattern[-1]
-        # self.root_note = self.scale.get(rnd_pattern[-1])  # <-- this conversion is wrong
-        print('new root note:', self.root_note)
-
-        self.pattern_array[self.pattern_idx].reset()
-
-        # Degree conversion here with scale
-        # converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.scale)  #TODO extend scale
-        converted_note = iso.PDegree(self.pattern_array[self.pattern_idx]['note'], self.key) # is this vaiid usage?
-        notes = iso.PDict({
-            iso.EVENT_NOTE: converted_note,
-            iso.EVENT_DURATION: self.pattern_array[self.pattern_idx]['duration'],
-            # iso.EVENT_OCTAVE: 5
-            # iso.EVENT_DEGREE: xxxx
-        })
-        print(f'converted with scale {self.key.scale.name}:', list(converted_note))
-        self.pattern_array[self.pattern_idx].reset()
-
-        self.pattern_idx += 1
-        self.pattern_idx %= len(self.pattern_array)
-        self.pattern_array[self.pattern_idx].reset()
-        self.tmln.event_stream['duration'] = math.ceil(sum(self.pattern_array[self.pattern_idx]['duration']))
-        self.pattern_array[self.pattern_idx].reset()
-
-        print("pplay - END")
-        return notes
 
     @log_and_schedule
     def play_from_to(self, from_note, to_note, in_pattern=False ):
@@ -852,23 +776,5 @@ class Tracker:
         })  #TODO extend scale
 
 
-    def pplay_new(self):
-        log_call()
-        from_note = self.midi_note_array[self.pattern_idx]
-        to_note = self.midi_note_array[self.pattern_idx+1]
-        #print(f"{self.midi_note_array=} {self.pattern_idx=}")
-        #print(f"{from_note=} {to_note=}")
-        self.beat = lambda: self.play_from_to(from_note, to_note, in_pattern=True)
-        #print(f"{self.midi_note_array=} {self.pattern_idx=}")
-        self.pattern_idx += 1
-        self.pattern_idx %= len(self.pattern_array)
-        # print(f"{self.midi_note_array=} {self.pattern_idx=}")
-        print("pplay_new Done")
-
-
-    def pplay_queue(self):
-        log_call()
-        self.play_from_to(None, None, in_pattern=True)
-        print("pplay_queue Done")
     # </editor-fold>
 

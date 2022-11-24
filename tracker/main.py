@@ -53,14 +53,9 @@ def sbtn():
 def sbtt():
     my_tracker.beat = my_tracker.beat_test
 
-def sbtp():
-    my_tracker.beat = my_tracker.pplay
+# def sbtp():
+#     my_tracker.beat = my_tracker.pplay
 
-def sbtn():
-    my_tracker.pplay_new()
-
-def sbpq():
-    my_tracker.pplay_queue()
 
 def rs():
     rand_scale()
@@ -70,9 +65,6 @@ def save_midi():
     my_tracker.save_midi()
     # my_tracker.midi_out.write()
 
-# def xxxrand_scale():
-#     # my_tracker.scale = iso.Scale.random()
-#     my_tracker.key = iso.Key(iso.key.tonic, iso.Scale.random())
 
 def sbft(note_from = 60, note_to = 64):
     my_tracker.beat = lambda: my_tracker.play_from_to(note_from, note_to)
@@ -80,17 +72,17 @@ def sbft(note_from = 60, note_to = 64):
 # </editor-fold>
 
 # <editor-fold desc="wrk functions">
-def rel_pq():
-    """
-    Reload Play queue
-    """
-    notes_chain = [1, 4, 4, 2, 3, 4, 11, 5, 1, 0]
-    # [63, 65, 65, 63, 63, 65, 70, 65, 63, 60]
-    midi_notes_chain = list(np.array(notes_chain) + 60)
-    print(midi_notes_chain)
-
-    # to load queue
-    dummy = [my_tracker.note_queue.put(note) for note in midi_notes_chain]
+# def rel_pq():
+#     """
+#     Reload Play queue
+#     """
+#     notes_chain = [1, 4, 4, 2, 3, 4, 11, 5, 1, 0]
+#     # [63, 65, 65, 63, 63, 65, 70, 65, 63, 60]
+#     midi_notes_chain = list(np.array(notes_chain) + 60)
+#     print(midi_notes_chain)
+#
+#     # to load queue
+#     dummy = [my_tracker.note_queue.put(note) for note in midi_notes_chain]
 
 def cmp():
     # print('expected:\n', my_tracker.expected_array)
@@ -102,47 +94,6 @@ def put_in_queue(note):
     my_tracker.put_to_queue(note)
 
 
-def old_main():
-    global my_tracker
-    log_call()
-    # iso.util.midi_note_to_note_name=midi_note_to_note_name  # Overwritte original function
-    intervals_chain = [1, 3,    -2, 1, 1, 7, -6, -4, -1] # fix in random_pattern zero interval
-                       # [3, 0, -2, 1, 1, 7, -6, -4, -1, 1]
-                #[1, 3,  0,-2, 1, 1, 7, -6, -4, -1]
-    # self.midi_note_array2:     [61, 64, 64, 62, 63, 64, 71, 65, 61, 60]
-    # self.midi_note_array2 cvt: [62, 64, 64, 62, 64, 64, 70, 65, 62, 60]
-
-    notes_chain = [1, 4, 4, 2, 3, 4, 11, 5, 1, 0]
-                #[63, 65, 65, 63, 63, 65, 70, 65, 63, 60]
-    midi_notes_chain = list(np.array(notes_chain)+60)
-    print(midi_notes_chain)
-
-    # to load queue
-    # dummy = [my_tracker.note_queue.put(note) for note in midi_notes_chain]
-
-    print(sum(intervals_chain))
-    # midi_out_flag = Tracker.MIDI_OUT_FILE
-    # midi_out_flag = Tracker.MIDI_OUT_DEVICE
-    # midi_out_flag = Tracker.MIDI_OUT_DUMMY
-
-
-    # my_tracker = Tracker(interval_array=intervals_chain, midi_out_flag=midi_out_flag)
-    my_tracker = Tracker(midi_note_array=midi_notes_chain, note_array=notes_chain, midi_out_mode=midi_out_flag)
-    dummy = [my_tracker.note_queue.put(note) for note in midi_notes_chain]
-
-    # keys = "q2w3er5t6y7ui9o0p[=]"
-
-    # notepad_scale()
-    # uuu=[iso.Scale([int(aaa) - 1 for aaa in xxx[1].split()[:-1]], xxx[2]) for xxx in notepad if xxx[0] == "Scale"]
-    # Collect events until released
-    # with keyboard.Listener(
-    #         on_press=on_press,
-    #         on_release=on_release) as listener:
-    #     listener.join()
-    sbft(None,None)
-    # Keyboard(lambda x : xxx(x))
-    Keyboard(lambda note : put_in_queue(note))
-# These are work in progress debug functions
 def find_scale_dups():
     import itertools
     # cmp_scales = [(set(prd[0][1].semitones), set(prd[1][1].semitones)) for prd in itertools.product(enumerate(iso.Scale.all()), enumerate(iso.Scale.all()))
