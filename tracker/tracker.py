@@ -31,81 +31,91 @@ global MULTI_TRACK
 MULTI_TRACK = True
 MULTI_TRACK = False
 
-# class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
-class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
+if MULTI_TRACK:
+    class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
 
 
-    def __init__(self, filename):
-        self.filename = filename
-        self.midifile = mido.MidiFile()
-        self.miditrack = [mido.MidiTrack()]
-        self.midifile.tracks.append(self.miditrack[0])
-        # for track in self.miditrack:
-        #     self.midifile.tracks.append(track)
-        # [self.midifile.tracks.append(track) for track in self.miditrack]
-        self.channel_track = []
-        self.channel_track.append(0)
-        # self.time = 0
-        # self.last_event_time = 0
-        self.time = []
-        self.time.append(0)
-        self.last_event_time = []
-        self.last_event_time.append(0)
+        def __init__(self, filename):
+            self.filename = filename
+            self.midifile = mido.MidiFile()
+            self.miditrack = [mido.MidiTrack()]
+            self.midifile.tracks.append(self.miditrack[0])
+            # for track in self.miditrack:
+            #     self.midifile.tracks.append(track)
+            # [self.midifile.tracks.append(track) for track in self.miditrack]
+            self.channel_track = []
+            self.channel_track.append(0)
+            # self.time = 0
+            # self.last_event_time = 0
+            self.time = []
+            self.time.append(0)
+            self.last_event_time = []
+            self.last_event_time.append(0)
 
 
 
-    def extra_track(self, channel=None):
-        if channel:
-            if not [x for x in self.channel_track if x == channel]:
-                track=mido.MidiTrack()
-                self.miditrack.append(track)
-                self.midifile.tracks.append(track)
-                self.channel_track.append(channel)
-                self.time.append(0)
-                self.last_event_time.append(0)
+        def extra_track(self, channel=None):
+            if channel:
+                if not [x for x in self.channel_track if x == channel]:
+                    track=mido.MidiTrack()
+                    self.miditrack.append(track)
+                    self.midifile.tracks.append(track)
+                    self.channel_track.append(channel)
+                    self.time.append(0)
+                    self.last_event_time.append(0)
 
-    def get_channel_track(self, channel=0):
-        try:
-            track = self.channel_track.index(channel)
-        except:
-            track = 0
-        return track
+        def get_channel_track(self, channel=0):
+            try:
+                track = self.channel_track.index(channel)
+            except:
+                track = 0
+            return track
 
-    def note_on(self, note=60, velocity=64, channel=0):
-        #------------------------------------------------------------------------
-        # avoid rounding errors
-        #------------------------------------------------------------------------
-        track = self.get_channel_track(channel)
-        print(f"----------------track var: {channel=} {track=}")
-        if track >= 0:
-            print(f"------------note on: {track=}, {note=}, {channel=}")
-            dt = self.time[track] - self.last_event_time[track]
-            dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
-            self.miditrack[track].append(mido.Message('note_on', note=note, velocity=velocity, channel=channel, time=dt_ticks))
-            self.last_event_time[track] = self.time[track]
+        def note_on(self, note=60, velocity=64, channel=0):
+            #------------------------------------------------------------------------
+            # avoid rounding errors
+            #------------------------------------------------------------------------
+            track = self.get_channel_track(channel)
+            print(f"----------------track var: {channel=} {track=}")
+            if track >= 0:
+                print(f"------------note on: {track=}, {note=}, {channel=}")
+                dt = self.time[track] - self.last_event_time[track]
+                dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
+                self.miditrack[track].append(mido.Message('note_on', note=note, velocity=velocity, channel=channel, time=dt_ticks))
+                self.last_event_time[track] = self.time[track]
 
-    def note_off(self, note=60, channel=0):
-        track = self.get_channel_track(channel)
-        if track >= 0:
-            print(f"------------note on: {track=}, {note=}, {channel=}")
-            dt = self.time[track] - self.last_event_time[track]
-            dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
-            self.miditrack[track].append(mido.Message('note_off', note=note, channel=channel, time=dt_ticks))
-            self.last_event_time[track] = self.time[track]
+        def note_off(self, note=60, channel=0):
+            track = self.get_channel_track(channel)
+            if track >= 0:
+                print(f"------------note on: {track=}, {note=}, {channel=}")
+                dt = self.time[track] - self.last_event_time[track]
+                dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
+                self.miditrack[track].append(mido.Message('note_off', note=note, channel=channel, time=dt_ticks))
+                self.last_event_time[track] = self.time[track]
 
 
-    def tick(self):
-        # for time in self.time:
-        #     time += 1.0 / self.ticks_per_beat
-        self.time = list(map(lambda x : x + (1.0 / self.ticks_per_beat), self.time))
+        def tick(self):
+            # for time in self.time:
+            #     time += 1.0 / self.ticks_per_beat
+            self.time = list(map(lambda x : x + (1.0 / self.ticks_per_beat), self.time))
 
-        pass
+            pass
 
 
 
 if not MULTI_TRACK:
     class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
         pass
+
+        def tick(self):
+            super().tick()
+
+
+        def note_on(self, note=60, velocity=64, channel=0):
+            super().note_on(note, velocity, channel)
+
+        def note_off(self, note=60, channel=0):
+            super().note_off(note, channel)
 
 
     # def __init__(self, filename):
@@ -284,7 +294,7 @@ class Tracker:
         # self.beat = self.beat_none
         # my_tracker.metronome_start()
         self.tmln = self.tracker_timeline()
-        self.metro = self.metro_timeline
+        self.metro = self.metro_timeline()
 
     # def set_scale(self,scale):
     #     self.scale = scale
@@ -448,7 +458,7 @@ class Tracker:
             # "note": iso.PSequence([82, 69, 69, 69]) ,
             "note": iso.PSequence([32, 37, 37, 37], repeats=1),
             # "note" : iso.PSeries(1,1),
-            "duration": 1,
+            "duration": 1-0.000000000000002,
             "channel": 9,
             "amplitude": iso.PSequence([55, 45, 45, 45],  repeats=1),
             # "quantize": 1
