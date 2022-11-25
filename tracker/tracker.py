@@ -29,7 +29,7 @@ NO_MIDI_OUT = mido.get_output_names() == [];
 
 global MULTI_TRACK
 MULTI_TRACK = True
-MULTI_TRACK = False
+# MULTI_TRACK = False
 
 if MULTI_TRACK:
     class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
@@ -427,9 +427,9 @@ class Tracker:
         return self.timeline.schedule({
             "action": lambda: self.metro_beat()
             ,"duration": 4
-            # "quantize": 1
+            # ,"quantize": 1
         }
-            , quantize=1
+            # , quantize=1
             , remove_when_done=False
         )
 
@@ -445,7 +445,7 @@ class Tracker:
             "channel": 9,
             # "quantize": 1
         }
-            , quantize=1
+            # , quantize=1
             , remove_when_done=True)
 
         # @log_and_schedule
@@ -463,7 +463,7 @@ class Tracker:
             "amplitude": iso.PSequence([55, 45, 45, 45],  repeats=1),
             # "quantize": 1
         }
-            , quantize=1
+            # , quantize=1
             , remove_when_done=True)
 
     def metro_start_stop(self, start):
@@ -566,7 +566,7 @@ class Tracker:
             ,"duration": 4
             # "quantize": 1
         }
-            , quantize=1
+            # , quantize=1
             , remove_when_done=False
         )
 
