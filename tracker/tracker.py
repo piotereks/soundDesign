@@ -575,12 +575,19 @@ class Tracker:
         print(f"b_read tempo: {self.timeline.get_tempo()=}, {new_tempo=}")
         # self.timeline.set_tempo(int(new_tempo))
         self.timeline.set_tempo(int(new_tempo))
-        self.midi_out.miditrack.append(mido.MetaMessage('set_tempo',tempo=mido.bpm2tempo(int(new_tempo)), time=0))
+        if MULTI_TRACK:
+            self.midi_out.miditrack[0].append(mido.MetaMessage('set_tempo',tempo=mido.bpm2tempo(int(new_tempo)), time=0))
+        else:
+            self.midi_out.miditrack.append(mido.MetaMessage('set_tempo',tempo=mido.bpm2tempo(int(new_tempo)), time=0))
         print(f"a_read tempo: {self.timeline.get_tempo()=}, {new_tempo=}")
 
 
+
     def write_mid_text_meta(self, message):
-        self.midi_out.miditrack.append(mido.MetaMessage('text',text=message, time=0))
+        if MULTI_TRACK:
+            self.midi_out.miditrack[0].append(mido.MetaMessage('text',text=message, time=0))
+        else:
+            self.midi_out.miditrack.append(mido.MetaMessage('text',text=message, time=0))
 
 
     def meta_key_scale(self, key, scale):
