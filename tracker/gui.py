@@ -379,19 +379,25 @@ if __name__=="__main__":
 
 """
 Elements to place:
+* cap on amplitude  - done
+* implement rests (could be gates, could be none)
 
-* think over about how pause impacts file (is there a pause in timeline)?
-* pause happening on and end of beat? no - not decided what to do
+* Play functions
+* duration patterns
+* velocity patterns
+* different modes of play (not only random)  - (later make it selectable)
+    * shortest way (by my self or via existing function)
+    * fixed length 
+    * different lengths (combined)
+
+* think over about how pause impacts file (is there a pause in timeline)? - ignore
+* pause happening on and end of beat? no - not decided what to do - ignore
 * @property for key/scale, play func??  think over
 * implement duration (balanced/normalized)
-* cap on amplitude
-* amplitude (do I need to loop it myself if it is too short? rather not but check).
-* implement rests
+* amplitude (do I need to loop it myself if it is too short? rather not but check). - done
 
-* separate midi channel and midi track for metronome. 
-   - not possile with this package, all functions would need to be modified
-
-MidiMeta 
+* separate midi channel and midi track for metronome. - done 
+* MidiMeta  - done
 key_signature 
 A A#m Ab Abm Am B Bb Bbm Bm C C# C#m Cb Cm D D#m Db Dm E Eb Ebm Em F F# F#m Fm G G#m Gb Gm
 marker
@@ -399,7 +405,6 @@ lyrics
 instrument_name
 text
 
-* think about patterns that do reflect scale
 
 * bold the note played (optional)
 
@@ -409,7 +414,7 @@ text
 
 * dropdown for play functions - done
 * hotkeys to rand functions - done
-* tempo is not written to file (probably)  - set_tempo MetaMessage have been added to file.
+* tempo is not written to file (probably)  - set_tempo MetaMessage have been added to file. - done
 * tempo knob - done
 * save midi functionality on exit (or on play pause) - done
 * select scale key (dropdown) + rand key - done
@@ -419,41 +424,5 @@ text
 * readonly combo - done
 * combo - is it possible with search? - skip
 * rewrite functions to bind events  - not all tk object do have it
-
-Play functions
-* duration patterns
-* velocity patterns
-* different modes of play (not only random)  - (later make it selectable)
-    * shortest way (by my self or via existing function)
-    * fixed length 
-    * different lengths (combined)
-    *      
-
-Meta Message Types
-
-text (0x01)
-Attribute	Values	Default
-text	string	‘’
-General “Text” Meta Message. Can be used for any text based data.
-
-
-track_name (0x03)
-Attribute	Values	Default
-name	string	‘’
-Stores a MIDI track’s name.
-
-marker (0x06)
-Attribute	Values	Default
-text	string	‘’
-Marks a point of interest in a MIDI file. Can be used as the marker for the beginning of a verse, solo, etc.
-
-key_signature (0x59)
-Attribute	Values	Default
-key	‘C’, ‘F#m’, …	‘C’
-Valid values: A A#m Ab Abm Am B Bb Bbm Bm C C# C#m Cb Cm D D#m Db Dm E Eb Ebm Em F F# F#m Fm G G#m Gb Gm
-
-Note: the mode attribute was removed in 1.1.5. Instead, an ‘m’ is appended to minor keys.
-
-
 
 """

@@ -386,6 +386,7 @@ class Tracker:
             # print('skip checked: ', skip)
             # if not skip:
             notes[iso.EVENT_NOTE] = iso.PMap(notes[iso.EVENT_NOTE], lambda midi_note: None if not midi_note else None if midi_note < 0 else None if midi_note > 127 else midi_note)
+            notes[iso.EVENT_AMPLITUDE] = iso.PMap(notes[iso.EVENT_AMPLITUDE], lambda midi_amp: None if not midi_amp else None if midi_amp < 0 else None if midi_amp > 127 else midi_amp)
             self.check_notes=list(notes[iso.EVENT_NOTE].copy())
             print('check notes: ', self.check_notes)
             self.check_notes_action()
