@@ -5,3 +5,4 @@ wrk_*
 .idea/*
 .idea/*.*
 /tracker/saved_midi_files/
+tracker/__pycache__/*
