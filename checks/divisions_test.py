@@ -20,11 +20,13 @@ succ = [None, {2,3,4},{4,6,10},{6},{8,12}, {10},{12},None,{16}]
 # succ = [None, {2,3,4},{4,6,10},{6},{8,12}, {10},{12},None,{16},
 #         None, {20}, None, {24}, None, None, None, {32},
 #         ]
-# succ.extend(itertools.repeat(None,16))
+succ.extend(itertools.repeat(None,16))
 
-pat_lst=[[1]]
+pat_lst=[[1],[4,2,4],[8,4,8,2],[2,8,4,8],[4,8,4,8,4],[6,3,3,6],[10,5,5,5,5,10],
+         [10,5,10,5,10,5,10]
+         ]
 
-pat_lst=[[1]]
+# pat_lst=[[1]]
 
 
 for (pat_idx,pattern) in enumerate(pat_lst):  # better use enum here
@@ -53,7 +55,7 @@ for (pat_idx,pattern) in enumerate(pat_lst):  # better use enum here
 print('-------------')
 # pprint.pprint(pat_lst, map(1/x,pat_lst[]))
 pprint.pprint(
-  [(pat, sum(map(lambda x: pow(x, -1),pat))) for pat in pat_lst]
+  [(len(pat), pat, sum(map(lambda x: pow(x, -1),pat))) for pat in pat_lst]
 )
 print('-------------')
 print(len(pat_lst))
