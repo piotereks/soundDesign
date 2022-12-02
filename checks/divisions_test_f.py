@@ -31,7 +31,7 @@ class DurationPatterns:
     #          None,
     #          {(16,16)}]
 
-        self.allowed_successors = [None,
+        self.allowed_successorsX = [None,
                 {(2,2),(3,3,3),(5,5,5,5,5), (4,2,4),(6,3,3,6),(6,3,6,3),(3,6,3,6),(10,5,5,5,5,10)
                 ,(10,5,10,5,10,5,10)},
 
@@ -44,7 +44,20 @@ class DurationPatterns:
                 None,
                 {(16,16)}]
 
+        for st in self.allowed_successorsX or {}:
+            p0=[]
+            for fr in st or ():
+                # p1 = None
+                p1=[F(1,uuu) for uuu in fr]
+                print("p1:",p1)
+                p0.extend([p1])
+            print("p0:",p0)
+        return
+                 
+        # self.allowed_successors=
+        # [st for st in self.allowed_successorsX for fr in st]        
 
+        self.allowed_successors=self.allowed_successorsX
         self.allowed_successors.extend(itertools.repeat(None,16))
         self.init_pat_lst=[[1],[4,2,4],[8,4,8,2],[2,8,4,8],[4,8,4,8,4],[6,3,3,6],[10,5,5,5,5,10],
                 [10,5,10,5,10,5,10]
