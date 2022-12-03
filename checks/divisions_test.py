@@ -96,7 +96,7 @@ class DurationPatterns:
         # print(len(pat_lst))
         self.duration_patterns = [{"pattern":pat} for pat in self.init_pat_lst]
         # return(self.duration_patterns)
-        # print(duration_patterns)
+        print(len(self.duration_patterns))
 
         # print(f"{[pat for pat in pat_lst]}")
 
@@ -136,8 +136,8 @@ class DurationPatterns:
 durPat = DurationPatterns()
 # print(f"{durPat=}")
 durPat.find_all_pattern_splits()
-durPat.calc_attributes()
+# durPat.calc_attributes()
 # print(f"{retd=}")
-pprint.pprint(f"{durPat.duration_patterns=}")
+# pprint.pprint(f"{durPat.duration_patterns=}")
 
 # print(durPat)

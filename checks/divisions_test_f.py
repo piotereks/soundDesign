@@ -21,6 +21,7 @@ rp = itertools.repeat
 
 class DurationPatterns:
     def __init__(self):
+        self.duration_patterns = None
     # allowed_successors = [None,
     #          {(2,2),(3,3,3),(5,5,5,5,5)},
     #          {(4,4),(6,6,6),(10,10,10,10,10)},
@@ -31,53 +32,44 @@ class DurationPatterns:
     #          None,
     #          {(16,16)}]
 
-        self.allowed_successorsX = [None,
-                {(2,2),(3,3,3),(5,5,5,5,5), (4,2,4),(6,3,3,6),(6,3,6,3),(3,6,3,6),(10,5,5,5,5,10)
-                ,(10,5,10,5,10,5,10)},
+        self.allowed_successors = [None,
+                [(2,2),(3,3,3),(5,5,5,5,5), (4,2,4),(6,3,3,6),(6,3,6,3),(3,6,3,6),(10,5,5,5,5,10)
+                ,(10,5,10,5,10,5,10)],
 
-                {(4,4),(6,6,6),(10,10,10,10,10),(8,4,8),(12,6,6,12),(12,6,12,6),(6,12,6,12),(20,10,10,10,10,20)
-                ,(20,10,20,10,20,10,20)},
-                {(6,6),(12,6,12)},
-                {(8,8),(12,12,12),(16,8,16)},
-                {(10,10)},
-                {(12,12)},
+                [(4,4),(6,6,6),(10,10,10,10,10),(8,4,8),(12,6,6,12),(12,6,12,6),(6,12,6,12),(20,10,10,10,10,20)
+                ,(20,10,20,10,20,10,20)],
+                [(6,6),(12,6,12)],
+                [(8,8),(12,12,12),(16,8,16)],
+                [(10,10)],
+                [(12,12)],
                 None,
-                {(16,16)}]
+                [(16,16)]]
 
-        for st in self.allowed_successorsX or {}:
-            p0=[]
-            for fr in st or ():
-                # p1 = None
-                p1=[F(1,uuu) for uuu in fr]
-                print("p1:",p1)
-                p0.extend([p1])
-            print("p0:",p0)
-        return
-                 
-        # self.allowed_successors=
-        # [st for st in self.allowed_successorsX for fr in st]        
-
-        self.allowed_successors=self.allowed_successorsX
+        self.allowed_successors=[[ list(map(lambda x:  F(1,x),succ)) for succ in succ_set or ()] for succ_set in self.allowed_successors] 
+        # print(f"{self.allowed_successors=}")
         self.allowed_successors.extend(itertools.repeat(None,16))
         self.init_pat_lst=[[1],[4,2,4],[8,4,8,2],[2,8,4,8],[4,8,4,8,4],[6,3,3,6],[10,5,5,5,5,10],
                 [10,5,10,5,10,5,10]
                 ]
-
-        self.init_pat_lst=[[1]]
+        # self.init_pat_lst=[[1]]
+        self.init_pat_lst = [list(map(lambda x : F(1,x),pat)) for pat in self.init_pat_lst]
+        # print(f"{self.init_pat_lst=}")
 
 
     def find_all_pattern_splits(self):
 
         for (pat_idx,pattern) in enumerate(self.init_pat_lst):  # better use enum here
-        # print(f"pat_idx={(pat_idx,pattern)}, {pat_lst}")
+            # print(f"pat_idx={(pat_idx,pattern)}")
             for (el_idx, element) in enumerate(pattern):
+                # if el_idx>=2:
+                #     return
                 # print(f"---pat_lst={pat_lst}")
                 # print(f"---el_idx={(el_idx, element)}")
                 # if not succ[element]:
-                if not self.allowed_successors[element]:
+                if not self.allowed_successors[int(1/element)]:
                     continue
                 # for (succ_idx, succesor) in enumerate(succ[element]):
-                for (succ_idx, succesor) in enumerate(self.allowed_successors[element]):
+                for (succ_idx, succesor) in enumerate(self.allowed_successors[int(1/element)]):
                     # print(f"------pat_lst={pat_lst}")
                     # print(f"------{pattern}, {(el_idx,element)}, {succesor}")
                     # print(f"------succ_idx={(succ_idx,succesor)}")
@@ -100,7 +92,7 @@ class DurationPatterns:
 
                     if xp not in self.init_pat_lst:
                         self.init_pat_lst.append(xp)
-        print('-------------')
+        print('-------------xxxx')
 
         # pprint.pprint(
         #   [(len(pat), pat, sum(map(lambda x: pow(x, -1),pat))) for pat in pat_lst ]
@@ -109,7 +101,8 @@ class DurationPatterns:
         # print(len(pat_lst))
         self.duration_patterns = [{"pattern":pat} for pat in self.init_pat_lst]
         # return(self.duration_patterns)
-        # print(duration_patterns)
+        # print(self.duration_patterns)
+        print(len(self.duration_patterns))
 
         # print(f"{[pat for pat in pat_lst]}")
 
@@ -149,8 +142,8 @@ class DurationPatterns:
 durPat = DurationPatterns()
 # print(f"{durPat=}")
 durPat.find_all_pattern_splits()
-durPat.calc_attributes()
+# durPat.calc_attributes()
 # print(f"{retd=}")
-pprint.pprint(f"{durPat.duration_patterns=}")
+# pprint.pprint(f"{durPat.duration_patterns=}")
 
 # print(durPat)
