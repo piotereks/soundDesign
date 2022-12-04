@@ -12,7 +12,26 @@ from typing import Callable
 global IN_COLAB
 IN_COLAB = 'google.colab' in sys.modules
 
-class Patterns:
+class DurationPatterns:
+    def __init__(self):
+        self.__read_config_file__()
+
+    def __read_config_file__(self):
+        # print('reading config')
+        config_file = 'duration_patterns.yaml'
+        if IN_COLAB:
+            config_file = '/content/SoundDesign/tracker/' + config_file
+
+        with open(config_file, 'r') as file:
+            # with open('reviewed_pattern_cfg.yaml', 'r') as file:
+            self.patterns = yaml.safe_load(file)
+        # print(self.patterns_config)
+        # print(self.patterns_config['play_over'])
+        print('after list')
+
+        # pprint.pprint(self.patterns)
+
+class NotePatterns:
 
     def __init__(self):
         self.__read_config_file__()
@@ -21,6 +40,7 @@ class Patterns:
         self.pattern_methods_list = self.__list_get_pattern_methods__()
         self.pattern_methods_short_list  = [re.sub('get_(.*)_pattern', '\g<1>', method) for method in self.__list_get_pattern_methods__()]
         self.get_pattern = getattr(self, self.pattern_methods_list[0])
+        self.dur_patterns = DurationPatterns()
         # re.sub('abc(.*)xyz', '\g<1>', 'abcdefprstuwxyz')
         # Callable[[], None]
         # self.get_pattern = self.get_one_note_pattern
@@ -100,19 +120,36 @@ class Patterns:
         return suitable_patterns
 
 # <editor-fold desc="get pattern functions">
+    def mod_duration(func):
+        def inner(self, *args, **kwargs):
+            result = func(self, *args, **kwargs)
+            if not np.any(result.get(iso.EVENT_DURATION)):
+                # result[iso.EVENT_DURATION] = np.array([1, 7, 3])
+                durations = random.choice([dp["pattern"] for dp in self.dur_patterns.patterns
+                                    if dp["len"]==len(result[iso.EVENT_NOTE])-1])
+                print(f"=========>{durations=}")
+                result[iso.EVENT_DURATION] = 1/np.array(durations)
+
+            return result
+        return inner
+
+    # self.dur_patterns
+
+    @mod_duration
     def get_random_pattern(self, interval):
         # return random.choice(self.all_suitable_patterns(interval))
         # return {iso.EVENT_NOTE:random.choice(self.all_suitable_patterns(interval))}
         return {
             iso.EVENT_NOTE:random.choice(self.all_suitable_patterns(interval)),
-            iso.EVENT_AMPLITUDE: np.array([50, 120]),
-            iso.EVENT_DURATION: np.array([3, 1])
-            , iso.EVENT_GATE: np.array([1, 0.25, 0.25, 3.25])
+            iso.EVENT_AMPLITUDE: np.array([50, 120])
+            # iso.EVENT_DURATION: np.array([3, 1]),
+            #  iso.EVENT_GATE: np.array([1, 0.25, 0.25, 3.25])
 
         }
 
 
 
+    @mod_duration
     def get_one_note_pattern(self, interval):
         # return np.array([0, interval])
         return {iso.EVENT_NOTE: np.array([0, interval]),
@@ -120,6 +157,7 @@ class Patterns:
                 }
 
 
+    @mod_duration
     def get_path_pattern(self, interval):
         # return {iso.EVENT_NOTE:np.array([0,0]) if interval == 0 else np.arange(0, interval+np.sign(interval), np.sign(interval))}
         if interval == 0:
@@ -128,9 +166,9 @@ class Patterns:
             notes = np.arange(0, interval + np.sign(interval), np.sign(interval))
         return {
             iso.EVENT_NOTE:notes,
-            iso.EVENT_AMPLITUDE: np.array([120, 50]),
-            iso.EVENT_DURATION : np.array([2, 1])
-            ,iso.EVENT_GATE:np.array([1, 0.25, 0.25, 3.25])
+            iso.EVENT_AMPLITUDE: np.array([120, 100]),
+            # iso.EVENT_DURATION : np.array([2, 1])
+            # ,iso.EVENT_GATE:np.array([1, 0.25, 0.25, 3.25])
         }
     # </editor-fold>
 
@@ -141,18 +179,22 @@ class Patterns:
 
 
 def main():
-    global ptrn
-    ptrn = Patterns()
+    import pprint
+
+    global note_ptrn
+    note_ptrn = NotePatterns()
+    # dur_prtn = DurationPatterns()
+    note_ptrn.get_path_pattern(5)
     # print(ptrn.get_random_pattern(5))
     # print(ptrn.get_one_note_pattern(5))
     # print(ptrn.all_suitable_patterns(5))
-    import pprint
+
     # get_patt_search = re.compile('^get.*pattern$')
     # pprint.pprint([x for x in dir(Patterns) if get_patt_search.search(x)])
     # ptrn.list_get_pattern_methods()
-    print(ptrn.pattern_methods_list)
-    print(ptrn.get_pattern(5))
-
+    # print(note_ptrn.pattern_methods_list)
+    # print(note_ptrn.get_pattern(5))
+    pprint.pprint(dur_prtn.patterns)
 
 
 

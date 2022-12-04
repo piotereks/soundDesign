@@ -133,10 +133,10 @@ def metro_on_off():
 def rand_play_funct():
     log_call()
     selected_function=random.choice(
-        list(set(my_tracker.patterns.pattern_methods_short_list) - set([app.play_func_combo.get()]))
+        list(set(my_tracker.note_patterns.pattern_methods_short_list) - set([app.play_func_combo.get()]))
     )
     app.play_func_combo.set(selected_function)
-    my_tracker.patterns.set_pattern_function(selected_function)
+    my_tracker.note_patterns.set_pattern_function(selected_function)
     # my_tracker.midi_out.miditrack.append(mido.MetaMessage('text', text=f"funcR: {app.play_func_combo.get()}"))
     # my_tracker.meta_func(func=app.play_func_combo.get())
 
@@ -185,7 +185,7 @@ def set_play_func(event):
     # my_tracker.patterns.get_pattern.__name__ = app.play_func_combo.get()
     # my_tracker.patterns.get_pattern = getattr(my_tracker.patterns,
     #                                           'get_'+app.play_func_combo.get()+'_pattern')
-    my_tracker.patterns.set_pattern_function(app.play_func_combo.get())
+    my_tracker.note_patterns.set_pattern_function(app.play_func_combo.get())
     # my_tracker.midi_out.miditrack.append(mido.MetaMessage('text', text=f"func: {app.play_func_combo.get()}"))
     # my_tracker.meta_func(func=app.play_func_combo.get())
 
@@ -236,8 +236,8 @@ def run_gui():
     my_tracker.loopq = app.loop_queue_on.get()
 
     app.play_func_rnd_btn_cmd_ext = lambda: rand_play_funct()
-    app.play_func_combo['values'] = my_tracker.patterns.pattern_methods_short_list
-    app.play_func_combo.set(my_tracker.patterns.pattern_methods_short_list[0])
+    app.play_func_combo['values'] = my_tracker.note_patterns.pattern_methods_short_list
+    app.play_func_combo.set(my_tracker.note_patterns.pattern_methods_short_list[0])
     app.play_func_combo.bind("<<ComboboxSelected>>", set_play_func)
 
 

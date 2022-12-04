@@ -241,7 +241,7 @@ class Tracker:
         self.diff_time = 0
         self.prev_time = 0
         self.timeline = None
-        self.patterns = Patterns()
+        self.note_patterns = NotePatterns()
         self.prev_get_pattern_name = None
         self.root_note = 0
         self.last_note = None
@@ -628,9 +628,9 @@ class Tracker:
         # self.key.scale.name
         # self.key.tonic
 
-        if self.prev_get_pattern_name != self.patterns.get_pattern.__name__:
+        if self.prev_get_pattern_name != self.note_patterns.get_pattern.__name__:
             # self.meta_func(func=f"prev:{self.prev_get_pattern_name}")
-            self.meta_func(func=f"curr:{self.patterns.get_pattern.__name__}")
+            self.meta_func(func=f"curr:{self.note_patterns.get_pattern.__name__}")
             # pass
         if (not self.prev_key and self.key) \
             or self.prev_key != self.key:
@@ -640,8 +640,8 @@ class Tracker:
             self.meta_key_scale(key=f"curr: {self.key.tonic}", scale=self.key.scale.name)
 
         self.prev_key = self.key
-        print(f"============={self.prev_get_pattern_name=} {self.patterns.get_pattern.__name__=}")
-        self.prev_get_pattern_name = self.patterns.get_pattern.__name__
+        print(f"============={self.prev_get_pattern_name=} {self.note_patterns.get_pattern.__name__=}")
+        self.prev_get_pattern_name = self.note_patterns.get_pattern.__name__
         # my_tracker.meta_func(func=app.play_func_combo.get())
         # my_tracker.meta_key_scale(key=app.keys_group.get(), scale=app.scale_combo.get())
 
@@ -715,7 +715,7 @@ class Tracker:
         # print(f"{self.patterns.get_pattern(interval)=}")
 
         # pattern = self.patterns.get_pattern(interval) + root_note
-        pattern = self.patterns.get_pattern(interval)
+        pattern = self.note_patterns.get_pattern(interval)
 
 
         print(f"type of pattern: {type(pattern)=}, {isinstance(pattern, np.ndarray)}")

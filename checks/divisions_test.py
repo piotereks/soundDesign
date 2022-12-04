@@ -14,6 +14,7 @@
 import itertools
 import pprint
 import statistics
+import yaml
 from fractions import Fraction as F
 
 # succ = [None, {2,3,4},{4,6,10},{6},{8,12}, {10},{12},None,{16}]
@@ -95,7 +96,7 @@ class DurationPatterns:
         # print('-------------')
         # print(len(pat_lst))
         self.duration_patterns = [{"pattern":pat} for pat in self.init_pat_lst]
-        # return(self.duration_patterns)
+        # return(self.patterns)
         print(len(self.duration_patterns))
 
         # print(f"{[pat for pat in pat_lst]}")
@@ -125,11 +126,11 @@ class DurationPatterns:
         return self.check_dur_sizes( pattern = pat, dividor = 2, any_all ="any")
 
 
-    def all_trees(self, pat):
+    def all_threes(self, pat):
         return self.check_dur_sizes( pattern = pat, dividor = 3, any_all ="all")
 
 
-    def any_trees(self, pat):
+    def any_threes(self, pat):
         return self.check_dur_sizes( pattern = pat, dividor = 3, any_all ="any")
 
 
@@ -142,6 +143,10 @@ class DurationPatterns:
 
 
     def calc_attributes(self):
+        def assign_attrib(attr:str, val:bool):
+            if val:
+                pat[attr] = val
+
         for pat in self.duration_patterns:
             ret_pattern = pat.get("pattern")
             if not ret_pattern:
@@ -151,20 +156,27 @@ class DurationPatterns:
             # print(pat)
             pat["mean"] = statistics.mean(ret_pattern) # type: ignore
             pat["geo_mean"] = statistics.geometric_mean(ret_pattern) # type: ignore
-            pat["harm_mean"] = statistics.harmonic_mean(ret_pattern) # type: ignore
+            # pat["harm_mean"] = statistics.harmonic_mean(ret_pattern) # type: ignore
             pat["pstdev"] = statistics.pstdev(ret_pattern) # type: ignore
-     
+
             pat["max"] = max(ret_pattern) # type: ignore
             pat["min"] = min(ret_pattern) # type: ignore
 
-            pat["all2"] = self.all_twos(ret_pattern) # type: ignore
-            pat["any2"] = self.any_twos(ret_pattern) # type: ignore
+            assign_attrib("all2",self.all_twos(ret_pattern))
+            assign_attrib("any2",self.any_twos(ret_pattern))
+            assign_attrib("all3", self.all_threes(ret_pattern))
+            assign_attrib("any3", self.any_threes(ret_pattern))
+            assign_attrib("all5",self.all_fives(ret_pattern))
+            assign_attrib("any6",self.any_fives(ret_pattern))
 
-            pat["all3"] = self.all_trees(ret_pattern) # type: ignore
-            pat["any3"] = self.any_trees(ret_pattern) # type: ignore
+            # pat["all2"] = self.all_twos(ret_pattern) # type: ignore
+            # pat["any2"] = self.any_twos(ret_pattern) # type: ignore
 
-            pat["all5"] = self.all_fives(ret_pattern) # type: ignore
-            pat["any5"] = self.any_fives(ret_pattern) # type: ignore
+            # pat["all3"] = self.all_trees(ret_pattern) # type: ignore
+            # pat["any3"] = self.any_trees(ret_pattern) # type: ignore
+            #
+            # pat["all5"] = self.all_fives(ret_pattern) # type: ignore
+            # pat["any5"] = self.any_fives(ret_pattern) # type: ignore
 
 
 
@@ -173,8 +185,14 @@ durPat = DurationPatterns()
 durPat.find_all_pattern_splits()
 durPat.calc_attributes()
 # print(f"{retd=}")
-# pprint.pprint(f"{durPat.duration_patterns=}")
-pprint.pprint([pat for pat in durPat.duration_patterns if pat["all5"]])
+# pprint.pprint(f"{durPat.patterns=}")
+# pprint.pprint([pat for pat in durPat.patterns if pat["all5"]])
 # cities = sorted(cities, key=lambda city: city['population'])
-pprint.pprint(sorted(durPat.duration_patterns, key = lambda x : -x["pstdev"]))
+# pprint.pprint(sorted(durPat.patterns, key = lambda x : -x["pstdev"]))
 # print(durPat)
+print("bef dump")
+dumped_dur = yaml.dump(durPat.duration_patterns,default_flow_style=None, sort_keys=False)
+print(dumped_dur)
+print("aft dump")
+with open('patterns.yaml', 'w') as f:
+    data = yaml.dump(durPat.duration_patterns,f, default_flow_style=None, sort_keys=False)
