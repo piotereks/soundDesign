@@ -752,21 +752,24 @@ class Tracker:
 
         if not isinstance(pattern_duration, np.ndarray):
             pattern_duration = np.array(None)
-            # pattern_duration = np.repeat((4 / len_pattern) - 0.000000000000002, len_pattern)
-            pattern_duration = np.repeat(1.5, len_pattern)
+            pattern_duration = np.repeat((4 / len_pattern) - 0.000000000000002, len_pattern)
+            # pattern_duration = np.repeat(1.5, len_pattern)
 
         if not isinstance(pattern_amplitude, np.ndarray):
             pattern_amplitude = np.array([64])
 
         if not isinstance(pattern_gate, np.ndarray):
             pattern_gate = np.array([1])
+
+        # when duration size (elements) is less then multiply
+        # and remove if lenth is longer after multiplication
         if pattern_duration.size<len_pattern:
             # pattern_duration = np.repeat(pattern_duration, int(len_pattern/pattern_duration.size)+1)
             pattern_mult = np.tile(pattern_duration,(int(len_pattern/pattern_duration.size)+1, 1))
             pattern_duration = pattern_mult.reshape(pattern_mult.shape[0]*pattern_mult.shape[1])
-
         pattern_duration = pattern_duration[:len_pattern]
-
+        
+        # rescale duration of notes
         pattern_duration = 4*pattern_duration/pattern_duration.sum()-0.000000000000002
 
         #recalculate/normalize duration - base is now 4 (could be different in future)
@@ -786,7 +789,7 @@ class Tracker:
             # iso.EVENT_NOTE: iso.PDegree(iso.PSequence(pattern, repeats=1), self.scale),
             iso.EVENT_NOTE: iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key),
             # iso.EVENT_DURATION: iso.PSequence([(4 / len_pattern) - 0.000000000000002], repeats=len_pattern),
-            iso.EVENT_DURATION: iso.PSequence(pattern_duration, repeats=len_pattern),
+            iso.EVENT_DURATION: iso.PSequence(pattern_duration, repeats=1),
             iso.EVENT_AMPLITUDE: iso.PSequence(pattern_amplitude)
             ,iso.EVENT_GATE: iso.PSequence(pattern_gate)
             # iso.EVENT_OCTAVE: 5

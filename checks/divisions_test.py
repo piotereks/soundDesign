@@ -100,44 +100,81 @@ class DurationPatterns:
 
         # print(f"{[pat for pat in pat_lst]}")
 
+    # def inv(self, elmnt):
+    #     return 0 if elmnt==0 else elmnt
+
+    def check_dur_sizes(self,pattern:list, dividor:int, any_all="any"):
+        div_tab ={
+        2: [1,2,4,8,16,32,64],
+        3: [1,3,6,12,24],
+        5: [1,5,10,20]
+        }
+        if any_all == "any":
+            func = any
+        else:
+            func = all
+
+        return func([elem in div_tab[dividor] for elem in pattern])
+
+        
+    def all_twos(self, pat):
+        return self.check_dur_sizes( pattern = pat, dividor = 2, any_all ="all")
+
+
+    def any_twos(self, pat):
+        return self.check_dur_sizes( pattern = pat, dividor = 2, any_all ="any")
+
+
+    def all_trees(self, pat):
+        return self.check_dur_sizes( pattern = pat, dividor = 3, any_all ="all")
+
+
+    def any_trees(self, pat):
+        return self.check_dur_sizes( pattern = pat, dividor = 3, any_all ="any")
+
+
+    def all_fives(self, pat):
+        return self.check_dur_sizes( pattern = pat, dividor = 5, any_all ="all")
+
+
+    def any_fives(self, pat):
+        return self.check_dur_sizes( pattern = pat, dividor = 5, any_all ="any")
+
+
     def calc_attributes(self):
         for pat in self.duration_patterns:
             ret_pattern = pat.get("pattern")
-            pat["len"] = len(ret_pattern)
+            if not ret_pattern:
+                break
+      
+            pat["len"] = len(ret_pattern)  # type: ignore
             # print(pat)
-            pat["mean"] = statistics.mean(ret_pattern)
-            pat["geo_mean"] = statistics.geometric_mean(ret_pattern)
-            pat["harm_mean"] = statistics.harmonic_mean(ret_pattern)
-            pat["pstdev"] = statistics.pstdev(ret_pattern)
-            pat["pvariance"] = statistics.pvariance(ret_pattern)
-            # print(ret_pattern)
-            if len(ret_pattern)>1:
-                pat["variance"] = statistics.variance(ret_pattern)
-                pat["stdev"] = statistics.stdev(ret_pattern)
-            else:
-                pat["variance"]=0
-                pat["stdev"]=0
-                
-            pat["max"] = max(ret_pattern)
-            pat["min"] = min(ret_pattern)
+            pat["mean"] = statistics.mean(ret_pattern) # type: ignore
+            pat["geo_mean"] = statistics.geometric_mean(ret_pattern) # type: ignore
+            pat["harm_mean"] = statistics.harmonic_mean(ret_pattern) # type: ignore
+            pat["pstdev"] = statistics.pstdev(ret_pattern) # type: ignore
+     
+            pat["max"] = max(ret_pattern) # type: ignore
+            pat["min"] = min(ret_pattern) # type: ignore
 
+            pat["all2"] = self.all_twos(ret_pattern) # type: ignore
+            pat["any2"] = self.any_twos(ret_pattern) # type: ignore
 
-# statistics.pstdev(data, mu=None)
-# Return the population standard deviation
-# statistics.pvariance(data, mu=None)
-# Return the population variance of data, a non-empty sequence
-# statistics.stdev(data, xbar=None)
-# Return the sample standard deviation (the square root of the sample variance). See variance() for arguments and other details.
+            pat["all3"] = self.all_trees(ret_pattern) # type: ignore
+            pat["any3"] = self.any_trees(ret_pattern) # type: ignore
 
-# statistics.variance(data, xbar=None)
-# Return the sample variance of data, an iterable of at least two real-valued numbers. Variance, or second moment about the mean, is a measure of the variabili
+            pat["all5"] = self.all_fives(ret_pattern) # type: ignore
+            pat["any5"] = self.any_fives(ret_pattern) # type: ignore
+
 
 
 durPat = DurationPatterns()
 # print(f"{durPat=}")
 durPat.find_all_pattern_splits()
-# durPat.calc_attributes()
+durPat.calc_attributes()
 # print(f"{retd=}")
 # pprint.pprint(f"{durPat.duration_patterns=}")
-
+pprint.pprint([pat for pat in durPat.duration_patterns if pat["all5"]])
+# cities = sorted(cities, key=lambda city: city['population'])
+pprint.pprint(sorted(durPat.duration_patterns, key = lambda x : -x["pstdev"]))
 # print(durPat)
