@@ -33,7 +33,7 @@ class DurationPatterns:
     #          {(16,16)}]
 
         self.allowed_successors = [None,
-                {(2,2),(3,3,3),(5,5,5,5,5), (4,2,4),(6,3,3,6),(6,3,6,3),(3,6,3,6),(10,5,5,5,5,10)
+                {(3/2,3),(3,3/2),(4/3,4),(4,4/3),(2,2),(3,3,3),(5,5,5,5,5), (4,2,4),(6,3,3,6),(6,3,6,3),(3,6,3,6),(10,5,5,5,5,10)
                 ,(10,5,10,5,10,5,10)},
 
                 {(4,4),(6,6,6),(10,10,10,10,10),(8,4,8),(12,6,6,12),(12,6,12,6),(6,12,6,12),(20,10,10,10,10,20)
@@ -51,7 +51,7 @@ class DurationPatterns:
                 [10,5,10,5,10,5,10]
                 ]
 
-        self.init_pat_lst=[[1]]
+        # self.init_pat_lst=[[1]]
 
 
     def find_all_pattern_splits(self):
@@ -62,7 +62,8 @@ class DurationPatterns:
                 # print(f"---pat_lst={pat_lst}")
                 # print(f"---el_idx={(el_idx, element)}")
                 # if not succ[element]:
-                if not self.allowed_successors[element]:
+
+                if not isinstance(element,int)  or not self.allowed_successors[element]:
                     continue
                 # for (succ_idx, succesor) in enumerate(succ[element]):
                 for (succ_idx, succesor) in enumerate(self.allowed_successors[element]):
@@ -192,7 +193,7 @@ durPat.calc_attributes()
 # print(durPat)
 print("bef dump")
 dumped_dur = yaml.dump(durPat.duration_patterns,default_flow_style=None, sort_keys=False)
-print(dumped_dur)
+# print(dumped_dur)
 print("aft dump")
 with open('patterns.yaml', 'w') as f:
     data = yaml.dump(durPat.duration_patterns,f, default_flow_style=None, sort_keys=False)
