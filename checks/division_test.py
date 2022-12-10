@@ -34,25 +34,39 @@ class DurationPatterns:
     #          {(16,16)}]
 
         self.new_succ_divdors = \
-        { 2:
+        {20:
             [
-                (1,1),(1,3),(3,1)
+                (1,1)
             ],
-           3: [
+
+        21:  [
+                (1,3),(3,1)
+            ],
+        30: [
+               (1,1,1)
+            ],
+        31: [
                 (1,2),(2,1)
             ],
-           5: [
-                (2,3),(3,2),(1,4),(4,1),(1,9),(9,1),(3,7),(7,3)
+        50: [
+                (1,1,1,1,1)
+            ],
+        51: [
+                (2,1,2),(1,2,1,1),(1,1,2,1),
+                (2,3),(3,2),(1,4),(4,1)
+            ],
+        52: [
+                (1,9),(9,1),(3,7),(7,3)
             ]
         }
         self.succ_idx = {
-        1:[2,3,5],
-        2:[2,3,],
-        3:[2],
-        4:[2,3,5],
-        5:[2],
-        6:[2],
-        8:[2,3,5]
+        1:[20,21,30,31,50,51,52],
+        2:[20,21,30,31,50,51],
+        3:[20] #,
+        # 4:[20,21,30,31],
+        # 5:[20],
+        # 6:[20],
+        # 8:[20]
         }
 
         self.allowed_successors = [None,
@@ -78,35 +92,31 @@ class DurationPatterns:
 
     def recalc(self):
         for (pat_idx,pattern) in enumerate(self.init_pat_lst):
-            # print(f"==========={pat_idx=}, {pattern},\n--{self.init_pat_lst}")
             for (el_idx, element) in enumerate(pattern):
                 idx_map=self.succ_idx.get(element)
-                print(f"ppppppp={element=}, {idx_map=}")
+                # print(f"\nppppppp={pattern=}, {element=}, {idx_map=}")
                 if not idx_map:
                     continue
                 for idx in idx_map:
-                    # print(, {np.array(self.new_succ_divdors[idx])}")
-                    print(f"{idx=}, {self.new_succ_divdors[idx]}")
+                    # print(f"{idx=}, {self.new_succ_divdors[idx]}")
                     for dividor_tup in self.new_succ_divdors[idx]: 
                         
-                        # print(1/np.array(dividor))
-                        print(f"{dividor_tup=},{sum(dividor_tup)=},{sum(dividor_tup)/np.array(dividor_tup)}")
+                        # print(f"{dividor_tup=},{sum(dividor_tup)=},{sum(dividor_tup)/np.array(dividor_tup)}")
                         
                         div_array = element*sum(dividor_tup)/np.array(dividor_tup)
                         xp = pattern.copy()
                         del xp[el_idx]
 
-                        for x in div_array:
+                        for x in np.flip(div_array):
                             xp.insert(el_idx, x)
-                            # succesor.reset()
-                            # xp.insert(el_idx,15)
-                            # print(f"-------push xp:{xp}")
-                            # print(f"-------pat_lst:{pat_lst}")
 
                         if xp not in self.init_pat_lst:
-                            self.init_pat_lst.append(xp)
-                            print(f"{xp=}")
+                            self.init_pat_lst.append(list(xp))
+                            # print(f"{xp=}")
 
+        self.duration_patterns = [{"pattern":pat} for pat in self.init_pat_lst]
+        # return(self.patterns)
+        print(len(self.duration_patterns))
 
     def find_all_pattern_splits(self):
 
@@ -239,7 +249,7 @@ durPat = DurationPatterns()
 durPat.recalc()
 # print(f"{durPat=}")
 # durPat.find_all_pattern_splits()
-# durPat.calc_attributes()
+durPat.calc_attributes()
 # print(f"{retd=}")
 # pprint.pprint(f"{durPat.patterns=}")
 # pprint.pprint([pat for pat in durPat.patterns if pat["all5"]])
@@ -250,6 +260,6 @@ print("bef dump")
 # dumped_dur = yaml.dump(durPat.duration_patterns,default_flow_style=None, sort_keys=False)
 # print(dumped_dur)
 # print("aft dump")
-# with open('patterns.yaml', 'w') as f:
-    # data = yaml.dump(durPat.duration_patterns,f, default_flow_style=None, sort_keys=False)
-
+with open('patterns.yaml', 'w') as f:
+    data = yaml.dump(durPat.duration_patterns,f, default_flow_style=None, sort_keys=False)
+print('after writing')
