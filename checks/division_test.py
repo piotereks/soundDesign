@@ -87,7 +87,8 @@ class DurationPatterns:
                 for idx in idx_map:
                     # print(, {np.array(self.new_succ_divdors[idx])}")
                     print(f"{idx=}, {self.new_succ_divdors[idx]}")
-                    for dividor_tup in self.new_succ_divdors[idx]:
+                    for dividor_tup in self.new_succ_divdors[idx]: 
+                        
                         # print(1/np.array(dividor))
                         print(f"{dividor_tup=},{sum(dividor_tup)=},{sum(dividor_tup)/np.array(dividor_tup)}")
                         
