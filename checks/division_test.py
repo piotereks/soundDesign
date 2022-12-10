@@ -23,15 +23,6 @@ rp = itertools.repeat
 
 class DurationPatterns:
     def __init__(self):
-    # allowed_successors = [None,
-    #          {(2,2),(3,3,3),(5,5,5,5,5)},
-    #          {(4,4),(6,6,6),(10,10,10,10,10)},
-    #          {(6,6)},
-    #          {(8,8),(12,12,12)},
-    #          {(10,10)},
-    #          {(12,12)},
-    #          None,
-    #          {(16,16)}]
 
         self.new_succ_divdors = \
         {20:
@@ -50,40 +41,26 @@ class DurationPatterns:
             ],
         50: [
                 (1,1,1,1,1)
-            ],
-        51: [
-                (2,1,2),(1,2,1,1),(1,1,2,1),
-                (2,3),(3,2),(1,4),(4,1)
-            ],
-        52: [
-                (1,9),(9,1),(3,7),(7,3)
-            ]
+            ] #,
+        # 51: [
+        #         (2,1,2),(1,2,1,1),(1,1,2,1),
+        #         (2,3),(3,2),(1,4),(4,1)
+        #     ],
+        # 52: [
+        #         (1,9),(9,1),(3,7),(7,3)
+        #     (1,2,1,2,1,2,1),(1,2,2,2,1,1,1),(1,1,1,2,2,2,1)
+        #     ]
         }
         self.succ_idx = {
-        1:[20,21,30,31,50,51,52],
-        2:[20,21,30,31,50,51],
-        3:[20] #,
-        # 4:[20,21,30,31],
-        # 5:[20],
-        # 6:[20],
-        # 8:[20]
+        1:[20,21,30,31,50],
+        2:[20,21,30,31,50],
+        3:[20],
+        4:[20,21,30,31],
+        5:[20],
+        6:[20],
+        8:[20]
         }
 
-        self.allowed_successors = [None,
-                {(3/2,3),(3,3/2),(4/3,4),(4,4/3),(2,2),(3,3,3),(5,5,5,5,5), (4,2,4),(6,3,3,6),(6,3,6,3),(3,6,3,6),(10,5,5,5,5,10)
-                ,(10,5,10,5,10,5,10)},
-
-                {(4,4),(6,6,6),(10,10,10,10,10),(8,4,8),(12,6,6,12),(12,6,12,6),(6,12,6,12),(20,10,10,10,10,20)
-                ,(20,10,20,10,20,10,20)},
-                {(6,6),(12,6,12)},
-                {(8,8),(12,12,12),(16,8,16)},
-                {(10,10)},
-                {(12,12)},
-                None,
-                {(16,16)}]
-
-
-        self.allowed_successors.extend(itertools.repeat(None,16))
         # self.init_pat_lst=[[1],[4,2,4],[8,4,8,2],[2,8,4,8],[4,8,4,8,4],[6,3,3,6],[10,5,5,5,5,10],
         #         [10,5,10,5,10,5,10]
         #         ]
@@ -105,69 +82,29 @@ class DurationPatterns:
                         
                         div_array = element*sum(dividor_tup)/np.array(dividor_tup)
                         xp = pattern.copy()
+
                         del xp[el_idx]
 
                         for x in np.flip(div_array):
-                            xp.insert(el_idx, x)
+                            xp.insert(el_idx, x.tolist())
+
+                        # print(type(xp))
+                        #
+                        #
+                        # dumped_dur = yaml.dump(list(xp), default_flow_style=None, sort_keys=False)
+                        # print(dumped_dur)
 
                         if xp not in self.init_pat_lst:
-                            self.init_pat_lst.append(list(xp))
+                            self.init_pat_lst.append(xp)
                             # print(f"{xp=}")
 
+                        # dumped_dur = yaml.dump(self.init_pat_lst.append, default_flow_style=None, sort_keys=False)
+                        # print(dumped_dur)
         self.duration_patterns = [{"pattern":pat} for pat in self.init_pat_lst]
         # return(self.patterns)
         print(len(self.duration_patterns))
 
-    def find_all_pattern_splits(self):
 
-        for (pat_idx,pattern) in enumerate(self.init_pat_lst):  # better use enum here
-        # print(f"pat_idx={(pat_idx,pattern)}, {pat_lst}")
-            for (el_idx, element) in enumerate(pattern):
-                # print(f"---pat_lst={pat_lst}")
-                # print(f"---el_idx={(el_idx, element)}")
-                # if not succ[element]:
-
-                if not isinstance(element,int)  or not self.allowed_successors[element]:
-                    continue
-                # for (succ_idx, succesor) in enumerate(succ[element]):
-                for (succ_idx, succesor) in enumerate(self.allowed_successors[element]):
-                    # print(f"------pat_lst={pat_lst}")
-                    # print(f"------{pattern}, {(el_idx,element)}, {succesor}")
-                    # print(f"------succ_idx={(succ_idx,succesor)}")
-                    xp = pattern.copy()
-                    del xp[el_idx]
-                    # print(f"succ:{succesor}/el:{element}={succesor/element}")
-                    # xp.insert(el_idx,list(itertools.repeat( succesor,int(succesor/element))))
-                    # for x in itertools.repeat( succesor,int(succesor/element)):
-                    #   xp.insert(el_idx,x)
-                    # for x in list(rp(*succesor)):
-                    # a = list(succesor)
-                    # b = list(succesor)
-                    # succesor, succesor_copy = itertools.tee(succesor)
-                    for x in succesor:
-                        xp.insert(el_idx, x)
-                        # succesor.reset()
-                        # xp.insert(el_idx,15)
-                        # print(f"-------push xp:{xp}")
-                        # print(f"-------pat_lst:{pat_lst}")
-
-                    if xp not in self.init_pat_lst:
-                        self.init_pat_lst.append(xp)
-        print('-------------')
-
-        # pprint.pprint(
-        #   [(len(pat), pat, sum(map(lambda x: pow(x, -1),pat))) for pat in pat_lst ]
-        # )
-        # print('-------------')
-        # print(len(pat_lst))
-        self.duration_patterns = [{"pattern":pat} for pat in self.init_pat_lst]
-        # return(self.patterns)
-        print(len(self.duration_patterns))
-
-        # print(f"{[pat for pat in pat_lst]}")
-
-    # def inv(self, elmnt):
-    #     return 0 if elmnt==0 else elmnt
 
     def check_dur_sizes(self,pattern:list, dividor:int, any_all="any"):
         div_tab ={

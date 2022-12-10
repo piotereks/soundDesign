@@ -123,6 +123,7 @@ class NotePatterns:
     def mod_duration(func):
         def inner(self, *args, **kwargs):
             result = func(self, *args, **kwargs)
+            print(f"xx {len(result[iso.EVENT_NOTE])=}, {result[iso.EVENT_NOTE]=}")
             if not np.any(result.get(iso.EVENT_DURATION)):
                 # result[iso.EVENT_DURATION] = np.array([1, 7, 3])
                 durations = random.choice([dp["pattern"] for dp in self.dur_patterns.patterns
@@ -141,7 +142,7 @@ class NotePatterns:
         # return {iso.EVENT_NOTE:random.choice(self.all_suitable_patterns(interval))}
         return {
             iso.EVENT_NOTE:random.choice(self.all_suitable_patterns(interval)),
-            iso.EVENT_AMPLITUDE: np.array([50, 120])
+            iso.EVENT_AMPLITUDE: np.array([120, 100])
             # iso.EVENT_DURATION: np.array([3, 1]),
             #  iso.EVENT_GATE: np.array([1, 0.25, 0.25, 3.25])
 
