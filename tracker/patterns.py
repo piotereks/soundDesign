@@ -141,7 +141,8 @@ class NotePatterns:
         # return random.choice(self.all_suitable_patterns(interval))
         # return {iso.EVENT_NOTE:random.choice(self.all_suitable_patterns(interval))}
         return {
-            iso.EVENT_NOTE:random.choice(self.all_suitable_patterns(interval)),
+            # iso.EVENT_PROGRAM_CHANGE : 22,
+            iso.EVENT_NOTE:random.choice([pattern for pattern in self.all_suitable_patterns(interval) if len(pattern)<=16]),
             iso.EVENT_AMPLITUDE: np.array([120, 100])
             # iso.EVENT_DURATION: np.array([3, 1]),
             #  iso.EVENT_GATE: np.array([1, 0.25, 0.25, 3.25])

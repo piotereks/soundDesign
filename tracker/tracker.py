@@ -154,11 +154,12 @@ class FileOut(MidiFileManyTracksOutputDevice, iso.MidiOutputDevice):
     #     # iso.MidiOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
     #     super().note_on(note=note, velocity=velocity, channel=channel)
     #
-    # def program_change(self, program, channel):
-    #     # iso.MidiFileOutputDevice.program_change(self, program=program, channel=channel)
-    #     # MidiFileManyTracksOutputDevice.program_change(self, program=program, channel=channel)
-    #     # iso.MidiOutputDevice.program_change(self, program=program, channel=channel)
-    #     super().program_change(program=program, channel=channel)
+    # def program_change(self, program=0, channel=0):
+        # iso.MidiFileOutputDevice.program_change(self, program=program, channel=channel)
+        # MidiFileManyTracksOutputDevice.program_change(self, program=program, channel=channel)
+        # iso.MidiOutputDevice.program_change(self, program=program, channel=channel)
+        # super().program_change(program=program, channel=channel)
+
     #
     #
     # def start(self):
@@ -293,8 +294,12 @@ class Tracker:
         # self.play_from_to(None, None, in_pattern=True)
         # self.beat = self.beat_none
         # my_tracker.metronome_start()
+
+        # self.set_program_change(22)
+        self.set_program_change(program=30)
         self.tmln = self.tracker_timeline()
         self.metro = self.metro_timeline()
+
 
     # def set_scale(self,scale):
     #     self.scale = scale
@@ -560,6 +565,28 @@ class Tracker:
     # <editor-fold desc="play functions">
 
     # <editor-fold desc="play definitions">
+    # def set_program_change(self, program_nr = 0, channel = 0):
+        # self.timeline.schedule({
+        #     iso.EVENT_PROGRAM_CHANGE: program_nr,
+        #
+        #     iso.EVENT_CHANNEL: iso.DEFAULT_EVENT_CHANNEL
+        # })
+        # control_series = iso.PSeries(start=1, step=2, length=3)
+        # self.timeline.schedule({
+        #     iso.EVENT_CONTROL: 0,
+        #     iso.EVENT_VALUE: control_series,
+        #     iso.EVENT_DURATION: 1,
+        #     iso.EVENT_CHANNEL: 0
+        # })
+        # control_series = iso.PSeries(start=1, step=2, length=3)
+        # self.timeline.schedule({
+        #     iso.EVENT_PROGRAM_CHANGE: 22,
+        #     iso.EVENT_VALUE: control_series,
+        #     iso.EVENT_DURATION: 1,
+        #     iso.EVENT_CHANNEL: 0
+        # })
+        # pass
+
     def tracker_timeline(self):
         log_call()
         return self.timeline.schedule({
@@ -582,7 +609,13 @@ class Tracker:
             self.midi_out.miditrack.append(mido.MetaMessage('set_tempo',tempo=mido.bpm2tempo(int(new_tempo)), time=0))
         print(f"a_read tempo: {self.timeline.get_tempo()=}, {new_tempo=}")
 
-
+    def set_program_change(self, program = 0, channel = 0):
+        log_call()
+        self.midi_out.program_change(program=int(program), channel=int(channel))
+        if MULTI_TRACK:
+            self.midi_out.miditrack[0].append(mido.Message('program_change', program=int(program), channel=int(channel)))
+        else:
+            self.midi_out.miditrack.append(mido.Message('program_change', program=int(program), channel=int(channel)))
 
     def write_mid_text_meta(self, message):
         if MULTI_TRACK:
