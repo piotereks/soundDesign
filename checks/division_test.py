@@ -144,10 +144,18 @@ class DurationPatterns:
         return self.check_dur_sizes( pattern = pat, dividor = 5, any_all ="any")
 
 
+
+
+
     def calc_attributes(self):
         def assign_attrib(attr:str, val:bool):
             if val:
                 pat[attr] = val
+
+
+        def align_rng(step=1):
+            return set((np.arange(0,1,1/step)+1/step).round(5))   
+
 
         for pat in self.duration_patterns:
             ret_pattern = pat.get("pattern")
@@ -180,7 +188,13 @@ class DurationPatterns:
             # pat["all5"] = self.all_fives(ret_pattern) # type: ignore
             # pat["any5"] = self.any_fives(ret_pattern) # type: ignore
 
+            for dd in (2,3,4,5,6,8,10,12):
+                alignment_set=align_rng(dd)
+                ret_pattern_set=set((1/np.array(ret_pattern)).cumsum().round(5))
 
+# a = set(map(lambda x : round(x,5), (1/tst).cumsum()))
+
+                assign_attrib(f"align{dd}",alignment_set & ret_pattern_set == alignment_set)
 
 durPat = DurationPatterns()
 durPat.recalc()
