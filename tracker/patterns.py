@@ -120,7 +120,7 @@ class NotePatterns:
         return suitable_patterns
 
 # <editor-fold desc="get pattern functions">
-    def mod_duration(func):
+    def mod_duration(self, func):  #added self, eventual issue 
         def inner(self, *args, **kwargs):
             result = func(self, *args, **kwargs)
             print(f"xx {len(result[iso.EVENT_NOTE])=}, {result[iso.EVENT_NOTE]=}")
@@ -136,8 +136,15 @@ class NotePatterns:
 
     # self.dur_patterns
 
+
     @mod_duration
-    def get_random_pattern(self, interval):
+    def get_simple_pattern(self):  # interval sould be not needed
+        return {
+            iso.EVENT_NOTE: random.choice(self.patterns).extend(0)
+        }
+
+    @mod_duration
+    def get_random_path_pattern(self, interval):
         # return random.choice(self.all_suitable_patterns(interval))
         # return {iso.EVENT_NOTE:random.choice(self.all_suitable_patterns(interval))}
         return {
