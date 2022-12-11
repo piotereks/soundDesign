@@ -120,7 +120,7 @@ class NotePatterns:
         return suitable_patterns
 
 # <editor-fold desc="get pattern functions">
-    def mod_duration(self, func):  #added self, eventual issue 
+    def mod_duration(func):  #added self, eventual issue
         def inner(self, *args, **kwargs):
             result = func(self, *args, **kwargs)
             print(f"xx {len(result[iso.EVENT_NOTE])=}, {result[iso.EVENT_NOTE]=}")
@@ -138,10 +138,17 @@ class NotePatterns:
 
 
     @mod_duration
-    def get_simple_pattern(self):  # interval sould be not needed
+    def get_simple_pattern(self, interval=0):  # interval sould be not needed
         return {
-            iso.EVENT_NOTE: random.choice(self.patterns).extend(0)
+            iso.EVENT_NOTE: np.append(random.choice([1,-1])*random.choice(self.patterns), 0)
         }
+
+    @mod_duration
+    def get_chord_maj_pattern(self, interval=0):  # interval sould be not needed
+        return {
+            iso.EVENT_NOTE: np.append(random.choice([1,-1])*random.choice([1,2,3])*random.choice(self.patterns), 0)
+        }
+
 
     @mod_duration
     def get_random_path_pattern(self, interval):
@@ -156,7 +163,17 @@ class NotePatterns:
 
         }
 
+    @mod_duration
+    def get_simple3_pattern(self, interval=0):  # interval sould be not needed
+        return {
+            iso.EVENT_NOTE: np.append(random.choice([1,-1])*random.choice([1,2,3])*random.choice(self.patterns), 0)
+        }
 
+    # @mod_duration
+    # def get_chord_maj_pattern(self, interval=0):  # interval sould be not needed
+    #     return {
+    #         iso.EVENT_NOTE: [[0, 2, 4]]
+    #     }
 
     @mod_duration
     def get_one_note_pattern(self, interval):

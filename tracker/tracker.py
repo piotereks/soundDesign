@@ -295,8 +295,8 @@ class Tracker:
         # self.beat = self.beat_none
         # my_tracker.metronome_start()
 
-        # self.set_program_change(22)
-        self.set_program_change(program=30)
+
+        # self.set_program_change(program=30)
         self.tmln = self.tracker_timeline()
         self.metro = self.metro_timeline()
 
