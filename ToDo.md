@@ -154,8 +154,10 @@ This is done automatically - I accept that so far.
 ### apart from scale use different keys
 ### link scales names, but have only one scale in dictionary (?why, to avoid confusion)
 
+## think about melody as sentence (?bar) (elaborate what can it mean)
 
 ## playover selection
+### work on accents withing pattern (amplitude)
 ### playing one pattern with different transformation (there are some functions: transpose and invertion + combination of these 2 - possibly known from chords), but also slowdown, spedup, gate (legato/staccato)
 ### when using appregios please confider different for of chords (based on 4th interval, or second intervals)  - https://www.thejazzpianosite.com/jazz-piano-lessons/jazz-chord-voicings/chord-voicing-rules/ 
 * Consonant Voicing – Tertian Harmony (stacked 3rds)
