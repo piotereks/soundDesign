@@ -9,13 +9,13 @@ Adopt combination o patterns, scales and note leghts (pattern vs decorators)
 3. Detect read song bpm and adopt played patterns
 4. Pattern can be selected, can be random
 5. Add keyboard or midi steering for scales, pattern, leghts
-6. Add pattern selection depending on interval provided from keyboard
-7. Later scales can be suggested, selected, randomised,
-8. Predefined sets for different kind of music e.g. blues kater jazz, any others types
-9. Add your scales to scale.py
-Eventually Gather different backgrounds tracks for standard genres
-Multi-instrument support
-Tensor flow/magenta generations? Or maybe tensor selected impro patterns
+~~6. Add pattern selection depending on interval provided from keyboard - ~~ done
+~~7. Later scales can be suggested, selected, randomised, - ~~ done
+8. Predefined sets for different kind of music e.g. blues, later jazz, any others types
+~~9. Add your scales to scale.py~~ Done slightly different manner 
+10. Eventually Gather different backgrounds tracks for standard genres
+11. Multi-instrument support
+12. Tensor flow/magenta generations? Or maybe tensor selected impro patterns
 
 
 Problems:
@@ -29,8 +29,9 @@ OK 3) when using isobar and timeline - how to add additional sounds  - timeline.
 
 
 What to do with Rythmn patterns:
-(Idea: Express patterns with ticks)
-For start just focus on standard patterns (not necessarily equally distributed,but start them first).
+~~(Idea: Express patterns with ticks)).~~
+~~For start just focus on standard patterns (not necessarily equally distributed,but start them first).~~
+ 
 Skip for a moment Ornamentacje and maybe focus on diminuncje (which are about how to come from one tone to other, but
 but have slightly higher resolution as patterns.
 
@@ -68,8 +69,8 @@ Express as half-beat e.g. 4/4  - only covers 2 quarter notes (could be theoretic
 *  8x 1/16
 
 Decision to be taken:
-* implement as part of isobar sequences (of velocity and duration - after aligning values)
-NA * or using own structures (but maybe later applying to sequences)  - better to be as int/and fractint .
+* implement as part of isobar sequences (of velocity and duration - after aligning values) - partially done
+NA ~~* or using own structures (but maybe later applying to sequences)  - better to be as int/and fractint .~~
 
 PSequence for time could be confusing since it changes with change of tempo (or resolution).
 I want to have possibilitiy to calculate that on the fly.
@@ -80,18 +81,20 @@ Midi clock has
 clock, start, stop, continue (as base).
 is missing sync option though.
 Check here is to evaluate what are the option of syncing.
-
+* before synchronizing with Ableton (which should be first usable permament target) create kind-of click track that behaves alike Ableton (or just click track) - clock if fine, but also remember about start stop continue ewentually songpose, or even 3rd prio program changes signal
+* audible metronome as addon to click track.
+ temporary - use midi with sound
 
 Work on easy example first as prototype on how you want to play.
 
 
 ## Scheduling patterns with clock + actually synchronization
 timeline.background() allows any timing (this is live).
-This actually can be achieved by getting one track with click track and second track listening to that.
-Synchronization by click gives to preserve tempo. How to synch with beats?
+~~This actually can be achieved by getting one track with click track and second track listening to that.~~  
+~~Synchronization by click gives to preserve tempo. How to synch with beats?~~ Has been implemented different way
 - scheduling of patterns work, but really this is about synchronization with e.g. ableton now.
 
-## create loop with pattern ref replaced by other pattern (using sync) - Done
+~~## create loop with pattern ref replaced by other pattern (using sync) -~~ Done
 
 ## check different sources of midi clock
 ### midi file being played (by mido, but also by diff mid players)
@@ -134,6 +137,9 @@ Currently, patterns have ready midi notes.
 ### Think about scale up/down version and application in patterns
 ## Appregios as scales?
 ## Work with classes always
+ Running tracker is different than live, but some bigger tracker appoach can be used as live triggerring (for this is worth to remember about keeping possibility to change tracker while play (shorter like duration, but still synchronized).
+Would be good to remember about on-the-fly track changes when submitting tracker (this requires async, replace, but it is possible by action itself, or maybe in action somehow define position counter)  
+* Run tracker synchronized with 
 
 # new next steps
 ## ~~-create general pattern with exact values of steps not intervals. Intervals will be calculated-. -~~ 
@@ -150,16 +156,27 @@ This is done automatically - I accept that so far.
 
 
 ## playover selection
-### New scales at isobar
- draft done, please add to yaml
+### playing one pattern with different transformation (there are some functions: transpose and invertion + combination of these 2 - possibly known from chords), but also slowdown, spedup, gate (legato/staccato)
+### when using appregios please confider different for of chords (based on 4th interval, or second intervals)  - https://www.thejazzpianosite.com/jazz-piano-lessons/jazz-chord-voicings/chord-voicing-rules/ 
+* Consonant Voicing – Tertian Harmony (stacked 3rds)
+* Dissonant Voicing – Secundal Harmony (Tone Clusters)
+* Quartal Harmony
+
+~~### New scales at isobar~~
+ ~~draft done, please add to yaml~~ Done
 ### using existing patterns but only 4/6/10 (not other numbers)
 ### using existing patterns but with increment more than 1
 ### using existing pattern but following chord progression (this looks more like appregios, but not necesarily follow appregios
-### think about using different notes leghts
+~~### think about using different notes leghts ~~ - done
 ### this about using rests (pauza) withing lenghts pattern (this in theory allows to use different lengts. e.g. pattern 1-2 can be 1-rest-2 )
 ### implement/apply inrements with zero diference (unison) - use maybe diminuntions or existing patterns with 0-increment
+### chords 
+### CC (expression) - dimununtion (special events can go with notes)
 
 ## get midi keyboard for selecting notes
+
+# patterns classification
+## Detection and Classificationof pattern according too accents in phrase - partially done
 
 
 # sync to external clock/music
