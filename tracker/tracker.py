@@ -722,6 +722,9 @@ class Tracker:
             raise Exception("No notes returned!!!")
 
         pattern_notes+=root_note
+        # pattern_notes = [x + root_note if isinstance(x, np.int) else tuple(map(lambda u: u + root_note, x)) for x in pattern_notes]
+        # xxxxx =[x + 1 if isinstance(x,np.int) else  tuple(map(lambda xx : xx +1, x)) for x   in pattern_notes]
+        # [x + 11 if isinstance(x, np.int) else tuple(map(lambda u: u + 5, x)) for x in aa]
         pattern_notes = pattern_notes[:-1]
         len_pattern = len(pattern_notes)
         print(f"----debug----{pattern_notes} {len_pattern=}")
