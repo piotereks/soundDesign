@@ -143,12 +143,18 @@ class NotePatterns:
             iso.EVENT_NOTE: np.append(random.choice([1,-1])*random.choice(self.patterns), 0)
         }
 
-    @mod_duration
-    def get_chord_maj_pattern(self, interval=0):  # interval sould be not needed
-        return {
-            iso.EVENT_NOTE: np.append(random.choice([1,-1])*random.choice([1,2,3])*random.choice(self.patterns), 0)
-        }
+    # @mod_duration
+    # def get_chord_maj_pattern(self, interval=0):  # interval sould be not needed
+    #     return {
+    #         iso.EVENT_NOTE: np.append(random.choice([1,-1])*random.choice([1,2,3])*random.choice(self.patterns), 0)
+    #     }
 
+
+    # @mod_duration
+    # def get_simple3_pattern(self, interval=0):  # interval sould be not needed
+    #     return {
+    #         iso.EVENT_NOTE: np.append(random.choice([1,-1])*random.choice([1,2,3])*random.choice(self.patterns), 0)
+    #     }
 
     @mod_duration
     def get_random_path_pattern(self, interval):
@@ -156,18 +162,14 @@ class NotePatterns:
         # return {iso.EVENT_NOTE:random.choice(self.all_suitable_patterns(interval))}
         return {
             # iso.EVENT_PROGRAM_CHANGE : 22,
-            iso.EVENT_NOTE:random.choice([pattern for pattern in self.all_suitable_patterns(interval) if len(pattern)<=16]),
-            iso.EVENT_AMPLITUDE: np.array([120, 100])
+            iso.EVENT_NOTE:random.choice([pattern for pattern in self.all_suitable_patterns(interval) if len(pattern)<=16])
+            # iso.EVENT_AMPLITUDE: np.array([120, 100])
             # iso.EVENT_DURATION: np.array([3, 1]),
             #  iso.EVENT_GATE: np.array([1, 0.25, 0.25, 3.25])
 
         }
 
-    @mod_duration
-    def get_simple3_pattern(self, interval=0):  # interval sould be not needed
-        return {
-            iso.EVENT_NOTE: np.append(random.choice([1,-1])*random.choice([1,2,3])*random.choice(self.patterns), 0)
-        }
+
 
     # @mod_duration
     # def get_chord_maj_pattern(self, interval=0):  # interval sould be not needed
@@ -178,8 +180,8 @@ class NotePatterns:
     @mod_duration
     def get_one_note_pattern(self, interval):
         # return np.array([0, interval])
-        return {iso.EVENT_NOTE: np.array([0, interval]),
-                iso.EVENT_AMPLITUDE: [12]
+        return {iso.EVENT_NOTE: np.array([0, interval])
+            # ,iso.EVENT_AMPLITUDE: [12]
                 }
 
 
@@ -191,8 +193,8 @@ class NotePatterns:
         else:
             notes = np.arange(0, interval + np.sign(interval), np.sign(interval))
         return {
-            iso.EVENT_NOTE:notes,
-            iso.EVENT_AMPLITUDE: np.array([120, 100]),
+            iso.EVENT_NOTE:notes
+            # iso.EVENT_AMPLITUDE: np.array([120, 100]),
             # iso.EVENT_DURATION : np.array([2, 1])
             # ,iso.EVENT_GATE:np.array([1, 0.25, 0.25, 3.25])
         }

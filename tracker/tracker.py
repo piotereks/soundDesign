@@ -238,7 +238,7 @@ class Tracker:
         self.track = None
         self.filename = filename
         log_call()
-        self.beat_count = 0
+        self.beat_count = -1 % 4
         self.diff_time = 0
         self.prev_time = 0
         self.timeline = None
@@ -250,42 +250,11 @@ class Tracker:
         self.notes_pair =[None,None]
         self.queue_content_wrk = None
         self.note_queue = Queue(maxsize = 16)
+        self.amp_for_beat_factor = dict(zip([0, 2], [1.5, 1.25]))
 
 
         self.pattern_idx = 0
 
-        # self.pattern_array = [my_beats.bt1, my_beats.bt3, my_beats.bt1,
-        #                       my_beats.bt_trip, my_beats.bt2, my_beats.bt1_2, my_beats.bt2]
-        # if note_array:
-        # self.interval_array = []
-        # print('note array:', note_array)
-        # print('interval array:', interval_array)
-        # self.midi_note_array = midi_note_array
-        # print("self.midi_note_array:", self.midi_note_array)
-        # if note_array:
-        #     for index, note in enumerate(note_array + [note_array[0]]) or []:
-        #         # print('index,note:', index, note)
-        #         if index > 0:
-        #             # print('note - note_array[index-1]:', note - note_array[index-1])
-        #             self.interval_array.append(note - note_array[index - 1])
-        #         else:
-        #             self.interval_array.append(note)
-        # else:
-        #     self.interval_array = interval_array
-        #
-        # print('note array2:', note_array)
-        # print('interval array2:', interval_array)
-
-        # self.init_pattern_array()
-
-        # self.expected_array = [
-        #     67, 69, 68, 70,
-        #     63, 66, 59,
-        #     67, 69, 68, 70,
-        #     76, 78, 77, 79, 78,
-        #     73, 75, 74, 76, 75, 79,
-        #     67, 69, 68, 70,
-        #     73, 75, 74, 76, 75, 79]
 
         # self.init_timeline(True)
         self.init_timeline(midi_out_mode)
@@ -300,41 +269,6 @@ class Tracker:
         self.tmln = self.tracker_timeline()
         self.metro = self.metro_timeline()
 
-
-    # def set_scale(self,scale):
-    #     self.scale = scale
-    #     # self.key.scale = scale
-    #     self.key = iso.Key (self.key.tonic, scale )
-
-    # def init_pattern_array(self):
-    #     self.pattern_array = []
-    #     patterns = Patterns()
-    #     print('======')
-    #     root_note = self.interval_array[0]
-    #     print("self.interval_array", self.interval_array)
-    #     for interval in self.interval_array[1:]:
-    #         # print('gsp:', interval, patterns.get_random_pattern(interval))
-    #         # print('pre gsp:', interval, root_note)
-    #         rnd_pattern = patterns.get_random_pattern(interval) + root_note
-    #         print('------')
-    #         print('gsp:', interval, root_note, rnd_pattern)
-    #         # print('gsp2:', interval, iso.PSequence(rnd_pattern))
-    #         len_rnd_pattern = len(rnd_pattern) - 1
-    #         notes_seq = iso.PSequence(rnd_pattern[:-1], repeats=1)
-    #         print('gsp2:', interval, len_rnd_pattern, list(notes_seq.copy()))
-    #         beat = iso.PDict({
-    #             "note": notes_seq,
-    #             # "duration": 1/len_rnd_pattern
-    #             "duration": iso.PSequence([(4 / len_rnd_pattern) - 0.000000000000002], repeats=len_rnd_pattern)
-    #         })
-    #         # print("beat:", beat.note, beat.duration)
-    #         print("beatx:", list(beat["note"]), list(beat["duration"]))
-    #         # print("beatx:", list(beat["note"]))
-    #         self.pattern_array.append(beat)
-    #         root_note = rnd_pattern[-1]
-    #         print(f"root note:{root_note}")
-    #     print("init spa2:", self.pattern_array)
-    #     print(list(self.pattern_array))
 
     def save_midi(self):
         date = datetime.now().strftime('%Y%m%d%H%M%S')
@@ -369,6 +303,12 @@ class Tracker:
         # self.tstart()
     # </editor-fold>
 
+
+    def get_amp_factor(self):
+        accent = self.amp_for_beat_factor.get(self.beat_count)
+        return accent if accent else 1
+
+
     def log_and_schedule(func):
         def inner(self, *args, **kwargs):
             log_call()
@@ -391,7 +331,12 @@ class Tracker:
             # print('skip checked: ', skip)
             # if not skip:
             notes[iso.EVENT_NOTE] = iso.PMap(notes[iso.EVENT_NOTE], lambda midi_note: None if not midi_note else None if midi_note < 0 else None if midi_note > 127 else midi_note)
+            # create accent depending on beat
+            # notes[iso.EVENT_AMPLITUDE] = iso.PMap(notes[iso.EVENT_AMPLITUDE], lambda midi_amp: None if not midi_amp else None if midi_amp < 0 else 127 if midi_amp > 127 else int(midi_amp * 1.5)   )
+            notes[iso.EVENT_AMPLITUDE] = iso.PMapEnumerated(notes[iso.EVENT_AMPLITUDE], lambda n, value: int(value*self.get_amp_factor()) if n==0 else value)
+
             notes[iso.EVENT_AMPLITUDE] = iso.PMap(notes[iso.EVENT_AMPLITUDE], lambda midi_amp: None if not midi_amp else None if midi_amp < 0 else None if midi_amp > 127 else midi_amp)
+
             self.check_notes=list(notes[iso.EVENT_NOTE].copy())
             print('check notes: ', self.check_notes)
             self.check_notes_action()
