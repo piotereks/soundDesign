@@ -157,7 +157,12 @@ This is done automatically - I accept that so far.
 ## think about melody as sentence (?bar) (elaborate what can it mean)
 
 ## playover selection
-### work on accents withing pattern (amplitude)
+### pattern using multi-notes (chord-like) - done, but in case of chords, maybe would be good first\
+to reverse chord into scale steps, find closest chord. \
+Could be it is done already like that by notes approximation fails here somehow.\
+Think about notes approximation (tricky)
+
+~~### work on accents withing pattern (amplitude) -~~ done (fixed for 4/4)
 ### playing one pattern with different transformation (there are some functions: transpose and invertion + combination of these 2 - possibly known from chords), but also slowdown, spedup, gate (legato/staccato)
 ### when using appregios please confider different for of chords (based on 4th interval, or second intervals)  - https://www.thejazzpianosite.com/jazz-piano-lessons/jazz-chord-voicings/chord-voicing-rules/ 
 * Consonant Voicing – Tertian Harmony (stacked 3rds)

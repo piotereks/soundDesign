@@ -174,7 +174,7 @@ class NotePatterns:
     @mod_duration
     def get_chord_maj_pattern(self, interval=0):  # interval sould be not needed
         return {
-            iso.EVENT_NOTE:  np.array([(0, 2, 4), 0])
+            iso.EVENT_NOTE:  np.array([(0, 2, 4), 0],dtype=object)
         }
 
     @mod_duration
