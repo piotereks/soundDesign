@@ -330,7 +330,12 @@ class Tracker:
             #     notes, skip = result, False
             # print('skip checked: ', skip)
             # if not skip:
-            notes[iso.EVENT_NOTE] = iso.PMap(notes[iso.EVENT_NOTE], lambda midi_note: None if not midi_note else None if midi_note < 0 else None if midi_note > 127 else midi_note)
+            # notes[iso.EVENT_NOTE] = iso.PMap(notes[iso.EVENT_NOTE], lambda midi_note: None if not midi_note else None if midi_note < 0 else None if midi_note > 127 else midi_note)
+            notes[iso.EVENT_NOTE] = iso.PMap(notes[iso.EVENT_NOTE], lambda midi_note:
+            (None if not midi_note else None if midi_note < 0 else None if midi_note > 127 else midi_note)
+            if isinstance(midi_note, np.int64) or isinstance(midi_note, int)
+            else tuple(map(lambda u: None if not u else None if u < 0 else None if u > 127 else u, midi_note)))
+
             # create accent depending on beat
             # notes[iso.EVENT_AMPLITUDE] = iso.PMap(notes[iso.EVENT_AMPLITUDE], lambda midi_amp: None if not midi_amp else None if midi_amp < 0 else 127 if midi_amp > 127 else int(midi_amp * 1.5)   )
             notes[iso.EVENT_AMPLITUDE] = iso.PMapEnumerated(notes[iso.EVENT_AMPLITUDE], lambda n, value: int(value*self.get_amp_factor()) if n==0 else value)
