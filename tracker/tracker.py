@@ -28,8 +28,8 @@ IN_COLAB = 'google.colab' in sys.modules
 NO_MIDI_OUT = mido.get_output_names() == [];
 
 global MULTI_TRACK
-MULTI_TRACK = True
-# MULTI_TRACK = False
+# MULTI_TRACK = True
+MULTI_TRACK = False
 
 if MULTI_TRACK:
     class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
@@ -107,15 +107,15 @@ if not MULTI_TRACK:
     class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
         pass
 
-        def tick(self):
-            super().tick()
-
-
-        def note_on(self, note=60, velocity=64, channel=0):
-            super().note_on(note, velocity, channel)
-
-        def note_off(self, note=60, channel=0):
-            super().note_off(note, channel)
+        # def tick(self):
+        #     super().tick()
+        #
+        #
+        # def note_on(self, note=60, velocity=64, channel=0):
+        #     super().note_on(note, velocity, channel)
+        #
+        # def note_off(self, note=60, channel=0):
+        #     super().note_off(note, channel)
 
 
     # def __init__(self, filename):
@@ -141,18 +141,18 @@ class FileOut(MidiFileManyTracksOutputDevice, iso.MidiOutputDevice):
     #     # iso.MidiOutputDevice.control(self, control=control, value=value, channel=channel)
     #     super().control(control=control, value=value, channel=channel)
     #
-    # def note_off(self,  note, channel):
-    #     # iso.MidiFileOutputDevice.note_off(self, note=note, channel=channel)
-    #     # MidiFileManyTracksOutputDevice.note_off(self, note=note, channel=channel)
-    #     # iso.MidiOutputDevice.note_off(self, note=note, channel=channel)
-    #     super().note_off(note=note, channel=channel)
-    #
-    # def note_on(self, note, velocity, channel):
-    #     print(f"----------------{channel=}")
-    #     # iso.MidiFileOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
-    #     # MidiFileManyTracksOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
-    #     # iso.MidiOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
-    #     super().note_on(note=note, velocity=velocity, channel=channel)
+    def note_off(self,  note, channel):
+        # iso.MidiFileOutputDevice.note_off(self, note=note, channel=channel)
+        MidiFileManyTracksOutputDevice.note_off(self, note=note, channel=channel)
+        iso.MidiOutputDevice.note_off(self, note=note, channel=channel)
+        # super().note_off(note=note, channel=channel)
+
+    def note_on(self, note, velocity, channel):
+        print(f"----------------{channel=}")
+        # iso.MidiFileOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
+        MidiFileManyTracksOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
+        iso.MidiOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
+        # super().note_on(note=note, velocity=velocity, channel=channel)
     #
     # def program_change(self, program=0, channel=0):
         # iso.MidiFileOutputDevice.program_change(self, program=program, channel=channel)
@@ -180,8 +180,8 @@ class FileOut(MidiFileManyTracksOutputDevice, iso.MidiOutputDevice):
     #     # iso.MidiOutputDevice.tick(self)
     #     super().tick()
 
-    # def write(self):
-    #     iso.MidiFileOutputDevice.write(self)
+    def write(self):
+        iso.MidiFileOutputDevice.write(self)
 
 
     # def ticks_per_beat(self):
@@ -257,6 +257,7 @@ class Tracker:
 
 
         # self.init_timeline(True)
+        self.midi_out_mode = midi_out_mode
         self.init_timeline(midi_out_mode)
         self.beat = lambda: self.play_from_to(None,None,in_pattern=True)
         self.metro_beat = lambda: print('metro_beat init')
@@ -272,6 +273,8 @@ class Tracker:
 
     def save_midi(self):
         date = datetime.now().strftime('%Y%m%d%H%M%S')
+        if  self.midi_out_mode == self.MIDI_OUT_DEVICE:
+            return None
         self.midi_out.write()
         shutil.copy(self.filename, f"{self.filename.split('.')[0]}_{date}.mid")
 
@@ -333,7 +336,7 @@ class Tracker:
             # notes[iso.EVENT_NOTE] = iso.PMap(notes[iso.EVENT_NOTE], lambda midi_note: None if not midi_note else None if midi_note < 0 else None if midi_note > 127 else midi_note)
             notes[iso.EVENT_NOTE] = iso.PMap(notes[iso.EVENT_NOTE], lambda midi_note:
             (None if not midi_note else None if midi_note < 0 else None if midi_note > 127 else midi_note)
-            if isinstance(midi_note, np.int64) or isinstance(midi_note, int)
+            if isinstance(midi_note, np.int64) or isinstance(midi_note, np.int32) or isinstance(midi_note, int)
             else tuple(map(lambda u: None if not u else None if u < 0 else None if u > 127 else u, midi_note)))
 
             # create accent depending on beat
@@ -553,6 +556,8 @@ class Tracker:
         print(f"b_read tempo: {self.timeline.get_tempo()=}, {new_tempo=}")
         # self.timeline.set_tempo(int(new_tempo))
         self.timeline.set_tempo(int(new_tempo))
+        if  self.midi_out_mode == self.MIDI_OUT_DEVICE:
+            return None
         if MULTI_TRACK:
             self.midi_out.miditrack[0].append(mido.MetaMessage('set_tempo',tempo=mido.bpm2tempo(int(new_tempo)), time=0))
         else:
@@ -568,6 +573,8 @@ class Tracker:
             self.midi_out.miditrack.append(mido.Message('program_change', program=int(program), channel=int(channel)))
 
     def write_mid_text_meta(self, message):
+        if  self.midi_out_mode == self.MIDI_OUT_DEVICE:
+            return None
         if MULTI_TRACK:
             self.midi_out.miditrack[0].append(mido.MetaMessage('text',text=message, time=0))
         else:
@@ -726,10 +733,10 @@ class Tracker:
         else:
             raise Exception("No notes returned!!!")
 
-        if isinstance(pattern_notes, int) or isinstance(pattern_notes, np.int64):
+        if isinstance(pattern_notes, int) or isinstance(pattern_notes, np.int32) or isinstance(pattern_notes, np.int64):
             pattern_notes+=root_note
         else:
-            pattern_notes = [x + root_note if isinstance(x, np.int64) or isinstance(x, int)
+            pattern_notes = [x + root_note if  isinstance(x, np.int32) or isinstance(x, np.int64) or isinstance(x, int)
                              else tuple(map(lambda u: u + root_note, x)) for x in pattern_notes]
         # xxxxx =[x + 1 if isinstance(x,np.int) else  tuple(map(lambda xx : xx +1, x)) for x   in pattern_notes]
         # [x + 11 if isinstance(x, np.int) else tuple(map(lambda u: u + 5, x)) for x in aa]
