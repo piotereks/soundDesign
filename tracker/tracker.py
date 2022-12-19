@@ -28,8 +28,8 @@ IN_COLAB = 'google.colab' in sys.modules
 NO_MIDI_OUT = mido.get_output_names() == [];
 
 global MULTI_TRACK
-# MULTI_TRACK = True
-MULTI_TRACK = False
+MULTI_TRACK = True
+# MULTI_TRACK = False
 
 if MULTI_TRACK:
     class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
