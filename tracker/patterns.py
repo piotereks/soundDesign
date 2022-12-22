@@ -190,8 +190,8 @@ class NotePatterns:
         if interval == 0:
             notes = np.array([0,0])
         else:
-            real_notes = np.arange(0, interval + np.sign(interval), np.sign(interval))
-            rests = np.repeat(None, abs(interval + np.sign(interval)))
+            real_notes = np.arange(0, interval , np.sign(interval))
+            rests = np.repeat(None, abs(interval ))
             notes_with_rests = zip(real_notes, rests)
             notes = np.array([ nt for tp in notes_with_rests for nt in tp] + [None])
 
