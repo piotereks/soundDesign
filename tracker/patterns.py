@@ -184,6 +184,23 @@ class NotePatterns:
             # ,iso.EVENT_AMPLITUDE: [12]
                 }
 
+    @mod_duration
+    def get_rest_path_pattern(self, interval):
+        # return {iso.EVENT_NOTE:np.array([0,0]) if interval == 0 else np.arange(0, interval+np.sign(interval), np.sign(interval))}
+        if interval == 0:
+            notes = np.array([0,0])
+        else:
+            real_notes = np.arange(0, interval + np.sign(interval), np.sign(interval))
+            rests = np.repeat(None, abs(interval + np.sign(interval)))
+            notes_with_rests = zip(real_notes, rests)
+            notes = np.array([ nt for tp in notes_with_rests for nt in tp] + [None])
+
+        return {
+            iso.EVENT_NOTE:notes
+            # iso.EVENT_AMPLITUDE: np.array([120, 100]),
+            # iso.EVENT_DURATION : np.array([2, 1])
+            # ,iso.EVENT_GATE:np.array([1, 0.25, 0.25, 3.25])
+        }
 
     @mod_duration
     def get_path_pattern(self, interval):

@@ -336,7 +336,7 @@ class Tracker:
             # notes[iso.EVENT_NOTE] = iso.PMap(notes[iso.EVENT_NOTE], lambda midi_note: None if not midi_note else None if midi_note < 0 else None if midi_note > 127 else midi_note)
             notes[iso.EVENT_NOTE] = iso.PMap(notes[iso.EVENT_NOTE], lambda midi_note:
             (None if not midi_note else None if midi_note < 0 else None if midi_note > 127 else midi_note)
-            if isinstance(midi_note, np.int64) or isinstance(midi_note, np.int32) or isinstance(midi_note, int)
+            if not midi_note or isinstance(midi_note, np.int64) or isinstance(midi_note, np.int32) or isinstance(midi_note, int)
             else tuple(map(lambda u: None if not u else None if u < 0 else None if u > 127 else u, midi_note)))
 
             # create accent depending on beat
@@ -737,7 +737,8 @@ class Tracker:
             pattern_notes+=root_note
         else:
             pattern_notes = [x + root_note if  isinstance(x, np.int32) or isinstance(x, np.int64) or isinstance(x, int)
-                             else tuple(map(lambda u: u + root_note, x)) for x in pattern_notes]
+                             else None if not x
+                             else tuple(map(lambda u: u + root_note, x)) for x in pattern_notes ]
         # xxxxx =[x + 1 if isinstance(x,np.int) else  tuple(map(lambda xx : xx +1, x)) for x   in pattern_notes]
         # [x + 11 if isinstance(x, np.int) else tuple(map(lambda u: u + 5, x)) for x in aa]
         pattern_notes = pattern_notes[:-1]
