@@ -72,13 +72,15 @@ class NotePatterns:
 
     def __read_config_file__(self):
         # print('reading config')
-        config_file = 'reviewed_pattern_cfg.yaml'
+        # config_file = 'reviewed_pattern_cfg.yaml'
+        config_file = 'reviewed_pattern_cfg.json'
         if IN_COLAB:
             config_file = '/content/SoundDesign/tracker/' + config_file
 
         with open(config_file, 'r') as file:
             # with open('reviewed_pattern_cfg.yaml', 'r') as file:
-            self.patterns_config = yaml.safe_load(file)
+            # self.patterns_config = yaml.safe_load(file)
+            self.patterns_config = json.load(file)
         # print(self.patterns_config)
         # print(self.patterns_config['play_over'])
         self.patterns = list(map(lambda x: np.array(x['pattern']), self.patterns_config['play_over']['patterns']))
