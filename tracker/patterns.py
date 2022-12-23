@@ -1,7 +1,8 @@
 import numpy as np
 import itertools
 import random
-import yaml
+# import yaml
+import json
 import isobar as iso
 import pprint
 
@@ -18,13 +19,13 @@ class DurationPatterns:
 
     def __read_config_file__(self):
         # print('reading config')
-        config_file = 'duration_patterns.yaml'
+        config_file = 'duration_patterns.json'
         if IN_COLAB:
             config_file = '/content/SoundDesign/tracker/' + config_file
 
         with open(config_file, 'r') as file:
             # with open('reviewed_pattern_cfg.yaml', 'r') as file:
-            self.patterns = yaml.safe_load(file)
+            self.patterns = json.load(file)
         # print(self.patterns_config)
         # print(self.patterns_config['play_over'])
         print('after list')

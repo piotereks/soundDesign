@@ -15,6 +15,7 @@ import itertools
 import pprint
 import statistics
 import yaml
+import json
 import numpy as np
 from fractions import Fraction as F
 
@@ -211,6 +212,9 @@ print("bef dump")
 # dumped_dur = yaml.dump(durPat.duration_patterns,default_flow_style=None, sort_keys=False)
 # print(dumped_dur)
 # print("aft dump")
-with open('patterns.yaml', 'w') as f:
-    data = yaml.dump(durPat.duration_patterns,f, default_flow_style=None, sort_keys=False)
+# with open('patterns.yaml', 'w') as f:
+#     data = yaml.dump(durPat.duration_patterns,f, default_flow_style=None, sort_keys=False)
+with open('patterns.json', 'w') as f:
+    json.dump(durPat.duration_patterns, f, indent = 4)
+ 
 print('after writing')
