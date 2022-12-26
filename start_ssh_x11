@@ -1,0 +1,8 @@
+echo services status before script
+service --status-all
+echo script running...
+
+sudo /etc/init.d/ssh restart
+sudo /etc/init.d/x11-common restart
+echo services status after script
+service --status-all
