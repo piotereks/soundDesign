@@ -1,35 +1,96 @@
 #:kivy 1.0.9
+<RadioButton>:
+    orientation:'horizontal'
+    group:'keys'
+    ToggleButton:
+        text:self.parent.text if self.parent.text else 'X'
+
 
 <TrackerWidget>:
     orientation: 'vertical'
     BoxLayout:
         orientation: 'horizontal'
         ToggleButton:
-            text:'Play1'
+            text:'Play'
         Button:
-            text:'Save1'
+            text:'Save'
+        Button:
+            text:'rnd scale'
+        Label:
+            text:'scale name'
+
+    BoxLayout:
+        orientation: 'horizontal'
+        Button:
+            text:'rnd key'
+        Label:
+            text:'keys:'
+        RadioButton:
+            text:'C'
+        RadioButton:
+            text:'C#'
+        RadioButton:
+            text:'D'
+        RadioButton:
+            text:'D#'
+        RadioButton:
+            text:'E'
+        RadioButton:
+            text:'F'
+        RadioButton:
+            text:'F#'
+        RadioButton:
+            text:'G'
+        RadioButton:
+            text:'G#'
+        RadioButton:
+            text:'A'
+        RadioButton:
+            text:'A#'
+        RadioButton:
+            text:'B'
+
+
     BoxLayout:
         orientation: 'horizontal'
         ToggleButton:
-            text:'Play2'
+            text:'metronome'
+        BoxLayout:
+            orientation:'vertical'
+            Label:
+                id:tempo_val
+                text:str(tempo.value)
+            Slider:
+                id: tempo
+                min: 40
+                max: 200
+                value: 120
+                step: 1
+                orientation: 'horizontal'    
         Button:
-            text:'Save2'
+            text:'rnd func'
+        BoxLayout:
+            orientation:'vertical'
+            Label:
+                text:'play func'
+            Label:
+                text:'here func name'
     BoxLayout:
         orientation: 'horizontal'
         ToggleButton:
-            text:'Play3'
-        Button:
-            text:'Save3'
+            text:'LoopQ'
+        Label:
+            id: curr_notes_pair_lbl_text
+            text:'curr_notes_pair_lbl_text'
+        Label:
+            id: queue_content_lbl_text
+            text: 'queue_content_lbl_text'
     BoxLayout:
-        orientation: 'horizontal'
-        ToggleButton:
-            text:'Play4'
-        Button:
-            text:'Save4'
-    BoxLayout:
-        orientation: 'horizontal'
-        ToggleButton:
-            text:'Play5'
-        Button:
-            text:'Save5'
+        orientation: 'vertical'
+        Label:
+            id: full_queue_content
+            text:'full_queue_content_lbl_text'
+        Label:
+            id: check_notest_lbl_text
+            text:'check notes here'
  
