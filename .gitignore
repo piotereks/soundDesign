@@ -6,3 +6,15 @@ wrk_*
 .idea/*.*
 /tracker/saved_midi_files/
 tracker/__pycache__/*
+tracker_tk/__pycache__/beats.cpython-310.pyc
+tracker_tk/__pycache__/gui.cpython-310.pyc
+tracker_tk/__pycache__/isobar_fixes.cpython-310.pyc
+tracker_tk/__pycache__/keyboard.cpython-310.pyc
+tracker_tk/__pycache__/log_call.cpython-310.pyc
+tracker_tk/__pycache__/patterns.cpython-310.pyc
+tracker_tk/__pycache__/tracker.cpython-310.pyc
+tracker_tk/saved_midi_files/xoutput_20221226104804.mid
+tracker_tk/saved_midi_files/xoutput_20221227171236.mid
+tracker_tk/saved_midi_files/xoutput_20221227174846.mid
+tracker_tk/saved_midi_files/xoutput_20221227220047.mid
+tracker_tk/saved_midi_files/xoutput.mid
