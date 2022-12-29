@@ -1,12 +1,12 @@
 #:kivy 1.0.9
 <RadioButton>:
     orientation:'horizontal'
-    group:'keys'
+
     ToggleButton:
         text:self.parent.text if self.parent.text else 'X'
         size_hint: [None, None]
         size: [round(self.texture_size[0]/5,-1)*5+30,self.texture_size[1]*2]
-
+        group:'keys'
 
 
 <TrackerWidget>:
@@ -38,13 +38,23 @@
             # size_hint : [None, None]
             # size : self.size
             # anchor_x: 'right'
-        Label:
-            text:'scale dropdown'
-            # size_hint_x: 2.5
+        # Label:
+        #     text:'scale dropdown'
+        #     # size_hint_x: 2.5
+        #     # size_hint_y: None
+        #     size_hint: [2.5, None]
+        #     size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+ 
+        Spinner:
+            text: 'Python'
+            values: ('Python', 'C', 'C++', 'Java')
             # size_hint_y: None
             size_hint: [2.5, None]
-            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
-   
+            height: self.texture_size[1]*2
+            # pos_hint: {'center': (.5, .5)}
+            # size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+            # height: '48dp'
+            # values=["func1", "func2", "func3", "func4"],  
         Label:
             text:'scale name'
             # size_hint_x: 2.5
@@ -59,9 +69,11 @@
     BoxLayout:
         orientation: 'horizontal'
         padding: [20,20]
-        spacing: 20
+        spacing: 10
         size_hint_y: None
         # size_y: 20
+        Widget:
+            size_hint_x: 1
         Button:
             id : rnd_key
             text:'rnd key'
@@ -77,8 +89,6 @@
             # size_hint_y: None
             # size_y: [40]
           
-        Widget:
-            size_hint_x: 1
         Label:
             text:'keys:'
             size_hint: [None, None]
@@ -113,6 +123,8 @@
                 text:'A#'
             RadioButton:
                 text:'B'
+        Widget:
+            size_hint_x: 1
 
 
     BoxLayout:
@@ -131,22 +143,11 @@
                 text:str(tempo.value)
             Slider:
                 id: tempo
-                min: 0
-                max: 200
-                value: 10
+                min: 40
+                max: 300
+                value: 120
                 step: 1
                 orientation: 'horizontal'    
-
-            Label:
-                id:tst_val
-                text:str(tst.value)
-            Slider:
-                id: tst
-                min: 0
-                max: 200
-                value: 20
-                step: 1
-                orientation: 'horizontal'   
 
         Button:
             text:'rnd func'
@@ -156,12 +157,19 @@
             orientation:'vertical'
             Label:
                 text:'play func'
-                size_hint: [None, None]
+                size_hint: [1, None]
                 size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
-            Label:
+
+            Spinner:
+                text: 'func1'
+                values: ('func1', 'func2', 'func3', 'func4')
+                size_hint: [1, None]
                 size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
-                size_hint: [None, None]
-                text:'here func name'
+                # height: '48dp'
+ 
+
+
+
     BoxLayout:
         orientation: 'horizontal'
         padding: [20,20]
@@ -187,4 +195,8 @@
             text:'full_queue_content_lbl_text'
         Label:
             id: check_notest_lbl_text
-            text:'check notes here'
+            padding: [40,10]
+            text_size: root.width, 80
+            size: self.texture_size            
+            # text:'check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here '
+            text:'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
