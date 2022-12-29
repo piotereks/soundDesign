@@ -4,57 +4,126 @@
     group:'keys'
     ToggleButton:
         text:self.parent.text if self.parent.text else 'X'
+        size_hint: [None, None]
+        size: [round(self.texture_size[0]/5,-1)*5+30,self.texture_size[1]*2]
+
 
 
 <TrackerWidget>:
     orientation: 'vertical'
     BoxLayout:
         orientation: 'horizontal'
+        # size_hint_y: None
+        # size_y: 20
+        size_hint_y: None
+        padding: [20,20]
+        spacing: 20
+        # padding_y : tempo.value
         ToggleButton:
             text:'Play'
+            size_hint: [None, None]
+            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
         Button:
             text:'Save'
+            size_hint: [None, None]
+            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+            # valign: 'top'
+        Widget:
+            size_hint_x: 0.25
+            size_hint_y: None
         Button:
             text:'rnd scale'
+            size_hint: [None, None]
+            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+            # size_hint : [None, None]
+            # size : self.size
+            # anchor_x: 'right'
+        Label:
+            text:'scale dropdown'
+            # size_hint_x: 2.5
+            # size_hint_y: None
+            size_hint: [2.5, None]
+            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+   
         Label:
             text:'scale name'
+            # size_hint_x: 2.5
+            # size_hint_y: None
+            size_hint: [2.5, None]
+            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+   
+            valign : 'bottom'
+            # anchor_x: 'left'
+
 
     BoxLayout:
         orientation: 'horizontal'
+        padding: [20,20]
+        spacing: 20
+        size_hint_y: None
+        # size_y: 20
         Button:
+            id : rnd_key
             text:'rnd key'
+            size_hint: [None, None]
+            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+            # size: self.texture_size
+            # padding_x : -tst.value
+            # pos: (tempo.value,tst.value)
+            # size_y : 200
+            # size : [tempo.value,tst.value]
+            # size_hint: [None, None]
+            # size : [70,40]
+            # size_hint_y: None
+            # size_y: [40]
+          
+        Widget:
+            size_hint_x: 1
         Label:
             text:'keys:'
-        RadioButton:
-            text:'C'
-        RadioButton:
-            text:'C#'
-        RadioButton:
-            text:'D'
-        RadioButton:
-            text:'D#'
-        RadioButton:
-            text:'E'
-        RadioButton:
-            text:'F'
-        RadioButton:
-            text:'F#'
-        RadioButton:
-            text:'G'
-        RadioButton:
-            text:'G#'
-        RadioButton:
-            text:'A'
-        RadioButton:
-            text:'A#'
-        RadioButton:
-            text:'B'
+            size_hint: [None, None]
+            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+        BoxLayout:
+            orientation:'horizontal'
+            # padding: [30,30]
+            # spacing: 5
+            size_hint_x: 4
+
+            RadioButton:
+                text:'C'
+            RadioButton:
+                text:'C#'
+            RadioButton:
+                text:'D'
+            RadioButton:
+                text:'D#'
+            RadioButton:
+                text:'E'
+            RadioButton:
+                text:'F'
+            RadioButton:
+                text:'F#'
+            RadioButton:
+                text:'G'
+            RadioButton:
+                text:'G#'
+            RadioButton:
+                text:'A'
+            RadioButton:
+                text:'A#'
+            RadioButton:
+                text:'B'
 
 
     BoxLayout:
         orientation: 'horizontal'
+        size_hint_y: None
+        padding: [20,20]
+        spacing: 20
         ToggleButton:
             text:'metronome'
+            size_hint: [None, None]
+            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
         BoxLayout:
             orientation:'vertical'
             Label:
@@ -62,29 +131,55 @@
                 text:str(tempo.value)
             Slider:
                 id: tempo
-                min: 40
+                min: 0
                 max: 200
-                value: 120
+                value: 10
                 step: 1
                 orientation: 'horizontal'    
+
+            Label:
+                id:tst_val
+                text:str(tst.value)
+            Slider:
+                id: tst
+                min: 0
+                max: 200
+                value: 20
+                step: 1
+                orientation: 'horizontal'   
+
         Button:
             text:'rnd func'
+            size_hint: [None, None]
+            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
         BoxLayout:
             orientation:'vertical'
             Label:
                 text:'play func'
+                size_hint: [None, None]
+                size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
             Label:
+                size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+                size_hint: [None, None]
                 text:'here func name'
     BoxLayout:
         orientation: 'horizontal'
+        padding: [20,20]
+        spacing: 20
         ToggleButton:
             text:'LoopQ'
+            size_hint: [None, None]
+            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
         Label:
             id: curr_notes_pair_lbl_text
             text:'curr_notes_pair_lbl_text'
+            size_hint: [2, None]
+            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
         Label:
             id: queue_content_lbl_text
             text: 'queue_content_lbl_text'
+            size_hint: [2, None]
+            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
     BoxLayout:
         orientation: 'vertical'
         Label:
@@ -93,4 +188,3 @@
         Label:
             id: check_notest_lbl_text
             text:'check notes here'
- 
