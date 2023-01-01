@@ -20,12 +20,15 @@
         spacing: 20
         # padding_y : tempo.value
         ToggleButton:
-            text:'Play'
+#            text: self.state
+
+            text: 'Play' if self.state=='normal' else 'Stop'
+            id: start_stop_button
             size_hint: [None, None]
             size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
 #            on_press: app.test1()
 #            on_release: app.test2()
-            on_state: app.test1()
+            on_state: app.play_pause(*args)
         Button:
             text:'Save'
             size_hint: [None, None]

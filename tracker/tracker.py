@@ -341,9 +341,9 @@ class Tracker:
 
             # create accent depending on beat
             # notes[iso.EVENT_AMPLITUDE] = iso.PMap(notes[iso.EVENT_AMPLITUDE], lambda midi_amp: None if not midi_amp else None if midi_amp < 0 else 127 if midi_amp > 127 else int(midi_amp * 1.5)   )
-            notes[iso.EVENT_AMPLITUDE] = iso.PMapEnumerated(notes[iso.EVENT_AMPLITUDE], lambda n, value: int(value*self.get_amp_factor()) if n==0 else value)
-
-            notes[iso.EVENT_AMPLITUDE] = iso.PMap(notes[iso.EVENT_AMPLITUDE], lambda midi_amp: None if not midi_amp else None if midi_amp < 0 else None if midi_amp > 127 else midi_amp)
+            if notes[iso.EVENT_AMPLITUDE]:
+                notes[iso.EVENT_AMPLITUDE] = iso.PMapEnumerated(notes[iso.EVENT_AMPLITUDE], lambda n, value: int(value*self.get_amp_factor()) if n==0 else value)
+                notes[iso.EVENT_AMPLITUDE] = iso.PMap(notes[iso.EVENT_AMPLITUDE], lambda midi_amp: None if not midi_amp else None if midi_amp < 0 else None if midi_amp > 127 else midi_amp)
 
             self.check_notes=list(notes[iso.EVENT_NOTE].copy())
             print('check notes: ', self.check_notes)
@@ -592,6 +592,9 @@ class Tracker:
     def meta_tempo(self,tempo):
         self.write_mid_text_meta(f"tempo:{tempo}")
 
+    def tstop(self):
+        log_call()
+        self.timeline.stop()
 
     def ts(self):
         log_call()

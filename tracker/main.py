@@ -28,6 +28,10 @@ def tracker_dec(func):
     return inner
 
 @tracker_dec
+def tstop():
+    pass
+
+@tracker_dec
 def ts():
     pass
 
@@ -200,7 +204,7 @@ def set_tempo(tempo):
     my_tracker.set_tempo(tempo)
     my_tracker.meta_tempo(tempo=tempo)
 
-def play_pause():
+def play_pause_tk():
     global app
     log_call()
 
@@ -249,7 +253,7 @@ def run_gui_tk():
     app.save_midi_btn_cmd_ext = lambda: save_midi()
 
 
-    app.pp_btn_cmd_ext = lambda: play_pause()
+    app.pp_btn_cmd_ext = lambda: play_pause_tk()
 
     app.scale_rnd_btn_cmd_ext = lambda: rand_scale()
     app.scale_combo['values'] = sorted([scale.name for scale in iso.Scale.all()])
@@ -269,7 +273,7 @@ def run_gui_tk():
     my_tracker.fullq_content_action = lambda: app.fullq_content_lbl_text.set('full queue: '+str(my_tracker.get_queue_content_full()))
 
     keyboard.key_z_function = lambda : app.pp_btn_cmd()
-    # keyboard.key_space_function = lambda : play_pause()
+    # keyboard.key_space_function = lambda : play_pause_tk()
     keyboard.key_x_function = lambda: metro_on_off()
     keyboard.key_c_function = lambda : print("key c")
     keyboard.key_v_function = lambda : print("key v")
@@ -320,7 +324,7 @@ def run_gui():
     # app = SoundDesignGui(root)
 
 
-    # app.pp_btn_cmd_ext = lambda: play_pause()
+    # app.pp_btn_cmd_ext = lambda: play_pause_tk()
 
 
     # app.key_rnd_btn_cmd_ext = lambda: set_key()
@@ -407,13 +411,17 @@ class TrackerApp(App):
     def build(self):
         return TrackerWidget()
 
+    def play_pause(self, instance, state):
+        log_call()
+        print(f"{instance=}, {state=}")
+        tstart() if state=='down' else tstop()
 
-    def test1(self):
-        print("test1")
+    def test1(self, instance, state):
+        print(f"test1: {instance=}, {state=}")
 
+    def test2(self, instance, state):
+        print(f"test2: {instance=}, {state=}")
 
-    def test2(self):
-        print("test2")
 
 
 if __name__ == '__main__':
