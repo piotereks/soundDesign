@@ -21,13 +21,10 @@
         # padding_y : tempo.value
         ToggleButton:
 #            text: self.state
-
             text: 'Play' if self.state=='normal' else 'Stop'
             id: start_stop_button
             size_hint: [None, None]
             size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
-#            on_press: app.test1()
-#            on_release: app.test2()
             on_state: app.play_pause(*args)
         Button:
             text:'Save'
@@ -181,9 +178,11 @@
         padding: [20,20]
         spacing: 20
         ToggleButton:
+            id: loopq_button
             text:'LoopQ'
             size_hint: [None, None]
             size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+#            on_state: app.play_pause(*args)
         Label:
             id: curr_notes_pair_lbl_text
             text:'curr_notes_pair_lbl_text'

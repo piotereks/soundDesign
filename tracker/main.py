@@ -325,14 +325,14 @@ def run_gui():
 
 
     # app.pp_btn_cmd_ext = lambda: play_pause_tk()
+    # app.loop_queue_chk_cmd_ext = lambda: my_tracker.loop_play_queue_action(app.loop_queue_on.get())
+    # my_tracker.loopq = app.loop_queue_on.get()
 
 
     # app.key_rnd_btn_cmd_ext = lambda: set_key()
     # app.key_radio_cmd_ext = lambda: set_key()
 
     # app.metro_btn_cmd_ext = lambda: my_tracker.metro_start_stop(app.metro_on)
-    # app.loop_queue_chk_cmd_ext = lambda: my_tracker.loop_play_queue_action(app.loop_queue_on.get())
-    # my_tracker.loopq = app.loop_queue_on.get()
     #
     # app.play_func_rnd_btn_cmd_ext = lambda: rand_play_funct()
     # app.play_func_combo['values'] = my_tracker.note_patterns.pattern_methods_short_list
