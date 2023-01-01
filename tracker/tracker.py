@@ -683,16 +683,24 @@ class Tracker:
                 print('else ', to_note)
                 self.beat = self.beat_none
         self.notes_pair=[from_note,to_note]
-        self.queue_content_wrk = [from_note,to_note] + [' ']+ list(self.get_queue_content())
+        self.queue_content_wrk = [from_note,to_note] + [' ']+ list(self.get_queue_content())  #TODO Inial problem wit 'e','m','p','t','y'
         self.curr_notes_pair_action()  #TODO action
         self.fullq_content_action()
         self.last_from_note=from_note
+
+        # pattern_amplitude = np.array(None)
+        # pattern_gate = np.array(None)
+        # pattern_duration = np.array(None)
+
         if (to_note is None) or (from_note is None):
           from_note = None if not from_note else self.key.scale.indexOf(from_note)
+
           return iso.PDict({
             # iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.scale),
             iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.key),
             iso.EVENT_DURATION: iso.PSequence([4], repeats=1),
+            iso.EVENT_AMPLITUDE : np.array([64]),
+            iso.EVENT_GATE :  np.array([1])
             # iso.EVENT_OCTAVE: 5
             # iso.EVENT_DEGREE: xxxx
         })   #TODO extend scale
@@ -713,9 +721,9 @@ class Tracker:
 
         print(f"type of pattern: {type(pattern)=}, {isinstance(pattern, np.ndarray)}")
 
-        pattern_amplitude = np.array(None)
-        pattern_gate = np.array(None)
-        pattern_duration = np.array(None)
+        # pattern_amplitude = np.array(None)
+        # pattern_gate = np.array(None)
+        # pattern_duration = np.array(None)
         if isinstance(pattern, np.ndarray):
             pattern_notes = pattern
         elif isinstance(pattern, dict):
