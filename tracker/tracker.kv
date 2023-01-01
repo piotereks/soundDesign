@@ -23,6 +23,9 @@
             text:'Play'
             size_hint: [None, None]
             size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+#            on_press: app.test1()
+#            on_release: app.test2()
+            on_state: app.test1()
         Button:
             text:'Save'
             size_hint: [None, None]
