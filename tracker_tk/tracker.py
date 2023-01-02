@@ -690,6 +690,8 @@ class Tracker:
             # iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.scale),
             iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.key),
             iso.EVENT_DURATION: iso.PSequence([4], repeats=1),
+            iso.EVENT_AMPLITUDE: 64,
+            iso.EVENT_GATE: 1
             # iso.EVENT_OCTAVE: 5
             # iso.EVENT_DEGREE: xxxx
         })   #TODO extend scale
