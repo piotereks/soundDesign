@@ -232,7 +232,7 @@ class Tracker:
         # self.scale = iso.Scale.major  - replaced by key, and scale always can be referred as self.key.scale
         self.key = iso.Key("C", "major")
         self.prev_key = None
-        self.loopq = None
+        self.loopq = False
         # self.root_midi = [('C')]  #TODO check what is root_midi used for
         self.midi_out = None
         self.track = None
@@ -703,7 +703,7 @@ class Tracker:
             iso.EVENT_GATE :  np.array([1])
             # iso.EVENT_OCTAVE: 5
             # iso.EVENT_DEGREE: xxxx
-        })   #TODO extend scale
+        })
         print('after_check')
         # root_note = self.scale.indexOf(from_note-60)
         # note = self.scale.indexOf(to_note-60)

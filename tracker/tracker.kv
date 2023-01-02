@@ -182,7 +182,8 @@
             text:'LoopQ'
             size_hint: [None, None]
             size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
-#            on_state: app.play_pause(*args)
+            on_state: app.loop_play(*args)
+
         Label:
             id: curr_notes_pair_lbl_text
             text:'curr_notes_pair_lbl_text'

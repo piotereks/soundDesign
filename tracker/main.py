@@ -8,7 +8,7 @@ from keyboard import *
 global IN_COLAB
 IN_COLAB = 'google.colab' in sys.modules
 global label_str
-global app
+# global app
 
 
 from kivy.app import App
@@ -408,6 +408,7 @@ class TrackerWidget(BoxLayout):
 
 class TrackerApp(App):
 
+
     def build(self):
         return TrackerWidget()
 
@@ -416,12 +417,16 @@ class TrackerApp(App):
         print(f"{instance=}, {state=}")
         tstart() if state=='down' else tstop()
 
+    def loop_play(self, instance, state):
+        my_tracker.loopq = True if state == 'down' else False
+
     def test1(self, instance, state):
         print(f"test1: {instance=}, {state=}")
 
     def test2(self, instance, state):
         print(f"test2: {instance=}, {state=}")
-
+        # app.loop_queue_chk_cmd_ext = lambda: my_tracker.loop_play_queue_action(app.loop_queue_on.get())
+        # my_tracker.loopq = app.loop_queue_on.get()
 
 
 if __name__ == '__main__':
