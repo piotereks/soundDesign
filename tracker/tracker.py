@@ -609,7 +609,7 @@ class Tracker:
 
 
     @log_and_schedule
-    def play_from_to(self, from_note, to_note, in_pattern=False ):
+    def play_from_to(self, from_note, to_note, in_pattern=False):
         print('---------------------')
         print(f"in_pattern: {in_pattern} from_note:{from_note}, to_note: {to_note}")
         print(f"{self.key.scale.name=}, key={iso.Note.names[self.key.tonic%12]}, {self.key.scale.name=}")
@@ -620,7 +620,7 @@ class Tracker:
         # self.prev_key
         # self.key.scale.name
         # self.key.tonic
-
+        loopq = self.loopq
         if self.prev_get_pattern_name != self.note_patterns.get_pattern.__name__:
             # self.meta_func(func=f"prev:{self.prev_get_pattern_name}")
             self.meta_func(func=f"curr:{self.note_patterns.get_pattern.__name__}")
@@ -643,14 +643,14 @@ class Tracker:
         # if  from_note == None:
         #     return None
         if in_pattern:
-            if self.loopq and self.last_from_note is not None:
+            if loopq and self.last_from_note is not None:
                 # print(f'note {note} back to queue')
                 # self.put_to_queue(note)
                 print(f'note {self.last_from_note=} back to queue')
                 self.put_to_queue(self.last_from_note, q_action=False)
 
             from_note, to_note = self.get_queue_pair()
-            if self.loopq and not to_note:
+            if loopq and not to_note:
                 to_note=from_note  # TODO add put to queue
                 self.put_to_queue(from_note)
             # self.scale = iso.Scale.chromatic
@@ -659,7 +659,7 @@ class Tracker:
             from_notex = self.last_note
             # to_note = None if self.note_queue.empty() else self.note_queue.get_nowait()
             # to_notex = self.get_from_queue()
-            # if self.loopq and note is not None:
+            # if loopq and note is not None:
             #     print(f'note {note} back to queue')
             #     self.put_to_queue(note)
 

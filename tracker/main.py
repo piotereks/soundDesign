@@ -417,6 +417,8 @@ class TrackerWidget(BoxLayout):
 
 class TrackerApp(App):
 
+    def __init__(self):
+        my_tracker.loopq=self.loopq_button
 
     def build(self):
         return TrackerWidget()
@@ -428,6 +430,9 @@ class TrackerApp(App):
 
     def loop_play(self, instance, state):
         my_tracker.loopq = True if state == 'down' else False
+
+    def save(self):
+        my_tracker.save_midi()
 
     def test1(self, instance, state):
         print(f"test1: {instance=}, {state=}")

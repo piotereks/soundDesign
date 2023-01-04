@@ -30,6 +30,7 @@
             text:'Save'
             size_hint: [None, None]
             size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+            on_press: app.save()
             # valign: 'top'
         Widget:
             size_hint_x: 0.25
@@ -180,6 +181,7 @@
         ToggleButton:
             id: loopq_button
             text:'LoopQ'
+            state:'down'
             size_hint: [None, None]
             size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
             on_state: app.loop_play(*args)
