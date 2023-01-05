@@ -424,7 +424,7 @@ class TrackerApp(App):
         return TrackerWidget()
 
     def on_start(self):
-        self.loop_play(self.root.ids.loopq_button, self.root.ids.loopq_button.state)
+        self.loop_play(instance=None, state=self.root.ids.loopq_button.state)
 
     def play_pause(self, instance, state):
         log_call()
