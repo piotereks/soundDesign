@@ -417,8 +417,6 @@ class TrackerWidget(BoxLayout):
 
 class TrackerApp(App):
 
-    def __init__(self):
-        my_tracker.loopq=self.loopq_button
 
     def build(self):
         return TrackerWidget()
