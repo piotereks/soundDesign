@@ -70,8 +70,8 @@ def rs():
     rand_scale()
 
 
-def save_midi():
-    my_tracker.save_midi()
+def save_midi(on_exit=False):
+    my_tracker.save_midi(on_exit=on_exit)
     # my_tracker.midi_out.write()
 
 
@@ -404,7 +404,7 @@ def main():
     # ts()  # make by  default not starting
     TrackerApp().run()
     ts()
-    save_midi()
+    save_midi(on_exit=True)
 
 
 

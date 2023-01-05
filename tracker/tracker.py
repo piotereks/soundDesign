@@ -271,10 +271,13 @@ class Tracker:
         self.metro = self.metro_timeline()
 
 
-    def save_midi(self):
+    def save_midi(self, on_exit=False):
         date = datetime.now().strftime('%Y%m%d%H%M%S')
-        if  self.midi_out_mode == self.MIDI_OUT_DEVICE:
+        if self.midi_out_mode == self.MIDI_OUT_DEVICE:
             return None
+        if on_exit:
+            self.mid_MetaMessage('end_of_track', time=0)
+
         self.midi_out.write()
         shutil.copy(self.filename, f"{self.filename.split('.')[0]}_{date}.mid")
 
@@ -299,12 +302,13 @@ class Tracker:
             self.midi_out = iso.DummyOutputDevice()
             print("dummy mode")
         # write meta message about time signature (currently hardcoded)
-        if midi_out_mode in  (self.MIDI_OUT_MIX_FILE_DEVICE, self.MIDI_OUT_FILE):
-            if MULTI_TRACK:
-                self.midi_out.miditrack[0].append(
-                    mido.MetaMessage('time_signature', numerator=4, denominator=4, time=0))
-            else:
-                self.midi_out.miditrack.append(mido.MetaMessage('time_signature', numerator=4, denominator=4, time=0))
+        self.mid_MetaMessage('time_signature', numerator=4, denominator=4, time=0)
+        # if midi_out_mode in  (self.MIDI_OUT_MIX_FILE_DEVICE, self.MIDI_OUT_FILE):
+        #     if MULTI_TRACK:
+        #         self.midi_out.miditrack[0].append(
+        #             mido.MetaMessage('time_signature', numerator=4, denominator=4, time=0))
+        #     else:
+        #         self.midi_out.miditrack.append(mido.MetaMessage('time_signature', numerator=4, denominator=4, time=0))
         print(f"----------- {MULTI_TRACK=}")
         # midi_out = iso.DummyOutputDevice()
         self.timeline = iso.Timeline(120, output_device=self.midi_out)
@@ -557,17 +561,26 @@ class Tracker:
             , remove_when_done=False
         )
 
+    def mid_MetaMessage(self, *args, **kwargs):
+        if self.midi_out_mode == self.MIDI_OUT_DEVICE:
+            return None
+        if MULTI_TRACK:
+            self.midi_out.miditrack[0].append(mido.MetaMessage(*args, **kwargs))
+        else:
+            self.midi_out.miditrack.append(mido.MetaMessage(*args, **kwargs))
+
     def set_tempo(self, new_tempo):
         log_call()
         print(f"b_read tempo: {self.timeline.get_tempo()=}, {new_tempo=}")
         # self.timeline.set_tempo(int(new_tempo))
         self.timeline.set_tempo(int(new_tempo))
-        if  self.midi_out_mode == self.MIDI_OUT_DEVICE:
-            return None
-        if MULTI_TRACK:
-            self.midi_out.miditrack[0].append(mido.MetaMessage('set_tempo',tempo=mido.bpm2tempo(int(new_tempo)), time=0))
-        else:
-            self.midi_out.miditrack.append(mido.MetaMessage('set_tempo',tempo=mido.bpm2tempo(int(new_tempo)), time=0))
+        self.mid_MetaMessage('set_tempo', tempo=mido.bpm2tempo(int(new_tempo)), time=0)
+        # if  self.midi_out_mode == self.MIDI_OUT_DEVICE:
+        #     return None
+        # if MULTI_TRACK:
+        #     self.midi_out.miditrack[0].append(mido.MetaMessage('set_tempo',tempo=mido.bpm2tempo(int(new_tempo)), time=0))
+        # else:
+        #     self.midi_out.miditrack.append(mido.MetaMessage('set_tempo',tempo=mido.bpm2tempo(int(new_tempo)), time=0))
         print(f"a_read tempo: {self.timeline.get_tempo()=}, {new_tempo=}")
 
     def set_program_change(self, program = 0, channel = 0):
@@ -579,16 +592,28 @@ class Tracker:
             self.midi_out.miditrack.append(mido.Message('program_change', program=int(program), channel=int(channel)))
 
     def write_mid_text_meta(self, message):
-        if  self.midi_out_mode == self.MIDI_OUT_DEVICE:
-            return None
-        if MULTI_TRACK:
-            self.midi_out.miditrack[0].append(mido.MetaMessage('text',text=message, time=0))
-        else:
-            self.midi_out.miditrack.append(mido.MetaMessage('text',text=message, time=0))
+        self.mid_MetaMessage('text', text=message, time=0)
+        # if  self.midi_out_mode == self.MIDI_OUT_DEVICE:
+        #     return None
+        # if MULTI_TRACK:
+        #     self.midi_out.miditrack[0].append(mido.MetaMessage('text',text=message, time=0))
+        # else:
+        #     self.midi_out.miditrack.append(mido.MetaMessage('text',text=message, time=0))
 
 
     def meta_key_scale(self, key, scale):
+        key = iso.Note.names[key.tonic % 12]
         self.write_mid_text_meta(f"scale:{key}-{scale}")
+
+        # MetaMessage('key_signature', key='C', time=0)
+        self.mid_MetaMessage('key_signature', key=key, time=0)
+        # if self.midi_out_mode == self.MIDI_OUT_DEVICE:
+        #     return None
+        # print(f"key before write {key} {scale=}")
+        # if MULTI_TRACK:
+        #     self.midi_out.miditrack[0].append(mido.MetaMessage('key_signature', key=key, time=0))
+        # else:
+        #     self.midi_out.miditrack.append(mido.MetaMessage('key_signature', key=key, time=0))
 
 
     def meta_func(self,func):
@@ -597,6 +622,7 @@ class Tracker:
 
     def meta_tempo(self,tempo):
         self.write_mid_text_meta(f"tempo:{tempo}")
+        # self.mid_MetaMessage('end_of_track', time=0)
 
     def tstop(self):
         log_call()
@@ -636,7 +662,7 @@ class Tracker:
             # if self.prev_key:
             #     self.meta_key_scale(key=f"prev: {self.prev_key.tonic}", scale=self.prev_key.scale.name)
 
-            self.meta_key_scale(key=f"curr: {self.key.tonic}", scale=self.key.scale.name)
+            self.meta_key_scale(key=self.key, scale=self.key.scale.name)
 
         self.prev_key = self.key
         print(f"============={self.prev_get_pattern_name=} {self.note_patterns.get_pattern.__name__=}")
