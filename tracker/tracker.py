@@ -298,7 +298,13 @@ class Tracker:
             self.MIDI_OUT_DUMMY
             self.midi_out = iso.DummyOutputDevice()
             print("dummy mode")
-
+        # write meta message about time signature (currently hardcoded)
+        if midi_out_mode in  (self.MIDI_OUT_MIX_FILE_DEVICE, self.MIDI_OUT_FILE):
+            if MULTI_TRACK:
+                self.midi_out.miditrack[0].append(
+                    mido.MetaMessage('time_signature', numerator=4, denominator=4, time=0))
+            else:
+                self.midi_out.miditrack.append(mido.MetaMessage('time_signature', numerator=4, denominator=4, time=0))
         print(f"----------- {MULTI_TRACK=}")
         # midi_out = iso.DummyOutputDevice()
         self.timeline = iso.Timeline(120, output_device=self.midi_out)
