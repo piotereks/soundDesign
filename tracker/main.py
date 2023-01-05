@@ -417,9 +417,14 @@ class TrackerWidget(BoxLayout):
 
 class TrackerApp(App):
 
+    # def __init__(self):
+    #     self.loop_play( self.root.ids.loopq_button, self.root.ids.loopq_button.state )
 
     def build(self):
         return TrackerWidget()
+
+    def on_start(self):
+        self.loop_play(self.root.ids.loopq_button, self.root.ids.loopq_button.state)
 
     def play_pause(self, instance, state):
         log_call()
