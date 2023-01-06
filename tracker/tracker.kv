@@ -55,19 +55,20 @@
         #     size_hint: [2.5, None]
         #     size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
  
+        # Spinner:
+        #     id:scale_spinnerx
+        #     text: app.scale_init_text  if app.scale_init_text else 'Python'
+        #     values: app.scale_values if app.scale_values else ('Python', 'C', 'C++', 'Java') 
+        #     size_hint: [2.5, None]
+        #     height: self.texture_size[1]*2
+
         Spinner:
             id:scale_spinner
-            # text:'vvvasdf'
-            # text: self.blah_properties
             text: app.scale_init_text  if app.scale_init_text else 'Python'
             values: app.scale_values if app.scale_values else ('Python', 'C', 'C++', 'Java') 
-            # size_hint_y: None
             size_hint: [2.5, None]
-            height: self.texture_size[1]*2
-            # pos_hint: {'center': (.5, .5)}
-            # size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
-            # height: '48dp'
-            # values=["func1", "func2", "func3", "func4"],  
+            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+
         Label:
             text:'scale name'
             # size_hint_x: 2.5

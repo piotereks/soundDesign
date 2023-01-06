@@ -2,7 +2,8 @@ from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.behaviors import ToggleButtonBehavior
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, ListProperty
+
 
 class RadioButton(ToggleButtonBehavior, BoxLayout): 
     text = StringProperty('')
@@ -12,7 +13,10 @@ class TrackerWidget(BoxLayout):
     pass
 
 class TrackerApp(App):
-
+    scale_init_text = StringProperty()
+    scale_values = ListProperty()
+    
+    
     def build(self):
         return TrackerWidget()
 

@@ -416,8 +416,11 @@ class TrackerWidget(BoxLayout):
     pass
 
 class TrackerApp(App):
-    scale_init_text = StringProperty('')
-    scale_values = ListProperty(['asdf','eeee','pppppp'])
+    # app.scale_rnd_btn_cmd_ext = lambda: rand_scale()
+    # app.scale_combo.bind("<<ComboboxSelected>>", set_scale)
+    
+    scale_init_text = StringProperty()
+    scale_values = ListProperty()
     # scale_values.setter('asdf')
     # def __init__(self):
 
@@ -429,6 +432,10 @@ class TrackerApp(App):
     def on_start(self):
         self.loop_play(instance=None, state=self.root.ids.loopq_button.state)
         my_tracker.metro_start_stop(self.root.ids.metronome.state)
+        all_scales = sorted([scale.name for scale in iso.Scale.all()])
+        self.scale_init_text = my_tracker.key.scale.name
+        self.scale_values = all_scales
+
 
     def play_pause(self, instance, state):
         log_call()
