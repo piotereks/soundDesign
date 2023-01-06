@@ -11,6 +11,8 @@
 
 
 <TrackerWidget>:
+    xxx_scale_spinner_text:scale_spinner.text
+    # blah_properties:'asdf'
     orientation: 'vertical'
     BoxLayout:
         orientation: 'horizontal'
@@ -54,8 +56,11 @@
         #     size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
  
         Spinner:
-            text: 'Python'
-            values: ('Python', 'C', 'C++', 'Java')
+            id:scale_spinner
+            # text:'vvvasdf'
+            # text: self.blah_properties
+            text: app.scale_init_text  if app.scale_init_text else 'Python'
+            values: app.scale_values if app.scale_values else ('Python', 'C', 'C++', 'Java') 
             # size_hint_y: None
             size_hint: [2.5, None]
             height: self.texture_size[1]*2

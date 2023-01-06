@@ -14,7 +14,7 @@ global label_str
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.behaviors import ToggleButtonBehavior
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, ListProperty
 
 
 # <editor-fold desc="Interactive simplification functions">
@@ -416,8 +416,11 @@ class TrackerWidget(BoxLayout):
     pass
 
 class TrackerApp(App):
-
+    scale_init_text = StringProperty('')
+    scale_values = ListProperty(['asdf','eeee','pppppp'])
+    # scale_values.setter('asdf')
     # def __init__(self):
+
     #     self.loop_play( self.root.ids.loopq_button, self.root.ids.loopq_button.state )
 
     def build(self):
