@@ -133,7 +133,7 @@ def dump_scales():
 # print('processing Done')
 
 
-def metro_on_off():
+def tk_metro_on_off():
     log_call()
     app.metro_on.set((app.metro_on.get())+1%2)
     my_tracker.metro_start_stop(app.metro_on)
@@ -362,7 +362,7 @@ def run_gui():
     # my_tracker.fullq_content_action = lambda: app.fullq_content_lbl_text.set('full queue: '+str(my_tracker.get_queue_content_full()))
     #
     # keyboard.key_z_function = lambda : app.pp_btn_cmd()
-    # keyboard.key_x_function = lambda: metro_on_off()
+    # keyboard.key_x_function = lambda: tk_metro_on_off()
     # keyboard.key_c_function = lambda : print("key c")
     # keyboard.key_v_function = lambda : print("key v")
     # keyboard.key_b_function = lambda : rand_scale()
@@ -425,11 +425,18 @@ class TrackerApp(App):
 
     def on_start(self):
         self.loop_play(instance=None, state=self.root.ids.loopq_button.state)
+        my_tracker.metro_start_stop(self.root.ids.metronome.state)
 
     def play_pause(self, instance, state):
         log_call()
         print(f"{instance=}, {state=}, {instance.size=}")
         tstart() if state=='down' else tstop()
+
+
+    def metro_on_off(self, instance, state):
+        log_call()
+        my_tracker.metro_start_stop(state)
+
 
     def loop_play(self, instance, state):
         my_tracker.loopq = True if state == 'down' else False

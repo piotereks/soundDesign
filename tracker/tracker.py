@@ -233,7 +233,6 @@ class Tracker:
         self.key = iso.Key("C", "major")
         self.prev_key = None
         self.loopq = False
-        # self.root_midi = [('C')]  #TODO check what is root_midi used for
         self.midi_out = None
         self.track = None
         self.filename = filename
@@ -435,8 +434,8 @@ class Tracker:
             # , quantize=1
             , remove_when_done=True)
 
-    def metro_start_stop(self, start):
-        if start.get() == 1:
+    def metro_start_stop(self, state):
+        if state == 'down':
             print('-----------metro on-----------------')
             # self.metro_beat = lambda: print ('metro_play')
             self.metro_beat = self.metro_play
@@ -671,7 +670,7 @@ class Tracker:
         # my_tracker.meta_key_scale(key=app.keys_group.get(), scale=app.scale_combo.get())
 
 
-        self.scale_name_action()   #TODO extend scale
+        self.scale_name_action()
         # if  from_note == None:
         #     return None
         if in_pattern:
@@ -683,7 +682,7 @@ class Tracker:
 
             from_note, to_note = self.get_queue_pair()
             if loopq and not to_note:
-                to_note=from_note  # TODO add put to queue
+                to_note=from_note
                 self.put_to_queue(from_note)
             # self.scale = iso.Scale.chromatic
             # self.scale = iso.Scale.chromatic
@@ -715,7 +714,7 @@ class Tracker:
                 print('else ', to_note)
                 self.beat = self.beat_none
         self.notes_pair=[from_note,to_note]
-        self.queue_content_wrk = [from_note,to_note] + [' ']+ list(self.get_queue_content())  #TODO Inial problem wit 'e','m','p','t','y'
+        self.queue_content_wrk = [from_note,to_note] + [' ']+ [list(self.get_queue_content())]  #TODO Inial problem wit 'e','m','p','t','y'
         self.curr_notes_pair_action()  #TODO action
         self.fullq_content_action()
         self.last_from_note=from_note
@@ -836,7 +835,7 @@ class Tracker:
             ,iso.EVENT_GATE: iso.PSequence(pattern_gate)
             # iso.EVENT_OCTAVE: 5
             # iso.EVENT_DEGREE: xxxx
-        })  #TODO extend scale
+        })
 
 
     # </editor-fold>

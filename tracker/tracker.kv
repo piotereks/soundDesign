@@ -141,9 +141,12 @@
         padding: [20,20]
         spacing: 20
         ToggleButton:
+            id:metronome
             text:'metronome'
             size_hint: [None, None]
             size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
+            on_state: app.metro_on_off(*args)
+
         BoxLayout:
             orientation:'vertical'
             Label:

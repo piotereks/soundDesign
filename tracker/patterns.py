@@ -8,6 +8,7 @@ import pprint
 
 import sys
 import re
+from functools import wraps
 from typing import Callable
 
 global IN_COLAB
@@ -124,6 +125,7 @@ class NotePatterns:
 
 # <editor-fold desc="get pattern functions">
     def mod_duration(func):  #added self, eventual issue
+        @wraps(func)
         def inner(self, *args, **kwargs):
             result = func(self, *args, **kwargs)
             print(f"xx {len(result[iso.EVENT_NOTE])=}, {result[iso.EVENT_NOTE]=}")
