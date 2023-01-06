@@ -428,7 +428,7 @@ class TrackerApp(App):
 
     def play_pause(self, instance, state):
         log_call()
-        print(f"{instance=}, {state=}")
+        print(f"{instance=}, {state=}, {instance.size=}")
         tstart() if state=='down' else tstop()
 
     def loop_play(self, instance, state):

@@ -5,7 +5,8 @@
     ToggleButton:
         text:self.parent.text if self.parent.text else 'X'
         size_hint: [None, None]
-        size: [round(self.texture_size[0]/5,-1)*5+30,self.texture_size[1]*2]
+        # size: [round(self.texture_size[0]/5,-1)*5+30,self.texture_size[1]*2]
+        size: [-(-self.texture_size[0]//20)*20+10,self.texture_size[1]*2]
         group:'keys'
 
 
@@ -21,15 +22,18 @@
         # padding_y : tempo.value
         ToggleButton:
 #            text: self.state
-            text: 'Play' if self.state=='normal' else 'Stop'
+            text: 'Play' if self.state=='normal' else 'Pause'
             id: start_stop_button
             size_hint: [None, None]
-            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+            # size: [round(self.texture_size[0]/2,-1)*2+30,self.texture_size[1]*2]
+            # (-(-n//div))
+            size: [-(-self.texture_size[0]//70)*70,self.texture_size[1]*2]
             on_state: app.play_pause(*args)
         Button:
             text:'Save'
             size_hint: [None, None]
-            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+            # size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+            size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
             on_press: app.save()
             # valign: 'top'
         Widget:
@@ -38,7 +42,7 @@
         Button:
             text:'rnd scale'
             size_hint: [None, None]
-            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+            size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
             # size_hint : [None, None]
             # size : self.size
             # anchor_x: 'right'
@@ -64,7 +68,7 @@
             # size_hint_x: 2.5
             # size_hint_y: None
             size_hint: [2.5, None]
-            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+            size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
    
             valign : 'bottom'
             # anchor_x: 'left'
@@ -82,7 +86,7 @@
             id : rnd_key
             text:'rnd key'
             size_hint: [None, None]
-            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+            size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
             # size: self.texture_size
             # padding_x : -tst.value
             # pos: (tempo.value,tst.value)
@@ -96,7 +100,7 @@
         Label:
             text:'keys:'
             size_hint: [None, None]
-            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+            size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
         BoxLayout:
             orientation:'horizontal'
             # padding: [30,30]
@@ -139,7 +143,7 @@
         ToggleButton:
             text:'metronome'
             size_hint: [None, None]
-            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+            size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
         BoxLayout:
             orientation:'vertical'
             Label:
@@ -156,19 +160,19 @@
         Button:
             text:'rnd func'
             size_hint: [None, None]
-            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+            size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
         BoxLayout:
             orientation:'vertical'
             Label:
                 text:'play func'
                 size_hint: [1, None]
-                size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+                size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
 
             Spinner:
                 text: 'func1'
                 values: ('func1', 'func2', 'func3', 'func4')
                 size_hint: [1, None]
-                size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+                size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
                 # height: '48dp'
  
 
@@ -183,7 +187,7 @@
             text:'LoopQ'
             state:'down'
             size_hint: [None, None]
-            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+            size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
             on_state: app.loop_play(*args)
 
 
@@ -191,12 +195,12 @@
             id: curr_notes_pair_lbl_text
             text:'curr_notes_pair_lbl_text'
             size_hint: [2, None]
-            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+            size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
         Label:
             id: queue_content_lbl_text
             text: 'queue_content_lbl_text'
             size_hint: [2, None]
-            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+            size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
     BoxLayout:
         orientation: 'vertical'
         Label:
