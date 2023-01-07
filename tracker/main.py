@@ -175,12 +175,17 @@ def rand_scale():
     # my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
 
 
-def set_scale(event):
+def tk_set_scale(event):
     log_call()
     scale_obj =  iso.Scale.byname(app.scale_combo.get())
     my_tracker.key = iso.Key(my_tracker.key.tonic, scale_obj)
     # my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
 
+def set_scale(scale_name):
+    log_call()
+    scale_obj =  iso.Scale.byname(scale_name)
+    my_tracker.key = iso.Key(my_tracker.key.tonic, scale_obj)
+    
 
 def set_key():
     log_call()
@@ -453,6 +458,11 @@ class TrackerApp(App):
 
     def save(self):
         my_tracker.save_midi()
+        
+    def set_scale(self, instance, scale_name):
+        log_call()
+        # print(instance)
+        set_scale(scale_name)
 
     def test1(self, instance, state):
         print(f"test1: {instance=}, {state=}")
