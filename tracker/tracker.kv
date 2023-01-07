@@ -1,4 +1,4 @@
-#:kivy 1.9.0
+#:kivy 2.1.0
 
 #:import Factory kivy.factory.Factory
 
@@ -11,11 +11,13 @@
     background_down: 'atlas://data/images/defaulttheme/button'
     color: color_font
     # height: self.texture_size[1]*2
-    size_hint: [None, None]
+    size_hint: [2.5, None]
+    # sync_height: True
     # size: app.scale_spinner.width, app.scale_spinner.height
 
     # height: 10
-    # size: [-(-self.texture_size[0]//20)*20+10,self.texture_size[1]*2]
+    # size: [None,self.texture_size[1]*1]
+    size: [-(-self.texture_size[0]//20)*20+10,self.texture_size[1]*1]
     # size: app.size
 
 
@@ -96,6 +98,7 @@
             # values: app.scale_values if app.scale_values else ('Python', 'C', 'C++', 'Java') 
             values: app.scale_values if app.scale_values else ('Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', '123Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java') 
             size_hint: [2.5, None]
+            # size_height
             size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
             option_cls: Factory.get("MySpinnerOption")
 
