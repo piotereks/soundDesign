@@ -1,4 +1,25 @@
-#:kivy 1.0.9
+#:kivy 1.9.0
+
+#:import Factory kivy.factory.Factory
+
+#:set color_button (0.784, 0.443, 0.216, 1)  # brown
+#:set color_button_pressed (0.659, 0.522, 0.431, 1)  # darker brown
+#:set color_font   (0.957, 0.890, 0.843, 1)  # off white
+
+<MySpinnerOption@SpinnerOption>:
+    background_color: color_button if self.state == 'down' else color_button_pressed
+    background_down: 'atlas://data/images/defaulttheme/button'
+    color: color_font
+    # height: self.texture_size[1]*2
+    size_hint: [None, None]
+    # size: app.scale_spinner.width, app.scale_spinner.height
+
+    # height: 10
+    # size: [-(-self.texture_size[0]//20)*20+10,self.texture_size[1]*2]
+    # size: app.size
+
+
+
 <RadioButton>:
     orientation:'horizontal'
 
@@ -11,7 +32,7 @@
 
 
 <TrackerWidget>:
-    xxx_scale_spinner_text:scale_spinner.text
+    # xxx_scale_spinner_text:scale_spinner.text
     # blah_properties:'asdf'
     orientation: 'vertical'
     BoxLayout:
@@ -65,9 +86,11 @@
         Spinner:
             id:scale_spinner
             text: app.scale_init_text  if app.scale_init_text else 'Python'
-            values: app.scale_values if app.scale_values else ('Python', 'C', 'C++', 'Java') 
+            # values: app.scale_values if app.scale_values else ('Python', 'C', 'C++', 'Java') 
+            values: app.scale_values if app.scale_values else ('Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', '123Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java') 
             size_hint: [2.5, None]
             size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+            option_cls: Factory.get("MySpinnerOption")
 
         Label:
             text:'scale name'
