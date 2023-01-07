@@ -175,6 +175,20 @@ def rand_scale():
     # my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
 
 
+def tk_and_scale():
+    log_call()
+    all_scales=[scale.name for scale in iso.Scale.all()]
+    random_scale = random.choice(list(set(all_scales)-set([my_tracker.key.scale.name])))
+    # my_tracker.key = iso.Key(my_tracker.key.tonic, iso.Scale.random())
+    my_tracker.key = iso.Key(my_tracker.key.tonic, random_scale)
+    # app.keys_group.set(random.choice(
+    #     set(app.names)-set(app.keys_group.get())
+    #     ))
+
+    app.scale_combo.set(my_tracker.key.scale.name)
+    # my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
+
+
 def tk_set_scale(event):
     log_call()
     scale_obj =  iso.Scale.byname(app.scale_combo.get())
@@ -446,8 +460,6 @@ class TrackerApp(App):
 
         my_tracker.scale_name_action = lambda: self.set_scale_set_name_txt('set:' + my_tracker.key.scale.name)
  
-    def set_scale_set_name_txt(self, value):
-        self.scale_set_name_txt=value
 
     def play_pause(self, instance, state):
         log_call()
@@ -470,6 +482,18 @@ class TrackerApp(App):
         log_call()
         # print(instance)
         set_scale(scale_name)
+
+    def set_scale_set_name_txt(self, value):
+        self.scale_set_name_txt=value
+
+
+    def rand_scale(self):
+        log_call()
+        all_scales=[scale.name for scale in iso.Scale.all()]
+        random_scale = random.choice(list(set(all_scales)-set([my_tracker.key.scale.name])))
+        # my_tracker.key = iso.Key(my_tracker.key.tonic, iso.Scale.random())
+        my_tracker.key = iso.Key(my_tracker.key.tonic, random_scale)
+        self.scale_init_text=my_tracker.key.scale.name
 
     def test1(self, instance, state):
         print(f"test1: {instance=}, {state=}")
