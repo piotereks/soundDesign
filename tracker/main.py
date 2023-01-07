@@ -395,6 +395,7 @@ def main():
     my_tracker = Tracker(midi_out_mode=midi_out_flag)
     # my_tracker.midi_out.program_change(program=22)
 
+
     # wrk cleanup
     my_tracker.scale_name_action = lambda: print(None)
     my_tracker.check_notes_action = lambda: print(None)
@@ -426,6 +427,7 @@ class TrackerApp(App):
     
     scale_init_text = StringProperty()
     scale_values = ListProperty()
+    scale_set_name_txt = StringProperty()
     # scale_values.setter('asdf')
     # def __init__(self):
 
@@ -440,7 +442,12 @@ class TrackerApp(App):
         all_scales = sorted([scale.name for scale in iso.Scale.all()])
         self.scale_init_text = my_tracker.key.scale.name
         self.scale_values = all_scales
+        # self.set_scale_set_name_txt('ddd')
 
+        my_tracker.scale_name_action = lambda: self.set_scale_set_name_txt('set:' + my_tracker.key.scale.name)
+ 
+    def set_scale_set_name_txt(self, value):
+        self.scale_set_name_txt=value
 
     def play_pause(self, instance, state):
         log_call()

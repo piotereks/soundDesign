@@ -15,7 +15,7 @@ class TrackerWidget(BoxLayout):
 class TrackerApp(App):
     scale_init_text = StringProperty()
     scale_values = ListProperty()
-
+    scale_set_name_txt = StringProperty()
     # def on_touch_down(self, touch):
     #     if touch.is_mouse_scrolling:
     #         if touch.button == 'scrolldown':
