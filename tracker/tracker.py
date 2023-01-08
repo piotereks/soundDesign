@@ -561,6 +561,7 @@ class Tracker:
         )
 
     def mid_MetaMessage(self, *args, **kwargs):
+        # return None
         if self.midi_out_mode == self.MIDI_OUT_DEVICE:
             return None
         if MULTI_TRACK:
@@ -605,7 +606,7 @@ class Tracker:
         self.write_mid_text_meta(f"scale:{key}-{scale}")
 
         # MetaMessage('key_signature', key='C', time=0)
-        self.mid_MetaMessage('key_signature', key=key, time=0)
+        self.mid_MetaMessage('key_signature', key=key+'m', time=0)
         # if self.midi_out_mode == self.MIDI_OUT_DEVICE:
         #     return None
         # print(f"key before write {key} {scale=}")

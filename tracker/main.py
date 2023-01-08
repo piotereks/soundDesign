@@ -448,14 +448,9 @@ class TrackerApp(App):
 
     #     self.loop_play( self.root.ids.loopq_button, self.root.ids.loopq_button.state )
 
-    def print_bla(self):
-        print('blahhhhh')
 
     def build(self):
         return TrackerWidget()
-
-    def on_selected_root_note(self, instance, value):
-        print(f'radio {value}')
 
     def on_start(self):
        
@@ -494,7 +489,6 @@ class TrackerApp(App):
     def set_scale_set_name_txt(self, value):
         self.scale_set_name_txt=value
 
-
     def rand_scale(self):
         log_call()
         all_scales=[scale.name for scale in iso.Scale.all()]
@@ -502,6 +496,31 @@ class TrackerApp(App):
         # my_tracker.key = iso.Key(my_tracker.key.tonic, iso.Scale.random())
         my_tracker.key = iso.Key(my_tracker.key.tonic, random_scale)
         self.scale_init_text=my_tracker.key.scale.name
+
+    def on_selected_root_note(self, instance, root_note):
+        print(f'this is selected root note {root_note}')
+        keys_scale_action(root_note, my_tracker.key.scale.name)
+
+    def rand_key(self):
+        keys = list({key.text for key in self.root.ids.scales_group.children}\
+            -{ self.selected_root_note })
+        randomized_key = random.choice(keys)
+        print(f'this is {randomized_key=}')
+        print(my_tracker.key)
+        keys_scale_action(randomized_key, my_tracker.key.scale.name)
+        for key in self.root.ids.scales_group.children:
+            print(f"{key.text=} != {randomized_key}")
+            if key.text != randomized_key:
+                key.state = 'normal'
+                continue
+            key.state = 'down'
+            print(my_tracker.key)
+            # key.selected = True
+            
+        # self.names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+
+
+
 
     def test1(self, instance, state):
         print(f"test1: {instance=}, {state=}")

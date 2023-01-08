@@ -29,15 +29,15 @@
         # on_press: app.selected_root_note = self.parent.text
         state: self.parent.state
         on_state: app.selected_root_note = self.parent.text
-        on_state: print(app.selected_root_note)
-        on_state: print(self.parent.text)
+        # on_state: print(app.selected_root_note)
+        # on_state: print(self.parent.text)
 
-        # on_state: print( self.parent.text)
+ 
 
 <TrackerWidget>:
     # xxx_scale_spinner_text:scale_spinner.text
     # blah_properties:'asdf'
-    selected_root_note: 'C'
+    # selected_root_note: 'C'
     orientation: 'vertical'
     # on_selected_root_note: printx('asdfsdf')
     BoxLayout:
@@ -131,21 +131,14 @@
             text:'rnd key'
             size_hint: [None, None]
             size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
-            # size: self.texture_size
-            # padding_x : -tst.value
-            # pos: (tempo.value,tst.value)
-            # size_y : 200
-            # size : [tempo.value,tst.value]
-            # size_hint: [None, None]
-            # size : [70,40]
-            # size_hint_y: None
-            # size_y: [40]
+            on_press: app.rand_key()
           
         Label:
             text:'keys:'
             size_hint: [None, None]
             size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
         BoxLayout:
+            id: scales_group
             orientation:'horizontal'
             # padding: [30,30]
             # spacing: 5
