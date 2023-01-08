@@ -442,15 +442,23 @@ class TrackerApp(App):
     scale_init_text = StringProperty()
     scale_values = ListProperty()
     scale_set_name_txt = StringProperty()
+    selected_root_note = StringProperty()
     # scale_values.setter('asdf')
     # def __init__(self):
 
     #     self.loop_play( self.root.ids.loopq_button, self.root.ids.loopq_button.state )
 
+    def print_bla(self):
+        print('blahhhhh')
+
     def build(self):
         return TrackerWidget()
 
+    def on_selected_root_note(self, instance, value):
+        print(f'radio {value}')
+
     def on_start(self):
+       
         self.loop_play(instance=None, state=self.root.ids.loopq_button.state)
         my_tracker.metro_start_stop(self.root.ids.metronome.state)
         all_scales = sorted([scale.name for scale in iso.Scale.all()])

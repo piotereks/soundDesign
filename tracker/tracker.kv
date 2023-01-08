@@ -26,12 +26,20 @@
         # size: [round(self.texture_size[0]/5,-1)*5+30,self.texture_size[1]*2]
         size: [-(-self.texture_size[0]//20)*20+10,self.texture_size[1]*2]
         group:'keys'
+        # on_press: app.selected_root_note = self.parent.text
+        state: self.parent.state
+        on_state: app.selected_root_note = self.parent.text
+        on_state: print(app.selected_root_note)
+        on_state: print(self.parent.text)
 
+        # on_state: print( self.parent.text)
 
 <TrackerWidget>:
     # xxx_scale_spinner_text:scale_spinner.text
     # blah_properties:'asdf'
+    selected_root_note: 'C'
     orientation: 'vertical'
+    # on_selected_root_note: printx('asdfsdf')
     BoxLayout:
         orientation: 'horizontal'
         # size_hint_y: None
@@ -145,6 +153,7 @@
 
             RadioButton:
                 text:'C'
+                state: 'down'
             RadioButton:
                 text:'C#'
             RadioButton:
