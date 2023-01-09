@@ -438,8 +438,22 @@ class TrackerApp(App):
     def build(self):
         return TrackerWidget()
 
+    def keys_mapping_init(self):
+        # to fix
+        keyboard.key_z_function = lambda : self.inv_play_pause()
+        keyboard.key_x_function = lambda: self.inv_metro_on_off()
+        
+        # keyboard.key_c_function = lambda : print("key c")
+        # keyboard.key_v_function = lambda : print("key v")
+       
+        keyboard.key_b_function = lambda : self.rand_scale()
+        keyboard.key_n_function = lambda : self.rand_key()
+        # keyboard.key_n_function = lambda : print("keyx n")
+        keyboard.key_m_function = lambda : self.rand_play_funct()
+
     def on_start(self):
        
+        self.keys_mapping_init()
         self.loop_play(instance=None, state=self.root.ids.loopq_button.state)
         my_tracker.metro_start_stop(self.root.ids.metronome.state)
         all_scales = sorted([scale.name for scale in iso.Scale.all()])
@@ -455,8 +469,15 @@ class TrackerApp(App):
         my_tracker.curr_notes_pair_action = lambda: self.set_curr_notes_pair_lbl_text('from to: '+str(my_tracker.notes_pair))
         my_tracker.fullq_content_action = lambda: self.set_fullq_content_lbl_text('full queue: '+str(my_tracker.get_queue_content_full()))
 
-
- 
+    def inv_play_pause(self):
+        state=self.root.ids.start_stop_button.state
+        to_state = 'normal' if state == 'down' else 'down'
+        self.play_pause(None, to_state)
+        
+    def inv_metro_on_off(self):
+        state=self.root.ids.metronome.state
+        to_state = 'normal' if state == 'down' else 'down'
+        self.metro_on_off(None, to_state)
 
     def play_pause(self, instance, state):
         log_call()
@@ -480,8 +501,7 @@ class TrackerApp(App):
         # print(instance)
         set_scale(scale_name)
 
-    def set_property(self, *propertyx, value):
-        propertyx=value
+
     
     def set_scale_set_name_txt(self, value):
         self.scale_set_name_txt=value
