@@ -240,24 +240,24 @@
 
 
         Label:
-            id: curr_notes_pair_lbl_text
-            text:'curr_notes_pair_lbl_text'
+            id: curr_notes_pair_lbl
+            text: app.curr_notes_pair_lbl_text  if app.curr_notes_pair_lbl_text else  'curr_notes_pair_lbl_text'
             size_hint: [2, None]
             size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
         Label:
-            id: queue_content_lbl_text
-            text: 'queue_content_lbl_text'
+            id: queue_content_lbl
+            text: app.queue_content_lbl_text  if app.queue_content_lbl_text else 'queue_content_lbl_text'
             size_hint: [2, None]
             size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
     BoxLayout:
         orientation: 'vertical'
         Label:
             id: full_queue_content
-            text:'full_queue_content_lbl_text'
+            text: app.fullq_content_lbl_text  if app.fullq_content_lbl_text else 'full_queue_content_lbl_text'
         Label:
-            id: check_notest_lbl_text
+            id: check_notes_lbl
             padding: [40,10]
             text_size: root.width, 80
             size: self.texture_size            
             # text:'check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here '
-            text:'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+            text: app.check_notes_lbl_text  if app.check_notes_lbl_text else 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'

@@ -429,6 +429,11 @@ class TrackerApp(App):
     func_init_text = StringProperty()
     func_values = ListProperty()
 
+ 
+    check_notes_lbl_text = StringProperty()
+    queue_content_lbl_text = StringProperty()
+    curr_notes_pair_lbl_text = StringProperty()
+    fullq_content_lbl_text = StringProperty()
 
     def build(self):
         return TrackerWidget()
@@ -444,8 +449,13 @@ class TrackerApp(App):
         self.func_init_text = my_tracker.note_patterns.pattern_methods_short_list[0]
 
         my_tracker.scale_name_action = lambda: self.set_scale_set_name_txt('set:' + my_tracker.key.scale.name)
+        my_tracker.check_notes_action = lambda: self.set_check_notes_lbl_text(str(my_tracker.check_notes))
  
- 
+        my_tracker.queue_content_action = lambda: self.set_queue_content_lbl_text('queue: '+str(my_tracker.get_queue_content()))
+        my_tracker.curr_notes_pair_action = lambda: self.set_curr_notes_pair_lbl_text('from to: '+str(my_tracker.notes_pair))
+        my_tracker.fullq_content_action = lambda: self.set_fullq_content_lbl_text('full queue: '+str(my_tracker.get_queue_content_full()))
+
+
  
 
     def play_pause(self, instance, state):
@@ -470,8 +480,25 @@ class TrackerApp(App):
         # print(instance)
         set_scale(scale_name)
 
+    def set_property(self, *propertyx, value):
+        propertyx=value
+    
     def set_scale_set_name_txt(self, value):
         self.scale_set_name_txt=value
+
+        
+    def set_check_notes_lbl_text(self, value):
+        self.check_notes_lbl_text = value
+
+    def set_queue_content_lbl_text(self, value):
+        self.queue_content_lbl_text = value
+        
+    def set_curr_notes_pair_lbl_text(self, value):
+        self.curr_notes_pair_lbl_text = value
+
+    def set_fullq_content_lbl_text(self, value):
+        self.fullq_content_lbl_text = value
+
 
     def rand_scale(self):
         log_call()
