@@ -139,15 +139,6 @@ def tk_metro_on_off():
     my_tracker.metro_start_stop(app.metro_on)
 
 
-def rand_play_funct():
-    log_call()
-    selected_function=random.choice(
-        list(set(my_tracker.note_patterns.pattern_methods_short_list) - set([app.play_func_combo.get()]))
-    )
-    app.play_func_combo.set(selected_function)
-    my_tracker.note_patterns.set_pattern_function(selected_function)
-    # my_tracker.midi_out.miditrack.append(mido.MetaMessage('text', text=f"funcR: {app.play_func_combo.get()}"))
-    # my_tracker.meta_func(func=app.play_func_combo.get())
 
 
 
@@ -208,14 +199,6 @@ def set_key():
     # print(f"{app.keys_group.get()}")
 
 
-def set_play_func(event):
-    log_call()
-    # my_tracker.patterns.get_pattern.__name__ = app.play_func_combo.get()
-    # my_tracker.patterns.get_pattern = getattr(my_tracker.patterns,
-    #                                           'get_'+app.play_func_combo.get()+'_pattern')
-    my_tracker.note_patterns.set_pattern_function(app.play_func_combo.get())
-    # my_tracker.midi_out.miditrack.append(mido.MetaMessage('text', text=f"func: {app.play_func_combo.get()}"))
-    # my_tracker.meta_func(func=app.play_func_combo.get())
 
 
 def set_tempo(tempo):
@@ -443,10 +426,8 @@ class TrackerApp(App):
     scale_values = ListProperty()
     scale_set_name_txt = StringProperty()
     selected_root_note = StringProperty()
-    # scale_values.setter('asdf')
-    # def __init__(self):
-
-    #     self.loop_play( self.root.ids.loopq_button, self.root.ids.loopq_button.state )
+    func_init_text = StringProperty()
+    func_values = ListProperty()
 
 
     def build(self):
@@ -459,9 +440,12 @@ class TrackerApp(App):
         all_scales = sorted([scale.name for scale in iso.Scale.all()])
         self.scale_init_text = my_tracker.key.scale.name
         self.scale_values = all_scales
-        # self.set_scale_set_name_txt('ddd')
+        self.func_values = my_tracker.note_patterns.pattern_methods_short_list
+        self.func_init_text = my_tracker.note_patterns.pattern_methods_short_list[0]
 
         my_tracker.scale_name_action = lambda: self.set_scale_set_name_txt('set:' + my_tracker.key.scale.name)
+ 
+ 
  
 
     def play_pause(self, instance, state):
@@ -519,9 +503,27 @@ class TrackerApp(App):
             
         # self.names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 
+    def set_play_func(self, instance, func_name):
+        log_call()
+        # print(instance)
+        my_tracker.note_patterns.set_pattern_function(func_name)
+
+    def rand_play_funct(self):
+        log_call()
+        selected_function=random.choice(
+            list(set(my_tracker.note_patterns.pattern_methods_short_list) - set([self.func_init_text]))
+        )
+        self.func_init_text = selected_function
+        my_tracker.note_patterns.set_pattern_function(selected_function)
+
+ 
 
 
-
+# def set_play_func(event):
+#     log_call()
+#     my_tracker.note_patterns.set_pattern_function(app.play_func_combo.get())
+    
+    
     def test1(self, instance, state):
         print(f"test1: {instance=}, {state=}")
 

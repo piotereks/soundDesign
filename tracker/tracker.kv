@@ -202,6 +202,9 @@
             text:'rnd func'
             size_hint: [None, None]
             size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
+            on_press: app.rand_play_funct()
+
+
         BoxLayout:
             orientation:'vertical'
             Label:
@@ -210,12 +213,16 @@
                 size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
 
             Spinner:
-                text: 'func1'
-                values: ('func1', 'func2', 'func3', 'func4')
+                id:func_spinner
+                text: app.func_init_text  if app.func_init_text else 'func1'
+                values: app.func_values if app.func_values else ('func1', 'func2', 'func3', 'func4')
                 size_hint: [1, None]
                 size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
                 # height: '48dp'
- 
+                # size_hint: [2.5, None]
+                # size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+                on_text : app.set_play_func(*args)
+
 
 
 
