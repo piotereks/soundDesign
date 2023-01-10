@@ -26,11 +26,9 @@
         # size: [round(self.texture_size[0]/5,-1)*5+30,self.texture_size[1]*2]
         size: [-(-self.texture_size[0]//20)*20+10,self.texture_size[1]*2]
         group:'keys'
-        # on_press: app.selected_root_note = self.parent.text
         state: self.parent.state
-        on_state: app.selected_root_note = self.parent.text
-        # on_state: print(app.selected_root_note)
-        # on_state: print(self.parent.text)
+        # on_state: app.selected_root_note = self.parent.text
+
 
  
 
@@ -260,5 +258,5 @@
             padding: [40,10]
             text_size: root.width, 80
             size: self.texture_size            
-            # text:'check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here check notes here '
             text: app.check_notes_lbl_text  if app.check_notes_lbl_text else 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+            # text: app.check_notes_lbl_text  if app.check_notes_lbl_text else 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod t'

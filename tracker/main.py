@@ -348,6 +348,7 @@ class TrackerApp(App):
     func_values = ListProperty()
 
  
+    # check_notes_lbl_text = StringProperty('test1 test2')
     check_notes_lbl_text = StringProperty()
     queue_content_lbl_text = StringProperty()
     curr_notes_pair_lbl_text = StringProperty()
@@ -367,9 +368,7 @@ class TrackerApp(App):
         self.prev_key=None
         key = keycode[1]
         print(f'{key} released')
-        if key in ['left', 'right', 'up', 'spacebar']:
-            app = App.get_running_app()
-            app.root.ids[key].down_opacity = 0
+
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
         play_keys = "q2w3er5t6y7ui9o0p[=]"
@@ -404,7 +403,9 @@ class TrackerApp(App):
     def on_start(self):
        
         # self.keys_mapping_init()
-        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
+        self._keyboard = Window.request_keyboard(self._keyboard_closed, None)
+        # self._keyboard = App.request_keyboard(self._keyboard_closed, self)
+
         
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
         self._keyboard.bind(on_key_up=self._on_keyboard_up)

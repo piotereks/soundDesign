@@ -16,13 +16,16 @@ class TrackerApp(App):
     scale_init_text = StringProperty()
     scale_values = ListProperty()
     scale_set_name_txt = StringProperty()
-    # def on_touch_down(self, touch):
-    #     if touch.is_mouse_scrolling:
-    #         if touch.button == 'scrolldown':
-    #             print('down')
-    #         elif touch.button == 'scrollup':
-    #             print('up')
-    #     TrackerWidget.on_touch_down(self, touch)
+    selected_root_note = StringProperty()
+    func_init_text = StringProperty()
+    func_values = ListProperty()
+
+ 
+    check_notes_lbl_text = StringProperty()
+    queue_content_lbl_text = StringProperty()
+    curr_notes_pair_lbl_text = StringProperty()
+    fullq_content_lbl_text = StringProperty()
+    prev_key = None    
     
     
     def build(self):
