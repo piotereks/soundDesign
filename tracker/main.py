@@ -348,8 +348,8 @@ class TrackerApp(App):
     func_values = ListProperty()
 
  
-    # check_notes_lbl_text = StringProperty('test1 test2')
-    check_notes_lbl_text = StringProperty()
+    check_notes_lbl_text = StringProperty('test1 test2')
+    # check_notes_lbl_text = StringProperty()
     queue_content_lbl_text = StringProperty()
     curr_notes_pair_lbl_text = StringProperty()
     fullq_content_lbl_text = StringProperty()
