@@ -253,20 +253,27 @@
         Label:
             id: full_queue_content
             text: app.fullq_content_lbl_text  if app.fullq_content_lbl_text else 'full_queue_content_lbl_text'
+        # AnchorLayout:
+        #     anchor_x: 'center'
+        #     anchor_y: 'center'
         Label:
             id: check_notes_lbl
- 
+            halign:'center'
+            valign:'center'
             # padding: [40,10]
-            padding_y : 10
-            padding_x :self.center[0]
+            # padding_y : 40
+            # padding_x: 160
+            # padding_x :self.center[0]
+            # padding_x: (root.width - self.texture_size[0])/2
             # padding_x: [self.center[0] - self._get_text_width(max(self._lines, key=len), self.tab_width, self._label_cached) / 2.0,0] if self.text else [self.center[0], 0]
         # top, bottom
             # padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
- 
- 
+
+
             # valign: 'top'
             # haling: 'right'
             text_size: root.width, 80
             size: self.texture_size            
             text: app.check_notes_lbl_text  if app.check_notes_lbl_text else 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
-            # text: app.check_notes_lbl_text  if app.check_notes_lbl_text else 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod t'
+            # text: app.check_notes_lbl_text  if app.check_notes_lbl_text else  str(self.height) +' '+ str(self.line_height) +' '+ str(self.center)   +' '+str(root.width) +' '+str(root.height)+' '+str(self.texture_size)   +' Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut ...'
+            # text: app.check_notes_lbl_text  if app.check_notes_lbl_text else str(root.width) +' '+str(root.height)+' '+str(self.texture_size)   +' Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod t'
