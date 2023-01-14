@@ -163,6 +163,7 @@ class NotePatterns:
                 for split_size in splt_array:
                     dur_part = random.choice([dp["pattern"] for dp in self.dur_patterns.patterns
                                     if dp["len"]==split_size])
+                    dur_part2 = np.array(dur_part)/(split_size/pattern_len)
                     durations.extend(dur_part)
                 # else:  #TODO fix len>16
                 #     rpt = ((pattern_len-1)//16)+1
