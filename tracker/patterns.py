@@ -126,6 +126,15 @@ class NotePatterns:
 # <editor-fold desc="get pattern functions">
     def mod_duration(func):  #added self, eventual issue
         @wraps(func)
+        def split_no(interval, max_len = 4):
+            interval -=1
+            margin = interval % max_len
+            margin+=1
+            parts_no = interval // max_len
+            parts_no+=1
+            return (parts_no, margin)
+        
+        
         def inner(self, *args, **kwargs):
             result = func(self, *args, **kwargs)
             print(f"xx {len(result[iso.EVENT_NOTE])=}, {result[iso.EVENT_NOTE]=}")
@@ -133,8 +142,10 @@ class NotePatterns:
                 # result[iso.EVENT_DURATION] = np.array([1, 7, 3])
                 pattern_len = len(result[iso.EVENT_NOTE])-1
                 
-                if pattern_len<=16:
-                    durations = random.choice([dp["pattern"] for dp in self.dur_patterns.patterns
+                while pattern_len>0:
+                    parts_no, margin = split_no(pattern_len)
+                    if parts_no>1: 
+                        durations = random.choice([dp["pattern"] for dp in self.dur_patterns.patterns
                                         if dp["len"]==len(result[iso.EVENT_NOTE])-1])
                 else:  #TODO fix len>16
                     rpt = ((pattern_len-1)//16)+1
