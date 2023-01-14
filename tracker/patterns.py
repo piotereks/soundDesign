@@ -137,12 +137,14 @@ class NotePatterns:
                     durations = random.choice([dp["pattern"] for dp in self.dur_patterns.patterns
                                         if dp["len"]==len(result[iso.EVENT_NOTE])-1])
                 else:  #TODO fix len>16
-                    patt_perm = itertools.permutations(self.dur_patterns.patterns, 
+                    rpt = ((pattern_len-1)//16)+1
+                    patt_perm = itertools.product(self.dur_patterns.patterns,
                                     repeat = ((pattern_len-1)//16)+1)
-                    
+                    patt_perm = list(patt_perm)
                     
                     patt_perm_sel=[pt for pt in patt_perm if sum([p['len'] for p in pt]) == pattern_len]
                     xxx = [ [y['pattern'] for y in x] for x in patt_perm_sel]
+                    yyy=xxx
                     pass
                 print(f"=========>{durations=}")
                 result[iso.EVENT_DURATION] = 1/np.array(durations)
@@ -178,7 +180,8 @@ class NotePatterns:
         # return {iso.EVENT_NOTE:random.choice(self.all_suitable_patterns(interval))}
         return {
             # iso.EVENT_PROGRAM_CHANGE : 22,
-            iso.EVENT_NOTE:random.choice([pattern for pattern in self.all_suitable_patterns(interval) if len(pattern)<=16])
+            # iso.EVENT_NOTE:random.choice([pattern for pattern in self.all_suitable_patterns(interval) if len(pattern)<=16])
+            iso.EVENT_NOTE:random.choice([pattern for pattern in self.all_suitable_patterns(interval) ])
             # iso.EVENT_AMPLITUDE: np.array([120, 100])
             # iso.EVENT_DURATION: np.array([3, 1]),
             #  iso.EVENT_GATE: np.array([1, 0.25, 0.25, 3.25])
