@@ -126,13 +126,29 @@ class NotePatterns:
 # <editor-fold desc="get pattern functions">
     def mod_duration(func):  #added self, eventual issue
         @wraps(func)
-        def split_no(interval, max_len = 4):
+        def split_no(interval, max_len = 16):
+            pattern_len=interval
+            
             interval -=1
-            margin = interval % max_len
-            margin+=1
-            parts_no = interval // max_len
-            parts_no+=1
-            return (parts_no, margin)
+
+            parts_no16 = interval // max_len
+            parts_no16+=1
+            parts_no4 = interval // int(max_len/4)
+            parts_no4+=1
+
+            rnd_parts= random.randint(parts_no16, parts_no4 )
+
+            splt_array=[]
+            while pattern_len>0:
+                part=-(-pattern_len//rnd_parts)
+                splt_array.append(part)
+                # print(f"x:{part=}")
+                pattern_len-=part
+                rnd_parts-=1
+            # print(splt_array)
+
+            # return (parts_no16, parts_no4)
+            return (splt_array)
         
         
         def inner(self, *args, **kwargs):
@@ -142,21 +158,22 @@ class NotePatterns:
                 # result[iso.EVENT_DURATION] = np.array([1, 7, 3])
                 pattern_len = len(result[iso.EVENT_NOTE])-1
                 
-                while pattern_len>0:
-                    parts_no, margin = split_no(pattern_len)
-                    if parts_no>1: 
-                        durations = random.choice([dp["pattern"] for dp in self.dur_patterns.patterns
-                                        if dp["len"]==len(result[iso.EVENT_NOTE])-1])
-                else:  #TODO fix len>16
-                    rpt = ((pattern_len-1)//16)+1
-                    patt_perm = itertools.product(self.dur_patterns.patterns,
-                                    repeat = ((pattern_len-1)//16)+1)
-                    patt_perm = list(patt_perm)
+                splt_array = split_no(pattern_len)
+                durations =[]
+                for split_size in splt_array:
+                    dur_part = random.choice([dp["pattern"] for dp in self.dur_patterns.patterns
+                                    if dp["len"]==split_size])
+                    durations.extend(dur_part)
+                # else:  #TODO fix len>16
+                #     rpt = ((pattern_len-1)//16)+1
+                #     patt_perm = itertools.product(self.dur_patterns.patterns,
+                #                     repeat = ((pattern_len-1)//16)+1)
+                #     patt_perm = list(patt_perm)
                     
-                    patt_perm_sel=[pt for pt in patt_perm if sum([p['len'] for p in pt]) == pattern_len]
-                    xxx = [ [y['pattern'] for y in x] for x in patt_perm_sel]
-                    yyy=xxx
-                    pass
+                #     patt_perm_sel=[pt for pt in patt_perm if sum([p['len'] for p in pt]) == pattern_len]
+                #     xxx = [ [y['pattern'] for y in x] for x in patt_perm_sel]
+                #     yyy=xxx
+                #     pass
                 print(f"=========>{durations=}")
                 result[iso.EVENT_DURATION] = 1/np.array(durations)
 
