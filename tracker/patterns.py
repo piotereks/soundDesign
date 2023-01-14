@@ -158,13 +158,14 @@ class NotePatterns:
                 # result[iso.EVENT_DURATION] = np.array([1, 7, 3])
                 pattern_len = len(result[iso.EVENT_NOTE])-1
                 
-                splt_array = split_no(pattern_len)
+                # splt_array = split_no(pattern_len)
+                splt_array = [pattern_len]  # this is hardcoded to turn off split processing
                 durations =[]
                 for split_size in splt_array:
                     dur_part = random.choice([dp["pattern"] for dp in self.dur_patterns.patterns
                                     if dp["len"]==split_size])
                     dur_part2 = np.array(dur_part)/(split_size/pattern_len)
-                    durations.extend(dur_part)
+                    durations.extend(dur_part2)
                 # else:  #TODO fix len>16
                 #     rpt = ((pattern_len-1)//16)+1
                 #     patt_perm = itertools.product(self.dur_patterns.patterns,
@@ -207,11 +208,17 @@ class NotePatterns:
     def get_random_path_pattern(self, interval):
         # return random.choice(self.all_suitable_patterns(interval))
         # return {iso.EVENT_NOTE:random.choice(self.all_suitable_patterns(interval))}
+        interval_sign = 1 if interval>=0 else -1
+        octave = abs(interval) // 12
+        octave *= interval_sign 
+        interval = abs(interval) % 12
+        interval *=interval_sign
+        
+        notes_pattern = octave*12 + np.array(random.choice([pattern for pattern in self.all_suitable_patterns(interval) if len(pattern)<=16]))
         return {
             # iso.EVENT_PROGRAM_CHANGE : 22,
             # iso.EVENT_NOTE:random.choice([pattern for pattern in self.all_suitable_patterns(interval) if len(pattern)<=16])
-            iso.EVENT_NOTE:random.choice([pattern for pattern in self.all_suitable_patterns(interval) ])
-            # iso.EVENT_AMPLITUDE: np.array([120, 100])
+            iso.EVENT_NOTE:notes_pattern,
             # iso.EVENT_DURATION: np.array([3, 1]),
             #  iso.EVENT_GATE: np.array([1, 0.25, 0.25, 3.25])
 
