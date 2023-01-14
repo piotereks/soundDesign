@@ -131,8 +131,16 @@ class NotePatterns:
             print(f"xx {len(result[iso.EVENT_NOTE])=}, {result[iso.EVENT_NOTE]=}")
             if not np.any(result.get(iso.EVENT_DURATION)):
                 # result[iso.EVENT_DURATION] = np.array([1, 7, 3])
-                durations = random.choice([dp["pattern"] for dp in self.dur_patterns.patterns
-                                    if dp["len"]==len(result[iso.EVENT_NOTE])-1])
+                pattern_len = len(result[iso.EVENT_NOTE])-1
+                
+                if pattern_len<=16:
+                    durations = random.choice([dp["pattern"] for dp in self.dur_patterns.patterns, self.dur_patterns.patterns
+                                        if dp["len"]==len(result[iso.EVENT_NOTE])-1])
+                else:  #TODO fix len>16
+                    # perm_lenghts = itertools.permutations(self.dur_patterns.patterns, 
+                    #                 repeat = ((pattern_len-1)//16)+1)
+                    
+                    pass
                 print(f"=========>{durations=}")
                 result[iso.EVENT_DURATION] = 1/np.array(durations)
 
