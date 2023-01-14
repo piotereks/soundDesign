@@ -1,0 +1,42 @@
+<HomeScreen>:
+    name: 'ScreenManager'
+    BoxLayout:
+        orientation: 'vertical'
+        rows: 3
+
+        ScreenManager:
+            id: sm
+            size_hint_y: 0.8
+
+            Screen1:
+
+            Screen:
+                name: "screen_two"
+                BoxLayout:
+                    orientation: 'vertical'
+                    rows: 1
+                    Button:
+                        text: "Screen 2"
+                        on_release: sm.current = 'screen_one'
+
+        Button:
+            text: "Screen 1"
+            size_hint_y: 0.1
+            on_press:
+                sm.transition.direction = 'left'
+                sm.current = 'screen_one'
+        Button:
+            text: "Screen 2"
+            size_hint_y: 0.1
+            on_press:
+                sm.transition.direction = 'left'
+                sm.current = 'screen_two'
+
+<Screen1>:
+    name: "screen_one"
+    BoxLayout:
+        orientation: 'vertical'
+        rows: 1
+        Button:
+            text: "Screen 1 Out"
+            on_release: root.parent.current = 'screen_two'
