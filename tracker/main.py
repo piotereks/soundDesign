@@ -3,13 +3,20 @@ import isobar
 from tracker import *
 from patterns import *
 from gui import *
-# from pynput import keyboard
-from keyboard import *
+
+# from keyboard import *
 global IN_COLAB
 IN_COLAB = 'google.colab' in sys.modules
 global label_str
-global app
-# app = None
+# global app
+
+
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.behaviors import ToggleButtonBehavior
+from kivy.properties import StringProperty, ListProperty
+from kivy.core.window import Window
+
 
 
 # <editor-fold desc="Interactive simplification functions">
@@ -21,6 +28,10 @@ def tracker_dec(func):
         # print('new func: ',new_func)
         new_func()
     return inner
+
+@tracker_dec
+def tstop():
+    pass
 
 @tracker_dec
 def ts():
@@ -61,8 +72,8 @@ def rs():
     rand_scale()
 
 
-def save_midi():
-    my_tracker.save_midi()
+def save_midi(on_exit=False):
+    my_tracker.save_midi(on_exit=on_exit)
     # my_tracker.midi_out.write()
 
 
@@ -88,6 +99,7 @@ def cmp():
     # print('expected:\n', my_tracker.expected_array)
     print('expected:\n', [y for x in my_tracker.pattern_array for y in list(x['note'])])
     print('played:\n', [x.note for x in my_tracker.midi_out.miditrack if x.type == 'note_on'])
+
 def put_in_queue(note):
     print('test_put_queue: ',note)
     # my_tracker.note_queue.put(note)
@@ -124,21 +136,12 @@ def dump_scales():
 # print('processing Done')
 
 
-def metro_on_off():
+def tk_metro_on_off():
     log_call()
     app.metro_on.set((app.metro_on.get())+1%2)
     my_tracker.metro_start_stop(app.metro_on)
 
 
-def rand_play_funct():
-    log_call()
-    selected_function=random.choice(
-        list(set(my_tracker.note_patterns.pattern_methods_short_list) - set([app.play_func_combo.get()]))
-    )
-    app.play_func_combo.set(selected_function)
-    my_tracker.note_patterns.set_pattern_function(selected_function)
-    # my_tracker.midi_out.miditrack.append(mido.MetaMessage('text', text=f"funcR: {app.play_func_combo.get()}"))
-    # my_tracker.meta_func(func=app.play_func_combo.get())
 
 
 
@@ -166,12 +169,31 @@ def rand_scale():
     # my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
 
 
-def set_scale(event):
+def tk_and_scale():
+    log_call()
+    all_scales=[scale.name for scale in iso.Scale.all()]
+    random_scale = random.choice(list(set(all_scales)-set([my_tracker.key.scale.name])))
+    # my_tracker.key = iso.Key(my_tracker.key.tonic, iso.Scale.random())
+    my_tracker.key = iso.Key(my_tracker.key.tonic, random_scale)
+    # app.keys_group.set(random.choice(
+    #     set(app.names)-set(app.keys_group.get())
+    #     ))
+
+    app.scale_combo.set(my_tracker.key.scale.name)
+    # my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
+
+
+def tk_set_scale(event):
     log_call()
     scale_obj =  iso.Scale.byname(app.scale_combo.get())
     my_tracker.key = iso.Key(my_tracker.key.tonic, scale_obj)
     # my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
 
+def set_scale(scale_name):
+    log_call()
+    scale_obj =  iso.Scale.byname(scale_name)
+    my_tracker.key = iso.Key(my_tracker.key.tonic, scale_obj)
+    
 
 def set_key():
     log_call()
@@ -180,22 +202,14 @@ def set_key():
     # print(f"{app.keys_group.get()}")
 
 
-def set_play_func(event):
-    log_call()
-    # my_tracker.patterns.get_pattern.__name__ = app.play_func_combo.get()
-    # my_tracker.patterns.get_pattern = getattr(my_tracker.patterns,
-    #                                           'get_'+app.play_func_combo.get()+'_pattern')
-    my_tracker.note_patterns.set_pattern_function(app.play_func_combo.get())
-    # my_tracker.midi_out.miditrack.append(mido.MetaMessage('text', text=f"func: {app.play_func_combo.get()}"))
-    # my_tracker.meta_func(func=app.play_func_combo.get())
 
 
-def set_tempo(tempo):
+def tk_set_tempo(tempo):
     log_call()
     my_tracker.set_tempo(tempo)
     my_tracker.meta_tempo(tempo=tempo)
 
-def play_pause():
+def play_pause_tk():
     global app
     log_call()
 
@@ -213,7 +227,7 @@ def keys_scale_action(key, scale):
     # my_tracker.scale = scale_obj
 
 
-def run_gui():
+def run_gui_tk():
     global app
     root = tk.Tk()
     root.geometry("800x600")
@@ -244,7 +258,7 @@ def run_gui():
     app.save_midi_btn_cmd_ext = lambda: save_midi()
 
 
-    app.pp_btn_cmd_ext = lambda: play_pause()
+    app.pp_btn_cmd_ext = lambda: play_pause_tk()
 
     app.scale_rnd_btn_cmd_ext = lambda: rand_scale()
     app.scale_combo['values'] = sorted([scale.name for scale in iso.Scale.all()])
@@ -264,7 +278,7 @@ def run_gui():
     my_tracker.fullq_content_action = lambda: app.fullq_content_lbl_text.set('full queue: '+str(my_tracker.get_queue_content_full()))
 
     keyboard.key_z_function = lambda : app.pp_btn_cmd()
-    # keyboard.key_space_function = lambda : play_pause()
+    # keyboard.key_space_function = lambda : play_pause_tk()
     keyboard.key_x_function = lambda: metro_on_off()
     keyboard.key_c_function = lambda : print("key c")
     keyboard.key_v_function = lambda : print("key v")
@@ -286,10 +300,8 @@ def run_gui():
     my_tracker.loop_play_queue_action = lambda: print(None)
     my_tracker.fullq_content_action = lambda: print(None)
 
-# see for GUI layouts :https://www.pythonguis.com/faq/pack-place-and-grid-in-tkinter/
 
 def main():
-    global app
     global my_tracker
     global keyboard
     log_call()
@@ -299,18 +311,238 @@ def main():
     my_tracker = Tracker(midi_out_mode=midi_out_flag)
     # my_tracker.midi_out.program_change(program=22)
 
-    keyboard = Keyboard(lambda note: put_in_queue(note))
+
+    # wrk cleanup
+    # my_tracker.scale_name_action = lambda: print(None)
+    # my_tracker.check_notes_action = lambda: print(None)
+    # my_tracker.queue_content_action = lambda: print(None)
+    # my_tracker.curr_notes_pair_action = lambda: print(None)
+    # my_tracker.loop_play_queue_action = lambda: print(None)
+    # my_tracker.fullq_content_action = lambda: print(None)
+
+
+    # keyboard = Keyboard(lambda note: put_in_queue(note))
     # sbpq()
     # ts()  # make by  default not starting
-    run_gui()
+    TrackerApp().run()
     ts()
-    save_midi()
+    save_midi(on_exit=True)
 
+
+
+class RadioButton(ToggleButtonBehavior, BoxLayout):
+    text = StringProperty('')
+    pass
+
+class TrackerWidget(BoxLayout):
+    pass
+
+class TrackerApp(App):
+
+    
+    scale_init_text = StringProperty()
+    scale_values = ListProperty()
+    scale_set_name_txt = StringProperty()
+    selected_root_note = StringProperty()
+    func_init_text = StringProperty()
+    func_values = ListProperty()
+
+ 
+    check_notes_lbl_text = StringProperty('test1 test2')
+    # check_notes_lbl_text = StringProperty()
+    queue_content_lbl_text = StringProperty()
+    curr_notes_pair_lbl_text = StringProperty()
+    fullq_content_lbl_text = StringProperty()
+    prev_key = None    
+
+
+    def build(self):
+        return TrackerWidget()
+
+    def _keyboard_closed(self):
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        self._keyboard.unbind(on_key_up=self._on_keyboard_up)
+        self._keyboard = None
+
+    def _on_keyboard_up(self, keyboard, keycode):
+        self.prev_key=None
+        key = keycode[1]
+        print(f'{key} released')
+
+
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        play_keys = "q2w3er5t6y7ui9o0p[=]"
+        
+        if keycode[1]==self.prev_key:
+            return True
+        print(f"{keycode[1]=} pressed")
+        self.prev_key = keycode[1]
+        if keycode[1] == 'z':
+            self.inv_play_pause()
+        elif keycode[1] == 'x':
+            self.inv_metro_on_off()
+        elif keycode[1] == 'b':
+            self.rand_scale()
+        elif keycode[1] == 'n':
+            self.rand_key()
+        elif keycode[1] == 'm':
+            self.rand_play_funct()
+        elif keycode[1] == 'escape':
+            self.close_application()
+        elif keycode[1] in play_keys:
+            put_in_queue(play_keys.index(keycode[1])+60)
+            # self.note = self.play_keys.index(key.char)+60
+            # self.func_on_note(self.note)
+        return True
+
+    def close_application(self):
+        # closing application
+        App.get_running_app().stop()
+        Window.close()
+
+    def on_start(self):
+       
+        # self.keys_mapping_init()
+        self._keyboard = Window.request_keyboard(self._keyboard_closed, None)
+        # self._keyboard = App.request_keyboard(self._keyboard_closed, self)
+
+        
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+        self._keyboard.bind(on_key_up=self._on_keyboard_up)
+        self.loop_play(instance=None, state=self.root.ids.loopq_button.state)
+        my_tracker.metro_start_stop(self.root.ids.metronome.state)
+        all_scales = sorted([scale.name for scale in iso.Scale.all()])
+        self.scale_init_text = my_tracker.key.scale.name
+        self.scale_values = all_scales
+        self.func_values = my_tracker.note_patterns.pattern_methods_short_list
+        self.func_init_text = my_tracker.note_patterns.pattern_methods_short_list[0]
+
+        my_tracker.scale_name_action = lambda: self.set_scale_set_name_txt('set:' + my_tracker.key.scale.name)
+        my_tracker.check_notes_action = lambda: self.set_check_notes_lbl_text(str(my_tracker.check_notes))
+ 
+        my_tracker.queue_content_action = lambda: self.set_queue_content_lbl_text('queue: '+str(my_tracker.get_queue_content()))
+        my_tracker.curr_notes_pair_action = lambda: self.set_curr_notes_pair_lbl_text('from to: '+str(my_tracker.notes_pair))
+        my_tracker.fullq_content_action = lambda: self.set_fullq_content_lbl_text('full queue: '+str(my_tracker.get_queue_content_full()))
+
+    def inv_play_pause(self):
+        state=self.root.ids.start_stop_button.state
+        to_state = 'normal' if state == 'down' else 'down'
+        self.root.ids.start_stop_button.state=to_state
+        # self.play_pause(None, to_state)
+        
+    def inv_metro_on_off(self):
+        state=self.root.ids.metronome.state
+        to_state = 'normal' if state == 'down' else 'down'
+        self.root.ids.metronome.state=to_state
+        # self.metro_on_off(None, to_state)
+
+    def play_pause(self, instance, state):
+        log_call()
+        print(f"{instance=}, {state=}")
+        tstart() if state=='down' else tstop()
+
+
+    def metro_on_off(self, instance, state):
+        log_call()
+        my_tracker.metro_start_stop(state)
+
+
+    def loop_play(self, instance, state):
+        my_tracker.loopq = True if state == 'down' else False
+
+    def save(self):
+        my_tracker.save_midi()
+        
+    def set_scale(self, instance, scale_name):
+        log_call()
+        # print(instance)
+        set_scale(scale_name)
+
+
+    
+    def set_scale_set_name_txt(self, value):
+        self.scale_set_name_txt=value
+
+        
+    def set_check_notes_lbl_text(self, value):
+        self.check_notes_lbl_text = value
+
+    def set_queue_content_lbl_text(self, value):
+        self.queue_content_lbl_text = value
+        
+    def set_curr_notes_pair_lbl_text(self, value):
+        self.curr_notes_pair_lbl_text = value
+
+    def set_fullq_content_lbl_text(self, value):
+        self.fullq_content_lbl_text = value
+
+
+    def rand_scale(self):
+        log_call()
+        all_scales=[scale.name for scale in iso.Scale.all()]
+        random_scale = random.choice(list(set(all_scales)-set([my_tracker.key.scale.name])))
+        # my_tracker.key = iso.Key(my_tracker.key.tonic, iso.Scale.random())
+        my_tracker.key = iso.Key(my_tracker.key.tonic, random_scale)
+        self.scale_init_text=my_tracker.key.scale.name
+
+    def on_selected_root_note(self, instance, root_note):
+        print(f'this is selected root note {root_note}')
+        keys_scale_action(root_note, my_tracker.key.scale.name)
+
+    def rand_key(self):
+        keys = list({key.text for key in self.root.ids.scales_group.children}\
+            -{ self.selected_root_note })
+        randomized_key = random.choice(keys)
+        print(f'this is {randomized_key=}')
+        print(my_tracker.key)
+        keys_scale_action(randomized_key, my_tracker.key.scale.name)
+        for key in self.root.ids.scales_group.children:
+            print(f"{key.text=} != {randomized_key}")
+            if key.text != randomized_key:
+                key.state = 'normal'
+                continue
+            key.state = 'down'
+            print(my_tracker.key)
+            # key.selected = True
+            
+        # self.names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+
+    def set_play_func(self, instance, func_name):
+        log_call()
+        # print(instance)
+        my_tracker.note_patterns.set_pattern_function(func_name)
+
+    def rand_play_funct(self):
+        log_call()
+        selected_function=random.choice(
+            list(set(my_tracker.note_patterns.pattern_methods_short_list) - set([self.func_init_text]))
+        )
+        self.func_init_text = selected_function
+        my_tracker.note_patterns.set_pattern_function(selected_function)
+
+    def set_tempo(self, instance, tempo):
+        log_call()
+        my_tracker.set_tempo(tempo)
+        my_tracker.meta_tempo(tempo=tempo) 
+
+
+# def set_play_func(event):
+#     log_call()
+#     my_tracker.note_patterns.set_pattern_function(app.play_func_combo.get())
+    
+    
+    def test1(self, instance, state):
+        print(f"test1: {instance=}, {state=}")
+
+    def test2(self, instance, state):
+        print(f"test2: {instance=}, {state=}")
+        # app.loop_queue_chk_cmd_ext = lambda: my_tracker.loop_play_queue_action(app.loop_queue_on.get())
+        # my_tracker.loopq = app.loop_queue_on.get()
 
 
 if __name__ == '__main__':
     # print('Do we start?')
-    # old_main()
+    # main_tk()
     main()
     print('Processing Done.')
 

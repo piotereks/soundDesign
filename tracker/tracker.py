@@ -232,8 +232,7 @@ class Tracker:
         # self.scale = iso.Scale.major  - replaced by key, and scale always can be referred as self.key.scale
         self.key = iso.Key("C", "major")
         self.prev_key = None
-        self.loopq = None
-        # self.root_midi = [('C')]  #TODO check what is root_midi used for
+        self.loopq = False
         self.midi_out = None
         self.track = None
         self.filename = filename
@@ -271,10 +270,13 @@ class Tracker:
         self.metro = self.metro_timeline()
 
 
-    def save_midi(self):
+    def save_midi(self, on_exit=False):
         date = datetime.now().strftime('%Y%m%d%H%M%S')
-        if  self.midi_out_mode == self.MIDI_OUT_DEVICE:
+        if self.midi_out_mode == self.MIDI_OUT_DEVICE:
             return None
+        if on_exit:
+            self.mid_MetaMessage('end_of_track', time=0)
+
         self.midi_out.write()
         shutil.copy(self.filename, f"{self.filename.split('.')[0]}_{date}.mid")
 
@@ -298,7 +300,14 @@ class Tracker:
             self.MIDI_OUT_DUMMY
             self.midi_out = iso.DummyOutputDevice()
             print("dummy mode")
-
+        # write meta message about time signature (currently hardcoded)
+        self.mid_MetaMessage('time_signature', numerator=4, denominator=4, time=0)
+        # if midi_out_mode in  (self.MIDI_OUT_MIX_FILE_DEVICE, self.MIDI_OUT_FILE):
+        #     if MULTI_TRACK:
+        #         self.midi_out.miditrack[0].append(
+        #             mido.MetaMessage('time_signature', numerator=4, denominator=4, time=0))
+        #     else:
+        #         self.midi_out.miditrack.append(mido.MetaMessage('time_signature', numerator=4, denominator=4, time=0))
         print(f"----------- {MULTI_TRACK=}")
         # midi_out = iso.DummyOutputDevice()
         self.timeline = iso.Timeline(120, output_device=self.midi_out)
@@ -341,9 +350,9 @@ class Tracker:
 
             # create accent depending on beat
             # notes[iso.EVENT_AMPLITUDE] = iso.PMap(notes[iso.EVENT_AMPLITUDE], lambda midi_amp: None if not midi_amp else None if midi_amp < 0 else 127 if midi_amp > 127 else int(midi_amp * 1.5)   )
-            notes[iso.EVENT_AMPLITUDE] = iso.PMapEnumerated(notes[iso.EVENT_AMPLITUDE], lambda n, value: int(value*self.get_amp_factor()) if n==0 else value)
-
-            notes[iso.EVENT_AMPLITUDE] = iso.PMap(notes[iso.EVENT_AMPLITUDE], lambda midi_amp: None if not midi_amp else None if midi_amp < 0 else None if midi_amp > 127 else midi_amp)
+            if notes[iso.EVENT_AMPLITUDE]:
+                notes[iso.EVENT_AMPLITUDE] = iso.PMapEnumerated(notes[iso.EVENT_AMPLITUDE], lambda n, value: int(value*self.get_amp_factor()) if n==0 else value)
+                notes[iso.EVENT_AMPLITUDE] = iso.PMap(notes[iso.EVENT_AMPLITUDE], lambda midi_amp: None if not midi_amp else None if midi_amp < 0 else None if midi_amp > 127 else midi_amp)
 
             self.check_notes=list(notes[iso.EVENT_NOTE].copy())
             print('check notes: ', self.check_notes)
@@ -425,8 +434,8 @@ class Tracker:
             # , quantize=1
             , remove_when_done=True)
 
-    def metro_start_stop(self, start):
-        if start.get() == 1:
+    def metro_start_stop(self, state):
+        if state == 'down':
             print('-----------metro on-----------------')
             # self.metro_beat = lambda: print ('metro_play')
             self.metro_beat = self.metro_play
@@ -551,17 +560,27 @@ class Tracker:
             , remove_when_done=False
         )
 
+    def mid_MetaMessage(self, *args, **kwargs):
+        # return None
+        if self.midi_out_mode == self.MIDI_OUT_DEVICE:
+            return None
+        if MULTI_TRACK:
+            self.midi_out.miditrack[0].append(mido.MetaMessage(*args, **kwargs))
+        else:
+            self.midi_out.miditrack.append(mido.MetaMessage(*args, **kwargs))
+
     def set_tempo(self, new_tempo):
         log_call()
         print(f"b_read tempo: {self.timeline.get_tempo()=}, {new_tempo=}")
         # self.timeline.set_tempo(int(new_tempo))
         self.timeline.set_tempo(int(new_tempo))
-        if  self.midi_out_mode == self.MIDI_OUT_DEVICE:
-            return None
-        if MULTI_TRACK:
-            self.midi_out.miditrack[0].append(mido.MetaMessage('set_tempo',tempo=mido.bpm2tempo(int(new_tempo)), time=0))
-        else:
-            self.midi_out.miditrack.append(mido.MetaMessage('set_tempo',tempo=mido.bpm2tempo(int(new_tempo)), time=0))
+        self.mid_MetaMessage('set_tempo', tempo=mido.bpm2tempo(int(new_tempo)), time=0)
+        # if  self.midi_out_mode == self.MIDI_OUT_DEVICE:
+        #     return None
+        # if MULTI_TRACK:
+        #     self.midi_out.miditrack[0].append(mido.MetaMessage('set_tempo',tempo=mido.bpm2tempo(int(new_tempo)), time=0))
+        # else:
+        #     self.midi_out.miditrack.append(mido.MetaMessage('set_tempo',tempo=mido.bpm2tempo(int(new_tempo)), time=0))
         print(f"a_read tempo: {self.timeline.get_tempo()=}, {new_tempo=}")
 
     def set_program_change(self, program = 0, channel = 0):
@@ -573,16 +592,28 @@ class Tracker:
             self.midi_out.miditrack.append(mido.Message('program_change', program=int(program), channel=int(channel)))
 
     def write_mid_text_meta(self, message):
-        if  self.midi_out_mode == self.MIDI_OUT_DEVICE:
-            return None
-        if MULTI_TRACK:
-            self.midi_out.miditrack[0].append(mido.MetaMessage('text',text=message, time=0))
-        else:
-            self.midi_out.miditrack.append(mido.MetaMessage('text',text=message, time=0))
+        self.mid_MetaMessage('text', text=message, time=0)
+        # if  self.midi_out_mode == self.MIDI_OUT_DEVICE:
+        #     return None
+        # if MULTI_TRACK:
+        #     self.midi_out.miditrack[0].append(mido.MetaMessage('text',text=message, time=0))
+        # else:
+        #     self.midi_out.miditrack.append(mido.MetaMessage('text',text=message, time=0))
 
 
     def meta_key_scale(self, key, scale):
+        key = iso.Note.names[key.tonic % 12]
         self.write_mid_text_meta(f"scale:{key}-{scale}")
+
+        # MetaMessage('key_signature', key='C', time=0)
+        self.mid_MetaMessage('key_signature', key=key+'m', time=0)
+        # if self.midi_out_mode == self.MIDI_OUT_DEVICE:
+        #     return None
+        # print(f"key before write {key} {scale=}")
+        # if MULTI_TRACK:
+        #     self.midi_out.miditrack[0].append(mido.MetaMessage('key_signature', key=key, time=0))
+        # else:
+        #     self.midi_out.miditrack.append(mido.MetaMessage('key_signature', key=key, time=0))
 
 
     def meta_func(self,func):
@@ -591,7 +622,11 @@ class Tracker:
 
     def meta_tempo(self,tempo):
         self.write_mid_text_meta(f"tempo:{tempo}")
+        # self.mid_MetaMessage('end_of_track', time=0)
 
+    def tstop(self):
+        log_call()
+        self.timeline.stop()
 
     def ts(self):
         log_call()
@@ -606,7 +641,7 @@ class Tracker:
 
 
     @log_and_schedule
-    def play_from_to(self, from_note, to_note, in_pattern=False ):
+    def play_from_to(self, from_note, to_note, in_pattern=False):
         print('---------------------')
         print(f"in_pattern: {in_pattern} from_note:{from_note}, to_note: {to_note}")
         print(f"{self.key.scale.name=}, key={iso.Note.names[self.key.tonic%12]}, {self.key.scale.name=}")
@@ -617,7 +652,7 @@ class Tracker:
         # self.prev_key
         # self.key.scale.name
         # self.key.tonic
-
+        loopq = self.loopq
         if self.prev_get_pattern_name != self.note_patterns.get_pattern.__name__:
             # self.meta_func(func=f"prev:{self.prev_get_pattern_name}")
             self.meta_func(func=f"curr:{self.note_patterns.get_pattern.__name__}")
@@ -627,7 +662,7 @@ class Tracker:
             # if self.prev_key:
             #     self.meta_key_scale(key=f"prev: {self.prev_key.tonic}", scale=self.prev_key.scale.name)
 
-            self.meta_key_scale(key=f"curr: {self.key.tonic}", scale=self.key.scale.name)
+            self.meta_key_scale(key=self.key, scale=self.key.scale.name)
 
         self.prev_key = self.key
         print(f"============={self.prev_get_pattern_name=} {self.note_patterns.get_pattern.__name__=}")
@@ -636,19 +671,19 @@ class Tracker:
         # my_tracker.meta_key_scale(key=app.keys_group.get(), scale=app.scale_combo.get())
 
 
-        self.scale_name_action()   #TODO extend scale
+        self.scale_name_action()
         # if  from_note == None:
         #     return None
         if in_pattern:
-            if self.loopq and self.last_from_note is not None:
+            if loopq and self.last_from_note is not None:
                 # print(f'note {note} back to queue')
                 # self.put_to_queue(note)
                 print(f'note {self.last_from_note=} back to queue')
                 self.put_to_queue(self.last_from_note, q_action=False)
 
             from_note, to_note = self.get_queue_pair()
-            if self.loopq and not to_note:
-                to_note=from_note  # TODO add put to queue
+            if loopq and not to_note:
+                to_note=from_note
                 self.put_to_queue(from_note)
             # self.scale = iso.Scale.chromatic
             # self.scale = iso.Scale.chromatic
@@ -656,7 +691,7 @@ class Tracker:
             from_notex = self.last_note
             # to_note = None if self.note_queue.empty() else self.note_queue.get_nowait()
             # to_notex = self.get_from_queue()
-            # if self.loopq and note is not None:
+            # if loopq and note is not None:
             #     print(f'note {note} back to queue')
             #     self.put_to_queue(note)
 
@@ -680,19 +715,29 @@ class Tracker:
                 print('else ', to_note)
                 self.beat = self.beat_none
         self.notes_pair=[from_note,to_note]
-        self.queue_content_wrk = [from_note,to_note] + [' ']+ list(self.get_queue_content())
+        self.queue_content_wrk = [from_note,to_note] + [' ']+ [list(self.get_queue_content())]  #TODO Inial problem wit 'e','m','p','t','y'
         self.curr_notes_pair_action()  #TODO action
         self.fullq_content_action()
         self.last_from_note=from_note
+
+        # pattern_amplitude = np.array(None)
+        # pattern_gate = np.array(None)
+        # pattern_duration = np.array(None)
+
         if (to_note is None) or (from_note is None):
           from_note = None if not from_note else self.key.scale.indexOf(from_note)
+
           return iso.PDict({
             # iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.scale),
             iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.key),
             iso.EVENT_DURATION: iso.PSequence([4], repeats=1),
+            # iso.EVENT_AMPLITUDE : np.array([64]),
+            # iso.EVENT_GATE :  np.array([1])
+            iso.EVENT_AMPLITUDE : 64,
+            iso.EVENT_GATE :  1
             # iso.EVENT_OCTAVE: 5
             # iso.EVENT_DEGREE: xxxx
-        })   #TODO extend scale
+        })
         print('after_check')
         # root_note = self.scale.indexOf(from_note-60)
         # note = self.scale.indexOf(to_note-60)
@@ -710,9 +755,9 @@ class Tracker:
 
         print(f"type of pattern: {type(pattern)=}, {isinstance(pattern, np.ndarray)}")
 
-        pattern_amplitude = np.array(None)
-        pattern_gate = np.array(None)
-        pattern_duration = np.array(None)
+        # pattern_amplitude = np.array(None)
+        # pattern_gate = np.array(None)
+        # pattern_duration = np.array(None)
         if isinstance(pattern, np.ndarray):
             pattern_notes = pattern
         elif isinstance(pattern, dict):
@@ -791,7 +836,7 @@ class Tracker:
             ,iso.EVENT_GATE: iso.PSequence(pattern_gate)
             # iso.EVENT_OCTAVE: 5
             # iso.EVENT_DEGREE: xxxx
-        })  #TODO extend scale
+        })
 
 
     # </editor-fold>
