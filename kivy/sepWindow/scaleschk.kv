@@ -1,0 +1,78 @@
+#: kivy 1.10.0
+#: import CardTransition kivy.uix.screenmanager.CardTransition
+#: import NoTransition kivy.uix.screenmanager.NoTransition
+#: import FadeTransition kivy.uix.screenmanager.FadeTransition
+#: import RiseInTransition kivy.uix.screenmanager.RiseInTransition
+
+
+<MySpinnerOption@SpinnerOption>:
+    background_color: color_button if self.state == 'down' else color_button_pressed
+    background_down: 'atlas://data/images/defaulttheme/button'
+    color: color_font
+    height: self.texture_size[1]*1.5
+    size_hint: [2.5, None]
+    # sync_height: True
+    # size: [-(-self.texture_size[0]//20)*20+10,self.texture_size[1]*1]
+
+<RadioButton>:
+    orientation:'horizontal'
+
+    ToggleButton:
+        text:self.parent.text if self.parent.text else 'X'
+        size_hint: [None, None]
+        # size: [round(self.texture_size[0]/5,-1)*5+30,self.texture_size[1]*2]
+        size: [-(-self.texture_size[0]//20)*20+10,self.texture_size[1]*2]
+        group:'keys'
+        state: self.parent.state
+        on_state: app.selected_root_note = self.parent.text
+
+ScreenManager:
+    id: screen_manager
+    transition: NoTransition()
+
+    MainScreen:
+        id: main_scr
+        name: 'main_screen'
+        manager: 'screen_manager'
+    ScalesSelectScreen:
+        id: scales_opt
+        name: 'scales_option'
+        manager: 'screen_manager'
+
+
+
+<MainScreen>:
+	BoxLayout:
+		# Button:
+		# 	text: "Go to Screen 2"
+		# 	on_press:   
+        #         app.root.current='scales_option'
+        #         app.root.transition=FadeTransition()
+        #     	app.root.transition.direction = 'left'
+		# 		app.root.transition.duration = 1
+
+
+        Button:
+            id:scale_spinner
+            text: 'scales select'
+            # text: app.scale_init_text  if app.scale_init_text else 'Python'
+            # values: app.scale_values if app.scale_values else ('Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', '123Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java') 
+            size_hint: [2.5, None]
+            # size_height
+            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+            # option_cls: Factory.get("MySpinnerOption")
+            # on_text : app.set_scale(*args)
+            on_press:   
+                app.root.current='scales_option'
+
+
+<ScalesSelectScreen>:
+	BoxLayout:
+		Button:
+			text: "scales option"
+			on_press: 
+                app.root.current='main_screen'
+                app.root.transition: NoTransition()
+                app.root.transition.direction = 'up'
+				app.root.transition.duration = 0.5
+
