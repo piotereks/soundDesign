@@ -29,6 +29,8 @@
             app.selected_root_note = self.parent.text
             app.root.current='main_screen'
             app.selected_scale_button = self.parent.text
+            app.rem_buttons()
+            # TODO check if can be done without variable
 
 ScreenManager:
     id: screen_manager

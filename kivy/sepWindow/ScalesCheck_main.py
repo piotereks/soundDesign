@@ -30,15 +30,25 @@ class ScalesChkApp(App):
 
     # ScreenManager.transition=RiseInTransition()
     # def populate_button(self):
-    
+    but_id_offset = 0
+
     def on_selected_scale_button(self, instance, value):
         print(instance, value)
         print(self.selected_scale_button)
     
+    def rem_buttons(self):
+        for button in self.button_matrix:
+            self.root.remove_widget(button) 
+        self.but_id_offset+=100
+    
     def on_start(self):
         self.root.ids.scales_opt.ids.button_grid.add_widget(RadioButton(text='World 2'))
-        for button_id in range(10):
-            self.root.ids.scales_opt.ids.button_grid.add_widget(RadioButton(text=f'auto_{button_id}'))
+        self.button_matrix=[]
+        for button_id in range(self.but_id_offset,self.but_id_offset+10):
+            btn = RadioButton(text=f'auto_{button_id}')
+            self.button_matrix.append(btn)
+            # self.root.ids.scales_opt.ids.button_grid.add_widget(RadioButton(text=f'auto_{button_id}'))
+            self.root.ids.scales_opt.ids.button_grid.add_widget(btn)
             
         print('----------------')
     pass
