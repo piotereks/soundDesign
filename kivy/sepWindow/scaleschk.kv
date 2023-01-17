@@ -25,11 +25,11 @@
         size: [100,self.texture_size[1]*2]
         group:'keys'
         state: self.parent.state
-        on_state: 
+        on_press: 
+            app.rem_buttons()
             app.selected_root_note = self.parent.text
             app.root.current='main_screen'
             app.selected_scale_button = self.parent.text
-            app.rem_buttons()
             # TODO check if can be done without variable
 
 ScreenManager:
@@ -71,7 +71,8 @@ ScreenManager:
             # on_text : app.set_scale(*args)
             on_press:   
                 app.root.current='scales_option'
-                # app.populate_button()
+                app.populate_button()
+                # app.on_start()
 
 
 <ScalesSelectScreen>:
