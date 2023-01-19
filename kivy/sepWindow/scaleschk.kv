@@ -81,68 +81,78 @@ ScreenManager:
             id: prev_page
             text: 'prev'
             size_hint_x: 0.5
+            on_release :
+                app.scale_page('prev') 
+                # app.rem_buttons()
+                # app.but_id_offset = app.but_id_offset-app.grid_len if app.but_id_offset-app.grid_len>0 else 0
+                # app.populate_button()
         GridLayout:
             id: button_grid
             size_hint_x: 6
             
-            cols: 6
-            rows: 12
+            cols: app.grid_cols
+            rows: app.grid_rows
             row_force_default: True 
             row_default_height: 40
 
-            RadioButton:
-                text: "scales option"
-                on_press: 
-                    app.root.current='main_screen'
-                    app.root.transition: NoTransition()
-                    app.root.transition.direction = 'up'
-                    app.root.transition.duration = 0.5
-            RadioButton:
-                text: "scales option"
-                on_press: 
-                    app.root.current='main_screen'
-                    app.root.transition: NoTransition()
-                    app.root.transition.direction = 'up'
-                    app.root.transition.duration = 0.5
-            RadioButton:
-                text: "scales option"
-                on_press: 
-                    app.root.current='main_screen'
-                    app.root.transition: NoTransition()
-                    app.root.transition.direction = 'up'
-                    app.root.transition.duration = 0.5
-            RadioButton:
-                text: "scales option"
-                on_press: 
-                    app.root.current='main_screen'
-                    app.root.transition: NoTransition()
-                    app.root.transition.direction = 'up'
-                    app.root.transition.duration = 0.5
-            RadioButton:
-                text: "scales option"
-                on_press: 
-                    app.root.current='main_screen'
-                    app.root.transition: NoTransition()
-                    app.root.transition.direction = 'up'
-                    app.root.transition.duration = 0.5
-            RadioButton:
-                text: "scales option"
-                on_press: 
-                    app.root.current='main_screen'
-                    app.root.transition: NoTransition()
-                    app.root.transition.direction = 'up'
-                    app.root.transition.duration = 0.5
-            RadioButton:
-                text: "scales option"
-                on_press: 
-                    app.root.current='main_screen'
-                    app.root.transition: NoTransition()
-                    app.root.transition.direction = 'up'
-                    app.root.transition.duration = 0.5
+            # RadioButton:
+            #     text: "scales option"
+            #     on_press: 
+            #         app.root.current='main_screen'
+            #         app.root.transition: NoTransition()
+            #         app.root.transition.direction = 'up'
+            #         app.root.transition.duration = 0.5
+            # RadioButton:
+            #     text: "scales option"
+            #     on_press: 
+            #         app.root.current='main_screen'
+            #         app.root.transition: NoTransition()
+            #         app.root.transition.direction = 'up'
+            #         app.root.transition.duration = 0.5
+            # RadioButton:
+            #     text: "scales option"
+            #     on_press: 
+            #         app.root.current='main_screen'
+            #         app.root.transition: NoTransition()
+            #         app.root.transition.direction = 'up'
+            #         app.root.transition.duration = 0.5
+            # RadioButton:
+            #     text: "scales option"
+            #     on_press: 
+            #         app.root.current='main_screen'
+            #         app.root.transition: NoTransition()
+            #         app.root.transition.direction = 'up'
+            #         app.root.transition.duration = 0.5
+            # RadioButton:
+            #     text: "scales option"
+            #     on_press: 
+            #         app.root.current='main_screen'
+            #         app.root.transition: NoTransition()
+            #         app.root.transition.direction = 'up'
+            #         app.root.transition.duration = 0.5
+            # RadioButton:
+            #     text: "scales option"
+            #     on_press: 
+            #         app.root.current='main_screen'
+            #         app.root.transition: NoTransition()
+            #         app.root.transition.direction = 'up'
+            #         app.root.transition.duration = 0.5
+            # RadioButton:
+            #     text: "scales option"
+            #     on_press: 
+            #         app.root.current='main_screen'
+            #         app.root.transition: NoTransition()
+            #         app.root.transition.direction = 'up'
+            #         app.root.transition.duration = 0.5
 
 
         Button:
             id: next_page
             text: 'next'
             size_hint_x: 0.5
+            on_release : 
+                app.scale_page('next')
+                # app.rem_buttons()
+                # app.but_id_offset = app.but_id_offset+app.grid_len if app.but_id_offset+app.grid_len<app.nbr_of_scales else app.but_id_offset
+                # app.populate_button()
 
