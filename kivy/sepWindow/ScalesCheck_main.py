@@ -59,6 +59,7 @@ class ScalesChkApp(App):
             # self.root.ids.scales_opt.remove_widget(button) 
             self.root.ids.scales_opt.ids.button_grid.remove_widget(button)
         # self.but_id_offset+=self.grid_len
+    
     def scale_page(self, direction):
         if direction in ('RL','prev'):
             self.rem_buttons()
@@ -74,8 +75,13 @@ class ScalesChkApp(App):
             return    
         self.populate_button()
      
-        
-    
+    def on_touch_move(self,touch):    
+        if touch.dx > 0:
+            self.scale_page('next')
+        elif touch.dx < 0:
+            self.scale_page('prev')
+
+
     def populate_button(self):
         button_matix_len=self.grid_cols*self.grid_rows
         # self.root.ids.scales_opt.ids.button_grid.add_widget(RadioButton(text='World 2'))
