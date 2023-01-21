@@ -26,7 +26,8 @@
         group:'keys'
         state: self.parent.state
         on_press: 
-            app.rem_buttons()
+            # print('----------asdfasfasd----------' + self.parent.text)
+            app.root.ids.scales_opt.rem_buttons()
             app.selected_root_note = self.parent.text
             app.root.current='main_screen'
             app.selected_scale_button = self.parent.text
@@ -70,8 +71,10 @@ ScreenManager:
             # option_cls: Factory.get("MySpinnerOption")
             # on_text : app.set_scale(*args)
             on_press:   
+                print('=====on_press')
                 app.root.current='scales_option'
-                app.populate_button()
+                app.root.ids.scales_opt.populate_button()
+               
                 # app.on_start()
 
 
@@ -82,7 +85,7 @@ ScreenManager:
             text: 'prev'
             size_hint_x: 0.5
             on_release :
-                app.scale_page('prev') 
+                root.scale_page('prev') 
                 # app.rem_buttons()
                 # app.but_id_offset = app.but_id_offset-app.grid_len if app.but_id_offset-app.grid_len>0 else 0
                 # app.populate_button()
@@ -151,7 +154,7 @@ ScreenManager:
             text: 'next'
             size_hint_x: 0.5
             on_release : 
-                app.scale_page('next')
+                root.scale_page('next')
                 # app.rem_buttons()
                 # app.but_id_offset = app.but_id_offset+app.grid_len if app.but_id_offset+app.grid_len<app.nbr_of_scales else app.but_id_offset
                 # app.populate_button()
