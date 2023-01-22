@@ -26,9 +26,11 @@ class ScalesSelectScreen(Screen):
     btn = ObjectProperty()
     button_matrix = ListProperty()
     grid_rows=NumericProperty(13)
-    grid_cols=NumericProperty(5)
-    grid_len=NumericProperty(13*5)
-    pos_x = NumericProperty()
+    grid_cols=NumericProperty(4)
+    grid_len=NumericProperty(13*4)
+    # pos_x = NumericProperty()
+    grid_pos = ListProperty()
+
 
     but_id_offset = 0
     button_names = [ 'button_'+ str(i+1).rjust(3,'0')[-3:] for i in range(500)]
@@ -75,23 +77,53 @@ class ScalesSelectScreen(Screen):
         else:
             return    
         self.populate_button()
+        
+    # def on_touch_move(self, touch):
+    #     print(f"move , {touch.__dict__=}<-----")
+
+    #     print(f"{self.grid_pos=}")
+    #     print(f"{self.grid_pos[0]=}")
+    #     # print(f"{self.grid_pos(0)=}")
+        
+    #     # if self.grid_pos[0]-touch.px > 50:
+    #     print(f"{self.grid_pos[0]=},{touch.px=}, {self.grid_pos[0]-touch.px=}, {touch.dx=}")
+    #     # return super().on_touch_move(touch)
      
     def on_touch_down(self,touch):
-        # print(f"down , {touch.__dict__=}, {touch.px=}, {touch.py=}, {touch.pos=}")
-        self.pos_x=touch.px
+        print(f"down , {touch.__dict__=}, {touch.px=}, {touch.py=}, {touch.pos=}")
+        # self.pos_x=touch.px
+        self.grid_pos = touch.pos
         # return super(ScalesSelectScreen, self).on_touch_down(touch)
         # touch.grab(self)
         
     def on_touch_up(self,touch):
-        # print(f"up, {touch.__dict__=}, {touch.px=}, {touch.py=}, {touch.pos=}")
-        if self.pos_x-touch.px > 50:
+        if not self.grid_pos  or self.grid_pos == []:
+            self.grid_pos = touch.pos
+            return True
+        print(f"up, {touch.__dict__=}, {touch.px=}, {touch.py=}, {touch.pos=}")
+        # if self.pos_x-touch.px > 50:
+        # print(f"{self.grid_pos=}, {self.grid_pos(0)=}, {touch.px=}")
+        print(f"{self.grid_pos=}")
+        print(f"{self.grid_pos[0]=}")
+        # print(f"{self.grid_pos(0)=}")
+        
+        # if self.grid_pos[0]-touch.px > 50:
+        print(f"{self.grid_pos[0]=},{touch.px=}, {self.grid_pos[0]-touch.px=}, {touch.dx=}")
+        if self.grid_pos[0]-touch.x > 50:
             print('next')
             self.scale_page('next')
-        elif self.pos_x-touch.px <-50:
+        # elif self.pos_x-touch.px <-50:
+        if self.grid_pos[0]-touch.x <-50:
             print('prev')
             self.scale_page('prev')
             # return super(ScalesSelectScreen, self).on_touch_down(touch)
+        # if self.pos == touch.pos:
+        if pow(self.grid_pos[0]-touch.x,2)+pow(self.grid_pos[1]-touch.y,2) <=100:
+            print('>>>>>>>equal<<<<<<<')
+            self.grid_pos = touch.pos
+            return super(ScalesSelectScreen, self).on_touch_down(touch)
         # touch.grab(self)
+        self.grid_pos = touch.pos
 
 
     # def on_touch_move(self,touch): 
@@ -123,9 +155,9 @@ class ScalesChkApp(App):
 
     def __init__(self, rows, cols):
         super(ScalesChkApp, self).__init__()
-        self.grid_rows=rows
-        self.grid_cols=cols
-        self.grid_len=rows*cols
+        # self.grid_rows=rows
+        # self.grid_cols=cols
+        # self.grid_len=rows*cols
 
 
     def on_selected_scale_button(self, instance, value):
