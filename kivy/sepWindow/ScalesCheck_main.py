@@ -23,22 +23,31 @@ class MainScreen(Screen):
 class ScalesSelectScreen(Screen):
 
 
+    # self.grid_rows=rows
+    # self.grid_cols=cols
+    # self.grid_len=rows*cols
+
     btn = ObjectProperty()
     button_matrix = ListProperty()
-    grid_rows=NumericProperty(13)
-    grid_cols=NumericProperty(4)
-    grid_len=NumericProperty(13*4)
+    # grid_rows=NumericProperty(13)
+    # grid_cols=NumericProperty(4)
+    # grid_len=NumericProperty(13*4)
+    
+    grid_rows=NumericProperty()
+    grid_cols=NumericProperty()
+    grid_len=NumericProperty()
+
     # pos_x = NumericProperty()
     grid_pos = ListProperty()
+
 
 
     but_id_offset = 0
     button_names = [ 'button_'+ str(i+1).rjust(3,'0')[-3:] for i in range(500)]
     nbr_of_scales = len(button_names)   
 
-    
     def populate_button(self):
-        button_matix_len=self.grid_cols*self.grid_rows
+        # button_matix_len=self.grid_cols*self.grid_rows
         # self.root.ids.scales_opt.ids.button_grid.add_widget(RadioButton(text='World 2'))
         # self.button_matrix=[]
         # for button_id in range(self.but_id_offset,self.but_id_offset+10):
@@ -78,16 +87,7 @@ class ScalesSelectScreen(Screen):
             return    
         self.populate_button()
         
-    # def on_touch_move(self, touch):
-    #     print(f"move , {touch.__dict__=}<-----")
 
-    #     print(f"{self.grid_pos=}")
-    #     print(f"{self.grid_pos[0]=}")
-    #     # print(f"{self.grid_pos(0)=}")
-        
-    #     # if self.grid_pos[0]-touch.px > 50:
-    #     print(f"{self.grid_pos[0]=},{touch.px=}, {self.grid_pos[0]-touch.px=}, {touch.dx=}")
-    #     # return super().on_touch_move(touch)
      
     def on_touch_down(self,touch):
         print(f"down , {touch.__dict__=}, {touch.px=}, {touch.py=}, {touch.pos=}")
@@ -126,16 +126,6 @@ class ScalesSelectScreen(Screen):
         self.grid_pos = touch.pos
 
 
-    # def on_touch_move(self,touch): 
-    #     # print(f"----------------------{self}, {touch} {touch.dx}") 
-    #     print(f"{touch.dx}") 
-    #     # touch.ungrab(self)
-    #     if touch.dx < -50:
-    #         print('next')
-    #         self.scale_page('next')
-    #     elif touch.dx > 50:
-    #         print('prev')
-    #         self.scale_page('prev')
 
 
         
@@ -148,16 +138,8 @@ class RadioButton(ToggleButtonBehavior, BoxLayout):
 class ScalesChkApp(App):
  
     selected_scale_button = StringProperty() 
-    
-    # ScalesSelectScreen.root.ids.scales_opt.ids.button_grid.add_widget(RadioButton(text='World 1'))
-    # ScalesSelectScreen.ids.button_grid.add_widget(RadioButton(text='World 3'))
-
-
-    def __init__(self, rows, cols):
-        super(ScalesChkApp, self).__init__()
-        # self.grid_rows=rows
-        # self.grid_cols=cols
-        # self.grid_len=rows*cols
+    parm_rows=NumericProperty()
+    parm_cols=NumericProperty()
 
 
     def on_selected_scale_button(self, instance, value):
@@ -172,4 +154,5 @@ class ScalesChkApp(App):
 #  self.manager.ids.another.ids.box.add_widget(Label(text="Button 1 pressed"))
 
 if __name__ == '__main__':
-    ScalesChkApp(14,5).run()
+    # ScalesSelectScreen(12,3)
+    ScalesChkApp(parm_rows=7,parm_cols=3).run()

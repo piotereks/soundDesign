@@ -41,11 +41,15 @@ ScreenManager:
         id: main_scr
         name: 'main_screen'
         manager: 'screen_manager'
+
+
     ScalesSelectScreen:
         id: scales_opt
         name: 'scales_option'
         manager: 'screen_manager'
-
+        grid_cols: app.parm_cols
+        grid_rows: app.parm_rows
+        grid_len: app.parm_cols * app.parm_rows
 
 
 <MainScreen>:
@@ -92,11 +96,15 @@ ScreenManager:
         GridLayout:
             id: button_grid
             size_hint_x: 6
+             
             
-            cols: root.grid_cols
-            rows: root.grid_rows
+            # cols: root.grid_cols
+            # rows: root.grid_rows
+            cols: app.parm_cols
+            rows: app.parm_rows
             row_force_default: True 
             row_default_height: 40
+            orientation: 'tb-lr'
 
             # RadioButton:
             #     text: "scales option"
