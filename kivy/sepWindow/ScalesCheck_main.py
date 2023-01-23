@@ -39,6 +39,8 @@ class ScalesSelectScreen(Screen):
 
     # pos_x = NumericProperty()
     grid_pos = ListProperty()
+    last_grid_up_down = StringProperty()
+    
 
     but_id_offset = 0
     button_names = [ 'button_'+ str(i+1).rjust(3,'0')[-3:] for i in range(500)]
@@ -98,6 +100,7 @@ class ScalesSelectScreen(Screen):
 
      
     def on_touch_down(self,touch):
+        self.last_grid_up_down='down'
         # print(f"down , {touch.__dict__=}, {touch.px=}, {touch.py=}, {touch.pos=}")
         print(f"down , {touch.px=}, {touch.py=}, {touch.pos=}")
         # self.pos_x=touch.px
@@ -106,6 +109,9 @@ class ScalesSelectScreen(Screen):
         # touch.grab(self)
         
     def on_touch_up(self,touch):
+        prev_last_grid_up_down=self.last_grid_up_down
+        self.last_grid_up_down='up'
+
         if not self.grid_pos  or self.grid_pos == []:
             self.grid_pos = touch.pos
             return True
@@ -113,22 +119,23 @@ class ScalesSelectScreen(Screen):
         print(f"up,  {touch.px=}, {touch.py=}, {touch.pos=}")
         
         # if self.grid_pos[0]-touch.px > 50:
-        print(f"{self.grid_pos[0]=},{touch.px=}, {self.grid_pos[0]-touch.px=}, {touch.dx=}")
-        if self.grid_pos[0]-touch.x > 50:
-            print('>>>>>>>next')
-            self.scale_page(direction='next')
-        # elif self.pos_x-touch.px <-50:
-        if self.grid_pos[0]-touch.x <-50:
-            print('prev<<<<<<<')
-            self.scale_page(direction='prev')
-            # return super(ScalesSelectScreen, self).on_touch_down(touch)
-        # if self.pos == touch.pos:
-        if pow(self.grid_pos[0]-touch.x,2)+pow(self.grid_pos[1]-touch.y,2) <=100:
-            print('>>>>>>>equal<<<<<<<')
+        print(f"{self.grid_pos[0]=},{touch.x=}, {self.grid_pos[0]-touch.x=}")
+        if prev_last_grid_up_down=='down': # to filter out accidental up-up
+            if self.grid_pos[0]-touch.x > 50:
+                print('>>>>>>>next')
+                self.scale_page(direction='next')
+            # elif self.pos_x-touch.px <-50:
+            if self.grid_pos[0]-touch.x <-50:
+                print('prev<<<<<<<')
+                self.scale_page(direction='prev')
+                # return super(ScalesSelectScreen, self).on_touch_down(touch)
+            # if self.pos == touch.pos:
+            if pow(self.grid_pos[0]-touch.x,2)+pow(self.grid_pos[1]-touch.y,2) <=100:
+                print('>>>>>>>equal<<<<<<<')
+                self.grid_pos = touch.pos
+                return super(ScalesSelectScreen, self).on_touch_down(touch)
+            # touch.grab(self)
             self.grid_pos = touch.pos
-            return super(ScalesSelectScreen, self).on_touch_down(touch)
-        # touch.grab(self)
-        self.grid_pos = touch.pos
 
 
 
