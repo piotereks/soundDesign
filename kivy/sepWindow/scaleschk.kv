@@ -7,14 +7,16 @@
 
 
 <ScaleButton>:
-    orientation:'horizontal'
+    # orientation:'horizontal'
 
     ToggleButton:
         text:self.parent.text if self.parent.text else 'X'
         size_hint: [None, None]
         # size: [round(self.texture_size[0]/5,-1)*5+30,self.texture_size[1]*2]
         # size: [-(-self.texture_size[0]//20)*20+10,self.texture_size[1]*2]
-        size: [100,self.texture_size[1]*2]
+        # padding : (10,10)
+        # padding : self.center
+        # size: [100,self.texture_size[1]*2]
         group:'keys'
         state: self.parent.state
         on_press: 
@@ -24,6 +26,7 @@
             app.root.current='main_screen'
             app.selected_scale_button = self.parent.text
             # TODO check if can be done without variable
+            # padding is a VariableListProperty and defaults to [0, 0, 0, 0].
 
 ScreenManager:
     id: screen_manager
@@ -87,6 +90,7 @@ ScreenManager:
         GridLayout:
             id: button_grid
             size_hint_x: 6
+            padding : (50,50)
              
             cols: app.parm_cols
             rows: app.parm_rows
