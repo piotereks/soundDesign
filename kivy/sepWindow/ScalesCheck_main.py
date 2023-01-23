@@ -40,8 +40,6 @@ class ScalesSelectScreen(Screen):
     # pos_x = NumericProperty()
     grid_pos = ListProperty()
 
-
-
     but_id_offset = 0
     button_names = [ 'button_'+ str(i+1).rjust(3,'0')[-3:] for i in range(500)]
     nbr_of_scales = len(button_names)   
@@ -53,7 +51,11 @@ class ScalesSelectScreen(Screen):
         # for button_id in range(self.but_id_offset,self.but_id_offset+10):
         # for button_id in self.button_names:
         for button_id in self.button_names[self.but_id_offset:self.but_id_offset+self.grid_len]:
-            btn = RadioButton(text=f'{button_id}')
+            button_text=f'{button_id}'
+            btn = ScaleButton(text=button_text)
+            if button_text == self.selected_scale:
+                btn.state='down'
+                
             self.button_matrix.append(btn)
             # self.root.ids.scales_opt.ids.button_grid.add_widget(RadioButton(text=f'auto_{button_id}'))
             # self.root.ids.scales_opt.ids.button_grid.add_widget(btn)
@@ -72,7 +74,7 @@ class ScalesSelectScreen(Screen):
     
 
 
-    def scale_page(self, direction):
+    def scale_page(self, direction=None, scale='major'):
         if direction in ('RL','prev'):
             self.rem_buttons()
             self.but_id_offset-=self.grid_len    
@@ -84,13 +86,20 @@ class ScalesSelectScreen(Screen):
                 self.but_id_offset+=self.grid_len
             
         else:
-            return    
+            for x in range(0,len(self.button_names),self.grid_len):
+                if scale  in self.button_names[x:x+self.grid_len]:
+                    self.but_id_offset=x
+                    # return
+            
+# for button_id in self.button_names[self.but_id_offset:self.but_id_offset+self.grid_len]:            
+            # return    
         self.populate_button()
         
 
      
     def on_touch_down(self,touch):
-        print(f"down , {touch.__dict__=}, {touch.px=}, {touch.py=}, {touch.pos=}")
+        # print(f"down , {touch.__dict__=}, {touch.px=}, {touch.py=}, {touch.pos=}")
+        print(f"down , {touch.px=}, {touch.py=}, {touch.pos=}")
         # self.pos_x=touch.px
         self.grid_pos = touch.pos
         # return super(ScalesSelectScreen, self).on_touch_down(touch)
@@ -100,22 +109,18 @@ class ScalesSelectScreen(Screen):
         if not self.grid_pos  or self.grid_pos == []:
             self.grid_pos = touch.pos
             return True
-        print(f"up, {touch.__dict__=}, {touch.px=}, {touch.py=}, {touch.pos=}")
-        # if self.pos_x-touch.px > 50:
-        # print(f"{self.grid_pos=}, {self.grid_pos(0)=}, {touch.px=}")
-        print(f"{self.grid_pos=}")
-        print(f"{self.grid_pos[0]=}")
-        # print(f"{self.grid_pos(0)=}")
+        # print(f"up, {touch.__dict__=}, {touch.px=}, {touch.py=}, {touch.pos=}")
+        print(f"up,  {touch.px=}, {touch.py=}, {touch.pos=}")
         
         # if self.grid_pos[0]-touch.px > 50:
         print(f"{self.grid_pos[0]=},{touch.px=}, {self.grid_pos[0]-touch.px=}, {touch.dx=}")
         if self.grid_pos[0]-touch.x > 50:
-            print('next')
-            self.scale_page('next')
+            print('>>>>>>>next')
+            self.scale_page(direction='next')
         # elif self.pos_x-touch.px <-50:
         if self.grid_pos[0]-touch.x <-50:
-            print('prev')
-            self.scale_page('prev')
+            print('prev<<<<<<<')
+            self.scale_page(direction='prev')
             # return super(ScalesSelectScreen, self).on_touch_down(touch)
         # if self.pos == touch.pos:
         if pow(self.grid_pos[0]-touch.x,2)+pow(self.grid_pos[1]-touch.y,2) <=100:
@@ -130,7 +135,7 @@ class ScalesSelectScreen(Screen):
 
         
         
-class RadioButton(ToggleButtonBehavior, BoxLayout):
+class ScaleButton(ToggleButtonBehavior, BoxLayout):
     text = StringProperty('')
     pass
 
@@ -144,7 +149,7 @@ class ScalesChkApp(App):
 
     def on_selected_scale_button(self, instance, value):
         print(instance, value)
-        print(self.selected_scale_button)    
+        print(self.selected_scale_button)
 
 
 

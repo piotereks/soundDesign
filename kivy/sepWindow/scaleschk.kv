@@ -5,16 +5,8 @@
 #: import RiseInTransition kivy.uix.screenmanager.RiseInTransition
 
 
-<MySpinnerOption@SpinnerOption>:
-    background_color: color_button if self.state == 'down' else color_button_pressed
-    background_down: 'atlas://data/images/defaulttheme/button'
-    color: color_font
-    height: self.texture_size[1]*1.5
-    size_hint: [2.5, None]
-    # sync_height: True
-    # size: [-(-self.texture_size[0]//20)*20+10,self.texture_size[1]*1]
 
-<RadioButton>:
+<ScaleButton>:
     orientation:'horizontal'
 
     ToggleButton:
@@ -50,6 +42,7 @@ ScreenManager:
         grid_cols: app.parm_cols
         grid_rows: app.parm_rows
         grid_len: app.parm_cols * app.parm_rows
+        selected_scale: app.selected_scale_button
 
 
 <MainScreen>:
@@ -72,12 +65,12 @@ ScreenManager:
             size_hint: [2.5, None]
             # size_height
             size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
-            # option_cls: Factory.get("MySpinnerOption")
-            # on_text : app.set_scale(*args)
+
             on_press:   
                 print('=====on_press')
                 app.root.current='scales_option'
-                app.root.ids.scales_opt.populate_button()
+                app.root.ids.scales_opt.scale_page(scale=app.selected_scale_button)
+                # app.root.ids.scales_opt.populate_button()
                
                 # app.on_start()
 
@@ -89,72 +82,18 @@ ScreenManager:
             text: 'prev'
             size_hint_x: 0.5
             on_release :
-                root.scale_page('prev') 
-                # app.rem_buttons()
-                # app.but_id_offset = app.but_id_offset-app.grid_len if app.but_id_offset-app.grid_len>0 else 0
-                # app.populate_button()
+                root.scale_page(direction='prev') 
+
         GridLayout:
             id: button_grid
             size_hint_x: 6
              
-            
-            # cols: root.grid_cols
-            # rows: root.grid_rows
             cols: app.parm_cols
             rows: app.parm_rows
             row_force_default: True 
             row_default_height: 40
             orientation: 'tb-lr'
 
-            # RadioButton:
-            #     text: "scales option"
-            #     on_press: 
-            #         app.root.current='main_screen'
-            #         app.root.transition: NoTransition()
-            #         app.root.transition.direction = 'up'
-            #         app.root.transition.duration = 0.5
-            # RadioButton:
-            #     text: "scales option"
-            #     on_press: 
-            #         app.root.current='main_screen'
-            #         app.root.transition: NoTransition()
-            #         app.root.transition.direction = 'up'
-            #         app.root.transition.duration = 0.5
-            # RadioButton:
-            #     text: "scales option"
-            #     on_press: 
-            #         app.root.current='main_screen'
-            #         app.root.transition: NoTransition()
-            #         app.root.transition.direction = 'up'
-            #         app.root.transition.duration = 0.5
-            # RadioButton:
-            #     text: "scales option"
-            #     on_press: 
-            #         app.root.current='main_screen'
-            #         app.root.transition: NoTransition()
-            #         app.root.transition.direction = 'up'
-            #         app.root.transition.duration = 0.5
-            # RadioButton:
-            #     text: "scales option"
-            #     on_press: 
-            #         app.root.current='main_screen'
-            #         app.root.transition: NoTransition()
-            #         app.root.transition.direction = 'up'
-            #         app.root.transition.duration = 0.5
-            # RadioButton:
-            #     text: "scales option"
-            #     on_press: 
-            #         app.root.current='main_screen'
-            #         app.root.transition: NoTransition()
-            #         app.root.transition.direction = 'up'
-            #         app.root.transition.duration = 0.5
-            # RadioButton:
-            #     text: "scales option"
-            #     on_press: 
-            #         app.root.current='main_screen'
-            #         app.root.transition: NoTransition()
-            #         app.root.transition.direction = 'up'
-            #         app.root.transition.duration = 0.5
 
 
         Button:
@@ -162,7 +101,7 @@ ScreenManager:
             text: 'next'
             size_hint_x: 0.5
             on_release : 
-                root.scale_page('next')
+                root.scale_page(direction='next')
                 # app.rem_buttons()
                 # app.but_id_offset = app.but_id_offset+app.grid_len if app.but_id_offset+app.grid_len<app.nbr_of_scales else app.but_id_offset
                 # app.populate_button()
