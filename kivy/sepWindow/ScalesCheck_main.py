@@ -1,3 +1,5 @@
+import json
+
 from kivy.app import App
 from kivy.lang import Builder
 # from kivy.uix.screenmanager import ScreenManager, Screen
@@ -7,6 +9,8 @@ FadeTransition, WipeTransition, FallOutTransition, RiseInTransition)
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.behaviors import ToggleButtonBehavior
 from kivy.properties import (StringProperty, ListProperty, ObjectProperty, NumericProperty)
+
+
 
 class MainScreen(Screen):
 
@@ -43,17 +47,41 @@ class ScalesSelectScreen(Screen):
     
 
     but_id_offset = 0
-    button_names = [ 'button_'+ str(i+1).rjust(3,'0')[-3:] for i in range(500)]
-    nbr_of_scales = len(button_names)   
+    # button_names = [ 'button_'+ str(i+1).rjust(3,'0')[-3:] for i in range(500)]
+    # nbr_of_scales = len(button_names)   
+
+
+    def __init__(self, **kwargs):
+        super(ScalesSelectScreen, self).__init__(**kwargs)     
+        self.__read_config_file__()
+        #TODO something wrong with indices seleted 
+        self.button_names = [button_id['name'][0] for button_id in self.patterns_config['scales'][self.but_id_offset:self.but_id_offset+self.grid_len] if button_id['name']!=[]]
+        self.nbr_of_scales = len(self.button_names)   
+
+        
+    def __read_config_file__(self):
+        # print('reading config')
+        # config_file = 'reviewed_pattern_cfg.yaml'
+        config_file = '/workspaces/soundDesign/tracker/reviewed_pattern_cfg.json'
+
+
+        with open(config_file, 'r') as file:
+            # with open('reviewed_pattern_cfg.yaml', 'r') as file:
+            # self.patterns_config = yaml.safe_load(file)
+            self.patterns_config = json.load(file)
+
 
     def populate_button(self):
+        
         # button_matix_len=self.grid_cols*self.grid_rows
         # self.root.ids.scales_opt.ids.button_grid.add_widget(RadioButton(text='World 2'))
         # self.button_matrix=[]
         # for button_id in range(self.but_id_offset,self.but_id_offset+10):
         # for button_id in self.button_names:
+
         for button_id in self.button_names[self.but_id_offset:self.but_id_offset+self.grid_len]:
-            button_text=f'{button_id}'
+        # for button_id in self.patterns_config['scales'][self.but_id_offset:self.but_id_offset+self.grid_len if button_id['name']!=[]]:
+            button_text=f"{button_id}"
             btn = ScaleButton(text=button_text)
             if button_text == self.selected_scale:
                 btn.state='down'
@@ -149,7 +177,7 @@ class ScaleButton(ToggleButtonBehavior, BoxLayout):
 
 class ScalesChkApp(App):
  
-    selected_scale_button = StringProperty() 
+    selected_scale_button = StringProperty('button_055') 
     parm_rows=NumericProperty()
     parm_cols=NumericProperty()
 
