@@ -56,9 +56,9 @@ class ScalesSelectScreen(Screen):
         print(f"{self.grid_cols=}, {self.grid_rows=},{self.grid_cols=}")
 
         self.__read_config_file__()
-        #TODO something wrong with indices seleted 
-        self.button_names = [button_id['name'][0] for button_id in self.patterns_config['scales'] if button_id['name'] ]
-        self.nbr_of_scales = len(self.button_names)   
+        # self.button_names = [button_id['name'][0] for button_id in self.patterns_config['scales'] if button_id['name'] ]
+        self.button_names = ['\n'.join(button_id['name']) for button_id in self.patterns_config['scales'] if button_id['name'] ]
+        self.nbr_of_scales = len(self.button_names)
 
         
     def __read_config_file__(self):
@@ -179,7 +179,7 @@ class ScaleButton(ToggleButtonBehavior, BoxLayout):
 
 class ScalesChkApp(App):
  
-    selected_scale_button = StringProperty('button_055') 
+    selected_scale_button = StringProperty('augmented') # this should be later taken from default valie
     parm_rows=NumericProperty()
     parm_cols=NumericProperty()
 
