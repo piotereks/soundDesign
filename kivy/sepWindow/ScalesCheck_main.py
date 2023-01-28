@@ -57,7 +57,7 @@ class ScalesSelectScreen(Screen):
 
         self.__read_config_file__()
         #TODO something wrong with indices seleted 
-        self.button_names = [button_id['name'][0] for button_id in self.patterns_config['scales'][self.but_id_offset:self.but_id_offset+self.grid_len] if button_id['name']!=[]]
+        self.button_names = [button_id['name'][0] for button_id in self.patterns_config['scales'] if button_id['name'] ]
         self.nbr_of_scales = len(self.button_names)   
 
         
