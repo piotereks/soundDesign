@@ -52,7 +52,9 @@ class ScalesSelectScreen(Screen):
 
 
     def __init__(self, **kwargs):
-        super(ScalesSelectScreen, self).__init__(**kwargs)     
+        super(ScalesSelectScreen, self).__init__(**kwargs)   
+        print(f"{self.grid_cols=}, {self.grid_rows=},{self.grid_cols=}")
+
         self.__read_config_file__()
         #TODO something wrong with indices seleted 
         self.button_names = [button_id['name'][0] for button_id in self.patterns_config['scales'][self.but_id_offset:self.but_id_offset+self.grid_len] if button_id['name']!=[]]
