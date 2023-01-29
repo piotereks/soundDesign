@@ -24,9 +24,9 @@
         state: self.parent.state
         on_press: 
             # print('----------asdfasfasd----------' + self.parent.text)
-            app.root.ids.scales_opt.rem_buttons()
+#            app.root.ids.scales_opt.rem_buttons() # temporary blocked
 #            app.selected_root_note = self.parent.text
-            app.root.current='main_screen'
+#            app.root.current='main_screen'  #temporary blocked
             app.selected_scale_button = self.parent.raw_text[0]
             # padding is a VariableListProperty and defaults to [0, 0, 0, 0].
 
@@ -82,12 +82,22 @@ ScreenManager:
 
 <ScalesSelectScreen>:
 	BoxLayout:
-        Button:
-            id: prev_page
-            text: 'prev'
-            size_hint_x: 0.5
-            on_release :
-                root.scale_page(direction='prev') 
+	    BoxLayout:
+	        size_hint_x: 0.5
+	        orientation: 'vertical'
+	        Button:
+	            text: '<<ret'
+	            size_hint_y: 1
+	            on_release:
+	                app.root.current='main_screen'
+	                app.root.ids.scales_opt.rem_buttons()
+
+            Button:
+                id: prev_page
+                text: 'prev'
+                size_hint_y: 6
+                on_release :
+                    root.scale_page(direction='prev')
 
         GridLayout:
             id: button_grid

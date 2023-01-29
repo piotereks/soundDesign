@@ -1,4 +1,5 @@
 import json
+from itertools import chain
 
 from kivy.app import App
 from kivy.lang import Builder
@@ -123,8 +124,10 @@ class ScalesSelectScreen(Screen):
             
         else:
             for x in range(0,len(self.button_names),self.grid_len):
-                if scale  in self.button_names[x:x+self.grid_len]:
+                # if scale  in self.button_names[x:x+self.grid_len]:
+                if scale  in list(chain(*self.button_names[x:x+self.grid_len])):
                     self.but_id_offset=x
+                    break
                     # return
             
 # for button_id in self.button_names[self.but_id_offset:self.but_id_offset+self.grid_len]:            
@@ -213,6 +216,7 @@ class ScalesChkApp(App):
         if keycode[1] == 'escape':
             if self.root.current=='scales_option':
                 self.root.current='main_screen'
+                self.root.ids.scales_opt.rem_buttons()
                 print('return to main screen')
             else:
                 print('close application')
