@@ -9,7 +9,7 @@ FadeTransition, WipeTransition, FallOutTransition, RiseInTransition)
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.behaviors import ToggleButtonBehavior
 from kivy.properties import (StringProperty, ListProperty, ObjectProperty, NumericProperty)
-
+from kivy.core.window import Window
 
 
 class MainScreen(Screen):
@@ -63,8 +63,8 @@ class ScalesSelectScreen(Screen):
         
     def __read_config_file__(self):
         # print('reading config')
-        # config_file = 'reviewed_pattern_cfg.yaml'
-        config_file = '/workspaces/soundDesign/tracker/reviewed_pattern_cfg.json'
+        config_file = '../../tracker/reviewed_pattern_cfg.json'
+        # config_file = '/workspaces/soundDesign/tracker/reviewed_pattern_cfg.json'
 
 
         with open(config_file, 'r') as file:
@@ -187,15 +187,57 @@ class ScalesChkApp(App):
     selected_scale_button = StringProperty('augmented') # this should be later taken from default valie
     parm_rows=NumericProperty()
     parm_cols=NumericProperty()
-
+    prev_key = None
 
     def on_selected_scale_button(self, instance, value):
         print(instance, value)
         print(self.selected_scale_button)
 
+    def _keyboard_closed(self):
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        self._keyboard.unbind(on_key_up=self._on_keyboard_up)
+        self._keyboard = None
 
+    def _on_keyboard_up(self, keyboard, keycode):
+        self.prev_key = None
+        key = keycode[1]
+        print(f'{key} released')
 
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        play_keys = "q2w3er5t6y7ui9o0p[=]"
 
+        if keycode[1] == self.prev_key:
+            return True
+        print(f"{keycode[1]=} pressed")
+        self.prev_key = keycode[1]
+        if keycode[1] == 'escape':
+            if self.root.current=='scales_option':
+                self.root.current='main_screen'
+                print('return to main screen')
+            else:
+                print('close application')
+                self.close_application()
+
+        return True
+
+    def close_application(self):
+        # closing application
+        App.get_running_app().stop()
+        Window.close()
+
+    def on_start(self):
+
+        # self.keys_mapping_init()
+        self._keyboard = Window.request_keyboard(self._keyboard_closed, None)
+        # self._keyboard = App.request_keyboard(self._keyboard_closed, self)
+
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+        self._keyboard.bind(on_key_up=self._on_keyboard_up)
+
+    def close_application(self):
+        # closing application
+        App.get_running_app().stop()
+        Window.close()
 
 
 #  self.manager.ids.another.ids.box.add_widget(Label(text="Button 1 pressed"))
