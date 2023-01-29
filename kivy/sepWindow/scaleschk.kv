@@ -8,9 +8,10 @@
 
 <ScaleButton>:
     # orientation:'horizontal'
-
+#    raw_text:'Y'
     ToggleButton:
-        text:self.parent.text if self.parent.text else 'X'
+#        text:self.parent.text if self.parent.text else 'X'
+        text:'\n'.join(self.parent.raw_text) if self.parent.raw_text else 'X'
         halign: 'center'
         valign: 'middle'
 #        size_hint: [None, None]
@@ -26,7 +27,7 @@
             app.root.ids.scales_opt.rem_buttons()
 #            app.selected_root_note = self.parent.text
             app.root.current='main_screen'
-            app.selected_scale_button = self.parent.text
+            app.selected_scale_button = self.parent.raw_text[0]
             # padding is a VariableListProperty and defaults to [0, 0, 0, 0].
 
 ScreenManager:

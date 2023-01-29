@@ -57,7 +57,7 @@ class ScalesSelectScreen(Screen):
 
         self.__read_config_file__()
         # self.button_names = [button_id['name'][0] for button_id in self.patterns_config['scales'] if button_id['name'] ]
-        self.button_names = ['\n'.join(button_id['name']) for button_id in self.patterns_config['scales'] if button_id['name'] ]
+        self.button_names = [button_id['name'] for button_id in self.patterns_config['scales'] if button_id['name'] ]
         self.nbr_of_scales = len(self.button_names)
 
         
@@ -83,9 +83,13 @@ class ScalesSelectScreen(Screen):
 
         for button_id in self.button_names[self.but_id_offset:self.but_id_offset+self.grid_len]:
         # for button_id in self.patterns_config['scales'][self.but_id_offset:self.but_id_offset+self.grid_len if button_id['name']!=[]]:
-            button_text=f"{button_id}"
-            btn = ScaleButton(text=button_text)
-            if button_text == self.selected_scale:
+        #     button_text=f"{button_id}"
+        #     button_text='\n'.join(button_id)
+            button_text = button_id
+            # btn = ScaleButton(text=button_text)
+            btn = ScaleButton(raw_text=button_text)
+            # if button_text == self.selected_scale:
+            if self.selected_scale in button_text:
                 btn.state='down'
                 
             self.button_matrix.append(btn)
@@ -174,6 +178,7 @@ class ScalesSelectScreen(Screen):
         
 class ScaleButton(ToggleButtonBehavior, BoxLayout):
     text = StringProperty('')
+    raw_text = ListProperty('')
     pass
 
 
