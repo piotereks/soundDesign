@@ -1,0 +1,50 @@
+    3  echo services status before script
+    4  service --status-all
+    5  echo script running...
+    6  sudo /etc/init.d/ssh restart
+    7  sudo /etc/init.d/x11-common restart
+    8  echo services status after script
+    9  service --status-all
+   12  sudo apt install x11-apps
+   15  sudo apt install xauth
+   16  sudo apt-get install xauth
+   17  sudo apt update
+   18  sudo apt upgrade
+   19  sudo apt update
+   20  sudo apt-get install xauth
+   23  python -m pip install --upgrade pip setuptools virtualenv
+   24  echo $DISPLAY
+   25  xeyes
+   26  sudo apt install x11-apps
+   27  xeyes
+   28  wget https://az764295.vo.msecnd.net/stable/97dec172d3256f8ca4bfb2143f3f76b503ca0534/code_1.74.3-1673284829_amd64.deb
+   30  sudo dpkg -i code_1.74.3-1673284829_amd64.deb 
+   31  sudo apt install xdg-utils
+   32  sudo dpkg -i code_1.74.3-1673284829_amd64.deb 
+   33  code
+   34  git clone https://piotereks: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@github.com/piotereks/SoundDesign.git
+   36  cd mv SoundDesign/ soundDesign/
+   37  mv SoundDesign/ soundDesign/
+   38  cd soundDesign/
+   40  sudo apt-get install -y     python3-pip     build-essential     git     python3     python3-dev \
+   41  python -m virtualenv kivy_venv
+   42  code
+   43  python -m pip install "kivy[base]" kivy_examples
+   61  python -m pip install ffpyplayer
+   62  pip install kivy
+   63  pip install kivy.deps.angle
+   64  pip install kivy.deps.sdl2
+   65  pip install kivy.deps.glew
+   66  pip install kivy.deps.gstreamer
+   74  sudo apt-get update && sudo apt-get install ffmpeg libsm6 libxext6  -y
+   76  sudo apt install python3 python3-dev python3-distutils -y
+   82  . /workspaces/soundDesign/kivy_venv/bin/activate
+   83  sudo apt install python3 python3-dev python3-distutils -y
+   84  wget https://download-cdn.jetbrains.com/python/pycharm-community-2022.3.2.tar.gz
+   93  sudo tar xzf pycharm-*.tar.gz -C /opt/
+   94  cd /opt/pycharm-community-2022.3.2/
+   95  cd bin
+   96  ./pycharm.sh 
+   97  sudo apt install default-jdk
+   98  ./pycharm.sh 
+  111  /opt/pycharm-community-2022.3.2/bin/pycharm.sh 

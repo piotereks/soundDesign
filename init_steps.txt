@@ -1,0 +1,56 @@
+echo services status before script
+service --status-all
+echo script running...
+sudo /etc/init.d/ssh restart
+sudo /etc/init.d/x11-common restart
+echo services status after script
+service --status-all
+
+sudo apt upgrade
+sudo apt update
+sudo apt install xauth x11-apps -y
+echo $DISPLAY
+xeyes
+
+sudo apt install xdg-utils -y
+sudo apt-get update && sudo apt-get install ffmpeg libsm6 libxext6  -y
+sudo apt install python3 python3-dev python3-distutils -y
+sudo apt install default-jdk -y
+sudo apt-get install -y     python3-pip     build-essential     git     python3     python3-dev
+
+
+
+wget https://az764295.vo.msecnd.net/stable/97dec172d3256f8ca4bfb2143f3f76b503ca0534/code_1.74.3-1673284829_amd64.deb
+sudo dpkg -i code_1.74.3-1673284829_amd64.deb
+code
+
+git clone https://piotereks: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@github.com/piotereks/SoundDesign.git
+cd mv SoundDesign/ soundDesign/
+mv SoundDesign/ soundDesign/
+cd soundDesign/
+code
+
+wget https://download-cdn.jetbrains.com/python/pycharm-community-2022.3.2.tar.gz
+sudo tar xzf pycharm-*.tar.gz -C /opt/
+# ./pycharm.sh
+
+ln -s /opt/pycharm-community-2022.3.2/bin/pycharm.sh pycharm_link
+cat >pych <<123123123
+./pycharm_link >/dev/null 2>/dev/null &
+123123123
+
+
+python -m pip install --upgrade pip setuptools virtualenv
+python -m virtualenv kivy_venv
+. /workspaces/soundDesign/kivy_venv/bin/activate
+python -m pip install "kivy[base]" kivy_examples
+python -m pip install ffpyplayer
+# pip install kivy
+# pip install kivy.deps.angle
+# pip install kivy.deps.sdl2
+# pip install kivy.deps.glew
+# pip install kivy.deps.gstreamer
+
+
+
+
