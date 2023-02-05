@@ -6,6 +6,12 @@
 #:set color_button_pressed (0.659, 0.522, 0.431, 1)  # darker brown
 #:set color_font   (0.957, 0.890, 0.843, 1)  # off white
 
+#: import CardTransition kivy.uix.screenmanager.CardTransition
+#: import NoTransition kivy.uix.screenmanager.NoTransition
+#: import FadeTransition kivy.uix.screenmanager.FadeTransition
+#: import RiseInTransition kivy.uix.screenmanager.RiseInTransition
+
+
 <MySpinnerOption@SpinnerOption>:
     background_color: color_button if self.state == 'down' else color_button_pressed
     background_down: 'atlas://data/images/defaulttheme/button'
@@ -14,6 +20,34 @@
     size_hint: [2.5, None]
     # sync_height: True
     # size: [-(-self.texture_size[0]//20)*20+10,self.texture_size[1]*1]
+
+
+
+
+
+
+
+
+
+ScreenManager:
+    id: screen_manager
+    transition: NoTransition()
+
+    MainScreen:
+        id: main_scr
+        name: 'main_screen'
+        manager: 'screen_manager'
+
+
+    ScalesSelectScreen:
+        id: scales_opt
+        name: 'scales_option'
+        manager: 'screen_manager'
+        grid_cols: app.parm_cols
+        grid_rows: app.parm_rows
+        grid_len: app.parm_cols * app.parm_rows
+        selected_scale: app.selected_scale_button
+
 
 
 
@@ -32,248 +66,298 @@
 
  
 
-<TrackerWidget>:
-    # xxx_scale_spinner_text:scale_spinner.text
-    # blah_properties:'asdf'
-    # selected_root_note: 'C'
-    orientation: 'vertical'
-    # on_selected_root_note: printx('asdfsdf')
+<MainScreen>:
     BoxLayout:
-        orientation: 'horizontal'
-        # size_hint_y: None
-        # size_y: 20
-        size_hint_y: None
-        padding: [20,20]
-        spacing: 20
-        # padding_y : tempo.value
-        ToggleButton:
-#            text: self.state
-            text: 'Play' if self.state=='normal' else 'Pause'
-            id: start_stop_button
-            size_hint: [None, None]
-            # size: [round(self.texture_size[0]/2,-1)*2+30,self.texture_size[1]*2]
-            # (-(-n//div))
-            size: [-(-self.texture_size[0]//70)*70,self.texture_size[1]*2]
-            on_state: app.play_pause(*args)
-        Button:
-            text:'Save'
-            size_hint: [None, None]
-            # size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
-            size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
-            on_press: app.save()
-            # valign: 'top'
-        Widget:
-            size_hint_x: 0.25
-            size_hint_y: None
-        Button:
-            text:'rnd scale'
-            size_hint: [None, None]
-            size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
-            on_press: app.rand_scale()
-            # size_hint : [None, None]
-            # size : self.size
-            # anchor_x: 'right'
-        # Label:
-        #     text:'scale dropdown'
-        #     # size_hint_x: 2.5
-        #     # size_hint_y: None
-        #     size_hint: [2.5, None]
-        #     size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
- 
-        # Spinner:
-        #     id:scale_spinnerx
-        #     text: app.scale_init_text  if app.scale_init_text else 'Python'
-        #     values: app.scale_values if app.scale_values else ('Python', 'C', 'C++', 'Java') 
-        #     size_hint: [2.5, None]
-        #     height: self.texture_size[1]*2
-
-#        Spinner:
-#            id:scale_spinner
-#            text: app.scale_init_text  if app.scale_init_text else 'Python'
-#            values: app.scale_values if app.scale_values else ('Python', 'C', 'C++', 'Java')
-#            size_hint: [2.5, None]
-#            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
-
-        Spinner:
-            id:scale_spinner
-            text: app.scale_init_text  if app.scale_init_text else 'Python'
-            # values: app.scale_values if app.scale_values else ('Python', 'C', 'C++', 'Java') 
-            values: app.scale_values if app.scale_values else ('Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', '123Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java') 
-            size_hint: [2.5, None]
-            # size_height
-            size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
-            option_cls: Factory.get("MySpinnerOption")
-            on_text : app.set_scale(*args)
-
-        Label:
-            text: app.scale_set_name_txt if app.scale_set_name_txt else 'scale name'
-            # size_hint_x: 2.5
-            # size_hint_y: None
-            size_hint: [2.5, None]
-            size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
-   
-            valign : 'bottom'
-            # anchor_x: 'left'
-
-
-    BoxLayout:
-        orientation: 'horizontal'
-        padding: [20,20]
-        spacing: 10
-        size_hint_y: None
-        # size_y: 20
-        Widget:
-            size_hint_x: 1
-        Button:
-            id : rnd_key
-            text:'rnd key'
-            size_hint: [None, None]
-            size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
-            on_press: app.rand_key()
-          
-        Label:
-            text:'keys:'
-            size_hint: [None, None]
-            size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
-        BoxLayout:
-            id: scales_group
-            orientation:'horizontal'
-            # padding: [30,30]
-            # spacing: 5
-            size_hint_x: 4
-
-            RadioButton:
-                text:'C'
-                state: 'down'
-            RadioButton:
-                text:'C#'
-            RadioButton:
-                text:'D'
-            RadioButton:
-                text:'D#'
-            RadioButton:
-                text:'E'
-            RadioButton:
-                text:'F'
-            RadioButton:
-                text:'F#'
-            RadioButton:
-                text:'G'
-            RadioButton:
-                text:'G#'
-            RadioButton:
-                text:'A'
-            RadioButton:
-                text:'A#'
-            RadioButton:
-                text:'B'
-        Widget:
-            size_hint_x: 1
-
-
-    BoxLayout:
-        orientation: 'horizontal'
-        size_hint_y: None
-        padding: [20,20]
-        spacing: 20
-        ToggleButton:
-            id:metronome
-            text:'metronome'
-            size_hint: [None, None]
-            size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
-            on_state: app.metro_on_off(*args)
-
-        BoxLayout:
-            orientation:'vertical'
-            Label:
-                id:tempo_val
-                text:str(tempo.value)
-            Slider:
-                id: tempo
-                min: 40
-                max: 300
-                value: 120
-                step: 1
-                orientation: 'horizontal'
-                on_value: app.set_tempo(*args)
-
-        Button:
-            text:'rnd func'
-            size_hint: [None, None]
-            size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
-            on_press: app.rand_play_funct()
-
-
-        BoxLayout:
-            orientation:'vertical'
-            Label:
-                text:'play func'
-                size_hint: [1, None]
-                size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
-
-            Spinner:
-                id:func_spinner
-                text: app.func_init_text  if app.func_init_text else 'func1'
-                values: app.func_values if app.func_values else ('func1', 'func2', 'func3', 'func4')
-                size_hint: [1, None]
-                size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
-                # height: '48dp'
-                # size_hint: [2.5, None]
-                # size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
-                on_text : app.set_play_func(*args)
-
-
-
-
-    BoxLayout:
-        orientation: 'horizontal'
-        padding: [20,20]
-        spacing: 20
-        ToggleButton:
-            id: loopq_button
-            text:'LoopQ'
-            state:'down'
-            size_hint: [None, None]
-            size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
-            on_state: app.loop_play(*args)
-
-
-        Label:
-            id: curr_notes_pair_lbl
-            text: app.curr_notes_pair_lbl_text  if app.curr_notes_pair_lbl_text else  'curr_notes_pair_lbl_text'
-            size_hint: [2, None]
-            size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
-        Label:
-            id: queue_content_lbl
-            text: app.queue_content_lbl_text  if app.queue_content_lbl_text else 'queue_content_lbl_text'
-            size_hint: [2, None]
-            size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
-    BoxLayout:
+    # Widget:
         orientation: 'vertical'
-        Label:
-            id: full_queue_content
-            text: app.fullq_content_lbl_text  if app.fullq_content_lbl_text else 'full_queue_content_lbl_text'
-        # AnchorLayout:
-        #     anchor_x: 'center'
-        #     anchor_y: 'center'
-        Label:
-            id: check_notes_lbl
-            halign:'center'
-            valign:'center'
-            # padding: [40,10]
-            # padding_y : 40
-            # padding_x: 160
-            # padding_x :self.center[0]
-            # padding_x: (root.width - self.texture_size[0])/2
-            # padding_x: [self.center[0] - self._get_text_width(max(self._lines, key=len), self.tab_width, self._label_cached) / 2.0,0] if self.text else [self.center[0], 0]
-        # top, bottom
-            # padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            padding: [20,20]
+            spacing: 20
+            # padding_y : tempo.value
+            ToggleButton:
+                text: 'Play' if self.state=='normal' else 'Pause'
+                id: start_stop_button
+                size_hint: [None, None]
+                # size: [round(self.texture_size[0]/2,-1)*2+30,self.texture_size[1]*2]
+                # (-(-n//div))
+                size: [-(-self.texture_size[0]//70)*70,self.texture_size[1]*2]
+                on_state: app.play_pause(*args)
+            Button:
+                text:'Save'
+                size_hint: [None, None]
+                # size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+                size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
+                on_press: app.save()
+                # valign: 'top'
+            Widget:
+                size_hint_x: 0.25
+                size_hint_y: None
+            Button:
+                text:'rnd scale'
+                size_hint: [None, None]
+                size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
+                on_press: app.rand_scale()
+                # size_hint : [None, None]
+                # size : self.size
+                # anchor_x: 'right'
+
+            #button here
+            Button:
+                id:scale_spinner
+                text: 'scales select'
+                # text: app.scale_init_text  if app.scale_init_text else 'Python'
+                # values: app.scale_values if app.scale_values else ('Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', '123Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java') 
+                size_hint: [2.5, None]
+                # size_height
+                size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+
+                on_press:   
+                    print('=====on_press')
+                    app.root.current='scales_option'
+                    app.root.ids.scales_opt.scale_page(scale=app.selected_scale_button)
+                    # app.root.ids.scales_opt.populate_button()
+                
+                    # app.on_start()
+
+            Label:
+                text: app.scale_set_name_txt if app.scale_set_name_txt else 'scale name'
+                # size_hint_x: 2.5
+                # size_hint_y: None
+                size_hint: [2.5, None]
+                size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
+    
+                valign : 'bottom'
+                # anchor_x: 'left'
 
 
-            # valign: 'top'
-            # haling: 'right'
-            text_size: root.width, 80
-            size: self.texture_size            
-            text: app.check_notes_lbl_text  if app.check_notes_lbl_text else 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
-            # text: app.check_notes_lbl_text  if app.check_notes_lbl_text else  str(self.height) +' '+ str(self.line_height) +' '+ str(self.center)   +' '+str(root.width) +' '+str(root.height)+' '+str(self.texture_size)   +' Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut ...'
-            # text: app.check_notes_lbl_text  if app.check_notes_lbl_text else str(root.width) +' '+str(root.height)+' '+str(self.texture_size)   +' Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod t'
+        BoxLayout:
+            orientation: 'horizontal'
+            padding: [20,20]
+            spacing: 10
+            size_hint_y: None
+            # size_y: 20
+            Widget:
+                size_hint_x: 1
+            Button:
+                id : rnd_key
+                text:'rnd key'
+                size_hint: [None, None]
+                size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
+                on_press: app.rand_key()
+            
+            Label:
+                text:'keys:'
+                size_hint: [None, None]
+                size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
+            BoxLayout:
+                id: scales_group
+                orientation:'horizontal'
+                # padding: [30,30]
+                # spacing: 5
+                size_hint_x: 4
+
+                RadioButton:
+                    text:'C'
+                    state: 'down'
+                RadioButton:
+                    text:'C#'
+                RadioButton:
+                    text:'D'
+                RadioButton:
+                    text:'D#'
+                RadioButton:
+                    text:'E'
+                RadioButton:
+                    text:'F'
+                RadioButton:
+                    text:'F#'
+                RadioButton:
+                    text:'G'
+                RadioButton:
+                    text:'G#'
+                RadioButton:
+                    text:'A'
+                RadioButton:
+                    text:'A#'
+                RadioButton:
+                    text:'B'
+            Widget:
+                size_hint_x: 1
+
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            padding: [20,20]
+            spacing: 20
+            ToggleButton:
+                id:metronome
+                text:'metronome'
+                size_hint: [None, None]
+                size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
+                on_state: app.metro_on_off(*args)
+
+            BoxLayout:
+                orientation:'vertical'
+                Label:
+                    id:tempo_val
+                    text:str(tempo.value)
+                Slider:
+                    id: tempo
+                    min: 40
+                    max: 300
+                    value: 120
+                    step: 1
+                    orientation: 'horizontal'
+                    
+                    # on_value: app.set_tempo(*args)  # TODO to restore
+
+            Button:
+                text:'rnd func'
+                size_hint: [None, None]
+                size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
+                on_press: app.rand_play_funct()
+
+
+            BoxLayout:
+                orientation:'vertical'
+                Label:
+                    text:'play func'
+                    size_hint: [1, None]
+                    size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
+
+                Spinner:
+                    id:func_spinner
+                    text: app.func_init_text  if app.func_init_text else 'func1'
+                    values: app.func_values if app.func_values else ('func1', 'func2', 'func3', 'func4')
+                    size_hint: [1, None]
+                    size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
+                    # height: '48dp'
+                    # size_hint: [2.5, None]
+                    # size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
+                    on_text : app.set_play_func(*args)
+
+
+
+
+        BoxLayout:
+            orientation: 'horizontal'
+            padding: [20,20]
+            spacing: 20
+            ToggleButton:
+                id: loopq_button
+                text:'LoopQ'
+                state:'down'
+                size_hint: [None, None]
+                size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
+                on_state: app.loop_play(*args)
+
+
+            Label:
+                id: curr_notes_pair_lbl
+                text: app.curr_notes_pair_lbl_text  if app.curr_notes_pair_lbl_text else  'curr_notes_pair_lbl_text'
+                size_hint: [2, None]
+                size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
+            Label:
+                id: queue_content_lbl
+                text: app.queue_content_lbl_text  if app.queue_content_lbl_text else 'queue_content_lbl_text'
+                size_hint: [2, None]
+                size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                id: full_queue_content
+                text: app.fullq_content_lbl_text  if app.fullq_content_lbl_text else 'full_queue_content_lbl_text'
+            # AnchorLayout:
+            #     anchor_x: 'center'
+            #     anchor_y: 'center'
+            Label:
+                id: check_notes_lbl
+                halign:'center'
+                valign:'center'
+                # padding: [40,10]
+                # padding_y : 40
+                # padding_x: 160
+                # padding_x :self.center[0]
+                # padding_x: (root.width - self.texture_size[0])/2
+                # padding_x: [self.center[0] - self._get_text_width(max(self._lines, key=len), self.tab_width, self._label_cached) / 2.0,0] if self.text else [self.center[0], 0]
+            # top, bottom
+                # padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
+
+
+                # valign: 'top'
+                # haling: 'right'
+                text_size: root.width, 80
+                size: self.texture_size            
+                text: app.check_notes_lbl_text  if app.check_notes_lbl_text else 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+                # text: app.check_notes_lbl_text  if app.check_notes_lbl_text else  str(self.height) +' '+ str(self.line_height) +' '+ str(self.center)   +' '+str(root.width) +' '+str(root.height)+' '+str(self.texture_size)   +' Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut ...'
+                # text: app.check_notes_lbl_text  if app.check_notes_lbl_text else str(root.width) +' '+str(root.height)+' '+str(self.texture_size)   +' Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod t'
+
+<ScaleButton>:
+    # orientation:'horizontal'
+#    raw_text:'Y'
+    ToggleButton:
+#        text:self.parent.text if self.parent.text else 'X'
+        text:'\n'.join(self.parent.raw_text) if self.parent.raw_text else 'X'
+        halign: 'center'
+        valign: 'middle'
+#        size_hint: [None, None]
+        # size: [round(self.texture_size[0]/5,-1)*5+30,self.texture_size[1]*2]
+        # size: [-(-self.texture_size[0]//20)*20+10,self.texture_size[1]*2]
+        # padding : (10,10)
+        # padding : self.center
+        # size: [100,self.texture_size[1]*2]
+        group:'keys'
+        state: self.parent.state
+        on_press: 
+            # print('----------asdfasfasd----------' + self.parent.text)
+#            app.root.ids.scales_opt.rem_buttons() # temporary blocked
+#            app.selected_root_note = self.parent.text
+#            app.root.current='main_screen'  #temporary blocked
+            app.selected_scale_button = self.parent.raw_text[0]
+            # padding is a VariableListProperty and defaults to [0, 0, 0, 0].
+
+<ScalesSelectScreen>:
+	BoxLayout:
+	    BoxLayout:
+	        size_hint_x: 0.5
+	        orientation: 'vertical'
+	        Button:
+	            text: '<<ret'
+	            size_hint_y: 1
+	            on_release:
+	                app.root.current='main_screen'
+	                app.root.ids.scales_opt.rem_buttons()
+
+            Button:
+                id: prev_page
+                text: 'prev'
+                size_hint_y: 6
+                on_release :
+                    root.scale_page(direction='prev')
+
+        GridLayout:
+            id: button_grid
+            size_hint_x: 6
+            # padding : (50,50)
+             
+            cols: app.parm_cols
+            rows: app.parm_rows
+            # row_force_default: True 
+            # row_default_height: 40
+            orientation: 'tb-lr'
+
+
+
+        Button:
+            id: next_page
+            text: 'next'
+            size_hint_x: 0.5
+            on_release : 
+                root.scale_page(direction='next')
+                # app.rem_buttons()
+                # app.but_id_offset = app.but_id_offset+app.grid_len if app.but_id_offset+app.grid_len<app.nbr_of_scales else app.but_id_offset
+                # app.populate_button()
+

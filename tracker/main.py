@@ -1,4 +1,6 @@
 import isobar
+import json
+from itertools import chain
 
 from tracker import *
 from patterns import *
@@ -12,12 +14,16 @@ global label_str
 
 
 from kivy.app import App
+from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.behaviors import ToggleButtonBehavior
-from kivy.properties import StringProperty, ListProperty
+from kivy.properties import (StringProperty, ListProperty, ObjectProperty, NumericProperty)
+
+from kivy.lang import Builder
+from kivy.uix.screenmanager import (ScreenManager, Screen, NoTransition,
+SlideTransition, CardTransition, SwapTransition,
+FadeTransition, WipeTransition, FallOutTransition, RiseInTransition)
 from kivy.core.window import Window
-
-
 
 # <editor-fold desc="Interactive simplification functions">
 def tracker_dec(func):
@@ -324,7 +330,7 @@ def main():
     # keyboard = Keyboard(lambda note: put_in_queue(note))
     # sbpq()
     # ts()  # make by  default not starting
-    TrackerApp().run()
+    TrackerApp(parm_rows=7,parm_cols=3).run()
     ts()
     save_midi(on_exit=True)
 
@@ -334,8 +340,13 @@ class RadioButton(ToggleButtonBehavior, BoxLayout):
     text = StringProperty('')
     pass
 
-class TrackerWidget(BoxLayout):
+class ScaleButton(ToggleButtonBehavior, BoxLayout):
+    text = StringProperty('')
+    raw_text = ListProperty('')
     pass
+
+# class TrackerWidget(BoxLayout):
+#     pass
 
 class TrackerApp(App):
 
@@ -355,9 +366,15 @@ class TrackerApp(App):
     fullq_content_lbl_text = StringProperty()
     prev_key = None    
 
+    selected_scale_button = StringProperty('augmented') # this should be later taken from default valie
+    parm_rows=NumericProperty()
+    parm_cols=NumericProperty()
+    prev_key = None
 
-    def build(self):
-        return TrackerWidget()
+
+
+    # def build(self):
+    #     return TrackerWidget()
 
     def _keyboard_closed(self):
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
@@ -409,8 +426,8 @@ class TrackerApp(App):
         
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
         self._keyboard.bind(on_key_up=self._on_keyboard_up)
-        self.loop_play(instance=None, state=self.root.ids.loopq_button.state)
-        my_tracker.metro_start_stop(self.root.ids.metronome.state)
+        self.loop_play(instance=None, state=self.root.ids.main_scr.ids.loopq_button.state)
+        my_tracker.metro_start_stop(self.root.ids.main_scr.ids.metronome.state)
         all_scales = sorted([scale.name for scale in iso.Scale.all()])
         self.scale_init_text = my_tracker.key.scale.name
         self.scale_values = all_scales
@@ -425,15 +442,15 @@ class TrackerApp(App):
         my_tracker.fullq_content_action = lambda: self.set_fullq_content_lbl_text('full queue: '+str(my_tracker.get_queue_content_full()))
 
     def inv_play_pause(self):
-        state=self.root.ids.start_stop_button.state
+        state=self.root.ids.main_scr.ids.start_stop_button.state
         to_state = 'normal' if state == 'down' else 'down'
-        self.root.ids.start_stop_button.state=to_state
+        self.root.ids.main_scr.ids.start_stop_button.state=to_state
         # self.play_pause(None, to_state)
         
     def inv_metro_on_off(self):
-        state=self.root.ids.metronome.state
+        state=self.root.ids.main_scr.ids.metronome.state
         to_state = 'normal' if state == 'down' else 'down'
-        self.root.ids.metronome.state=to_state
+        self.root.ids.main_scr.ids.metronome.state=to_state
         # self.metro_on_off(None, to_state)
 
     def play_pause(self, instance, state):
@@ -490,13 +507,13 @@ class TrackerApp(App):
         keys_scale_action(root_note, my_tracker.key.scale.name)
 
     def rand_key(self):
-        keys = list({key.text for key in self.root.ids.scales_group.children}\
+        keys = list({key.text for key in self.root.ids.main_scr.ids.scales_group.children}\
             -{ self.selected_root_note })
         randomized_key = random.choice(keys)
         print(f'this is {randomized_key=}')
         print(my_tracker.key)
         keys_scale_action(randomized_key, my_tracker.key.scale.name)
-        for key in self.root.ids.scales_group.children:
+        for key in self.root.ids.main_scr.ids.scales_group.children:
             print(f"{key.text=} != {randomized_key}")
             if key.text != randomized_key:
                 key.state = 'normal'
@@ -540,12 +557,214 @@ class TrackerApp(App):
         # my_tracker.loopq = app.loop_queue_on.get()
 
 
+    def on_selected_scale_button(self, instance, value):
+        print(instance, value)
+        print(self.selected_scale_button)
+        app.set_scale(self, instance, value)
+
+    # def _keyboard_closed(self):
+    #     self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+    #     self._keyboard.unbind(on_key_up=self._on_keyboard_up)
+    #     self._keyboard = None
+
+    # def _on_keyboard_up(self, keyboard, keycode):
+    #     self.prev_key = None
+    #     key = keycode[1]
+    #     print(f'{key} released')
+
+    # def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+    #     play_keys = "q2w3er5t6y7ui9o0p[=]"
+
+    #     if keycode[1] == self.prev_key:
+    #         return True
+    #     print(f"{keycode[1]=} pressed")
+    #     self.prev_key = keycode[1]
+    #     if keycode[1] == 'escape':
+    #         if self.root.current=='scales_option':
+    #             self.root.current='main_screen'
+    #             self.root.ids.scales_opt.rem_buttons()
+    #             print('return to main screen')
+    #         else:
+    #             print('close application')
+    #             self.close_application()
+
+    #     return True
+
+
+
+    # def on_start(self):
+
+        # # self.keys_mapping_init()
+        # self._keyboard = Window.request_keyboard(self._keyboard_closed, None)
+        # # self._keyboard = App.request_keyboard(self._keyboard_closed, self)
+
+        # self._keyboard.bind(on_key_down=self._on_keyboard_down)
+        # self._keyboard.bind(on_key_up=self._on_keyboard_up)
+
+    def close_application(self):
+        # closing application
+        App.get_running_app().stop()
+        Window.close()
+
+
+class MainScreen(Screen):
+
+    pass
+
+
+
+class ScalesSelectScreen(Screen):
+
+
+    # self.grid_rows=rows
+    # self.grid_cols=cols
+    # self.grid_len=rows*cols
+
+    btn = ObjectProperty()
+    button_matrix = ListProperty()
+    # grid_rows=NumericProperty(13)
+    # grid_cols=NumericProperty(4)
+    # grid_len=NumericProperty(13*4)
+    
+    grid_rows=NumericProperty()
+    grid_cols=NumericProperty()
+    grid_len=NumericProperty()
+
+    # pos_x = NumericProperty()
+    grid_pos = ListProperty()
+    last_grid_up_down = StringProperty()
+    
+
+    but_id_offset = 0
+    # button_names = [ 'button_'+ str(i+1).rjust(3,'0')[-3:] for i in range(500)]
+    # nbr_of_scales = len(button_names)   
+
+
+    def __init__(self, **kwargs):
+        super(ScalesSelectScreen, self).__init__(**kwargs)   
+        print(f"{self.grid_cols=}, {self.grid_rows=},{self.grid_cols=}")
+
+        self.__read_config_file__()
+        # self.button_names = [button_id['name'][0] for button_id in self.patterns_config['scales'] if button_id['name'] ]
+        self.button_names = [button_id['name'] for button_id in self.patterns_config['scales'] if button_id['name'] ]
+        self.nbr_of_scales = len(self.button_names)
+
+        
+    def __read_config_file__(self):
+        # print('reading config')
+        config_file = 'reviewed_pattern_cfg.json'
+        # config_file = '/workspaces/soundDesign/tracker/reviewed_pattern_cfg.json'
+
+
+        with open(config_file, 'r') as file:
+            # with open('reviewed_pattern_cfg.yaml', 'r') as file:
+            # self.patterns_config = yaml.safe_load(file)
+            self.patterns_config = json.load(file)
+
+
+    def populate_button(self):
+        
+        # button_matix_len=self.grid_cols*self.grid_rows
+        # self.root.ids.scales_opt.ids.button_grid.add_widget(RadioButton(text='World 2'))
+        # self.button_matrix=[]
+        # for button_id in range(self.but_id_offset,self.but_id_offset+10):
+        # for button_id in self.button_names:
+
+        for button_id in self.button_names[self.but_id_offset:self.but_id_offset+self.grid_len]:
+        # for button_id in self.patterns_config['scales'][self.but_id_offset:self.but_id_offset+self.grid_len if button_id['name']!=[]]:
+        #     button_text=f"{button_id}"
+        #     button_text='\n'.join(button_id)
+            button_text = button_id
+            # btn = ScaleButton(text=button_text)
+            btn = ScaleButton(raw_text=button_text)
+            # if button_text == self.selected_scale:
+            if self.selected_scale in button_text:
+                btn.state='down'
+                
+            self.button_matrix.append(btn)
+            # self.root.ids.scales_opt.ids.button_grid.add_widget(RadioButton(text=f'auto_{button_id}'))
+            # self.root.ids.scales_opt.ids.button_grid.add_widget(btn)
+            self.ids.button_grid.add_widget(btn)
+            
+        print('----------------')
+    pass
+
+
+    def rem_buttons(self):
+        for button in self.button_matrix:
+            # self.root.ids.scales_opt.remove_widget(button) 
+            # self.root.ids.scales_opt.ids.button_grid.remove_widget(button)
+            self.ids.button_grid.remove_widget(button)
+        # self.but_id_offset+=self.grid_len
+    
+
+
+    def scale_page(self, direction=None, scale='major'):
+        if direction in ('RL','prev'):
+            self.rem_buttons()
+            self.but_id_offset-=self.grid_len    
+            if self.but_id_offset<0:
+                self.but_id_offset=0
+        elif direction in ('LR', 'next'):
+            self.rem_buttons()
+            if self.but_id_offset+self.grid_len<self.nbr_of_scales:
+                self.but_id_offset+=self.grid_len
+            
+        else:
+            for x in range(0,len(self.button_names),self.grid_len):
+                # if scale  in self.button_names[x:x+self.grid_len]:
+                if scale  in list(chain(*self.button_names[x:x+self.grid_len])):
+                    self.but_id_offset=x
+                    break
+                    # return
+            
+# for button_id in self.button_names[self.but_id_offset:self.but_id_offset+self.grid_len]:            
+            # return    
+        self.populate_button()
+        
+
+     
+    def on_touch_down(self,touch):
+        self.last_grid_up_down='down'
+        # print(f"down , {touch.__dict__=}, {touch.px=}, {touch.py=}, {touch.pos=}")
+        print(f"down , {touch.px=}, {touch.py=}, {touch.pos=}")
+        # self.pos_x=touch.px
+        self.grid_pos = touch.pos
+        # return super(ScalesSelectScreen, self).on_touch_down(touch)
+        # touch.grab(self)
+        
+    def on_touch_up(self,touch):
+        prev_last_grid_up_down=self.last_grid_up_down
+        self.last_grid_up_down='up'
+
+        if not self.grid_pos  or self.grid_pos == []:
+            self.grid_pos = touch.pos
+            return True
+        # print(f"up, {touch.__dict__=}, {touch.px=}, {touch.py=}, {touch.pos=}")
+        print(f"up,  {touch.px=}, {touch.py=}, {touch.pos=}")
+        
+        # if self.grid_pos[0]-touch.px > 50:
+        print(f"{self.grid_pos[0]=},{touch.x=}, {self.grid_pos[0]-touch.x=}")
+        if prev_last_grid_up_down=='down': # to filter out accidental up-up
+            if self.grid_pos[0]-touch.x > 50:
+                print('>>>>>>>next')
+                self.scale_page(direction='next')
+            # elif self.pos_x-touch.px <-50:
+            if self.grid_pos[0]-touch.x <-50:
+                print('prev<<<<<<<')
+                self.scale_page(direction='prev')
+                # return super(ScalesSelectScreen, self).on_touch_down(touch)
+            # if self.pos == touch.pos:
+            if pow(self.grid_pos[0]-touch.x,2)+pow(self.grid_pos[1]-touch.y,2) <=100:
+                print('>>>>>>>equal<<<<<<<')
+                self.grid_pos = touch.pos
+                return super(ScalesSelectScreen, self).on_touch_down(touch)
+            # touch.grab(self)
+            self.grid_pos = touch.pos
+
+
 if __name__ == '__main__':
     # print('Do we start?')
     # main_tk()
     main()
     print('Processing Done.')
-
-"""
-nice scales https://jguitar.com/scale/E/Ionian
-"""
