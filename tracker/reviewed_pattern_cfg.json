@@ -96,6 +96,10 @@
                 9
             ]
         },
+        {"name":["penta sus","M2 majorPenta"],
+        "semitones":[0, 2, 5, 7, 10]
+        },
+
         {
             "name": [
                 "ritusen"
@@ -189,6 +193,7 @@
                 10
             ]
         },
+
         {
             "name": [
                 "lydian"
@@ -203,9 +208,13 @@
                 11
             ]
         },
+        {"name": ["lydian augmented"],
+        "semitones":[0, 2, 4, 6,  8,  9, 10]
+
+        },
         {
             "name": [
-                "mixolydianm 5 mod"
+                "mixolydian 5 mod", "MinM M5"
             ],
             "semitones": [
                 0,
@@ -232,6 +241,8 @@
                 10
             ]
         },
+        {"name":["Locrian#2","MinM M6"],
+        "semitones":[0,  2,  3,  5,  6,  8,  10]},
         {
             "name": [
                 "fourths"
@@ -302,6 +313,9 @@
                 11
             ]
         },
+        {"name":["minor harmonic"],
+        "semitones":[0, 2, 3, 5, 7, 8, 11]
+        },
         {
             "name": [
                 "Spanish",
@@ -318,7 +332,7 @@
             ]
         },
         {
-            "name": ["lydian dominant","highlander"],
+            "name": ["lydian dominant","highlander","Lydian b7","MinM M4"],
             "semitones": [
                 0,
                 2,
@@ -409,9 +423,13 @@
                 11
             ]
         },
+        {"name":["wholetone -halftone","WT HT"],
+        "semitones":[0, 2, 3,  5, 6,  8,  9, 11]
+
+        },
         {
             "name": [
-                "half tone - whole tone"
+                "half tone - whole tone","HT WT"
             ],
             "semitones": [
                 0,
@@ -541,7 +559,7 @@
         },
         {
             "name": [
-                "jawaian"
+                "Phrygian #6","jawaian", "MinH M2"
             ],
             "semitones": [
                 0,
@@ -640,7 +658,7 @@
         },
         {
             "name": [
-                "bebop dorian"
+                "bebop dorian","bebop minor"
             ],
             "semitones": [
                 0,

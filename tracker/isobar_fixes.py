@@ -1,7 +1,8 @@
 import isobar as iso
 import math
 import sys
-import yaml
+# import yaml
+import json
 global IN_COLAB
 IN_COLAB = 'google.colab' in sys.modules
 
@@ -26,15 +27,17 @@ def midi_note_to_note_name(note):
 
 def read_config_file_scales():
     # print('reading config')
-    config_file = 'reviewed_pattern_cfg.yaml'
+   
+    config_file = 'reviewed_pattern_cfg.json'
     if IN_COLAB:
         config_file = '/content/SoundDesign/tracker/' + config_file
 
     with open(config_file, 'r') as file:
         # with open('reviewed_pattern_cfg.yaml', 'r') as file:
-        loaded_yaml = yaml.safe_load(file)
+        # loaded_yaml = yaml.safe_load(file)
+        loaded_json = json.load(file)
     # uuuu = [iso.Scale(scale['semitones'], scale['name']) for scale in loaded_yaml['scales']]
-    for scale in loaded_yaml['scales']:
+    for scale in loaded_json['scales']:
         for name in scale['name']:
             new_scale = iso.Scale(scale['semitones'],name)
 

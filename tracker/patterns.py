@@ -284,7 +284,7 @@ def main():
     global note_ptrn
     note_ptrn = NotePatterns()
     # dur_prtn = DurationPatterns()
-    note_ptrn.get_path_pattern(5)
+    # note_ptrn.get_path_pattern(5)
     # print(ptrn.get_random_pattern(5))
     # print(ptrn.get_one_note_pattern(5))
     # print(ptrn.all_suitable_patterns(5))
@@ -294,11 +294,20 @@ def main():
     # ptrn.list_get_pattern_methods()
     # print(note_ptrn.pattern_methods_list)
     # print(note_ptrn.get_pattern(5))
-    pprint.pprint(dur_prtn.patterns)
+    # pprint.pprint(note_ptrn.patterns_config['scales'])
+    # pprint.pprint(note_ptrn['scales'].__dict__)
+    find_scale([0, 2, 3, 5, 7, 8, 11])
+    # find_scale([0,2,4,5,7,9,11])
 
-
+def find_scale(semitones:list):
+    for scale in note_ptrn.patterns_config['scales']:
+        # if not scale.get("semitones"):
+            # print(scale)
+        if set(scale['semitones']) ==set(semitones):
+            print(scale)
 
 if __name__ == '__main__':
     main()
 
 
+# patterns_config
