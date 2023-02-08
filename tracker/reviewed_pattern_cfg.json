@@ -39,7 +39,9 @@
                 "minor",
                 "minor natural",
                 "aeolian",
-                "6 mod"
+                "6 mod",
+                "geez",
+                "minor melodic down"
             ],
             "semitones": [
                 0,
@@ -96,13 +98,13 @@
                 9
             ]
         },
-        {"name":["penta sus","M2 majorPenta"],
+        {"name":["penta sus","M2 majorPenta","egyptian"],
         "semitones":[0, 2, 5, 7, 10]
         },
 
         {
             "name": [
-                "ritusen"
+                "ritusen","yo (jap)"
             ],
             "semitones": [
                 0,
@@ -114,7 +116,7 @@
         },
         {
             "name": [
-                "pelog"
+                "pelog","balinese"
             ],
             "semitones": [
                 0,
@@ -139,7 +141,7 @@
         },
         {
             "name": [
-                "augmented 2"
+                "augmented 2","Prometheus Liszt"
             ],
             "semitones": [
                 0,
@@ -214,7 +216,7 @@
         },
         {
             "name": [
-                "mixolydian 5 mod", "MinM M5"
+                "mixolydian 5 mod", "MinM M5","Hindu_1"
             ],
             "semitones": [
                 0,
@@ -257,7 +259,8 @@
         {
             "name": [
                 "major soft",
-                "indian"
+                "indian",
+                "aeolian dominant"
             ],
             "semitones": [
                 0,
@@ -271,21 +274,7 @@
         },
         {
             "name": [
-                "minor melodic down"
-            ],
-            "semitones": [
-                0,
-                2,
-                3,
-                5,
-                7,
-                8,
-                10
-            ]
-        },
-        {
-            "name": [
-                "minor melodic up"
+                "minor melodic up","hawaian"
             ],
             "semitones": [
                 0,
@@ -313,14 +302,14 @@
                 11
             ]
         },
-        {"name":["minor harmonic"],
+        {"name":["minor harmonic","Mohammedan"],
         "semitones":[0, 2, 3, 5, 7, 8, 11]
         },
         {
             "name": [
                 "Spanish",
-                "5 mod of minor harmonic"
-            ],
+                "min harm M5",
+                "Phrygian Dominant", "Spanish Phrygian", "Spanish Gypsy", "Jewish"],
             "semitones": [
                 0,
                 1,
@@ -397,7 +386,7 @@
         },
         {
             "name": [
-                "altered"
+                "altered","Super Locrian"
             ],
             "semitones": [
                 0,
@@ -423,13 +412,13 @@
                 11
             ]
         },
-        {"name":["wholetone -halftone","WT HT"],
+        {"name":["wholetone -halftone","WT HT","Oct diminished"],
         "semitones":[0, 2, 3,  5, 6,  8,  9, 11]
 
         },
         {
             "name": [
-                "half tone - whole tone","HT WT"
+                "half tone - whole tone","HT WT","Oct Dominant Dim"
             ],
             "semitones": [
                 0,
@@ -469,7 +458,7 @@
         },
         {
             "name": [
-                "arabic"
+                "arabic","maj locrian"
             ],
             "semitones": [
                 0,
@@ -496,7 +485,7 @@
         },
         {
             "name": [
-                "gypsy 2"
+                "gypsy 2","Arabic", "Byzantine", "Double Harm"
             ],
             "semitones": [
                 0,
@@ -508,9 +497,31 @@
                 11
             ]
         },
+        {"name": ["Hun Gypsy","Hung Min"],
+    "semitones":[0,2,3,6,7,8,11]},
+    {"name":["oriental"],
+    "semitones":[0,1,4,5,6,9,10]},
+    {"name":["Iwato"],
+    "semitones":[0,1,5,6,10]},
+    {"name":["Prometheus"],
+    "semitones":[0,2,4,6,9,10]},
+    {"name":["Prometheus Neapol"],
+    "semitones":[0,1,4,6,9,10]},
+    {"name":["Romanian Min"],
+    "semitones":[0,2,3,6,7,9,10]},
+    {"name":["Iberian Hexa"],
+    "semitones":[0,1,4,5,7,10]},
+    {"name":["Harioji"],
+    "semitones":[0,2,3,7,8]},
+    {"name":["chinese 2"],
+    "semitones":[0,4,6,7,11]},
+    {"name":["algerian (short)"],
+    "semitones":[0,4,6,7,11]},
+    {"name":["algerian (long)"],
+    "semitones":[0,2,3,5,6,7,8,11,12,14,15,17]},
         {
             "name": [
-                "hawaian"
+                "hawaian 2"
             ],
             "semitones": [
                 0,
@@ -573,7 +584,7 @@
         },
         {
             "name": [
-                "neapolitian"
+                "neapolitian","neapolitan min"
             ],
             "semitones": [
                 0,
@@ -585,6 +596,17 @@
                 11
             ]
         },
+        {"name":["neapolitan maj"],
+    "semitones":[0,1,3,5,7,9,11]},
+        {"name":["Enigmatic up"],
+    "semitones":[0,1,4,6,8,10,11]},
+     {"name":["Enigmatic down"],
+    "semitones":[0,1,4,5,8,10,11]},
+     {"name":["Spanish 8tones"],
+    "semitones":[0,1,3,4,5,6,8,10]},
+   {"name":["Spanish 8tones"],
+    "semitones":[0,1,3,4,5,6,8,10]},
+
         {
             "name": [
                 "persian"
@@ -601,7 +623,7 @@
         },
         {
             "name": [
-                "hungarian"
+                "hungarian","hung major"
             ],
             "semitones": [
                 0,
