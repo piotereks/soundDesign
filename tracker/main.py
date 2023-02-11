@@ -473,7 +473,7 @@ class TrackerApp(App):
     def set_scale(self, instance, scale_name):
         log_call()
         # print(instance)
-        set_scale(scale_name)
+        set_scale(scale_name) #TODO review this
 
 
     
@@ -560,7 +560,7 @@ class TrackerApp(App):
     def on_selected_scale_button(self, instance, value):
         print(instance, value)
         print(self.selected_scale_button)
-        app.set_scale(self, instance, value)
+        self.set_scale(instance, value)
 
     # def _keyboard_closed(self):
     #     self._keyboard.unbind(on_key_down=self._on_keyboard_down)
