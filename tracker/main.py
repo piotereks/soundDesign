@@ -351,7 +351,7 @@ class ScaleButton(ToggleButtonBehavior, BoxLayout):
 class TrackerApp(App):
 
     
-    scale_init_text = StringProperty()
+    # scale_init_text = StringProperty()
     scale_values = ListProperty()
     scale_set_name_txt = StringProperty()
     selected_root_note = StringProperty()
@@ -366,7 +366,7 @@ class TrackerApp(App):
     fullq_content_lbl_text = StringProperty()
     prev_key = None    
 
-    selected_scale_button = StringProperty('augmented') # this should be later taken from default valie
+    selected_scale_button = StringProperty()
     parm_rows=NumericProperty()
     parm_cols=NumericProperty()
     prev_key = None
@@ -429,7 +429,8 @@ class TrackerApp(App):
         self.loop_play(instance=None, state=self.root.ids.main_scr.ids.loopq_button.state)
         my_tracker.metro_start_stop(self.root.ids.main_scr.ids.metronome.state)
         all_scales = sorted([scale.name for scale in iso.Scale.all()])
-        self.scale_init_text = my_tracker.key.scale.name
+        # self.scale_init_text = my_tracker.key.scale.name
+        self.selected_scale_button  = my_tracker.key.scale.name
         self.scale_values = all_scales
         self.func_values = my_tracker.note_patterns.pattern_methods_short_list
         self.func_init_text = my_tracker.note_patterns.pattern_methods_short_list[0]
@@ -500,7 +501,8 @@ class TrackerApp(App):
         random_scale = random.choice(list(set(all_scales)-set([my_tracker.key.scale.name])))
         # my_tracker.key = iso.Key(my_tracker.key.tonic, iso.Scale.random())
         my_tracker.key = iso.Key(my_tracker.key.tonic, random_scale)
-        self.scale_init_text=my_tracker.key.scale.name
+        # self.scale_init_text=my_tracker.key.scale.name
+        self.selected_scale_button =my_tracker.key.scale.name
 
     def on_selected_root_note(self, instance, root_note):
         print(f'this is selected root note {root_note}')
