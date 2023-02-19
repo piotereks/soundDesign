@@ -53,7 +53,7 @@ ScreenManager:
 
 <RadioButton>:
     orientation:'horizontal'
-
+#    state:self.children[0].state
     ToggleButton:
         text:self.parent.text if self.parent.text else 'X'
         size_hint: [None, None]
@@ -61,8 +61,9 @@ ScreenManager:
         size: [-(-self.texture_size[0]//20)*20+10,self.texture_size[1]*2]
         group:'keys'
         state: self.parent.state
-        on_state: app.selected_root_note = self.parent.text
-
+        on_state:
+            app.selected_root_note = self.parent.text
+#            self.parent.state='down'
 
  
 

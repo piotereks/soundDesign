@@ -265,6 +265,7 @@ def main():
 
 class RadioButton(ToggleButtonBehavior, BoxLayout):
     text = StringProperty('')
+    # state = StringProperty('normal')
     pass
 
 class ScaleButton(ToggleButtonBehavior, BoxLayout):
@@ -465,11 +466,16 @@ class TrackerApp(App):
         print(my_tracker.key)
         keys_scale_action(randomized_key, my_tracker.key.scale.name)
         for key in self.root.ids.main_scr.ids.scales_group.children:
-            print(f"{key.text=} != {randomized_key}")
+            print(f"{key.text=} != {randomized_key}  {key.text != randomized_key=}")
             if key.text != randomized_key:
                 key.state = 'normal'
+                # key.children[0].state='normal'
+                print("key set normal")
                 continue
-            key.state = 'down'
+            # key.state = 'down'
+            # key.state = 'normal'
+            key.children[0].state = 'down'
+            print("key set down")
             print(my_tracker.key)
             # key.selected = True
             
