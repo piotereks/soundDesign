@@ -468,7 +468,7 @@ class TrackerApp(App):
         for key in self.root.ids.main_scr.ids.scales_group.children:
             print(f"{key.text=} != {randomized_key}  {key.text != randomized_key=}")
             if key.text != randomized_key:
-                key.state = 'normal'
+                # key.state = 'normal'
                 key.children[0].state='normal'
                 print("key set normal")
                 continue
