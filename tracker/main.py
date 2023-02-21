@@ -245,19 +245,19 @@ def main():
     # my_tracker.midi_out.program_change(program=22)
 
 
-    # wrk cleanup
-    # my_tracker.scale_name_action = lambda: print(None)
-    # my_tracker.check_notes_action = lambda: print(None)
-    # my_tracker.queue_content_action = lambda: print(None)
-    # my_tracker.curr_notes_pair_action = lambda: print(None)
-    # my_tracker.loop_play_queue_action = lambda: print(None)
-    # my_tracker.fullq_content_action = lambda: print(None)
-
-
     # keyboard = Keyboard(lambda note: put_in_queue(note))
     # sbpq()
     # ts()  # make by  default not starting
     TrackerApp(parm_rows=7,parm_cols=3).run()
+    
+    # cleanup attempt
+    my_tracker.scale_name_action = lambda: print(None)
+    my_tracker.check_notes_action = lambda: print(None)
+    my_tracker.queue_content_action = lambda: print(None)
+    my_tracker.curr_notes_pair_action = lambda: print(None)
+    # my_tracker.loop_play_queue_action = lambda: print(None)
+    my_tracker.fullq_content_action = lambda: print(None)
+    
     ts()
     save_midi(on_exit=True)
 
