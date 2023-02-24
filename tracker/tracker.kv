@@ -53,7 +53,7 @@ ScreenManager:
 
 <RadioButton>:
     orientation:'horizontal'
-
+#    state:self.children[0].state
     ToggleButton:
         text:self.parent.text if self.parent.text else 'X'
         size_hint: [None, None]
@@ -61,8 +61,9 @@ ScreenManager:
         size: [-(-self.texture_size[0]//20)*20+10,self.texture_size[1]*2]
         group:'keys'
         state: self.parent.state
-        on_state: app.selected_root_note = self.parent.text
-
+        on_state:
+            app.selected_root_note = self.parent.text
+#            self.parent.state='down'
 
  
 
@@ -106,7 +107,9 @@ ScreenManager:
             #button here
             Button:
                 id:scale_spinner
-                text: 'scales select'
+#                text: 'scales select'
+#                text: app.scale_init_text
+                text: app.selected_scale_button
                 # text: app.scale_init_text  if app.scale_init_text else 'Python'
                 # values: app.scale_values if app.scale_values else ('Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', '123Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java') 
                 size_hint: [2.5, None]
@@ -211,8 +214,7 @@ ScreenManager:
                     value: 120
                     step: 1
                     orientation: 'horizontal'
-                    
-                    # on_value: app.set_tempo(*args)  # TODO to restore
+                    on_value: app.set_tempo(*args)
 
             Button:
                 text:'rnd func'
