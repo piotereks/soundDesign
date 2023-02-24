@@ -142,14 +142,6 @@ def dump_scales():
 # print('processing Done')
 
 
-def tk_metro_on_off():
-    log_call()
-    app.metro_on.set((app.metro_on.get())+1%2)
-    my_tracker.metro_start_stop(app.metro_on)
-
-
-
-
 
 def rand_key():
     log_call()
@@ -175,26 +167,6 @@ def rand_scale():
     # my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
 
 
-def tk_and_scale():
-    log_call()
-    all_scales=[scale.name for scale in iso.Scale.all()]
-    random_scale = random.choice(list(set(all_scales)-set([my_tracker.key.scale.name])))
-    # my_tracker.key = iso.Key(my_tracker.key.tonic, iso.Scale.random())
-    my_tracker.key = iso.Key(my_tracker.key.tonic, random_scale)
-    # app.keys_group.set(random.choice(
-    #     set(app.names)-set(app.keys_group.get())
-    #     ))
-
-    app.scale_combo.set(my_tracker.key.scale.name)
-    # my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
-
-
-def tk_set_scale(event):
-    log_call()
-    scale_obj =  iso.Scale.byname(app.scale_combo.get())
-    my_tracker.key = iso.Key(my_tracker.key.tonic, scale_obj)
-    # my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
-
 def set_scale(scale_name):
     log_call()
     scale_obj =  iso.Scale.byname(scale_name)
@@ -207,23 +179,6 @@ def set_key():
     # my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
     # print(f"{app.keys_group.get()}")
 
-
-
-
-def tk_set_tempo(tempo):
-    log_call()
-    my_tracker.set_tempo(tempo)
-    my_tracker.meta_tempo(tempo=tempo)
-
-def play_pause_tk():
-    global app
-    log_call()
-
-    if app.is_playing:
-        ts()
-    else:
-        tstart()
-    pass
 
 
 def keys_scale_action(key, scale):
@@ -299,8 +254,6 @@ class TrackerApp(App):
     parm_cols=NumericProperty()
     prev_key = None
 
-
-
     # def build(self):
     #     return TrackerWidget()
 
@@ -336,6 +289,7 @@ class TrackerApp(App):
             self.rand_play_funct()
         elif keycode[1] == 'escape':
             if self.root.current=='scales_option':
+                # self.root.transition.direction = 'down'
                 self.root.current='main_screen'
                 self.root.ids.scales_opt.rem_buttons()
                 print('return to main screen')
@@ -724,6 +678,5 @@ class ScalesSelectScreen(Screen):
 
 if __name__ == '__main__':
     # print('Do we start?')
-    # main_tk()
     main()
     print('Processing Done.')
