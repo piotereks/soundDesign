@@ -320,9 +320,11 @@ class TrackerApp(App):
         
         if keycode[1]==self.prev_key:
             return True
-        print(f"{keycode[1]=} pressed")
+        print(f"{keycode[1]=} pressed {keycode}")
         self.prev_key = keycode[1]
-        if keycode[1] == 'z':
+        if not keycode[1]:
+            pass
+        elif keycode[1] == 'z':
             self.inv_play_pause()
         elif keycode[1] == 'x':
             self.inv_metro_on_off()
