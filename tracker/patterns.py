@@ -127,28 +127,31 @@ class NotePatterns:
     def mod_duration(func):  #added self, eventual issue
         @wraps(func)
         def split_no(interval, max_len = 16):
+            if interval<=16:
+                return [interval]
             pattern_len=interval
             
             interval -=1
 
             parts_no16 = interval // max_len
             parts_no16+=1
-            parts_no4 = interval // int(max_len/4)
-            parts_no4+=1
+            # parts_no4 = interval // int(max_len/4)
+            # parts_no4+=1
 
-            rnd_parts= random.randint(parts_no16, parts_no4 )
+            # rnd_parts= random.randint(parts_no16, parts_no4 )
+            rnd_parts = random.choice([parts_no16, parts_no16 * 2, parts_no16 * 4])
 
             splt_array=[]
             while pattern_len>0:
                 part=-(-pattern_len//rnd_parts)
                 splt_array.append(part)
                 # print(f"x:{part=}")
-                pattern_len-=part
-                rnd_parts-=1
+                pattern_len -= part
+                rnd_parts -= 1
             # print(splt_array)
 
             # return (parts_no16, parts_no4)
-            return (splt_array)
+            return splt_array
         
         
         def inner(self, *args, **kwargs):
@@ -158,13 +161,14 @@ class NotePatterns:
                 # result[iso.EVENT_DURATION] = np.array([1, 7, 3])
                 pattern_len = len(result[iso.EVENT_NOTE])-1
                 
-                # splt_array = split_no(pattern_len)
-                splt_array = [pattern_len]  # this is hardcoded to turn off split processing
+                splt_array = split_no(pattern_len)
+                # splt_array = [pattern_len]  # this is hardcoded to turn off split processing
                 durations =[]
                 for split_size in splt_array:
                     dur_part = random.choice([dp["pattern"] for dp in self.dur_patterns.patterns
                                     if dp["len"]==split_size])
-                    dur_part2 = np.array(dur_part)/(split_size/pattern_len)
+                    # dur_part2 = np.array(dur_part)/(split_size/pattern_len)
+                    dur_part2 = np.array(dur_part)
                     durations.extend(dur_part2)
                 # else:  #TODO fix len>16
                 #     rpt = ((pattern_len-1)//16)+1
@@ -208,13 +212,17 @@ class NotePatterns:
     def get_random_path_pattern(self, interval):
         # return random.choice(self.all_suitable_patterns(interval))
         # return {iso.EVENT_NOTE:random.choice(self.all_suitable_patterns(interval))}
+        org_interval=interval
+        # this secion is when we want to optimize/shorten patterns
         interval_sign = 1 if interval>=0 else -1
         octave = abs(interval) // 12
         octave *= interval_sign 
         interval = abs(interval) % 12
         interval *=interval_sign
+        #
         
-        notes_pattern = octave*12 + np.array(random.choice([pattern for pattern in self.all_suitable_patterns(interval) if len(pattern)<=16]))
+        # notes_pattern = octave*12 + np.array(random.choice([pattern for pattern in self.all_suitable_patterns(interval) if len(pattern)<=16]))
+        notes_pattern = np.array(random.choice([pattern for pattern in self.all_suitable_patterns(org_interval)]))
         return {
             # iso.EVENT_PROGRAM_CHANGE : 22,
             # iso.EVENT_NOTE:random.choice([pattern for pattern in self.all_suitable_patterns(interval) if len(pattern)<=16])
