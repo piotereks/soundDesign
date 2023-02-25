@@ -74,8 +74,8 @@ def sbtt():
 #     my_tracker.beat = my_tracker.pplay
 
 
-def rs():
-    rand_scale()
+# def rs():
+#     rand_scale()
 
 
 def save_midi(on_exit=False):
@@ -143,28 +143,28 @@ def dump_scales():
 
 
 
-def rand_key():
-    log_call()
-    # app.keys_group.set(random.choice(app.names))
-    app.keys_group.set(random.choice(
-        list(set(app.names)-set([app.keys_group.get()]))
-        ))
-    keys_scale_action(app.keys_group.get(), my_tracker.key.scale.name)
-    # my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
+# def rand_key():
+#     log_call()
+#     # app.keys_group.set(random.choice(app.names))
+#     app.keys_group.set(random.choice(
+#         list(set(app.names)-set([app.keys_group.get()]))
+#         ))
+#     keys_scale_action(app.keys_group.get(), my_tracker.key.scale.name)
+#     # my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
 
 
-def rand_scale():
-    log_call()
-    all_scales=[scale.name for scale in iso.Scale.all()]
-    random_scale = random.choice(list(set(all_scales)-set([my_tracker.key.scale.name])))
-    # my_tracker.key = iso.Key(my_tracker.key.tonic, iso.Scale.random())
-    my_tracker.key = iso.Key(my_tracker.key.tonic, random_scale)
-    # app.keys_group.set(random.choice(
-    #     set(app.names)-set(app.keys_group.get())
-    #     ))
-
-    app.scale_combo.set(my_tracker.key.scale.name)
-    # my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
+# def rand_scale():
+#     log_call()
+#     all_scales=[scale.name for scale in iso.Scale.all()]
+#     random_scale = random.choice(list(set(all_scales)-set([my_tracker.key.scale.name])))
+#     # my_tracker.key = iso.Key(my_tracker.key.tonic, iso.Scale.random())
+#     my_tracker.key = iso.Key(my_tracker.key.tonic, random_scale)
+#     # app.keys_group.set(random.choice(
+#     #     set(app.names)-set(app.keys_group.get())
+#     #     ))
+#
+#     app.scale_combo.set(my_tracker.key.scale.name)
+#     # my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
 
 
 def set_scale(scale_name):
@@ -173,9 +173,9 @@ def set_scale(scale_name):
     my_tracker.key = iso.Key(my_tracker.key.tonic, scale_obj)
     
 
-def set_key():
-    log_call()
-    keys_scale_action(app.keys_group.get(), my_tracker.key.scale.name)
+# def set_key():
+#     log_call()
+#     keys_scale_action(app.keys_group.get(), my_tracker.key.scale.name)
     # my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
     # print(f"{app.keys_group.get()}")
 
