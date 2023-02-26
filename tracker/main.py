@@ -203,7 +203,7 @@ def main():
     # keyboard = Keyboard(lambda note: put_in_queue(note))
     # sbpq()
     # ts()  # make by  default not starting
-    TrackerApp(parm_rows=7,parm_cols=3).run()
+    TrackerApp(parm_rows=12,parm_cols=5).run()
     
     # cleanup attempt
     my_tracker.scale_name_action = lambda: print(None)
@@ -231,9 +231,19 @@ class ScaleButton(ToggleButtonBehavior, BoxLayout):
 # class TrackerWidget(BoxLayout):
 #     pass
 
-class TrackerApp(App):
 
-    
+class TrackerApp(App):
+    # to be inititalized from config.json
+    parm_rows = NumericProperty()
+    parm_cols = NumericProperty()
+    # parm_key = StringProperty()
+    parm_scale = StringProperty()
+    parm_tempo = NumericProperty()
+    parm_tempo_min = NumericProperty()
+    parm_tempo_max = NumericProperty()
+    # parm_play_func = StringProperty()
+    path_queue_content = ListProperty()
+
     # scale_init_text = StringProperty()
     scale_values = ListProperty()
     scale_set_name_txt = StringProperty()
@@ -250,12 +260,43 @@ class TrackerApp(App):
     prev_key = None    
 
     selected_scale_button = StringProperty()
-    parm_rows=NumericProperty()
-    parm_cols=NumericProperty()
-    prev_key = None
 
-    # def build(self):
-    #     return TrackerWidget()
+    def __init__(self, **kwargs):
+        super(TrackerApp, self).__init__(**kwargs)
+        # print(f"{self.grid_cols=}, {self.grid_rows=},{self.grid_cols=}")
+        self.__config_init_file__()
+
+    def __config_init_file__(self):
+        self.main_config = \
+        {
+            "key": "C",
+            "scale": "major",
+            "tempo": 110,
+            "tempo_min": 15,
+            "tempo_max": 312,
+            "play_funct": "one_note",
+            "rows": 8,
+            "cols":4
+        }
+        # print('reading config')
+        config_file = 'main_config.json'
+
+        with open(config_file, 'r') as file:
+            # with open('reviewed_pattern_cfg.yaml', 'r') as file:
+            # self.patterns_config = yaml.safe_load(file)
+            self.main_config.update(json.load(file))
+
+            # self.parm_key = self.main_config["key"]
+            self.selected_scale_button = self.main_config["scale"]
+            self.parm_tempo = self.main_config["tempo"]
+
+            self.parm_tempo_min = self.main_config["tempo_min"]
+            self.parm_tempo_max = self.main_config["tempo_max"]
+            self.func_init_text = self.main_config["play_funct"]
+            self.path_queue_content = self.main_config["queue_content"]
+            self.parm_rows = self.main_config["rows"]
+            self.parm_cols = self.main_config["cols"]
+
 
     def _keyboard_closed(self):
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
@@ -339,7 +380,7 @@ class TrackerApp(App):
         self.selected_scale_button  = my_tracker.key.scale.name
         self.scale_values = all_scales
         self.func_values = my_tracker.note_patterns.pattern_methods_short_list
-        self.func_init_text = my_tracker.note_patterns.pattern_methods_short_list[0]
+        self.func_init_text = self.func_init_text if self.func_init_text else my_tracker.note_patterns.pattern_methods_short_list[0]
 
         my_tracker.scale_name_action = lambda: self.set_scale_set_name_txt('set:' + my_tracker.key.scale.name)
         my_tracker.check_notes_action = lambda: self.set_check_notes_lbl_text(str(my_tracker.check_notes))
@@ -455,19 +496,6 @@ class TrackerApp(App):
         my_tracker.set_tempo(tempo)
         my_tracker.meta_tempo(tempo=tempo) 
 
-
-# def set_play_func(event):
-#     log_call()
-#     my_tracker.note_patterns.set_pattern_function(app.play_func_combo.get())
-    
-    
-    def test1(self, instance, state):
-        print(f"test1: {instance=}, {state=}")
-
-    def test2(self, instance, state):
-        print(f"test2: {instance=}, {state=}")
-        # app.loop_queue_chk_cmd_ext = lambda: my_tracker.loop_play_queue_action(app.loop_queue_on.get())
-        # my_tracker.loopq = app.loop_queue_on.get()
 
 
     def on_selected_scale_button(self, instance, value):
