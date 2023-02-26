@@ -1,6 +1,7 @@
 import time
 import isobar as iso
 from isobar_fixes import *
+# from functools import wraps
 
 # one time init    (this is the best to used globals)
 # One time is sufficient, so basically this may be repeated
@@ -655,8 +656,8 @@ class Tracker:
         loopq = self.loopq
         if self.prev_get_pattern_name != self.note_patterns.get_pattern.__name__:
             # self.meta_func(func=f"prev:{self.prev_get_pattern_name}")
-            self.meta_func(func=f"curr:{self.note_patterns.get_pattern.__name__}")
-            # pass
+            # self.meta_func(func=f"curr:{self.note_patterns.get_pattern.__name__}")
+            pass
         if (not self.prev_key and self.key) \
             or self.prev_key != self.key:
             # if self.prev_key:
