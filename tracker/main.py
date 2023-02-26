@@ -262,7 +262,7 @@ class TrackerApp(App):
     selected_scale_button = StringProperty()
 
     def on_start(self):
-        self.__config_init_file__()
+
 
         # self.keys_mapping_init()
         self._keyboard = Window.request_keyboard(self._keyboard_closed, None)
@@ -290,6 +290,8 @@ class TrackerApp(App):
         my_tracker.fullq_content_action = lambda: self.set_fullq_content_lbl_text(
             'full queue: ' + str(my_tracker.get_queue_content_full()))
 
+        self.__config_init_file__()
+
     # def __init__(self, **kwargs):
     #     super(TrackerApp, self).__init__(**kwargs)
     #     # print(f"{self.grid_cols=}, {self.grid_rows=},{self.grid_cols=}")
@@ -315,25 +317,58 @@ class TrackerApp(App):
             # self.patterns_config = yaml.safe_load(file)
             self.main_config.update(json.load(file))
 
-        keys_scale_action(self.main_config["key"], self.main_config["scale"])
-        self.set_kv_key(self.main_config["key"])
-        # self.parm_key = self.main_config["key"]
-        # self.selected_root_note = self.main_config["key"]
+        keys_scale_action(self.main_config.get("key"), self.main_config.get("scale"))
+        self.set_kv_key(self.main_config.get("key"))
+        # self.parm_key = self.main_config.get("key")
+        # self.selected_root_note = self.main_config.get("key")
 
-        self.selected_scale_button = self.main_config["scale"]
+        self.selected_scale_button = self.main_config.get("scale")
 
-        # self.set_tempo(None, self.main_config["tempo"])
-        self.parm_tempo = self.main_config["tempo"]
-        self.parm_tempo_min = self.main_config["tempo_min"]
-        self.parm_tempo_max = self.main_config["tempo_max"]
+        # self.set_tempo(None, self.main_config.get("tempo"))
+        if self.main_config.get("tempo"):
+           self.parm_tempo = self.main_config.get("tempo")
+        if self.main_config.get("tempo_min"):
+            self.parm_tempo_min = self.main_config.get("tempo_min")
+        if self.main_config.get("tempo_max"):
+            self.parm_tempo_max = self.main_config.get("tempo_max")
 
-        self.set_play_func(None, self.main_config["play_funct"])
-        self.func_init_text = self.main_config["play_funct"]
+        if self.main_config.get("play_funct"):
+            self.set_play_func(None, self.main_config.get("play_funct"))
+        if self.main_config.get("play_funct"):
+            self.func_init_text = self.main_config.get("play_funct")
+        if self.main_config.get("queue_content"):
+            self.path_queue_content = self.main_config.get("queue_content")
 
-        self.path_queue_content = self.main_config["queue_content"]
-        self.parm_rows = self.main_config["rows"]
-        self.parm_cols = self.main_config["cols"]
+        if self.main_config.get("rows"):
+            self.parm_rows = self.main_config.get("rows")
 
+        if self.main_config.get("cols"):
+            self.parm_cols = self.main_config.get("cols")
+
+        for note in self.path_queue_content or []:
+            put_in_queue(note)
+
+        # keys_scale_action(self.main_config["key"], self.main_config["scale"])
+        # self.set_kv_key(self.main_config["key"])
+        # # self.parm_key = self.main_config["key"]
+        # # self.selected_root_note = self.main_config["key"]
+        #
+        # self.selected_scale_button = self.main_config["scale"]
+        #
+        # # self.set_tempo(None, self.main_config["tempo"])
+        # self.parm_tempo = self.main_config["tempo"]
+        # self.parm_tempo_min = self.main_config["tempo_min"]
+        # self.parm_tempo_max = self.main_config["tempo_max"]
+        #
+        # self.set_play_func(None, self.main_config["play_funct"])
+        # self.func_init_text = self.main_config["play_funct"]
+        #
+        # self.path_queue_content = self.main_config["queue_content"]
+        # self.parm_rows = self.main_config["rows"]
+        # self.parm_cols = self.main_config["cols"]
+
+        # for note in self.path_queue_content or []:
+        #     put_in_queue(note)
 
     def _keyboard_closed(self):
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
