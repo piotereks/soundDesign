@@ -228,6 +228,7 @@ class Tracker:
                  midi_out_mode='dummy',
                  filename=os.path.join("saved_midi_files","xoutput.mid")):
 
+        self.midi_in = None
         read_config_file_scales()
         # my_beats = Beats()
         # self.scale = iso.Scale.major  - replaced by key, and scale always can be referred as self.key.scale
@@ -280,6 +281,14 @@ class Tracker:
 
         self.midi_out.write()
         shutil.copy(self.filename, f"{self.filename.split('.')[0]}_{date}.mid")
+    def setup_midi_in(self):
+        def put_to_queue_callback(message):
+            print(" - Received MIDI: %s" % message)
+            if message.type == 'note_on':
+                self.put_to_queue(message.note)
+
+        self.midi_in = iso.MidiInputDevice('loopMIDI Port 0')  # hardcoded so far
+        self.midi_in.callback = put_to_queue_callback
 
     def init_timeline(self, midi_out_mode='dummy'):
         log_call()
@@ -301,6 +310,7 @@ class Tracker:
             self.MIDI_OUT_DUMMY
             self.midi_out = iso.DummyOutputDevice()
             print("dummy mode")
+        self.setup_midi_in()
         # write meta message about time signature (currently hardcoded)
         self.mid_MetaMessage('time_signature', numerator=4, denominator=4, time=0)
         # if midi_out_mode in  (self.MIDI_OUT_MIX_FILE_DEVICE, self.MIDI_OUT_FILE):

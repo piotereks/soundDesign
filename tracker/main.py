@@ -189,9 +189,10 @@ def keys_scale_action(key, scale):
 
 
 
+
 def main():
     global my_tracker
-    global keyboard
+    # global keyboard
     log_call()
     # midi_out_flag = Tracker.MIDI_OUT_DEVICE
     midi_out_flag = Tracker.MIDI_OUT_MIX_FILE_DEVICE
@@ -212,7 +213,7 @@ def main():
     my_tracker.curr_notes_pair_action = lambda: print(None)
     # my_tracker.loop_play_queue_action = lambda: print(None)
     my_tracker.fullq_content_action = lambda: print(None)
-    
+
     ts()
     save_midi(on_exit=True)
 
