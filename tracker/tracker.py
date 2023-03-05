@@ -223,7 +223,7 @@ class Tracker:
     # name = "Virtual Midi"
 
     # name= "loopMIDI 6"
-    def __init__(self,
+    def __init__(self,midi_in_name = '',
                  # interval_array=None, note_array=None, midi_note_array=None,
                  midi_out_mode='dummy',
                  filename=os.path.join("saved_midi_files","xoutput.mid")):
@@ -252,6 +252,7 @@ class Tracker:
         self.queue_content_wrk = None
         self.note_queue = Queue(maxsize = 16)
         self.amp_for_beat_factor = dict(zip([0, 2], [1.5, 1.25]))
+        self.midi_in_name=midi_in_name
 
 
         self.pattern_idx = 0
@@ -259,7 +260,7 @@ class Tracker:
 
         # self.init_timeline(True)
         self.midi_out_mode = midi_out_mode
-        self.init_timeline(midi_out_mode)
+        self.init_timeline(midi_in_name=self.midi_in_name , midi_out_mode=midi_out_mode)
         self.beat = lambda: self.play_from_to(None,None,in_pattern=True)
         self.metro_beat = lambda: print('metro_beat init')
         # self.play_from_to(None, None, in_pattern=True)
@@ -281,16 +282,19 @@ class Tracker:
 
         self.midi_out.write()
         shutil.copy(self.filename, f"{self.filename.split('.')[0]}_{date}.mid")
-    def setup_midi_in(self):
+    def setup_midi_in(self, midi_in_name):
         def put_to_queue_callback(message):
             print(" - Received MIDI: %s" % message)
             if message.type == 'note_on':
                 self.put_to_queue(message.note)
 
-        self.midi_in = iso.MidiInputDevice('loopMIDI Port 0')  # hardcoded so far
-        self.midi_in.callback = put_to_queue_callback
+        if midi_in_name in mido.get_input_names():
+            self.midi_in = iso.MidiInputDevice(midi_in_name)
+            self.midi_in.callback = put_to_queue_callback
+        else:
+            print(f"No midi in with {midi_in_name}")
 
-    def init_timeline(self, midi_out_mode='dummy'):
+    def init_timeline(self, midi_in_name, midi_out_mode='dummy', ):
         log_call()
         print(f" Device:{midi_out_mode}")
         print(f"{NO_MIDI_OUT=}")
@@ -310,7 +314,7 @@ class Tracker:
             self.MIDI_OUT_DUMMY
             self.midi_out = iso.DummyOutputDevice()
             print("dummy mode")
-        self.setup_midi_in()
+        self.setup_midi_in(midi_in_name)
         # write meta message about time signature (currently hardcoded)
         self.mid_MetaMessage('time_signature', numerator=4, denominator=4, time=0)
         # if midi_out_mode in  (self.MIDI_OUT_MIX_FILE_DEVICE, self.MIDI_OUT_FILE):

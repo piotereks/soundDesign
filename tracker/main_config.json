@@ -1,11 +1,13 @@
 {
-"key":"F",
-"scale":"minor",
-"tempo":125,
-"tempo_min":20,
-"tempo_max":333,
-"play_funct":"path",
-"queue_content":[60,64,62,70],
-"rows":7,
-"cols":3
+  "key":"F",
+  "scale":"minor",
+  "tempo":125,
+  "tempo_min":20,
+  "tempo_max":333,
+  "play_funct":"path",
+  "queue_content":[60,64,62,70],
+  "rows":7,
+  "cols":3,
+  "midi_in_name": "KB loopMIDI Port 0",
+  "dummy_file_config": "qqqq"
 }

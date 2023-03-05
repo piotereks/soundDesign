@@ -189,22 +189,28 @@ def keys_scale_action(key, scale):
 
 
 
-
 def main():
     global my_tracker
     # global keyboard
     log_call()
+    config_file = 'main_config.json'
+
+    with open(config_file, 'r') as file:
+        # with open('reviewed_pattern_cfg.yaml', 'r') as file:
+        # self.patterns_config = yaml.safe_load(file)
+        app_config = json.load(file)
+
     # midi_out_flag = Tracker.MIDI_OUT_DEVICE
     midi_out_flag = Tracker.MIDI_OUT_MIX_FILE_DEVICE
     # midi_out_flag = Tracker.MIDI_OUT_FILE
-    my_tracker = Tracker(midi_out_mode=midi_out_flag)
+    my_tracker = Tracker(midi_in_name= app_config.get("midi_in_name"),midi_out_mode=midi_out_flag)
     # my_tracker.midi_out.program_change(program=22)
 
 
     # keyboard = Keyboard(lambda note: put_in_queue(note))
     # sbpq()
     # ts()  # make by  default not starting
-    TrackerApp(parm_rows=12,parm_cols=5).run()
+    TrackerApp(parm_rows=12,parm_cols=5, main_config=app_config).run()
     
     # cleanup attempt
     my_tracker.scale_name_action = lambda: print(None)
@@ -262,6 +268,9 @@ class TrackerApp(App):
 
     selected_scale_button = StringProperty()
 
+    main_config = ObjectProperty()
+
+
     def on_start(self):
 
 
@@ -299,24 +308,21 @@ class TrackerApp(App):
     #     self.__config_init_file__()
 
     def __config_init_file__(self):
-        self.main_config = \
-        {
-            "key": "C",
-            "scale": "major",
-            "tempo": 110,
-            "tempo_min": 15,
-            "tempo_max": 312,
-            "play_funct": "one_note",
-            "rows": 8,
-            "cols":4
-        }
-        # print('reading config')
-        config_file = 'main_config.json'
-
-        with open(config_file, 'r') as file:
-            # with open('reviewed_pattern_cfg.yaml', 'r') as file:
-            # self.patterns_config = yaml.safe_load(file)
-            self.main_config.update(json.load(file))
+        default_main_config = \
+            {
+                "key": "C",
+                "scale": "major",
+                "tempo": 110,
+                "tempo_min": 15,
+                "tempo_max": 312,
+                "play_funct": "one_note",
+                "rows": 8,
+                "cols": 4,
+                "midi_in_name": "blah_blah_0",
+                "dummy_hardcoded_config" : "asdfsdf"
+            }
+        default_main_config.update(self.main_config)
+        self.main_config = default_main_config
 
         keys_scale_action(self.main_config.get("key"), self.main_config.get("scale"))
         self.set_kv_key(self.main_config.get("key"))
