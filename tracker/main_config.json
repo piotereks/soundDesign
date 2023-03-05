@@ -1,14 +1,59 @@
 {
-  "key":"F",
-  "scale":"minor",
-  "tempo":125,
-  "tempo_min":20,
-  "tempo_max":333,
-  "play_funct":"path",
-  "queue_content":[60,64,62,70],
-  "rows":7,
-  "cols":3,
-  "midi_in_name": ["Arturia MiniLab mkII", "KB loopMIDI Port"],
-  "midi_out_name": ["Microsoft GS Wavetable Synth","blah","KB loopMIDI Port"],
-  "dummy_file_config": "qqqq"
+  "app":
+    {
+      "key":"F",
+      "scale":"minor",
+      "tempo":125,
+      "tempo_min":20,
+      "tempo_max":333,
+      "play_funct":"path",
+      "queue_content":[60,64,62,70],
+      "rows":7,
+      "cols":3
+    },
+  "tracker": {
+    "midi_in_name": ["Arturia MiniLab mkII", "KB loopMIDI Port"],
+    "midi_out_name": ["Microsoft GS Wavetable Synth","blah","KB loopMIDI Port"],
+    "dummy_file_config": "qqqq"
+  },
+  "midi_mapping": {
+    "s": 1,
+    "tempo" : {
+      "cc": 22,
+      "type" : "rel#1"
+    },
+    "example2" : {
+      "cc": 23,
+      "type" : "rel#2"
+    },
+    "example3" : {
+      "cc": 24,
+      "type" : "abs"
+    },
+    "play": {
+      "channel": 9,
+      "value": 13
+    },
+    "metronome": {
+      "channel": 9,
+      "value": 14
+    },
+    "loop": {
+      "channel": 9,
+      "value": 15
+    },
+    "rnd_scale": {
+      "channel": 9,
+      "value": 16
+    },
+    "rnd_key": {
+      "channel": 9,
+      "value": 17
+    },
+    "rnd_func": {
+      "channel": 9,
+      "value": 18
+    },
+
+  }
 }

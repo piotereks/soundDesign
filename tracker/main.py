@@ -196,22 +196,24 @@ def main():
     config_file = 'main_config.json'
 
     with open(config_file, 'r') as file:
-        # with open('reviewed_pattern_cfg.yaml', 'r') as file:
-        # self.patterns_config = yaml.safe_load(file)
-        app_config = json.load(file)
+
+        loaded_config = json.load(file)
+        app_config =  loaded_config['app']
+        tracker_config = loaded_config['tracker']
 
     # midi_out_flag = Tracker.MIDI_OUT_DEVICE
     midi_out_flag = Tracker.MIDI_OUT_MIX_FILE_DEVICE
     # midi_out_flag = Tracker.MIDI_OUT_FILE
-    my_tracker = Tracker(midi_in_name= app_config.get("midi_in_name"), midi_out_name= app_config.get("midi_out_name"), \
-                         midi_out_mode=midi_out_flag)
+    # my_tracker = Tracker(midi_in_name= tracker_config.get("midi_in_name"), midi_out_name= tracker_config.get("midi_out_name"), \
+    #                      midi_out_mode=midi_out_flag)
+    my_tracker = Tracker(tracker_config=tracker_config, midi_out_mode=midi_out_flag)
     # my_tracker.midi_out.program_change(program=22)
 
 
     # keyboard = Keyboard(lambda note: put_in_queue(note))
     # sbpq()
     # ts()  # make by  default not starting
-    TrackerApp(parm_rows=12,parm_cols=5, main_config=app_config).run()
+    TrackerApp(parm_rows=12, parm_cols=5, app_config=app_config).run()
     
     # cleanup attempt
     my_tracker.scale_name_action = lambda: print(None)
@@ -269,7 +271,7 @@ class TrackerApp(App):
 
     selected_scale_button = StringProperty()
 
-    main_config = ObjectProperty()
+    app_config = ObjectProperty()
 
 
     def on_start(self):
@@ -309,7 +311,7 @@ class TrackerApp(App):
     #     self.__config_init_file__()
 
     def __config_init_file__(self):
-        default_main_config = \
+        default_app_config = \
             {
                 "key": "C",
                 "scale": "major",
@@ -318,41 +320,43 @@ class TrackerApp(App):
                 "tempo_max": 312,
                 "play_funct": "one_note",
                 "rows": 8,
-                "cols": 4,
-                "midi_in_name": ["blah_blah_0", "sdfdsf123"],
-                "midi_out_name": ["in_blah_blah_0", "ppp_sdfdsf123"],
-                "dummy_hardcoded_config" : "asdfsdf"
+                "cols": 4
             }
-        default_main_config.update(self.main_config)
-        self.main_config = default_main_config
 
-        keys_scale_action(self.main_config.get("key"), self.main_config.get("scale"))
-        self.set_kv_key(self.main_config.get("key"))
+
+        # default_app_config.update(self.main_config)
+        # default_app_config.tracker.update(self.app_config.tracker)
+        default_app_config.update(self.app_config)
+
+        self.app_config = default_app_config
+
+        keys_scale_action(self.app_config.get("key"), self.app_config.get("scale"))
+        self.set_kv_key(self.app_config.get("key"))
         # self.parm_key = self.main_config.get("key")
         # self.selected_root_note = self.main_config.get("key")
 
-        self.selected_scale_button = self.main_config.get("scale")
+        self.selected_scale_button = self.app_config.get("scale")
 
         # self.set_tempo(None, self.main_config.get("tempo"))
-        if self.main_config.get("tempo"):
-           self.parm_tempo = self.main_config.get("tempo")
-        if self.main_config.get("tempo_min"):
-            self.parm_tempo_min = self.main_config.get("tempo_min")
-        if self.main_config.get("tempo_max"):
-            self.parm_tempo_max = self.main_config.get("tempo_max")
+        if self.app_config.get("tempo"):
+           self.parm_tempo = self.app_config.get("tempo")
+        if self.app_config.get("tempo_min"):
+            self.parm_tempo_min = self.app_config.get("tempo_min")
+        if self.app_config.get("tempo_max"):
+            self.parm_tempo_max = self.app_config.get("tempo_max")
 
-        if self.main_config.get("play_funct"):
-            self.set_play_func(None, self.main_config.get("play_funct"))
-        if self.main_config.get("play_funct"):
-            self.func_init_text = self.main_config.get("play_funct")
-        if self.main_config.get("queue_content"):
-            self.path_queue_content = self.main_config.get("queue_content")
+        if self.app_config.get("play_funct"):
+            self.set_play_func(None, self.app_config.get("play_funct"))
+        if self.app_config.get("play_funct"):
+            self.func_init_text = self.app_config.get("play_funct")
+        if self.app_config.get("queue_content"):
+            self.path_queue_content = self.app_config.get("queue_content")
 
-        if self.main_config.get("rows"):
-            self.parm_rows = self.main_config.get("rows")
+        if self.app_config.get("rows"):
+            self.parm_rows = self.app_config.get("rows")
 
-        if self.main_config.get("cols"):
-            self.parm_cols = self.main_config.get("cols")
+        if self.app_config.get("cols"):
+            self.parm_cols = self.app_config.get("cols")
 
         for note in self.path_queue_content or []:
             put_in_queue(note)

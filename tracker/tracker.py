@@ -223,7 +223,7 @@ class Tracker:
     # name = "Virtual Midi"
 
     # name= "loopMIDI 6"
-    def __init__(self, midi_in_name = '', midi_out_name = '',
+    def __init__(self, tracker_config = None,
                  # interval_array=None, note_array=None, midi_note_array=None,
                  midi_out_mode='dummy',
                  filename=os.path.join("saved_midi_files","xoutput.mid")):
@@ -252,17 +252,27 @@ class Tracker:
         self.queue_content_wrk = None
         self.note_queue = Queue(maxsize = 16)
         self.amp_for_beat_factor = dict(zip([0, 2], [1.5, 1.25]))
-        self.midi_in_name = midi_in_name
-        self.midi_out_name = midi_out_name
+        # self.midi_in_name = midi_in_name
+        # self.midi_out_name = midi_out_name
+
         self.knob_01 = 0
 
         self.pattern_idx = 0
-
+        self.default_tracker_config = \
+            {
+                "midi_in_name": ["blah_blah_0", "sdfdsf123"],
+                "midi_out_name": ["in_blah_blah_0", "ppp_sdfdsf123"],
+                "dummy_hardcoded_config" : "asdfsdf"
+            }
+        if tracker_config:
+            self.default_tracker_config.update(tracker_config)
+        self.midi_in_name = self.default_tracker_config.get("midi_in_name")
+        self.midi_out_name = self.default_tracker_config.get("midi_out_name")
 
         # self.init_timeline(True)
         self.midi_out_mode = midi_out_mode
-        self.init_timeline(midi_in_name=self.midi_in_name , midi_out_name = midi_out_name, midi_out_mode=midi_out_mode)
-        self.beat = lambda: self.play_from_to(None,None,in_pattern=True)
+        self.init_timeline(midi_in_name=self.midi_in_name , midi_out_name=self.midi_out_name, midi_out_mode=midi_out_mode)
+        self.beat = lambda: self.play_from_to(None, None, in_pattern=True)
         self.metro_beat = lambda: print('metro_beat init')
         # self.play_from_to(None, None, in_pattern=True)
         # self.beat = self.beat_none
