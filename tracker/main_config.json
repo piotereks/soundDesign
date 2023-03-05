@@ -8,7 +8,7 @@
   "queue_content":[60,64,62,70],
   "rows":7,
   "cols":3,
-  "midi_in_name": ["blah","KB loopMIDI Port 0"],
-  "midi_out_name": ["Microsoft GS Wavetable Synth 0","blah","KB loopMIDI Port 1"],
+  "midi_in_name": ["Arturia MiniLab mkII", "KB loopMIDI Port"],
+  "midi_out_name": ["Microsoft GS Wavetable Synth","blah","KB loopMIDI Port"],
   "dummy_file_config": "qqqq"
 }

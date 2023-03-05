@@ -288,7 +288,10 @@ class Tracker:
             print(" - Received MIDI: %s" % message)
             if message.type == 'note_on':
                 self.put_to_queue(message.note)
-        midi_in_name = list(set(midi_in_name) & set(mido.get_input_names())) + mido.get_input_names()
+
+        midi_in_name = [mids[0] for mids in itertools.product(mido.get_input_names(), midi_in_name) if mids[1] in mids[0]]
+
+        # midi_in_name = list(set(midi_in_name) & set(mido.get_input_names())) + mido.get_input_names()
         if midi_in_name:
             self.midi_in = iso.MidiInputDevice(midi_in_name[0])
             self.midi_in.callback = put_to_queue_callback
@@ -300,9 +303,9 @@ class Tracker:
         print(f" Device:{midi_out_mode}")
         print(f"{NO_MIDI_OUT=}")
         filename = self.filename
+        midi_out_name = [mids[0] for mids in itertools.product(mido.get_output_names(), midi_out_name) if mids[1] in mids[0]]
 
-        midi_out_name = list(set(midi_out_name) & set(mido.get_output_names())) + mido.get_output_names()
-        if midi_in_name:
+        if midi_out_name:
             self.midi_out_name = midi_out_name[0]
         else:
             self.midi_out_name=self.midi_out_name[0]
