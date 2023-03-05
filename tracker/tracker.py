@@ -254,7 +254,7 @@ class Tracker:
         self.amp_for_beat_factor = dict(zip([0, 2], [1.5, 1.25]))
         self.midi_in_name = midi_in_name
         self.midi_out_name = midi_out_name
-
+        self.knob_01 = 0
 
         self.pattern_idx = 0
 
@@ -284,17 +284,23 @@ class Tracker:
         self.midi_out.write()
         shutil.copy(self.filename, f"{self.filename.split('.')[0]}_{date}.mid")
     def setup_midi_in(self, midi_in_name):
-        def put_to_queue_callback(message):
+        def midi_in_callback(message):
             print(" - Received MIDI: %s" % message)
+            print(message.__dict__)
             if message.type == 'note_on':
                 self.put_to_queue(message.note)
+            elif message.type == 'control_change':
+                if message.control == 22:  # hardcoded TODO change to config.
+                    if message.control != 0: # or message.contol==64:
+                        self.knob_01 +=(message.value+64)%128  - 64
+                        print(f"{self.knob_01}")
 
         midi_in_name = [mids[0] for mids in itertools.product(mido.get_input_names(), midi_in_name) if mids[1] in mids[0]]
 
         # midi_in_name = list(set(midi_in_name) & set(mido.get_input_names())) + mido.get_input_names()
         if midi_in_name:
             self.midi_in = iso.MidiInputDevice(midi_in_name[0])
-            self.midi_in.callback = put_to_queue_callback
+            self.midi_in.callback = midi_in_callback
         else:
             print(f"No midi in with {midi_in_name}")
 
