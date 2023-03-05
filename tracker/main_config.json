@@ -8,6 +8,7 @@
   "queue_content":[60,64,62,70],
   "rows":7,
   "cols":3,
-  "midi_in_name": "KB loopMIDI Port 0",
+  "midi_in_name": ["blah","KB loopMIDI Port 0"],
+  "midi_out_name": ["Microsoft GS Wavetable Synth 0","blah","KB loopMIDI Port 1"],
   "dummy_file_config": "qqqq"
 }

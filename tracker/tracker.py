@@ -212,7 +212,7 @@ class Tracker:
     MIDI_OUT_MIX_FILE_DEVICE = 3
 
 
-    name = "Microsoft GS Wavetable Synth 0"
+    # midi_out_name = "Microsoft GS Wavetable Synth 0"
 
 
 
@@ -223,7 +223,7 @@ class Tracker:
     # name = "Virtual Midi"
 
     # name= "loopMIDI 6"
-    def __init__(self,midi_in_name = '',
+    def __init__(self, midi_in_name = '', midi_out_name = '',
                  # interval_array=None, note_array=None, midi_note_array=None,
                  midi_out_mode='dummy',
                  filename=os.path.join("saved_midi_files","xoutput.mid")):
@@ -252,7 +252,8 @@ class Tracker:
         self.queue_content_wrk = None
         self.note_queue = Queue(maxsize = 16)
         self.amp_for_beat_factor = dict(zip([0, 2], [1.5, 1.25]))
-        self.midi_in_name=midi_in_name
+        self.midi_in_name = midi_in_name
+        self.midi_out_name = midi_out_name
 
 
         self.pattern_idx = 0
@@ -260,7 +261,7 @@ class Tracker:
 
         # self.init_timeline(True)
         self.midi_out_mode = midi_out_mode
-        self.init_timeline(midi_in_name=self.midi_in_name , midi_out_mode=midi_out_mode)
+        self.init_timeline(midi_in_name=self.midi_in_name , midi_out_name = midi_out_name, midi_out_mode=midi_out_mode)
         self.beat = lambda: self.play_from_to(None,None,in_pattern=True)
         self.metro_beat = lambda: print('metro_beat init')
         # self.play_from_to(None, None, in_pattern=True)
@@ -287,27 +288,38 @@ class Tracker:
             print(" - Received MIDI: %s" % message)
             if message.type == 'note_on':
                 self.put_to_queue(message.note)
-
-        if midi_in_name in mido.get_input_names():
-            self.midi_in = iso.MidiInputDevice(midi_in_name)
+        midi_in_name = list(set(midi_in_name) & set(mido.get_input_names())) + mido.get_input_names()
+        if midi_in_name:
+            self.midi_in = iso.MidiInputDevice(midi_in_name[0])
             self.midi_in.callback = put_to_queue_callback
         else:
             print(f"No midi in with {midi_in_name}")
 
-    def init_timeline(self, midi_in_name, midi_out_mode='dummy', ):
+    def init_timeline(self, midi_in_name, midi_out_name, midi_out_mode='dummy', ):
         log_call()
         print(f" Device:{midi_out_mode}")
         print(f"{NO_MIDI_OUT=}")
         filename = self.filename
 
+        midi_out_name = list(set(midi_out_name) & set(mido.get_output_names())) + mido.get_output_names()
+        if midi_in_name:
+            self.midi_out_name = midi_out_name[0]
+        else:
+            self.midi_out_name=self.midi_out_name[0]
+        # if midi_in_name:
+        #     self.midi_in = iso.MidiInputDevice(midi_in_name[0])
+        #     self.midi_in.callback = put_to_queue_callback
+        # else:
+        #     print(f"No midi in with {midi_in_name}")
+
         if midi_out_mode == self.MIDI_OUT_FILE:
             self.midi_out = iso.MidiFileOutputDevice(filename)
             print("file mode")
         elif midi_out_mode == self.MIDI_OUT_DEVICE and not NO_MIDI_OUT:
-            self.midi_out = iso.MidiOutputDevice(device_name=self.name, send_clock=True)
+            self.midi_out = iso.MidiOutputDevice(device_name=self.midi_out_name, send_clock=True)
             print("device mode")
         elif midi_out_mode ==  self.MIDI_OUT_MIX_FILE_DEVICE:
-            self.midi_out = FileOut(filename=filename, device_name=self.name, send_clock=True, virtual = NO_MIDI_OUT)
+            self.midi_out = FileOut(filename=filename, device_name=self.midi_out_name, send_clock=True, virtual = NO_MIDI_OUT)
             # self.midi_out = FileOut(filename=filename, device_name=self.name, send_clock=True, virtual=True)
             print("device mode")
         else:

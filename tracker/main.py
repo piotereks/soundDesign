@@ -203,7 +203,8 @@ def main():
     # midi_out_flag = Tracker.MIDI_OUT_DEVICE
     midi_out_flag = Tracker.MIDI_OUT_MIX_FILE_DEVICE
     # midi_out_flag = Tracker.MIDI_OUT_FILE
-    my_tracker = Tracker(midi_in_name= app_config.get("midi_in_name"),midi_out_mode=midi_out_flag)
+    my_tracker = Tracker(midi_in_name= app_config.get("midi_in_name"), midi_out_name= app_config.get("midi_out_name"), \
+                         midi_out_mode=midi_out_flag)
     # my_tracker.midi_out.program_change(program=22)
 
 
@@ -318,7 +319,8 @@ class TrackerApp(App):
                 "play_funct": "one_note",
                 "rows": 8,
                 "cols": 4,
-                "midi_in_name": "blah_blah_0",
+                "midi_in_name": ["blah_blah_0", "sdfdsf123"],
+                "midi_out_name": ["in_blah_blah_0", "ppp_sdfdsf123"],
                 "dummy_hardcoded_config" : "asdfsdf"
             }
         default_main_config.update(self.main_config)
