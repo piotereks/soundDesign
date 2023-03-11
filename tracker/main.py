@@ -198,15 +198,16 @@ def main():
     with open(config_file, 'r') as file:
 
         loaded_config = json.load(file)
-        app_config =  loaded_config['app']
+        app_config = loaded_config['app']
         tracker_config = loaded_config['tracker']
+        midi_mapping = loaded_config.get('midi_mapping')
 
     # midi_out_flag = Tracker.MIDI_OUT_DEVICE
     midi_out_flag = Tracker.MIDI_OUT_MIX_FILE_DEVICE
     # midi_out_flag = Tracker.MIDI_OUT_FILE
     # my_tracker = Tracker(midi_in_name= tracker_config.get("midi_in_name"), midi_out_name= tracker_config.get("midi_out_name"), \
     #                      midi_out_mode=midi_out_flag)
-    my_tracker = Tracker(tracker_config=tracker_config, midi_out_mode=midi_out_flag)
+    my_tracker = Tracker(tracker_config=tracker_config, midi_mapping=midi_mapping, midi_out_mode=midi_out_flag)
     # my_tracker.midi_out.program_change(program=22)
 
 

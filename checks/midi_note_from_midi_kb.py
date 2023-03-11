@@ -21,9 +21,7 @@ def print_message(message):
     print(" - Received MIDI: %s %s" % (message ,datetime.now()))
     print(message.__dict__)
     # time.sleep(0.1)
-    xxx = message.time
-    yyy = message.control
-    print(yyy)
+
     pass
     # if message.type == 'note_on':
     #    pass

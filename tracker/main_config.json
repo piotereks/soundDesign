@@ -17,18 +17,21 @@
     "dummy_file_config": "qqqq"
   },
   "midi_mapping": {
-    "s": 1,
-    "tempo" : {
-      "cc": 22,
-      "type" : "rel#1"
+    "set_tempo_knob" : {
+      "cc": 75,
+      "knob_type" : "rel#2"
     },
     "example2" : {
-      "cc": 23,
-      "type" : "rel#2"
+      "cc": 72,
+      "knob_type" : "rel#3"
     },
     "example3" : {
-      "cc": 24,
-      "type" : "abs"
+      "cc": 73,
+      "knob_type" : "rel#1"
+    },
+    "example3" : {
+      "cc": 79,
+      "knob_type" : "abs"
     },
     "play": {
       "channel": 9,
@@ -53,7 +56,7 @@
     "rnd_func": {
       "channel": 9,
       "value": 18
-    },
+    }
 
   }
 }

@@ -226,6 +226,7 @@ class Tracker:
     def __init__(self, tracker_config = None,
                  # interval_array=None, note_array=None, midi_note_array=None,
                  midi_out_mode='dummy',
+                 midi_mapping ={},
                  filename=os.path.join("saved_midi_files","xoutput.mid")):
 
         self.midi_in = None
@@ -254,7 +255,7 @@ class Tracker:
         self.amp_for_beat_factor = dict(zip([0, 2], [1.5, 1.25]))
         # self.midi_in_name = midi_in_name
         # self.midi_out_name = midi_out_name
-
+        self.midi_mapping = midi_mapping
         self.knob_01 = 0
 
         self.pattern_idx = 0
@@ -266,6 +267,8 @@ class Tracker:
             }
         if tracker_config:
             self.default_tracker_config.update(tracker_config)
+
+
         self.midi_in_name = self.default_tracker_config.get("midi_in_name")
         self.midi_out_name = self.default_tracker_config.get("midi_out_name")
 
@@ -294,16 +297,44 @@ class Tracker:
         self.midi_out.write()
         shutil.copy(self.filename, f"{self.filename.split('.')[0]}_{date}.mid")
     def setup_midi_in(self, midi_in_name):
+
+
         def midi_in_callback(message):
+            def get_knob(cc=None):
+                knob = [self.midi_mapping[mid_k] for mid_k  in self.midi_mapping \
+                        if self.midi_mapping[mid_k].get("cc") == cc]
+                if knob:
+                    knob = knob[0]
+                else:
+                    return None
+
+                type_base_conv = {"rel#1": 64, "rel#2": 0, "rel#3": 16}
+                if knob:
+                    if knob.get("knob_type") == 'abs':
+                        pass
+                        return -1
+                    else:
+                        knob_base = type_base_conv.get(knob.get("knob_type"))
+                    return knob_base
+            def to_signed(val):
+                if val>127:
+                    raise ValueError('Out of range 0-128')
+                return val if val<=63 else val-128
+
             print(" - Received MIDI: %s" % message)
             print(message.__dict__)
             if message.type == 'note_on':
                 self.put_to_queue(message.note)
             elif message.type == 'control_change':
-                if message.control == 22:  # hardcoded TODO change to config.
-                    if message.control != 0: # or message.contol==64:
-                        self.knob_01 +=(message.value+64)%128  - 64
-                        print(f"{self.knob_01}")
+                # set_tempo_knob = self.midi_mapping.get("set_tempo_knob")
+                base = get_knob(cc=message.control)
+                bl = base == None
+                print(f"{base=}, {bl=}")
+                if base!=None and message.value != base:
+                    print(f"{base=},{message.value=},{(message.value+base) % 128 - base=}")
+                    self.knob_01 += to_signed(message.value) - base
+                    print(f"{self.knob_01}")
+
 
         midi_in_name = [mids[0] for mids in itertools.product(mido.get_input_names(), midi_in_name) if mids[1] in mids[0]]
 
