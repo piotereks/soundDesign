@@ -306,53 +306,51 @@ class Tracker:
                     val -= 128
                 return val
 
-
-
-            def get_knob(message = None):
-                if not message:
+            def get_knob(mess = None):
+                if not mess:
                     return None
                 type_base_conv = {"rel#1": 64, "rel#2": 0, "rel#3": 16}
-                print(type(message), message.__dict__)
+                print(type(mess), mess.__dict__)
 
                 # knob = [self.midi_mapping[mid_k] for mid_k in self.midi_mapping \
                 #         if self.midi_mapping[mid_k].get("cc") == message.control]
 
-                knob = [(mid_k, self.midi_mapping[mid_k]) for mid_k in self.midi_mapping \
-                        if self.midi_mapping[mid_k].get("cc") == message.control]
+                knb = [(mid_k, self.midi_mapping[mid_k]) for mid_k in self.midi_mapping \
+                                 if self.midi_mapping[mid_k].get("cc") == mess.control]
 
-                if not knob:
+                if not knb:
                     return None
 
-                knob = knob[0]
-                knob_name = knob[0] # this is different knob[0] than above line
-                print(f"{knob=},{knob[0]=},{knob[1]=}")
-                if not knob[1].get("value"):
-                    knob[1]['value'] = 0
-                if not knob[1].get("inc_value"):
-                    knob[1]['inc_value'] = 0
+                knb = knb[0]
+                knob_name = knb[0] # this is different knob[0] than above line
+                print(f"{knb=},{knb[0]=},{knb[1]=}")
+                if not knb[1].get("value"):
+                    knb[1]['value'] = 0
+                if not knb[1].get("inc_value"):
+                    knb[1]['inc_value'] = 0
 
-                knob_type = knob[1]['knob_type']
+                knob_type = knb[1]['knob_type']
                 if knob_type == 'abs':
-                    knob[1]['value'] = message.value
+                    knb[1]['value'] = mess.value
                 else:
                     knob_base = type_base_conv.get(knob_type)
                     # print(f"{knob_base=}")
                     if knob_base is None:
                         return None
                     # print(f"{knob_base=},{message.value=},{get_knob_val(message.value, knob_base)=}")
-                    if message.value != knob_base:
+                    if mess.value != knob_base:
                         # print(knob)
-                        knob[1]['inc_value'] = get_knob_val(message.value, knob_base)
-                        knob[1]['value'] += knob[1]['inc_value']
+                        knb[1]['inc_value'] = get_knob_val(mess.value, knob_base)
+                        knb[1]['value'] += knb[1]['inc_value']
 
                         # self.knob_01 += get_knob_val(message.value, knob_base)
 
-                        print(f"{knob[1]['value'] },{knob[1]['inc_value'] }")
+                        print(f"{knb[1]['value'] },{knb[1]['inc_value'] }")
                         # print(f"{self.midi_mapping[knob_name]=},{self.midi_mapping}")
                 return {'name' : knob_name,
                         'type' : knob_type,
-                        'value' : knob[1]['value'],
-                        'inc_value' : knob[1]['inc_value']
+                        'value' : knb[1]['value'],
+                        'inc_value' : knb[1]['inc_value']
                         }
 
             print(" - Received MIDI: %s" % message)
@@ -363,7 +361,7 @@ class Tracker:
                 print(f"{message.control=}")
                 # set_tempo_knob = self.midi_mapping.get("set_tempo_knob")
                 # base = set_knob(message=message)
-                knob = get_knob(message=message)
+                knob = get_knob(mess=message)
                 print(f"{knob=}")
 
 
