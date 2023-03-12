@@ -328,13 +328,13 @@ class Tracker:
                 print(f"{knob=},{knob[0]=},{knob[1]=}")
                 if not knob[1].get("value"):
                     knob[1]['value'] = 0
+                if not knob[1].get("inc_value"):
+                    knob[1]['inc_value'] = 0
 
                 knob_type = knob[1]['knob_type']
                 if knob_type == 'abs':
                     knob[1]['value'] = message.value
                 else:
-                    if not knob[1].get("inc_value"):
-                        knob[1]['inc_value'] = 0
                     knob_base = type_base_conv.get(knob_type)
                     # print(f"{knob_base=}")
                     if knob_base is None:
@@ -349,6 +349,11 @@ class Tracker:
 
                         print(f"{knob[1]['value'] },{knob[1]['inc_value'] }")
                         # print(f"{self.midi_mapping[knob_name]=},{self.midi_mapping}")
+                return {'name' : knob_name,
+                        'type' : knob_type,
+                        'value' : knob[1]['value'],
+                        'inc_value' : knob[1]['inc_value']
+                        }
 
             print(" - Received MIDI: %s" % message)
             print(message.__dict__)
@@ -359,6 +364,7 @@ class Tracker:
                 # set_tempo_knob = self.midi_mapping.get("set_tempo_knob")
                 # base = set_knob(message=message)
                 knob = get_knob(message=message)
+                print(f"{knob=}")
 
 
 
