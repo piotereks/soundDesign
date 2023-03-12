@@ -310,6 +310,7 @@ class TrackerApp(App):
             'full queue: ' + str(my_tracker.get_queue_content_full()))
 
         my_tracker.set_tempo_action = lambda: self.set_tempo(None, tempo_knob=my_tracker.midi_mapping['set_tempo_knob'])
+        my_tracker.set_play_action = lambda: self.play_pause(None, tempo_button=my_tracker.midi_mapping['play'])
 
         self.__config_init_file__()
 
@@ -477,10 +478,12 @@ class TrackerApp(App):
         self.root.ids.main_scr.ids.metronome.state=to_state
         # self.metro_on_off(None, to_state)
 
-    def play_pause(self, instance, state):
+    def play_pause(self, instance, state=None, tempo_button = None):
         log_call()
+        if tempo_button:
+            state = tempo_button['state']
         print(f"{instance=}, {state=}")
-        tstart() if state=='down' else tstop()
+        tstart() if state == 'down' else tstop()
 
 
     def metro_on_off(self, instance, state):

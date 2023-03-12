@@ -331,7 +331,7 @@ class Tracker:
                     btn[1]['state'] = 'normal'
 
                 if btn[1]['toggle']:
-                    if mess.type=='note_on':
+                    if mess.type == 'note_on':
                         btn[1]['state'] = 'down'
                     else:
                         btn[1]['state'] = 'normal'
@@ -410,7 +410,10 @@ class Tracker:
                         self.put_to_queue(message.note)
                 else:
                     button = get_button(mess=message)
-
+                    print(f"{button=}")
+                    if button:
+                        if button['name']=='play':
+                            self.set_play_action()
             elif message.type == 'control_change':
                 print(f"{message.control=}")
                 # set_tempo_knob = self.midi_mapping.get("set_tempo_knob")
@@ -635,6 +638,9 @@ class Tracker:
         log_call()
 
     def set_tempo_action(self):
+        log_call()
+
+    def set_play_action(self):
         log_call()
 
     # </editor-fold>
