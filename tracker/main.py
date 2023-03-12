@@ -273,6 +273,9 @@ class TrackerApp(App):
     selected_scale_button = StringProperty()
 
     app_config = ObjectProperty()
+    tempo_value = NumericProperty(120)
+    tempo_min = NumericProperty(40)
+    tempo_max = NumericProperty(300)
 
 
     def on_start(self):
@@ -289,10 +292,12 @@ class TrackerApp(App):
         all_scales = sorted([scale.name for scale in iso.Scale.all()])
         # self.scale_init_text = my_tracker.key.scale.name
         self.selected_scale_button = my_tracker.key.scale.name
+
+
         self.scale_values = all_scales
         self.func_values = my_tracker.note_patterns.pattern_methods_short_list
         self.func_init_text = self.func_init_text if self.func_init_text else \
-        my_tracker.note_patterns.pattern_methods_short_list[0]
+            my_tracker.note_patterns.pattern_methods_short_list[0]
 
         my_tracker.scale_name_action = lambda: self.set_scale_set_name_txt('set:' + my_tracker.key.scale.name)
         my_tracker.check_notes_action = lambda: self.set_check_notes_lbl_text(str(my_tracker.check_notes))
@@ -304,8 +309,17 @@ class TrackerApp(App):
         my_tracker.fullq_content_action = lambda: self.set_fullq_content_lbl_text(
             'full queue: ' + str(my_tracker.get_queue_content_full()))
 
+        my_tracker.set_tempo_action = lambda: self.set_tempo(None, 12)
+
         self.__config_init_file__()
 
+        # self.tempo_value = self.parm_tempo if self.parm_tempo else 120
+        # self.tempo_min = self.parm_tempo_min if self.parm_tempo_min else 40
+        # self.tempo_max = self.parm_tempo_max if self.parm_tempo_max else 300
+
+        self.tempo_value = self.parm_tempo
+        self.tempo_min = self.parm_tempo_min
+        self.tempo_max = self.parm_tempo_max
     # def __init__(self, **kwargs):
     #     super(TrackerApp, self).__init__(**kwargs)
     #     # print(f"{self.grid_cols=}, {self.grid_rows=},{self.grid_cols=}")
@@ -561,7 +575,14 @@ class TrackerApp(App):
     def set_tempo(self, instance, tempo):
         log_call()
         my_tracker.set_tempo(tempo)
-        my_tracker.meta_tempo(tempo=tempo) 
+        my_tracker.meta_tempo(tempo=tempo)
+        print(f"bef: {self.tempo_value}")
+        if tempo > self.tempo_max:
+            tempo = self.tempo_max
+        elif tempo < self.tempo_min:
+            tempo = self.tempo_min
+        self.tempo_value = tempo
+        print(f"aft: {self.tempo_value}")
 
 
 

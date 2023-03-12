@@ -216,9 +216,12 @@ ScreenManager:
                     text:str(tempo.value)
                 Slider:
                     id: tempo
-                    min: app.parm_tempo_min if app.parm_tempo_min else 40
-                    max: app.parm_tempo_max if app.parm_tempo_max else 300
-                    value: app.parm_tempo if app.parm_tempo  else 120
+#                    min: app.parm_tempo_min if app.parm_tempo_min else 40
+#                    max: app.parm_tempo_max if app.parm_tempo_max else 300
+#                    value: app.parm_tempo if app.parm_tempo  else 120
+                    min: app.tempo_min
+                    max: app.tempo_max
+                    value: app.tempo_value
                     step: 1
                     orientation: 'horizontal'
                     on_value: app.set_tempo(*args)

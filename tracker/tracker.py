@@ -363,6 +363,7 @@ class Tracker:
                 # base = set_knob(message=message)
                 knob = get_knob(mess=message)
                 print(f"{knob=}")
+                self.set_tempo_action()
 
 
 
@@ -575,6 +576,9 @@ class Tracker:
         log_call()
 
     def fullq_content_action(self):
+        log_call()
+
+    def set_tempo_action(self):
         log_call()
 
     # </editor-fold>
