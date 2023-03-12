@@ -574,7 +574,7 @@ class TrackerApp(App):
 
     def set_tempo(self, instance, tempo=None, tempo_knob=None):
         log_call()
-        print(inspect.stack()[1])
+        # print(inspect.stack()[1])
         print(f"xxxxx: {tempo=},{tempo_knob=}")
         if not tempo:
             # tempo_increment = tempo_knob['inc_value']

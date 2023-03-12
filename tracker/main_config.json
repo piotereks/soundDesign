@@ -14,6 +14,7 @@
   "tracker": {
     "midi_in_name": ["Arturia MiniLab mkII", "KB loopMIDI Port"],
     "midi_out_name": ["Microsoft GS Wavetable Synth","blah","KB loopMIDI Port"],
+    "default_channel" : 0,
     "dummy_file_config": "qqqq"
   },
   "midi_mapping": {
@@ -36,27 +37,28 @@
     },
     "play": {
       "channel": 9,
-      "value": 13
+      "note": 36,
+      "toggle" : true
     },
     "metronome": {
       "channel": 9,
-      "value": 14
+      "note": 37
     },
     "loop": {
       "channel": 9,
-      "value": 15
+      "note": 15
     },
     "rnd_scale": {
       "channel": 9,
-      "value": 16
+      "note": 16
     },
     "rnd_key": {
       "channel": 9,
-      "value": 17
+      "note": 17
     },
     "rnd_func": {
       "channel": 9,
-      "value": 18
+      "note": 18
     }
 
   }

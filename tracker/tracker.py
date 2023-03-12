@@ -263,7 +263,8 @@ class Tracker:
             {
                 "midi_in_name": ["blah_blah_0", "sdfdsf123"],
                 "midi_out_name": ["in_blah_blah_0", "ppp_sdfdsf123"],
-                "dummy_hardcoded_config" : "asdfsdf"
+                "default_channel": 1,
+                "dummy_hardcoded_config": "asdfsdf"
             }
         if tracker_config:
             self.default_tracker_config.update(tracker_config)
@@ -305,6 +306,50 @@ class Tracker:
                 if val > 63:
                     val -= 128
                 return val
+
+            def get_button(mess = None):
+                log_call()
+                if not mess:
+                    print("no message")
+
+                    return None
+                print(type(mess), mess.__dict__)
+                btn = [(mid_k, self.midi_mapping[mid_k]) for mid_k in self.midi_mapping \
+                                 if self.midi_mapping[mid_k].get("channel") == mess.channel\
+                                and self.midi_mapping[mid_k].get("note") == mess.note
+                       ]
+                if not btn:
+                    return None
+                btn = btn[0]
+                button_name = btn[0] # this is different knob[0] than above line
+
+                print(f"{btn=},{btn[0]=},{btn[1]=}")
+
+                if not btn[1].get("toggle"):
+                    btn[1]['toggle'] = False
+                if not btn[1].get("state"):
+                    btn[1]['state'] = 'normal'
+
+                if btn[1]['toggle']:
+                    if mess.type=='note_on':
+                        btn[1]['state'] = 'down'
+                    else:
+                        btn[1]['state'] = 'normal'
+                else:
+                    if mess.type == 'note_on':
+                        if btn[1]['state'] == 'down':
+                            btn[1]['state'] = 'normal'
+                        else:
+                            btn[1]['state'] = 'down'
+
+                print(f"{btn[1]['state']=}")
+
+
+                        # print(f"{self.midi_mapping[knob_name]=},{self.midi_mapping}")
+                return {'name': button_name,
+                        'toggle': btn[1]['toggle'],
+                        'state': btn[1]['state']
+                        }
 
             def get_knob(mess = None):
                 if not mess:
@@ -358,8 +403,14 @@ class Tracker:
 
             print(" - Received MIDI: %s" % message)
             print(message.__dict__)
-            if message.type == 'note_on':
-                self.put_to_queue(message.note)
+            # self.default_tracker_config['default_channel']
+            if message.type == 'note_on' or message.type == 'note_off':
+                if message.channel == self.default_tracker_config['default_channel']:
+                    if message.type == 'note_on':
+                        self.put_to_queue(message.note)
+                else:
+                    button = get_button(mess=message)
+
             elif message.type == 'control_change':
                 print(f"{message.control=}")
                 # set_tempo_knob = self.midi_mapping.get("set_tempo_knob")
