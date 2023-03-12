@@ -256,7 +256,7 @@ class Tracker:
         # self.midi_in_name = midi_in_name
         # self.midi_out_name = midi_out_name
         self.midi_mapping = midi_mapping
-        self.knob_01 = 0
+        # self.knob_01 = 0
 
         self.pattern_idx = 0
         self.default_tracker_config = \
@@ -300,40 +300,66 @@ class Tracker:
 
 
         def midi_in_callback(message):
-            def get_knob(cc=None):
-                knob = [self.midi_mapping[mid_k] for mid_k  in self.midi_mapping \
-                        if self.midi_mapping[mid_k].get("cc") == cc]
-                if knob:
-                    knob = knob[0]
-                else:
+            def get_knob_val(val, base):
+                val -= base
+                if val > 63:
+                    val -= 128
+                return val
+
+
+
+            def get_knob(message = None):
+                if not message:
+                    return None
+                type_base_conv = {"rel#1": 64, "rel#2": 0, "rel#3": 16}
+                print(type(message), message.__dict__)
+
+                # knob = [self.midi_mapping[mid_k] for mid_k in self.midi_mapping \
+                #         if self.midi_mapping[mid_k].get("cc") == message.control]
+
+                knob = [(mid_k, self.midi_mapping[mid_k]) for mid_k in self.midi_mapping \
+                        if self.midi_mapping[mid_k].get("cc") == message.control]
+
+                if not knob:
                     return None
 
-                type_base_conv = {"rel#1": 64, "rel#2": 0, "rel#3": 16}
-                if knob:
-                    if knob.get("knob_type") == 'abs':
-                        pass
-                        return -1
-                    else:
-                        knob_base = type_base_conv.get(knob.get("knob_type"))
-                    return knob_base
-            def to_signed(val):
-                if val>127:
-                    raise ValueError('Out of range 0-128')
-                return val if val<=63 else val-128
+                knob = knob[0]
+                knob_name = knob[0] # this is different knob[0] than above line
+                print(f"{knob=},{knob[0]=},{knob[1]=}")
+                if not knob[1].get("value"):
+                    knob[1]['value'] = 0
+
+                knob_type = knob[1]['knob_type']
+                if knob_type == 'abs':
+                    knob[1]['value'] = message.value
+                else:
+                    if not knob[1].get("inc_value"):
+                        knob[1]['inc_value'] = 0
+                    knob_base = type_base_conv.get(knob_type)
+                    # print(f"{knob_base=}")
+                    if knob_base is None:
+                        return None
+                    # print(f"{knob_base=},{message.value=},{get_knob_val(message.value, knob_base)=}")
+                    if message.value != knob_base:
+                        # print(knob)
+                        knob[1]['inc_value'] = get_knob_val(message.value, knob_base)
+                        knob[1]['value'] += knob[1]['inc_value']
+
+                        # self.knob_01 += get_knob_val(message.value, knob_base)
+
+                        print(f"{knob[1]['value'] },{knob[1]['inc_value'] }")
+                        # print(f"{self.midi_mapping[knob_name]=},{self.midi_mapping}")
 
             print(" - Received MIDI: %s" % message)
             print(message.__dict__)
             if message.type == 'note_on':
                 self.put_to_queue(message.note)
             elif message.type == 'control_change':
+                print(f"{message.control=}")
                 # set_tempo_knob = self.midi_mapping.get("set_tempo_knob")
-                base = get_knob(cc=message.control)
-                bl = base == None
-                print(f"{base=}, {bl=}")
-                if base!=None and message.value != base:
-                    print(f"{base=},{message.value=},{(message.value+base) % 128 - base=}")
-                    self.knob_01 += to_signed(message.value) - base
-                    print(f"{self.knob_01}")
+                # base = set_knob(message=message)
+                knob = get_knob(message=message)
+
 
 
         midi_in_name = [mids[0] for mids in itertools.product(mido.get_input_names(), midi_in_name) if mids[1] in mids[0]]
