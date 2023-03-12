@@ -213,7 +213,7 @@ ScreenManager:
                 orientation:'vertical'
                 Label:
                     id:tempo_val
-                    text:str(tempo.value)
+                    text:str(int(tempo.value))
                 Slider:
                     id: tempo
 #                    min: app.parm_tempo_min if app.parm_tempo_min else 40
@@ -222,7 +222,7 @@ ScreenManager:
                     min: app.tempo_min
                     max: app.tempo_max
                     value: app.tempo_value
-                    step: 1
+#                    step: 1
                     orientation: 'horizontal'
                     on_value: app.set_tempo(*args)
 

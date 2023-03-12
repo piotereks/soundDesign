@@ -325,9 +325,12 @@ class Tracker:
                 knob_name = knb[0] # this is different knob[0] than above line
                 print(f"{knb=},{knb[0]=},{knb[1]=}")
                 if not knb[1].get("value"):
-                    knb[1]['value'] = 0
+                    knb[1]['value'] = 0.0
                 if not knb[1].get("inc_value"):
-                    knb[1]['inc_value'] = 0
+                    knb[1]['inc_value'] = 0.0
+                if not knb[1].get("ratio"):
+                    knb[1]['ratio'] = 1.0
+
 
                 knob_type = knb[1]['knob_type']
                 if knob_type == 'abs':
@@ -341,7 +344,7 @@ class Tracker:
                     if mess.value != knob_base:
                         # print(knob)
                         knb[1]['inc_value'] = get_knob_val(mess.value, knob_base)
-                        knb[1]['value'] += knb[1]['inc_value']
+                        knb[1]['value'] += knb[1]['inc_value']*knb[1]['ratio']
 
                         # self.knob_01 += get_knob_val(message.value, knob_base)
 
@@ -363,7 +366,8 @@ class Tracker:
                 # base = set_knob(message=message)
                 knob = get_knob(mess=message)
                 print(f"{knob=}")
-                self.set_tempo_action()
+                if knob['name']=='set_tempo_knob':
+                    self.set_tempo_action()
 
 
 

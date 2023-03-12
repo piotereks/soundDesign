@@ -273,7 +273,7 @@ class TrackerApp(App):
     selected_scale_button = StringProperty()
 
     app_config = ObjectProperty()
-    tempo_value = NumericProperty(120)
+    tempo_value = NumericProperty(120.0)
     tempo_min = NumericProperty(40)
     tempo_max = NumericProperty(300)
 
@@ -309,7 +309,7 @@ class TrackerApp(App):
         my_tracker.fullq_content_action = lambda: self.set_fullq_content_lbl_text(
             'full queue: ' + str(my_tracker.get_queue_content_full()))
 
-        my_tracker.set_tempo_action = lambda: self.set_tempo(None, 12)
+        my_tracker.set_tempo_action = lambda: self.set_tempo(None, tempo_knob=my_tracker.midi_mapping['set_tempo_knob'])
 
         self.__config_init_file__()
 
@@ -572,17 +572,29 @@ class TrackerApp(App):
         self.func_init_text = selected_function
         my_tracker.note_patterns.set_pattern_function(selected_function)
 
-    def set_tempo(self, instance, tempo):
+    def set_tempo(self, instance, tempo=None, tempo_knob=None):
         log_call()
-        my_tracker.set_tempo(tempo)
-        my_tracker.meta_tempo(tempo=tempo)
+        print(inspect.stack()[1])
+        print(f"xxxxx: {tempo=},{tempo_knob=}")
+        if not tempo:
+            # tempo_increment = tempo_knob['inc_value']
+            tempo_increment = tempo_knob['inc_value']*tempo_knob['ratio'] if tempo_knob['ratio'] \
+                else tempo_knob['inc_value']
+            # tempo = int(round(self.tempo_value + tempo_increment))
+            tempo = self.tempo_value + tempo_increment
+            # ratio = tempo_knob['inc_value'] / 128
+            # fractional_tempo = ratio*(self.tempo_max-self.tempo_min)
+            # tempo = int(round(self.tempo_value + fractional_tempo))
         print(f"bef: {self.tempo_value}")
         if tempo > self.tempo_max:
             tempo = self.tempo_max
         elif tempo < self.tempo_min:
             tempo = self.tempo_min
         self.tempo_value = tempo
-        print(f"aft: {self.tempo_value}")
+        print(f"aft: {self.tempo_value=}")
+        my_tracker.set_tempo(round(tempo))
+        my_tracker.meta_tempo(tempo=round(tempo))
+
 
 
 
