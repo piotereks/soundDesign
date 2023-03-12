@@ -366,8 +366,9 @@ class Tracker:
                 # base = set_knob(message=message)
                 knob = get_knob(mess=message)
                 print(f"{knob=}")
-                if knob['name']=='set_tempo_knob':
-                    self.set_tempo_action()
+                if knob:
+                    if knob['name']=='set_tempo_knob':
+                        self.set_tempo_action()
 
 
 
