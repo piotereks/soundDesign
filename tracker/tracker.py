@@ -325,12 +325,15 @@ class Tracker:
                 button_name = btn[0] # this is different knob[0] than above line
 
                 print(f"{btn=},{btn[0]=},{btn[1]=}")
-                if btn[1].get("button"):
-                    state = 'down' if mess.type == 'note_on' else 'normal'
-                    return {'name': button_name,
-                            'button': True,
-                            'state': state
-                            }
+                if btn[1].get("button"): 
+                    if mess.type == 'note_on':
+                        # state = 'down' if mess.type == 'note_on' else 'normal'
+                        return {'name': button_name,
+                                'button': True,
+                                'state': 'down'
+                                }
+                    else:
+                        return None
                 if not btn[1].get("toggle"):
                     btn[1]['toggle'] = False
                 if not btn[1].get("state"):

@@ -236,6 +236,11 @@ def main():
     my_tracker.set_metronome_action = lambda: print(None)
     my_tracker.set_loop_action = lambda: print(None)
 
+    my_tracker.set_rnd_scale_action = lambda: print(None)
+    my_tracker.set_rnd_key_action = lambda: print(None)
+    my_tracker.set_rnd_func_action= lambda: print(None)
+
+
     ts()
     save_midi(on_exit=True)
 
@@ -327,6 +332,11 @@ class TrackerApp(App):
         my_tracker.set_metronome_action = lambda: self.set_metronome_state(
             metronome_button=my_tracker.midi_mapping['metronome'])
         my_tracker.set_loop_action = lambda: self.set_loop_state(loop_button=my_tracker.midi_mapping['loop'])
+
+        my_tracker.set_rnd_scale_action = lambda: self.rand_scale()
+        my_tracker.set_rnd_key_action = lambda: self.rand_key()
+        my_tracker.set_rnd_func_action= lambda: self.rand_play_funct()
+
 
         self.__config_init_file__()
 
@@ -497,6 +507,7 @@ class TrackerApp(App):
         state = loop_button.get('state')
         if state:
             self.root.ids.main_scr.ids.loopq_button.state = state
+          
 
     def set_metronome_state(self, metronome_button=None):
         if not metronome_button:
