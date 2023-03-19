@@ -494,22 +494,25 @@ class TrackerApp(App):
     def set_loop_state(self, loop_button=None):
         if not loop_button:
             return
-        state = loop_button['state']
-        self.root.ids.main_scr.ids.loopq_button.state = state
+        state = loop_button.get('state')
+        if state:
+            self.root.ids.main_scr.ids.loopq_button.state = state
 
     def set_metronome_state(self, metronome_button=None):
         if not metronome_button:
             return
-        state = metronome_button['state']
-        self.root.ids.main_scr.ids.metronome.state = state
+        state = metronome_button.get('state')
+        if state:
+            self.root.ids.main_scr.ids.metronome.state = state
 
     def set_play_pause_state(self, play_pause_button=None):
         if not play_pause_button:
             return
-        state = play_pause_button['state']
-        # state=self.root.ids.main_scr.ids.start_stop_button.state
-        # to_state = 'normal' if state == 'down' else 'down'
-        self.root.ids.main_scr.ids.start_stop_button.state = state
+        state = play_pause_button.get('state')
+        if state:
+            # state=self.root.ids.main_scr.ids.start_stop_button.state
+            # to_state = 'normal' if state == 'down' else 'down'
+            self.root.ids.main_scr.ids.start_stop_button.state = state
 
     def play_pause(self, instance, state=None, play_pause_button=None):
         log_call()

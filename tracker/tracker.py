@@ -308,7 +308,7 @@ class Tracker:
                     val -= 128
                 return val
 
-            def get_button(mess = None):
+            def get_button(mess=None):
                 log_call()
                 if not mess:
                     print("no message")
@@ -325,22 +325,34 @@ class Tracker:
                 button_name = btn[0] # this is different knob[0] than above line
 
                 print(f"{btn=},{btn[0]=},{btn[1]=}")
-
+                if btn[1].get("button"):
+                    state = 'down' if mess.type == 'note_on' else 'normal'
+                    return {'name': button_name,
+                            'button': True,
+                            'state': state
+                            }
                 if not btn[1].get("toggle"):
                     btn[1]['toggle'] = False
                 if not btn[1].get("state"):
                     btn[1]['state'] = 'normal'
-
+                print(f"{btn[1]['toggle']}")
                 if btn[1]['toggle']:
+                    print("x1")
                     if mess.type == 'note_on':
+                        print("x2")
                         btn[1]['state'] = 'down'
                     else:
                         btn[1]['state'] = 'normal'
+                        print("x3")
                 else:
+                    print("x4")
                     if mess.type == 'note_on':
+                        print("x5")
                         if btn[1]['state'] == 'down':
+                            print("x6")
                             btn[1]['state'] = 'normal'
                         else:
+                            print("x7")
                             btn[1]['state'] = 'down'
 
                 print(f"{btn[1]['state']=}")
@@ -412,13 +424,34 @@ class Tracker:
                 else:
                     button = get_button(mess=message)
                     print(f"{button=}")
+                    oper_to_func = {
+                        'play': self.set_play_action(),
+                        'metronome': self.set_metronome_action(),
+                        'loop': self.set_loop_action()
+                        ,
+                        'rnd_scale': self.set_rnd_scale_action(),
+                        'rnd_key': self.set_rnd_key_action(),
+                        'rnd_func': self.set_rnd_func_action()
+                    }
                     if button:
-                        if button['name']=='play':
-                            self.set_play_action()
-                        elif button['name']=='metronome':
-                            self.set_metronome_action()
-                        elif button['name']=='loop':
-                            self.set_loop_action()
+                        func = oper_to_func.get(button['name'])
+                        print(f"xxx:{func=}")
+                        if func:
+                            func()
+                    # if button:
+                    #     if button['name'] == 'play':
+                    #         self.set_play_action()
+                    #     elif button['name'] == 'metronome':
+                    #         self.set_metronome_action()
+                    #     elif button['name'] == 'loop':
+                    #         self.set_loop_action()
+                    #     elif button['name'] == 'rnd_scale':
+                    #         self.set_loop_action()
+                    #     elif button['name'] == 'rnd_key':
+                    #         self.set_loop_action()
+                    #     elif button['name'] == 'rnd_func':
+                    #         self.set_loop_action()
+
             elif message.type == 'control_change':
                 print(f"{message.control=}")
                 # set_tempo_knob = self.midi_mapping.get("set_tempo_knob")
@@ -435,10 +468,15 @@ class Tracker:
 
         # midi_in_name = list(set(midi_in_name) & set(mido.get_input_names())) + mido.get_input_names()
         if midi_in_name:
-            self.midi_in = iso.MidiInputDevice(midi_in_name[0])
+            try:
+                self.midi_in = iso.MidiInputDevice(midi_in_name[0])
+            except iso.DeviceNotFoundException:
+                print(f"Can't open midi in named'{midi_in_name[0]}. Possibly locked by other application'")
+                return
             self.midi_in.callback = midi_in_callback
         else:
             print(f"No midi in with {midi_in_name}")
+
 
     def init_timeline(self, midi_in_name, midi_out_name, midi_out_mode='dummy', ):
         log_call()
@@ -653,6 +691,17 @@ class Tracker:
 
     def set_loop_action(self):
         log_call()
+
+    def set_rnd_scale_action(self):
+        log_call()
+
+    def set_rnd_key_action(self):
+        log_call()
+
+    def set_rnd_func_action(self):
+        log_call()
+
+
     # </editor-fold>
 
     # <editor-fold desc="Queue functions">

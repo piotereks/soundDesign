@@ -52,15 +52,18 @@
     },
     "rnd_scale": {
       "channel": 9,
-      "note": 16
+      "note": 40,
+      "button": true
     },
     "rnd_key": {
       "channel": 9,
-      "note": 17
+      "note": 41,
+      "button": true
     },
     "rnd_func": {
       "channel": 9,
-      "note": 18
+      "note": 42,
+      "button": true
     }
 
   }
