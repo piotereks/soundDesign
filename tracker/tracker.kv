@@ -88,6 +88,8 @@ ScreenManager:
                 # size: [round(self.texture_size[0]/2,-1)*2+30,self.texture_size[1]*2]
                 # (-(-n//div))
                 size: [-(-self.texture_size[0]//70)*70,self.texture_size[1]*2]
+#                state=app.play_pause_state
+
                 on_state: app.play_pause(*args)
             Button:
                 text:'Save'

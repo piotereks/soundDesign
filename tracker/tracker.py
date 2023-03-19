@@ -278,6 +278,7 @@ class Tracker:
         self.init_timeline(midi_in_name=self.midi_in_name , midi_out_name=self.midi_out_name, midi_out_mode=midi_out_mode)
         self.beat = lambda: self.play_from_to(None, None, in_pattern=True)
         self.metro_beat = lambda: print('metro_beat init')
+        self.current_tempo = 0
         # self.play_from_to(None, None, in_pattern=True)
         # self.beat = self.beat_none
         # my_tracker.metronome_start()
@@ -744,6 +745,11 @@ class Tracker:
 
     def set_tempo(self, new_tempo):
         log_call()
+        print(f"{self.current_tempo=} == {new_tempo=}")
+        if int(self.current_tempo) == int(new_tempo):
+            print(f"tempo not changed {self.current_tempo=}")
+            return
+        self.current_tempo=int(new_tempo)
         print(f"b_read tempo: {self.timeline.get_tempo()=}, {new_tempo=}")
         # self.timeline.set_tempo(int(new_tempo))
         self.timeline.set_tempo(int(new_tempo))

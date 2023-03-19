@@ -17,7 +17,7 @@ from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.behaviors import ToggleButtonBehavior
-from kivy.properties import (StringProperty, ListProperty, ObjectProperty, NumericProperty)
+from kivy.properties import (StringProperty, ListProperty, ObjectProperty, NumericProperty, OptionProperty)
 
 from kivy.lang import Builder
 from kivy.uix.screenmanager import (ScreenManager, Screen, NoTransition,
@@ -276,7 +276,7 @@ class TrackerApp(App):
     tempo_value = NumericProperty(120.0)
     tempo_min = NumericProperty(40)
     tempo_max = NumericProperty(300)
-
+    # play_pause_state = OptionProperty('down')
 
     def on_start(self):
 
@@ -310,7 +310,8 @@ class TrackerApp(App):
             'full queue: ' + str(my_tracker.get_queue_content_full()))
 
         my_tracker.set_tempo_action = lambda: self.set_tempo(None, tempo_knob=my_tracker.midi_mapping['set_tempo_knob'])
-        my_tracker.set_play_action = lambda: self.play_pause(None, tempo_button=my_tracker.midi_mapping['play'])
+        # my_tracker.set_play_action = lambda: self.play_pause(None, play_pause_button=my_tracker.midi_mapping['play'])
+        my_tracker.set_play_action = lambda: self.set_play_pause_state(play_pause_button=my_tracker.midi_mapping['play'])
 
         self.__config_init_file__()
 
@@ -478,12 +479,24 @@ class TrackerApp(App):
         self.root.ids.main_scr.ids.metronome.state=to_state
         # self.metro_on_off(None, to_state)
 
-    def play_pause(self, instance, state=None, tempo_button = None):
+    def set_play_pause_state(self, play_pause_button = None):
+        if not play_pause_button:
+            return
+        state = play_pause_button['state']
+        # state=self.root.ids.main_scr.ids.start_stop_button.state
+        # to_state = 'normal' if state == 'down' else 'down'
+        self.root.ids.main_scr.ids.start_stop_button.state = state
+
+    def play_pause(self, instance, state=None, play_pause_button = None):
         log_call()
-        if tempo_button:
-            state = tempo_button['state']
+        if play_pause_button:
+            state = play_pause_button['state']
         print(f"{instance=}, {state=}")
         tstart() if state == 'down' else tstop()
+        # if self.root.ids.main_scr.ids.start_stop_button.state == state:
+        #     return
+        # self.root.ids.main_scr.ids.start_stop_button.state = state
+        # self.inv_play_pause()
 
 
     def metro_on_off(self, instance, state):
@@ -597,6 +610,7 @@ class TrackerApp(App):
         print(f"aft: {self.tempo_value=}")
         my_tracker.set_tempo(round(tempo))
         my_tracker.meta_tempo(tempo=round(tempo))
+
 
 
 
