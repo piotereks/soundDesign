@@ -312,6 +312,7 @@ class TrackerApp(App):
         my_tracker.set_tempo_action = lambda: self.set_tempo(None, tempo_knob=my_tracker.midi_mapping['set_tempo_knob'])
         # my_tracker.set_play_action = lambda: self.play_pause(None, play_pause_button=my_tracker.midi_mapping['play'])
         my_tracker.set_play_action = lambda: self.set_play_pause_state(play_pause_button=my_tracker.midi_mapping['play'])
+        my_tracker.set_metronome_action = lambda: self.set_metronome_state(metronome_button=my_tracker.midi_mapping['metronome'])
 
         self.__config_init_file__()
 
@@ -478,6 +479,12 @@ class TrackerApp(App):
         to_state = 'normal' if state == 'down' else 'down'
         self.root.ids.main_scr.ids.metronome.state=to_state
         # self.metro_on_off(None, to_state)
+
+    def set_metronome_state(self, metronome_button = None):
+        if not metronome_button:
+            return
+        state = metronome_button['state']
+        self.root.ids.main_scr.ids.metronome.state = state
 
     def set_play_pause_state(self, play_pause_button = None):
         if not play_pause_button:

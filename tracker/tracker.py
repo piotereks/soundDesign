@@ -415,6 +415,8 @@ class Tracker:
                     if button:
                         if button['name']=='play':
                             self.set_play_action()
+                        elif button['name']=='metronome':
+                            self.set_metronome_action()
             elif message.type == 'control_change':
                 print(f"{message.control=}")
                 # set_tempo_knob = self.midi_mapping.get("set_tempo_knob")
@@ -642,6 +644,9 @@ class Tracker:
         log_call()
 
     def set_play_action(self):
+        log_call()
+
+    def set_metronome_action(self):
         log_call()
 
     # </editor-fold>

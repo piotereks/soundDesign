@@ -42,7 +42,8 @@
     },
     "metronome": {
       "channel": 9,
-      "note": 37
+      "note": 37,
+      "toggle" : true
     },
     "loop": {
       "channel": 9,
