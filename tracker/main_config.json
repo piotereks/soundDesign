@@ -47,7 +47,8 @@
     },
     "loop": {
       "channel": 9,
-      "note": 15
+      "note": 38,
+      "toggle" : true
     },
     "rnd_scale": {
       "channel": 9,

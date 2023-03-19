@@ -417,6 +417,8 @@ class Tracker:
                             self.set_play_action()
                         elif button['name']=='metronome':
                             self.set_metronome_action()
+                        elif button['name']=='loop':
+                            self.set_loop_action()
             elif message.type == 'control_change':
                 print(f"{message.control=}")
                 # set_tempo_knob = self.midi_mapping.get("set_tempo_knob")
@@ -649,6 +651,8 @@ class Tracker:
     def set_metronome_action(self):
         log_call()
 
+    def set_loop_action(self):
+        log_call()
     # </editor-fold>
 
     # <editor-fold desc="Queue functions">
