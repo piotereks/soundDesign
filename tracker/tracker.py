@@ -325,11 +325,11 @@ class Tracker:
                 button_name = btn[0] # this is different knob[0] than above line
 
                 print(f"{btn=},{btn[0]=},{btn[1]=}")
-                if btn[1].get("button"): 
+                if btn[1].get('ToDo.md'gate'): 
                     if mess.type == 'note_on':
                         # state = 'down' if mess.type == 'note_on' else 'normal'
                         return {'name': button_name,
-                                'button': True,
+                                'gate': True,
                                 'state': 'down'
                                 }
                     else:

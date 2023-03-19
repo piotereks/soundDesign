@@ -53,17 +53,17 @@
     "rnd_scale": {
       "channel": 9,
       "note": 40,
-      "button": true
+      "gate": true
     },
     "rnd_key": {
       "channel": 9,
       "note": 41,
-      "button": true
+      "gate": true
     },
     "rnd_func": {
       "channel": 9,
       "note": 42,
-      "button": true
+      "gate": true
     }
 
   }
