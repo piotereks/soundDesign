@@ -3,14 +3,14 @@ import isobar as iso
 import time
 
 names=mido.get_input_names()
-print(names)
+print("input: ",names)
 input_midi_name='Bome Virtual MIDI Port 1'
 
 
 # input_midi_name='Bome''s Midi Translator 3 1'
 
 names=mido.get_output_names()
-print(names)
+print("output: ",names)
 output_midi_name='Bome Virtual MIDI Port 2'
 input_midi_name='BMO2'
 
@@ -29,6 +29,8 @@ for inp in mido.get_input_names():
 print('Input Done')
 
 for out in mido.get_output_names():
+    # if out != 'Arturia MiniLab mkII 1':
+    #     continue
     try:
         midi_out = iso.MidiOutputDevice(device_name=out)
         print(f'open out {out} opened')
@@ -40,6 +42,8 @@ for out in mido.get_output_names():
 # timeline_out = iso.Timeline(120, output_device=output_device)o
 # timeline_out.background()
 print('output Done')
+
+
 
 
 
