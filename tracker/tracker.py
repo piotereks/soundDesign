@@ -325,7 +325,7 @@ class Tracker:
                 button_name = btn[0] # this is different knob[0] than above line
 
                 print(f"{btn=},{btn[0]=},{btn[1]=}")
-                if btn[1].get('ToDo.md'gate'): 
+                if btn[1].get('gate'):
                     if mess.type == 'note_on':
                         # state = 'down' if mess.type == 'note_on' else 'normal'
                         return {'name': button_name,
@@ -428,16 +428,16 @@ class Tracker:
                     button = get_button(mess=message)
                     print(f"{button=}")
                     oper_to_func = {
-                        'play': self.set_play_action(),
-                        'metronome': self.set_metronome_action(),
-                        'loop': self.set_loop_action()
-                        ,
-                        'rnd_scale': self.set_rnd_scale_action(),
-                        'rnd_key': self.set_rnd_key_action(),
-                        'rnd_func': self.set_rnd_func_action()
+                        'play': self.set_play_action,
+                        'metronome': self.set_metronome_action,
+                        'loop': self.set_loop_action,
+                        'rnd_scale': self.set_rnd_scale_action,
+                        'rnd_key': self.set_rnd_key_action,
+                        'rnd_func': self.set_rnd_func_action
                     }
+                    # print(f"xxx:{button['name']}, {oper_to_func.get(button['name'])}")
                     if button:
-                        func = oper_to_func.get(button['name'])
+                        func = oper_to_func.get(button.get('name'))
                         print(f"xxx:{func=}")
                         if func:
                             func()
