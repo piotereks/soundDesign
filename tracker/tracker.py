@@ -804,7 +804,7 @@ class Tracker:
         else:
             self.midi_out.miditrack.append(mido.MetaMessage(*args, **kwargs))
 
-    def set_tempo(self, new_tempo):
+    def set_tempo_trk(self, new_tempo):
         log_call()
         print(f"{self.current_tempo=} == {new_tempo=}")
         if int(self.current_tempo) == int(new_tempo):
@@ -822,6 +822,7 @@ class Tracker:
         # else:
         #     self.midi_out.miditrack.append(mido.MetaMessage('set_tempo',tempo=mido.bpm2tempo(int(new_tempo)), time=0))
         print(f"a_read tempo: {self.timeline.get_tempo()=}, {new_tempo=}")
+        self.meta_tempo(tempo=round(new_tempo))
 
     def set_program_change(self, program = 0, channel = 0):
         log_call()
@@ -842,6 +843,7 @@ class Tracker:
 
 
     def meta_key_scale(self, key, scale):
+        log_call()
         key = iso.Note.names[key.tonic % 12]
         self.write_mid_text_meta(f"scale:{key}-{scale}")
 
@@ -857,10 +859,12 @@ class Tracker:
 
 
     def meta_func(self,func):
+        log_call()
         self.write_mid_text_meta(f"func:{func}")
 
 
     def meta_tempo(self,tempo):
+        log_call()
         self.write_mid_text_meta(f"tempo:{tempo}")
         # self.mid_MetaMessage('end_of_track', time=0)
 

@@ -178,7 +178,7 @@ def dump_scales():
 #     # my_tracker.meta_key_scale(key=app.keys_group.get(),scale=app.scale_combo.get())
 
 
-def set_scale(scale_name):
+def set_scale_mn(scale_name):
     log_call()
     scale_obj = iso.Scale.byname(scale_name)
     my_tracker.key = iso.Key(my_tracker.key.tonic, scale_obj)
@@ -325,7 +325,7 @@ class TrackerApp(App):
         my_tracker.fullq_content_action = lambda: self.set_fullq_content_lbl_text(
             'full queue: ' + str(my_tracker.get_queue_content_full()))
 
-        my_tracker.set_tempo_action = lambda: self.set_tempo(None, tempo_knob=my_tracker.midi_mapping['set_tempo_knob'])
+        my_tracker.set_tempo_action = lambda: self.set_tempo_f_main(None, tempo_knob=my_tracker.midi_mapping['set_tempo_knob'])
         # my_tracker.set_play_action = lambda: self.play_pause(None, play_pause_button=my_tracker.midi_mapping['play'])
         my_tracker.set_play_action = lambda: self.set_play_pause_state(
             play_pause_button=my_tracker.midi_mapping['play'])
@@ -387,8 +387,8 @@ class TrackerApp(App):
         if self.app_config.get("tempo_max"):
             self.parm_tempo_max = self.app_config.get("tempo_max")
 
-        if self.app_config.get("play_funct"):
-            self.set_play_func(None, self.app_config.get("play_funct"))
+        # if self.app_config.get("play_funct"):
+        #     self.set_play_func(None, self.app_config.get("play_funct"))
         if self.app_config.get("play_funct"):
             self.func_init_text = self.app_config.get("play_funct")
         if self.app_config.get("queue_content"):
@@ -546,10 +546,10 @@ class TrackerApp(App):
     def save(self):
         my_tracker.save_midi()
 
-    def set_scale(self, instance, scale_name):
+    def set_scale_app(self, instance, scale_name):
         log_call()
         # print(instance)
-        set_scale(scale_name)  # TODO review this
+        set_scale_mn(scale_name)  # TODO review this
 
     def set_scale_set_name_txt(self, value):
         self.scale_set_name_txt = value
@@ -608,6 +608,7 @@ class TrackerApp(App):
 
     def set_play_func(self, instance, func_name):
         log_call()
+        print('func_name:',func_name)
         # print(instance)
         my_tracker.note_patterns.set_pattern_function(func_name)
         my_tracker.meta_func(func=f"{func_name}")
@@ -620,33 +621,38 @@ class TrackerApp(App):
         self.func_init_text = selected_function
         my_tracker.note_patterns.set_pattern_function(selected_function)
 
-    def set_tempo(self, instance, tempo=None, tempo_knob=None):
+    def set_tempo_f_main(self, instance, tempo=None, tempo_knob=None):
         log_call()
         # print(inspect.stack()[1])
         print(f"xxxxx: {tempo=},{tempo_knob=}")
         if not tempo:
-            # tempo_increment = tempo_knob['inc_value']
-            tempo_increment = tempo_knob['inc_value'] * tempo_knob['ratio'] if tempo_knob['ratio'] \
-                else tempo_knob['inc_value']
-            # tempo = int(round(self.tempo_value + tempo_increment))
-            tempo = self.tempo_value + tempo_increment
-            # ratio = tempo_knob['inc_value'] / 128
-            # fractional_tempo = ratio*(self.tempo_max-self.tempo_min)
-            # tempo = int(round(self.tempo_value + fractional_tempo))
-        print(f"bef: {self.tempo_value}")
-        if tempo > self.tempo_max:
-            tempo = self.tempo_max
-        elif tempo < self.tempo_min:
-            tempo = self.tempo_min
+            if tempo_knob['knob_type']=='abs':
+                tempo = tempo_knob['value']
+                tempo = self.tempo_min+tempo*(self.tempo_max-self.tempo_min)/127
+            else:
+                # tempo_increment = tempo_knob['inc_value']
+                tempo_increment = tempo_knob['inc_value'] * tempo_knob['ratio'] if tempo_knob['ratio'] \
+                    else tempo_knob['inc_value']
+                # tempo = int(round(self.tempo_value + tempo_increment))
+                tempo = self.tempo_value + tempo_increment
+                # ratio = tempo_knob['inc_value'] / 128
+                # fractional_tempo = ratio*(self.tempo_max-self.tempo_min)
+                # tempo = int(round(self.tempo_value + fractional_tempo))
+            print(f"bef: {self.tempo_value}")
+            if tempo > self.tempo_max:
+                tempo = self.tempo_max
+            elif tempo < self.tempo_min:
+                tempo = self.tempo_min
         self.tempo_value = tempo
         print(f"aft: {self.tempo_value=}")
-        my_tracker.set_tempo(round(tempo))
-        my_tracker.meta_tempo(tempo=round(tempo))
+        my_tracker.set_tempo_trk(round(tempo))
+        # my_tracker.write_mid_text_meta(f"dupa")
+        # my_tracker.meta_tempo(tempo=round(tempo))
 
     def on_selected_scale_button(self, instance, value):
         print(instance, value)
         print(self.selected_scale_button)
-        self.set_scale(instance, value)
+        self.set_scale_app(instance, value)
 
     # def _keyboard_closed(self):
     #     self._keyboard.unbind(on_key_down=self._on_keyboard_down)
