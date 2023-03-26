@@ -275,6 +275,12 @@ ScreenManager:
                 size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
                 on_state: app.loop_play(*args)
 
+            Button:
+                id: clearq_button
+                text:'ClearQ'
+                size_hint: [None, None]
+                size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
+                on_press: app.clear_q()
 
             Label:
                 id: curr_notes_pair_lbl

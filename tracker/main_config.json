@@ -54,6 +54,11 @@
       "note": 38,
       "toggle" : true
     },
+    "clearq": {
+      "channel": 9,
+      "note": 39,
+       "gate": true
+    },
     "rnd_scale": {
       "channel": 9,
       "note": 40,

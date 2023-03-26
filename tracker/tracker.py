@@ -431,6 +431,7 @@ class Tracker:
                         'play': self.set_play_action,
                         'metronome': self.set_metronome_action,
                         'loop': self.set_loop_action,
+                        'clearq': self.set_clearq_action,
                         'rnd_scale': self.set_rnd_scale_action,
                         'rnd_key': self.set_rnd_key_action,
                         'rnd_func': self.set_rnd_func_action
@@ -695,6 +696,9 @@ class Tracker:
     def set_loop_action(self):
         log_call()
 
+    def set_clearq_action(self):
+        log_call()
+
     def set_rnd_scale_action(self):
         log_call()
 
@@ -744,6 +748,11 @@ class Tracker:
                 self.queue_content_action()
                 self.fullq_content_action()
 
+    def clear_queue(self):
+        self.last_from_note = None
+        self.note_queue.queue.clear()
+        pass
+
     def get_from_queue(self):
 
         note = None if self.note_queue.empty() else self.note_queue.get_nowait()
@@ -757,6 +766,9 @@ class Tracker:
         self.queue_content_action()
         self.fullq_content_action()
         return note
+
+
+
     # </editor-fold>
 
     # <editor-fold desc="play functions">
@@ -814,6 +826,7 @@ class Tracker:
         print(f"b_read tempo: {self.timeline.get_tempo()=}, {new_tempo=}")
         # self.timeline.set_tempo(int(new_tempo))
         self.timeline.set_tempo(int(new_tempo))
+        # print(f"{self.timeline.current_time=}")
         self.mid_MetaMessage('set_tempo', tempo=mido.bpm2tempo(int(new_tempo)), time=0)
         # if  self.midi_out_mode == self.MIDI_OUT_DEVICE:
         #     return None

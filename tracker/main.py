@@ -235,10 +235,16 @@ def main():
     my_tracker.set_play_action = lambda: print(None)
     my_tracker.set_metronome_action = lambda: print(None)
     my_tracker.set_loop_action = lambda: print(None)
+    my_tracker.set_clearq_action = lambda: print(None)
 
     my_tracker.set_rnd_scale_action = lambda: print(None)
     my_tracker.set_rnd_key_action = lambda: print(None)
     my_tracker.set_rnd_func_action= lambda: print(None)
+
+
+
+
+
 
 
     ts()
@@ -332,6 +338,7 @@ class TrackerApp(App):
         my_tracker.set_metronome_action = lambda: self.set_metronome_state(
             metronome_button=my_tracker.midi_mapping['metronome'])
         my_tracker.set_loop_action = lambda: self.set_loop_state(loop_button=my_tracker.midi_mapping['loop'])
+        my_tracker.set_clearq_action = lambda: self.set_clearq_state(clearq_button=my_tracker.midi_mapping['clearq'])
 
         my_tracker.set_rnd_scale_action = lambda: self.rand_scale()
         my_tracker.set_rnd_key_action = lambda: self.rand_key()
@@ -448,6 +455,8 @@ class TrackerApp(App):
             self.inv_play_pause()
         elif keycode[1] == 'x':
             self.inv_metro_on_off()
+        elif keycode[1] == 'c':
+            self.clear_q()
         elif keycode[1] == 'b':
             self.rand_scale()
         elif keycode[1] == 'n':
@@ -507,7 +516,11 @@ class TrackerApp(App):
         state = loop_button.get('state')
         if state:
             self.root.ids.main_scr.ids.loopq_button.state = state
-          
+
+    def set_clearq_state(self, clearq_button=None):
+        if not clearq_button:
+            return
+        my_tracker.clear_queue()
 
     def set_metronome_state(self, metronome_button=None):
         if not metronome_button:
@@ -542,6 +555,12 @@ class TrackerApp(App):
 
     def loop_play(self, instance, state):
         my_tracker.loopq = True if state == 'down' else False
+
+    # def clear_q(self, instance, state):
+    def clear_q(self):
+        log_call()
+        # print(f"{instance=}, {state=}")
+        my_tracker.clear_queue()
 
     def save(self):
         my_tracker.save_midi()
