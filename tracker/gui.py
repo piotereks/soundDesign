@@ -92,7 +92,7 @@ class SoundDesignGui(ttk.Frame):
         col += 1
 
         colsp = 2
-        self.play_funct_frm.grid(row=row, column=col, columnspan=colsp, padx=5, pady=5, sticky ='wn')
+        self.play_func_frm.grid(row=row, column=col, columnspan=colsp, padx=5, pady=5, sticky ='wn')
         col += 1
 
         row+=1
@@ -319,18 +319,18 @@ class SoundDesignGui(ttk.Frame):
             self.play_func_rnd_btn_cmd_ext()
             pass
 
-        self.play_funct_frm = ttk.Frame(self)
+        self.play_func_frm = ttk.Frame(self)
 
-        self.play_func_rnd_btn = tk.Button(self.play_funct_frm, text="rnd func", command=lambda: __play_func_rnd_btn_cmd__(),
+        self.play_func_rnd_btn = tk.Button(self.play_func_frm, text="rnd func", command=lambda: __play_func_rnd_btn_cmd__(),
                                            height=1, width=6)
         self.play_func_rnd_btn.grid(column=0, row=0, padx=5, pady = 10)
         # self.play_func_midi_btn.pack(side="top")
 
-        self.play_func_combo_lbl = tk.Label(self.play_funct_frm, text="play func", height=1)
+        self.play_func_combo_lbl = tk.Label(self.play_func_frm, text="play func", height=1)
         # self.play_func_combo_lbl.pack(side="top")
         self.play_func_combo_lbl.grid(column=1, row=0)
 
-        self.play_func_combo = ttk.Combobox(self.play_funct_frm,
+        self.play_func_combo = ttk.Combobox(self.play_func_frm,
             state="readonly",
             values=["func1", "func2", "func3", "func4"],
             postcommand=lambda: print('play func postcommand')

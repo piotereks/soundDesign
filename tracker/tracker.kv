@@ -65,9 +65,16 @@ ScreenManager:
         size: [-(-self.texture_size[0]//20)*20+10,self.texture_size[1]*2]
         group:'keys'
         state: self.parent.state
+        on_press:
+            self.state = 'down' if self.parent.state=='normal' else self.state
+            app.selected_root_note = self.parent.text if self.state=='down' else  app.selected_root_note
+            print(f"pressed:{self.state=}")
         on_state:
-            app.selected_root_note = self.parent.text
-#            self.parent.state='down'
+#            app.selected_root_note = self.parent.text # disabled for testing
+            print(f"{self.state=}")
+#            app.selected_root_note = self.parent.text if self.parent.state=='down' else  app.selected_root_note
+
+
 
  
 
@@ -232,7 +239,7 @@ ScreenManager:
                 text:'rnd func'
                 size_hint: [None, None]
                 size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
-                on_press: app.rand_play_funct()
+                on_press: app.rand_play_func()
 
 
             BoxLayout:

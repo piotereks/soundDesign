@@ -297,7 +297,7 @@ class TrackerApp(App):
     # play_pause_state = OptionProperty('down')
 
     def on_start(self):
-
+        self.__config_init_file__()
         # self.keys_mapping_init()
         self._keyboard = Window.request_keyboard(self._keyboard_closed, None)
         # self._keyboard = App.request_keyboard(self._keyboard_closed, self)
@@ -335,10 +335,10 @@ class TrackerApp(App):
 
         my_tracker.set_rnd_scale_action = lambda: self.rand_scale()
         my_tracker.set_rnd_key_action = lambda: self.rand_key()
-        my_tracker.set_rnd_func_action= lambda: self.rand_play_funct()
+        my_tracker.set_rnd_func_action= lambda: self.rand_play_func()
 
 
-        self.__config_init_file__()
+        # self.__config_init_file__()
 
         # self.tempo_value = self.parm_tempo if self.parm_tempo else 120
         # self.tempo_min = self.parm_tempo_min if self.parm_tempo_min else 40
@@ -361,7 +361,7 @@ class TrackerApp(App):
                 "tempo": 110,
                 "tempo_min": 15,
                 "tempo_max": 312,
-                "play_funct": "one_note",
+                "play_func": "one_note",
                 "rows": 8,
                 "cols": 4
             }
@@ -372,8 +372,8 @@ class TrackerApp(App):
 
         self.app_config = default_app_config
 
-        keys_scale_action(self.app_config.get("key"), self.app_config.get("scale"))
-        self.set_kv_key(self.app_config.get("key"))
+        # keys_scale_action(self.app_config.get("key"), self.app_config.get("scale"))
+        self.set_kv_key(self.app_config.get("key"), self.app_config.get("scale"))
         # self.parm_key = self.main_config.get("key")
         # self.selected_root_note = self.main_config.get("key")
 
@@ -387,10 +387,10 @@ class TrackerApp(App):
         if self.app_config.get("tempo_max"):
             self.parm_tempo_max = self.app_config.get("tempo_max")
 
-        # if self.app_config.get("play_funct"):
-        #     self.set_play_func(None, self.app_config.get("play_funct"))
-        if self.app_config.get("play_funct"):
-            self.func_init_text = self.app_config.get("play_funct")
+        # if self.app_config.get("play_func"):
+        #     self.set_play_func(None, self.app_config.get("play_func"))
+        if self.app_config.get("play_func"):
+            self.func_init_text = self.app_config.get("play_func")
         if self.app_config.get("queue_content"):
             self.path_queue_content = self.app_config.get("queue_content")
 
@@ -415,8 +415,8 @@ class TrackerApp(App):
         # self.parm_tempo_min = self.main_config["tempo_min"]
         # self.parm_tempo_max = self.main_config["tempo_max"]
         #
-        # self.set_play_func(None, self.main_config["play_funct"])
-        # self.func_init_text = self.main_config["play_funct"]
+        # self.set_play_func(None, self.main_config["play_func"])
+        # self.func_init_text = self.main_config["play_func"]
         #
         # self.path_queue_content = self.main_config["queue_content"]
         # self.parm_rows = self.main_config["rows"]
@@ -453,7 +453,7 @@ class TrackerApp(App):
         elif keycode[1] == 'n':
             self.rand_key()
         elif keycode[1] == 'm':
-            self.rand_play_funct()
+            self.rand_play_func()
         elif keycode[1] == 'escape':
             if self.root.current == 'scales_option':
                 # self.root.transition.direction = 'down'
@@ -576,11 +576,15 @@ class TrackerApp(App):
         self.selected_scale_button = my_tracker.key.scale.name
 
     def on_selected_root_note(self, instance, root_note):
-        print(f'this is selected root note {root_note}')
+        log_call()
+        print(f'this is selected root note {root_note}, {instance=}')
         keys_scale_action(root_note, my_tracker.key.scale.name)
 
-    def set_kv_key(self, new_key):
-        keys_scale_action(new_key, my_tracker.key.scale.name)
+    def set_kv_key(self, new_key, new_scale = None):
+        if not new_scale:
+            new_scale = my_tracker.key.scale.name
+        # keys_scale_action(new_key, my_tracker.key.scale.name)
+        # keys_scale_action(new_key, new_scale)
         for key in self.root.ids.main_scr.ids.scales_group.children:
             print(f"{key.text=} != {new_key}  {key.text != new_key=}")
             if key.text != new_key:
@@ -598,6 +602,8 @@ class TrackerApp(App):
 
         # self.names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 
+
+
     def rand_key(self):
         keys = list({key.text for key in self.root.ids.main_scr.ids.scales_group.children} \
                     - {self.selected_root_note})
@@ -613,7 +619,7 @@ class TrackerApp(App):
         my_tracker.note_patterns.set_pattern_function(func_name)
         my_tracker.meta_func(func=f"{func_name}")
 
-    def rand_play_funct(self):
+    def rand_play_func(self):
         log_call()
         selected_function = random.choice(
             list(set(my_tracker.note_patterns.pattern_methods_short_list) - set([self.func_init_text]))

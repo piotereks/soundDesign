@@ -6,7 +6,7 @@
       "tempo":125,
       "tempo_min":20,
       "tempo_max":333,
-      "play_funct":"path",
+      "play_func":"path",
       "queue_content":[60,64,62,70],
       "rows":7,
       "cols":3
