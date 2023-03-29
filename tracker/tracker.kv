@@ -61,7 +61,6 @@ ScreenManager:
     ToggleButton:
         text:self.parent.text if self.parent.text else 'X'
         size_hint: [None, None]
-        # size: [round(self.texture_size[0]/5,-1)*5+30,self.texture_size[1]*2]
         size: [-(-self.texture_size[0]//20)*20+10,self.texture_size[1]*2]
         group:'keys'
         state: self.parent.state
@@ -70,9 +69,7 @@ ScreenManager:
             app.selected_root_note = self.parent.text if self.state=='down' else  app.selected_root_note
             print(f"pressed:{self.state=}")
         on_state:
-#            app.selected_root_note = self.parent.text # disabled for testing
             print(f"{self.state=}")
-#            app.selected_root_note = self.parent.text if self.parent.state=='down' else  app.selected_root_note
 
 
 
@@ -87,24 +84,19 @@ ScreenManager:
             size_hint_y: None
             padding: [20,20]
             spacing: 20
-            # padding_y : tempo.value
             ToggleButton:
                 text: 'Play' if self.state=='normal' else 'Pause'
                 id: start_stop_button
                 size_hint: [None, None]
-                # size: [round(self.texture_size[0]/2,-1)*2+30,self.texture_size[1]*2]
-                # (-(-n//div))
                 size: [-(-self.texture_size[0]//70)*70,self.texture_size[1]*2]
-#                state=app.play_pause_state
 
                 on_state: app.play_pause(*args)
             Button:
                 text:'Save'
                 size_hint: [None, None]
-                # size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
                 size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
                 on_press: app.save()
-                # valign: 'top'
+
             Widget:
                 size_hint_x: 0.25
                 size_hint_y: None
@@ -113,42 +105,27 @@ ScreenManager:
                 size_hint: [None, None]
                 size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
                 on_press: app.rand_scale()
-                # size_hint : [None, None]
-                # size : self.size
-                # anchor_x: 'right'
 
-            #button here
+
             Button:
                 id:scale_spinner
-#                text: 'scales select'
-#                text: app.scale_init_text
                 text: app.selected_scale_button
-                # text: app.scale_init_text  if app.scale_init_text else 'Python'
-                # values: app.scale_values if app.scale_values else ('Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', '123Java','Python', 'C', 'C++', 'Java','Python', 'C', 'C++', 'Java') 
                 size_hint: [2.5, None]
-                # size_height
                 size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
 
                 on_press:   
                     print('=====on_press')
                     app.root.current='scales_option'
                     app.root.ids.scales_opt.scale_page(scale=app.selected_scale_button)
-#                    app.root.transition.direction = 'up'
-#                    app.root.transition.mode = 'push'
-
-                    # app.root.ids.scales_opt.populate_button()
-                
-                    # app.on_start()
 
             Label:
                 text: app.scale_set_name_txt if app.scale_set_name_txt else 'scale name'
-                # size_hint_x: 2.5
-                # size_hint_y: None
+
                 size_hint: [2.5, None]
                 size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
     
                 valign : 'bottom'
-                # anchor_x: 'left'
+
 
 
         BoxLayout:
@@ -173,8 +150,6 @@ ScreenManager:
             BoxLayout:
                 id: scales_group
                 orientation:'horizontal'
-                # padding: [30,30]
-                # spacing: 5
                 size_hint_x: 4
 
                 RadioButton:
@@ -225,13 +200,9 @@ ScreenManager:
                     text:str(int(tempo.value))
                 Slider:
                     id: tempo
-#                    min: app.parm_tempo_min if app.parm_tempo_min else 40
-#                    max: app.parm_tempo_max if app.parm_tempo_max else 300
-#                    value: app.parm_tempo if app.parm_tempo  else 120
                     min: app.tempo_min
                     max: app.tempo_max
                     value: app.tempo_value
-#                    step: 1
                     orientation: 'horizontal'
                     on_value: app.set_tempo_f_main(*args)
 
@@ -255,9 +226,6 @@ ScreenManager:
                     values: app.func_values if app.func_values else ('func1', 'func2', 'func3', 'func4')
                     size_hint: [1, None]
                     size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
-                    # height: '48dp'
-                    # size_hint: [2.5, None]
-                    # size: [round(self.texture_size[0],-1)+30,self.texture_size[1]*2]
                     on_text : app.set_play_func(*args)
 
 
@@ -297,54 +265,23 @@ ScreenManager:
             Label:
                 id: full_queue_content
                 text: app.fullq_content_lbl_text  if app.fullq_content_lbl_text else 'full_queue_content_lbl_text'
-            # AnchorLayout:
-            #     anchor_x: 'center'
-            #     anchor_y: 'center'
             Label:
                 id: check_notes_lbl
                 halign:'center'
                 valign:'center'
-                # padding: [40,10]
-                # padding_y : 40
-                # padding_x: 160
-                # padding_x :self.center[0]
-                # padding_x: (root.width - self.texture_size[0])/2
-                # padding_x: [self.center[0] - self._get_text_width(max(self._lines, key=len), self.tab_width, self._label_cached) / 2.0,0] if self.text else [self.center[0], 0]
-            # top, bottom
-                # padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
-
-
-                # valign: 'top'
-                # haling: 'right'
                 text_size: root.width, 80
                 size: self.texture_size            
                 text: app.check_notes_lbl_text  if app.check_notes_lbl_text else 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
-                # text: app.check_notes_lbl_text  if app.check_notes_lbl_text else  str(self.height) +' '+ str(self.line_height) +' '+ str(self.center)   +' '+str(root.width) +' '+str(root.height)+' '+str(self.texture_size)   +' Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut ...'
-                # text: app.check_notes_lbl_text  if app.check_notes_lbl_text else str(root.width) +' '+str(root.height)+' '+str(self.texture_size)   +' Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod t'
 
 <ScaleButton>:
-    # orientation:'horizontal'
-#    raw_text:'Y'
     ToggleButton:
-#        text:self.parent.text if self.parent.text else 'X'
         text:'\n'.join(self.parent.raw_text) if self.parent.raw_text else 'X'
         halign: 'center'
         valign: 'middle'
-#        size_hint: [None, None]
-        # size: [round(self.texture_size[0]/5,-1)*5+30,self.texture_size[1]*2]
-        # size: [-(-self.texture_size[0]//20)*20+10,self.texture_size[1]*2]
-        # padding : (10,10)
-        # padding : self.center
-        # size: [100,self.texture_size[1]*2]
         group:'scales'
         state: self.parent.state
         on_press: 
-            # print('----------asdfasfasd----------' + self.parent.text)
-#            app.root.ids.scales_opt.rem_buttons() # temporary blocked
-#            app.selected_root_note = self.parent.text
-#            app.root.current='main_screen'  #temporary blocked
             app.selected_scale_button = self.parent.raw_text[0]
-            # padding is a VariableListProperty and defaults to [0, 0, 0, 0].
 
 <ScalesSelectScreen>:
 
@@ -359,8 +296,6 @@ ScreenManager:
 	            on_release:
 	                app.root.current='main_screen'
 	                app.root.ids.scales_opt.rem_buttons()
-#                    app.root.transition.direction = 'down'
-#                    app.root.transition.mode = 'pop'
 
             Button:
                 id: prev_page
@@ -373,12 +308,9 @@ ScreenManager:
         GridLayout:
             id: button_grid
             size_hint_x: 6
-            # padding : (50,50)
-             
+
             cols: app.parm_cols
             rows: app.parm_rows
-            # row_force_default: True 
-            # row_default_height: 40
             orientation: 'tb-lr'
 
 
@@ -389,7 +321,3 @@ ScreenManager:
             size_hint_x: 0.5
             on_release : 
                 root.scale_page(direction='next')
-                # app.rem_buttons()
-                # app.but_id_offset = app.but_id_offset+app.grid_len if app.but_id_offset+app.grid_len<app.nbr_of_scales else app.but_id_offset
-                # app.populate_button()
-
