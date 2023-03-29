@@ -178,7 +178,7 @@ class DurationPatterns:
             assign_attrib("all3", self.all_threes(ret_pattern))
             assign_attrib("any3", self.any_threes(ret_pattern))
             assign_attrib("all5",self.all_fives(ret_pattern))
-            assign_attrib("any6",self.any_fives(ret_pattern))
+            assign_attrib("any5",self.any_fives(ret_pattern))
 
             # pat["all2"] = self.all_twos(ret_pattern) # type: ignore
             # pat["any2"] = self.any_twos(ret_pattern) # type: ignore
