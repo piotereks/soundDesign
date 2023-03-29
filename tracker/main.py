@@ -6,20 +6,16 @@ from tracker import *
 from patterns import *
 from gui import *
 
-# from keyboard import *
 global IN_COLAB
 IN_COLAB = 'google.colab' in sys.modules
 global label_str
-# global app
 
 
 from kivy.app import App
-from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.behaviors import ToggleButtonBehavior
 from kivy.properties import (StringProperty, ListProperty, ObjectProperty, NumericProperty, OptionProperty)
 
-from kivy.lang import Builder
 from kivy.uix.screenmanager import (ScreenManager, Screen, NoTransition,
                                     SlideTransition, CardTransition, SwapTransition,
                                     FadeTransition, WipeTransition, FallOutTransition, RiseInTransition)
@@ -169,7 +165,6 @@ def main():
     my_tracker.check_notes_action = lambda: print(None)
     my_tracker.queue_content_action = lambda: print(None)
     my_tracker.curr_notes_pair_action = lambda: print(None)
-    # my_tracker.loop_play_queue_action = lambda: print(None)
     my_tracker.fullq_content_action = lambda: print(None)
 
     my_tracker.set_tempo_action = lambda: print(None)
@@ -354,6 +349,8 @@ class TrackerApp(App):
             self.inv_metro_on_off()
         elif keycode[1] == 'c':
             self.clear_q()
+        elif keycode[1] == 'v':
+            self.inv_loop_play()
         elif keycode[1] == 'b':
             self.rand_scale()
         elif keycode[1] == 'n':
@@ -391,6 +388,11 @@ class TrackerApp(App):
         state = self.root.ids.main_scr.ids.metronome.state
         to_state = 'normal' if state == 'down' else 'down'
         self.root.ids.main_scr.ids.metronome.state = to_state
+
+    def inv_loop_play(self):
+        state = self.root.ids.main_scr.ids.loopq_button.state
+        to_state = 'normal' if state == 'down' else 'down'
+        self.root.ids.main_scr.ids.loopq_button.state = to_state
 
 
     def set_loop_state(self, loop_button=None):
