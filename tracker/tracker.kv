@@ -228,8 +228,23 @@ ScreenManager:
                     size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
                     on_text : app.set_play_func(*args)
 
+        BoxLayout:
+            orientation: 'horizontal'
+            padding: [20,20]
+            spacing: 20
 
-
+            BoxLayout:
+                orientation:'vertical'
+                Label:
+                    id:variety_val
+                    text:str(int(variety.value))
+                Slider:
+                    id: variety
+                    min: app.variety_min
+                    max: app.variety_max
+                    value: app.variety_value
+                    orientation: 'horizontal'
+                    on_value: app.set_variety_f_main(*args)
 
         BoxLayout:
             orientation: 'horizontal'

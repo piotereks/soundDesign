@@ -205,6 +205,7 @@ class Tracker:
         self.beat = lambda: self.play_from_to(None, None, in_pattern=True)
         self.metro_beat = lambda: print('metro_beat init')
         self.current_tempo = 0
+        self.current_variety = 0
         self.tmln = self.tracker_timeline()
         self.metro = self.metro_timeline()
 
@@ -655,6 +656,15 @@ class Tracker:
         print(f"a_read tempo: {self.timeline.get_tempo()=}, {new_tempo=}")
         self.meta_tempo(tempo=round(new_tempo))
 
+    def set_variety_trk(self, new_variety):
+        log_call()
+        print(f"{self.current_variety=} == {new_variety=}")
+        if self.current_variety == new_variety:
+            print(f"variety not changed {self.current_variety=}")
+            return
+        self.current_variety = new_variety
+        self.meta_variety(variety=new_variety)
+
     def set_program_change(self, program = 0, channel = 0):
         log_call()
         self.midi_out.program_change(program=int(program), channel=int(channel))
@@ -684,6 +694,10 @@ class Tracker:
     def meta_tempo(self,tempo):
         log_call()
         self.write_mid_text_meta(f"tempo:{tempo}")
+
+    def meta_variety(self,variety):
+        log_call()
+        self.write_mid_text_meta(f"variety:{variety}")
 
     def tstop(self):
         log_call()

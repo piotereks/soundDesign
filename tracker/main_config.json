@@ -6,6 +6,9 @@
       "tempo":125,
       "tempo_min":20,
       "tempo_max":333,
+      "variety":3.5,
+      "variety_min":0,
+      "variety_max":7,
       "play_func":"path",
       "queue_content":[60,64,62,70],
       "rows":7,
@@ -25,6 +28,10 @@
     },
     "set_tempo_knob" : {
       "cc": 11,
+      "knob_type" : "abs"
+    },
+    "set_variety_knob" : {
+      "cc": 12,
       "knob_type" : "abs"
     },
     "example2" : {

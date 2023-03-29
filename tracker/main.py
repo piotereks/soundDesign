@@ -1,5 +1,4 @@
-import isobar
-import json
+import math
 from itertools import chain
 
 from tracker import *
@@ -209,6 +208,10 @@ class TrackerApp(App):
     parm_tempo_min = NumericProperty()
     parm_tempo_max = NumericProperty()
 
+    parm_variety = NumericProperty()
+    parm_variety_min = NumericProperty()
+    parm_variety_max = NumericProperty()
+
     path_queue_content = ListProperty()
 
 
@@ -231,6 +234,10 @@ class TrackerApp(App):
     tempo_value = NumericProperty(120.0)
     tempo_min = NumericProperty(40)
     tempo_max = NumericProperty(300)
+
+    variety_value = NumericProperty(120.0)
+    variety_min = NumericProperty(40)
+    variety_max = NumericProperty(300)
 
 
     def on_start(self):
@@ -275,7 +282,9 @@ class TrackerApp(App):
         self.tempo_min = self.parm_tempo_min
         self.tempo_max = self.parm_tempo_max
 
-
+        self.variety_value = self.parm_variety
+        self.variety_min = self.parm_variety_min
+        self.variety_max = self.parm_variety_max
 
     def __config_init_file__(self):
         default_app_config = \
@@ -306,6 +315,13 @@ class TrackerApp(App):
             self.parm_tempo_min = self.app_config.get("tempo_min")
         if self.app_config.get("tempo_max"):
             self.parm_tempo_max = self.app_config.get("tempo_max")
+
+        if self.app_config.get("variety"):
+            self.parm_variety = self.app_config.get("variety")
+        if self.app_config.get("variety_min"):
+            self.parm_variety_min = self.app_config.get("variety_min")
+        if self.app_config.get("variety_max"):
+            self.parm_variety_max = self.app_config.get("variety_max")
 
 
         if self.app_config.get("play_func"):
@@ -539,6 +555,29 @@ class TrackerApp(App):
         self.tempo_value = tempo
         print(f"aft: {self.tempo_value=}")
         my_tracker.set_tempo_trk(round(tempo))
+
+    def set_variety_f_main(self, instance, variety=None, variety_knob=None):
+        log_call()
+        print(f"{variety=},{variety_knob=}")
+        if not variety:
+            if variety_knob['knob_type']=='abs':
+                variety = variety_knob['value']
+                variety = self.variety_min+variety*(self.variety_max-self.variety_min)/127
+            else:
+                # variety_increment = variety_knob['inc_value']
+                variety_increment = variety_knob['inc_value'] * variety_knob['ratio'] if variety_knob['ratio'] \
+                    else variety_knob['inc_value']
+                # variety = int(round(self.variety_value + variety_increment))
+                variety = self.variety_value + variety_increment
+
+            print(f"bef: {self.variety_value}")
+            if variety > self.variety_max:
+                variety = self.variety_max
+            elif variety < self.variety_min:
+                variety = self.variety_min
+        self.variety_value = variety
+        print(f"aft: {self.variety_value=}")
+        my_tracker.set_variety_trk(variety)
 
 
     def on_selected_scale_button(self, instance, value):
