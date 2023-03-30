@@ -237,14 +237,16 @@ ScreenManager:
                 orientation:'vertical'
                 Label:
                     id:variety_val
-                    text:str(int(variety.value))
+                    text:str(round(variety.value,1))
                 Slider:
                     id: variety
                     min: app.variety_min
                     max: app.variety_max
                     value: app.variety_value
+                    step: 0.1
                     orientation: 'horizontal'
                     on_value: app.set_variety_f_main(*args)
+
 
         BoxLayout:
             orientation: 'horizontal'

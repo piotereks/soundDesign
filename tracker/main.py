@@ -559,7 +559,7 @@ class TrackerApp(App):
     def set_variety_f_main(self, instance, variety=None, variety_knob=None):
         log_call()
         print(f"{variety=},{variety_knob=}")
-        if not variety:
+        if variety is None:
             if variety_knob['knob_type']=='abs':
                 variety = variety_knob['value']
                 variety = self.variety_min+variety*(self.variety_max-self.variety_min)/127
