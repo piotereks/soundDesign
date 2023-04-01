@@ -1,4 +1,6 @@
 import json
+# from scipy.stats import rv_histogram
+import numpy as np
 def read_config_file():
     # print('reading config')
     config_file = '../tracker/duration_patterns.json'
@@ -31,6 +33,7 @@ patterns = read_config_file()
 mx = max([p.get("mean") for p in patterns])
 print(f"mean max: {mx}")
 
+
 mn = min([p.get("mean") for p in patterns])
 print(f"mean min: {mn}")
 
@@ -57,3 +60,7 @@ print(lbl)
 for p in patterns:
     if not [ks for ks in p.keys() if 'any' in ks]:
         print(p)
+
+hist = np.histogram([p.get("pstdev") for p in patterns], bins=10)
+print()
+print(hist)

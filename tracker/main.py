@@ -167,6 +167,7 @@ def main():
     my_tracker.fullq_content_action = lambda: print(None)
 
     my_tracker.set_tempo_action = lambda: print(None)
+    my_tracker.set_variety_action = lambda: print(None)
     my_tracker.set_play_action = lambda: print(None)
     my_tracker.set_metronome_action = lambda: print(None)
     my_tracker.set_loop_action = lambda: print(None)
@@ -267,6 +268,7 @@ class TrackerApp(App):
             'full queue: ' + str(my_tracker.get_queue_content_full()))
 
         my_tracker.set_tempo_action = lambda: self.set_tempo_f_main(None, tempo_knob=my_tracker.midi_mapping['set_tempo_knob'])
+        my_tracker.set_variety_action = lambda: self.set_variety_f_main(None, variety_knob=my_tracker.midi_mapping['set_variety_knob'])
         my_tracker.set_play_action = lambda: self.set_play_pause_state(
             play_pause_button=my_tracker.midi_mapping['play'])
         my_tracker.set_metronome_action = lambda: self.set_metronome_state(
@@ -560,7 +562,7 @@ class TrackerApp(App):
         log_call()
         print(f"{variety=},{variety_knob=}")
         if variety is None:
-            if variety_knob['knob_type']=='abs':
+            if variety_knob['knob_type'] == 'abs':
                 variety = variety_knob['value']
                 variety = self.variety_min+variety*(self.variety_max-self.variety_min)/127
             else:

@@ -359,11 +359,38 @@ class Tracker:
                 # set_tempo_knob = self.midi_mapping.get("set_tempo_knob")
                 # base = set_knob(message=message)
                 knob = get_knob(mess=message)
+                oper_to_func = {
+                    'set_tempo_knob': self.set_tempo_action,
+                    'set_variety_knob': self.set_variety_action
+                }
                 print(f"{knob=}")
+                # if knob:
+                #     if knob['name']=='set_tempo_knob':
+                #         self.set_tempo_action()
                 if knob:
-                    if knob['name']=='set_tempo_knob':
-                        self.set_tempo_action()
+                    func = oper_to_func.get(knob.get('name'))
+                    print(f"xxx:{func=}")
+                    if func:
+                        func()
 
+# #---
+#                 button = get_button(mess=message)
+#                 print(f"{button=}")
+#                 oper_to_func = {
+#                     'play': self.set_play_action,
+#                     'metronome': self.set_metronome_action,
+#                     'loop': self.set_loop_action,
+#                     'clearq': self.set_clearq_action,
+#                     'rnd_scale': self.set_rnd_scale_action,
+#                     'rnd_key': self.set_rnd_key_action,
+#                     'rnd_func': self.set_rnd_func_action
+#                 }
+#                 # print(f"xxx:{button['name']}, {oper_to_func.get(button['name'])}")
+#                 if button:
+#                     func = oper_to_func.get(button.get('name'))
+#                     print(f"xxx:{func=}")
+#                     if func:
+#                         func()
 
 
         midi_in_name = [mids[0] for mids in itertools.product(mido.get_input_names(), midi_in_name) if mids[1] in mids[0]]
@@ -536,6 +563,9 @@ class Tracker:
         log_call()
 
     def set_tempo_action(self):
+        log_call()
+
+    def set_variety_action(self):
         log_call()
 
     def set_play_action(self):
@@ -779,7 +809,7 @@ class Tracker:
         root_note = self.key.scale.indexOf(from_note-self.key.tonic%12)
         note = self.key.scale.indexOf(to_note-self.key.tonic%12)
         interval = note - root_note
-        pattern = self.note_patterns.get_pattern(interval)
+        pattern = self.note_patterns.get_pattern(interval, self.current_variety)
 
         print(f"type of pattern: {type(pattern)=}, {isinstance(pattern, np.ndarray)}")
 

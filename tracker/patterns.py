@@ -127,6 +127,14 @@ class NotePatterns:
         
         def inner(self, *args, **kwargs):
             result = func(self, *args, **kwargs)
+            variety = 999
+            if args[1] is not None:
+                variety = args[1]
+            elif kwargs.get('variety'):
+                variety = kwargs.get('variety')
+            print(f"{args=},{kwargs=}")
+            print(f"-----////////////{variety=}")
+
             print(f"xx {len(result[iso.EVENT_NOTE])=}, {result[iso.EVENT_NOTE]=}")
             if not np.any(result.get(iso.EVENT_DURATION)):
                 pattern_len = len(result[iso.EVENT_NOTE])-1
@@ -135,7 +143,7 @@ class NotePatterns:
                 durations = []
                 for split_size in splt_array:
                     dur_part = random.choice([dp["pattern"] for dp in self.dur_patterns.patterns
-                                    if dp["len"]==split_size])
+                                    if dp["len"]==split_size and dp['pstdev']<=variety] )
                     dur_part2 = np.array(dur_part)
                     durations.extend(dur_part2)
 
@@ -148,14 +156,19 @@ class NotePatterns:
 
 
     @mod_duration
-    def get_simple_pattern(self, interval=0):  # interval sould be not needed
+    def get_simple_pattern(self, *args, **kwargs):  # interval sould be not needed
         return {
             iso.EVENT_NOTE: np.append(random.choice([1,-1])*random.choice(self.patterns), 0)
         }
 
 
     @mod_duration
-    def get_random_path_pattern(self, interval):
+    def get_random_path_pattern(self, *args, **kwargs):
+        interval = 0
+        if args[0]:
+            interval = args[0]
+        elif kwargs.get('interval'):
+            interval = kwargs.get('interval')
         # return random.choice(self.all_suitable_patterns(interval))
         # return {iso.EVENT_NOTE:random.choice(self.all_suitable_patterns(interval))}
         org_interval=interval
@@ -175,19 +188,30 @@ class NotePatterns:
 
 
     @mod_duration
-    def get_chord_maj_pattern(self, interval=0):  # interval sould be not needed
+    def get_chord_maj_pattern(self, *args, **kwargs): # interval sould be not needed
         return {
             iso.EVENT_NOTE:  np.array([(0, 2, 4), 0],dtype=object)
         }
 
     @mod_duration
-    def get_one_note_pattern(self, interval):
+    def get_one_note_pattern(self, *args, **kwargs):
+        interval = 0
+        if args[0]:
+            interval = args[0]
+        elif kwargs.get('interval'):
+            interval = kwargs.get('interval')
         return {iso.EVENT_NOTE: np.array([0, interval])
                 }
 
     @mod_duration
-    def get_rest_path_pattern(self, interval):
-        if interval == 0:
+    def get_rest_path_pattern(self, *args, **kwargs):
+        interval = 0
+        if args[0]:
+            interval = args[0]
+        elif kwargs.get('interval'):
+            interval = kwargs.get('interval')
+        # if interval == 0:
+        if not interval:
             notes = np.array([0,0])
         else:
             real_notes = np.arange(0, interval , np.sign(interval))
@@ -200,8 +224,16 @@ class NotePatterns:
         }
 
     @mod_duration
-    def get_path_pattern(self, interval):
-        if interval == 0:
+    # def get_path_pattern(self, interval):
+    def get_path_pattern(self, *args, **kwargs):
+        interval = 0
+        if args[0]:
+            interval = args[0]
+        elif kwargs.get('interval'):
+            interval = kwargs.get('interval')
+
+        # if interval == 0:
+        if not interval:
             notes = np.array([0,0])
         else:
             notes = np.arange(0, interval + np.sign(interval), np.sign(interval))
