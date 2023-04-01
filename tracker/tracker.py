@@ -206,6 +206,7 @@ class Tracker:
         self.metro_beat = lambda: print('metro_beat init')
         self.current_tempo = 0
         self.current_variety = 0
+        self.current_func = None
         self.tmln = self.tracker_timeline()
         self.metro = self.metro_timeline()
 
@@ -695,6 +696,18 @@ class Tracker:
         self.current_variety = new_variety
         self.meta_variety(variety=new_variety)
 
+
+    def set_func_trk(self, new_func):
+        log_call()
+        print(f"{self.current_func=} == {new_func=}")
+        if self.current_func == new_func:
+            print(f"func not changed {self.current_func=}")
+            return
+        self.current_func = new_func
+        self.meta_func(func=new_func)
+
+
+
     def set_program_change(self, program = 0, channel = 0):
         log_call()
         self.midi_out.program_change(program=int(program), channel=int(channel))
@@ -716,16 +729,16 @@ class Tracker:
 
 
 
-    def meta_func(self,func):
+    def meta_func(self, func):
         log_call()
         self.write_mid_text_meta(f"func:{func}")
 
 
-    def meta_tempo(self,tempo):
+    def meta_tempo(self, tempo):
         log_call()
         self.write_mid_text_meta(f"tempo:{tempo}")
 
-    def meta_variety(self,variety):
+    def meta_variety(self, variety):
         log_call()
         self.write_mid_text_meta(f"variety:{variety}")
 
@@ -758,6 +771,10 @@ class Tracker:
             or self.prev_key != self.key:
 
             self.meta_key_scale(key=self.key, scale=self.key.scale.name)
+        # if self.current_variety!=self.
+        self.set_variety_trk(self.variety)
+        self.set_func_trk(self.func_name)
+        # self.meta_func(func=self.func_name)
 
         self.prev_key = self.key
         print(f"============={self.prev_get_pattern_name=} {self.note_patterns.get_pattern.__name__=}")

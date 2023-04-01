@@ -522,10 +522,11 @@ class TrackerApp(App):
 
     def set_play_func(self, instance, func_name):
         log_call()
-        print('func_name:',func_name)
+        print('func_name:', func_name)
         # print(instance)
         my_tracker.note_patterns.set_pattern_function(func_name)
-        my_tracker.meta_func(func=f"{func_name}")
+        my_tracker.func_name = func_name
+        # my_tracker.meta_func(func=f"{func_name}")
 
     def rand_play_func(self):
         log_call()
@@ -579,7 +580,8 @@ class TrackerApp(App):
                 variety = self.variety_min
         self.variety_value = variety
         print(f"aft: {self.variety_value=}")
-        my_tracker.set_variety_trk(variety)
+        my_tracker.variety = variety
+        # my_tracker.set_variety_trk(variety)
 
 
     def on_selected_scale_button(self, instance, value):
