@@ -60,7 +60,11 @@ print(lbl)
 for p in patterns:
     if not [ks for ks in p.keys() if 'any' in ks]:
         print(p)
+bins = 10
+hist = np.histogram([p.get("pstdev") for p in patterns], bins=bins)
 
-hist = np.histogram([p.get("pstdev") for p in patterns], bins=10)
+for x in range(bins):
+    print(hist[1][x],hist[0][x])
 print()
 print(hist)
+print([x for x in hist])
