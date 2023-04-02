@@ -62,7 +62,8 @@ ScreenManager:
         text:self.parent.text if self.parent.text else 'X'
         size_hint: [None, None]
         size: [-(-self.texture_size[0]//20)*20+10,self.texture_size[1]*2]
-        group:'keys'
+#        group:'keys'
+        group:self.parent.parent.group
         state: self.parent.state
         on_press:
             self.state = 'down' if self.parent.state=='normal' else self.state
@@ -151,6 +152,7 @@ ScreenManager:
                 id: scales_group
                 orientation:'horizontal'
                 size_hint_x: 4
+                group:'keys'
 
                 RadioButton:
                     text:'C'
@@ -235,6 +237,8 @@ ScreenManager:
 
             BoxLayout:
                 orientation:'vertical'
+                size_hint_x: 7
+
                 Label:
                     id:dur_variety_val
                     text:'durvar: ' + str(round(dur_variety.value,1))
@@ -246,6 +250,57 @@ ScreenManager:
                     step: 0.1
                     orientation: 'horizontal'
                     on_value: app.set_dur_variety_f_main(*args)
+
+
+            BoxLayout:
+                orientation:'vertical'
+                size_hint_x: 3
+
+                Label:
+                    text:'quantize'
+                    size_hint: [None, None]
+                    size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
+                BoxLayout:
+                    id: quant_group
+                    orientation:'horizontal'
+
+    #                group: 'quantize'
+                    RadioButton:
+                        text:'2'
+                        state: 'down'
+                    RadioButton:
+                        text:'3'
+                    RadioButton:
+                        text:'5'
+            BoxLayout:
+                orientation:'vertical'
+                size_hint_x: 8
+                Label:
+                    text:'align'
+                    size_hint: [None, None]
+                    size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
+                BoxLayout:
+                    id: align_group
+                    orientation:'horizontal'
+#                    size_hint_x: 4
+                    group: 'align'
+                    RadioButton:
+                        text:'2'
+                        state: 'down'
+                    RadioButton:
+                        text:'3'
+                    RadioButton:
+                        text:'4'
+                    RadioButton:
+                        text:'5'
+                    RadioButton:
+                        text:'6'
+                    RadioButton:
+                        text:'8'
+                    RadioButton:
+                        text:'10'
+                    RadioButton:
+                        text:'12'
 
 
         BoxLayout:
