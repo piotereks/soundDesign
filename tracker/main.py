@@ -498,11 +498,17 @@ class TrackerApp(App):
     def on_selected_quantize(self, instance, quantize):
         log_call()
         print(f'this is selected quantize {quantize}, {instance=}')
+        print("-----------------==========-: ", self.root.quants_state)
+        print("-----------------==========-x-: ",  {x.text: x.children[0].state for x in self.root.quant_buttons})
+
+        my_tracker.quants_state =  {x.text: x.children[0].state for x in self.root.quant_buttons}
+        # my_tracker.quants_state = self.root.quants_state
         # keys_scale_action(quantize, my_tracker.key.scale.name)
 
     def on_selected_align(self, instance, align):
         log_call()
         print(f'this is selected align {align}, {instance=}')
+        my_tracker.align_state = align
         # keys_scale_action(align, my_tracker.key.scale.name)
 
     def set_kv_key(self, new_key, new_scale = None):
@@ -512,10 +518,12 @@ class TrackerApp(App):
             print(f"{key.text=} != {new_key}  {key.text != new_key=}")
             if key.text != new_key:
                 key.children[0].state = 'normal'
+                key.state =  'normal'
                 print("key set normal")
                 continue
 
             key.children[0].state = 'down'
+            key.state = 'down'
             print("key set down")
             print(my_tracker.key)
 
