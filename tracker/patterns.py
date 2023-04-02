@@ -127,13 +127,13 @@ class NotePatterns:
         
         def inner(self, *args, **kwargs):
             result = func(self, *args, **kwargs)
-            variety = 999
+            dur_variety = 999
             if args[1] is not None:
-                variety = args[1]
-            elif kwargs.get('variety'):
-                variety = kwargs.get('variety')
+                dur_variety = args[1]
+            elif kwargs.get('dur_variety'):
+                dur_variety = kwargs.get('dur_variety')
             print(f"{args=},{kwargs=}")
-            print(f"-----////////////{variety=}")
+            print(f"-----////////////{dur_variety=}")
 
             print(f"xx {len(result[iso.EVENT_NOTE])=}, {result[iso.EVENT_NOTE]=}")
             if not np.any(result.get(iso.EVENT_DURATION)):
@@ -143,7 +143,7 @@ class NotePatterns:
                 durations = []
                 for split_size in splt_array:
                     dur_part = random.choice([dp["pattern"] for dp in self.dur_patterns.patterns
-                                    if dp["len"]==split_size and dp['pstdev']<=variety] )
+                                    if dp["len"]==split_size and dp['pstdev']<=dur_variety] )
                     dur_part2 = np.array(dur_part)
                     durations.extend(dur_part2)
 

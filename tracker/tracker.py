@@ -205,7 +205,7 @@ class Tracker:
         self.beat = lambda: self.play_from_to(None, None, in_pattern=True)
         self.metro_beat = lambda: print('metro_beat init')
         self.current_tempo = 0
-        self.current_variety = 0
+        self.current_dur_variety = 0
         self.current_func = None
         self.tmln = self.tracker_timeline()
         self.metro = self.metro_timeline()
@@ -362,7 +362,7 @@ class Tracker:
                 knob = get_knob(mess=message)
                 oper_to_func = {
                     'set_tempo_knob': self.set_tempo_action,
-                    'set_variety_knob': self.set_variety_action
+                    'set_dur_variety_knob': self.set_dur_variety_action
                 }
                 print(f"{knob=}")
                 # if knob:
@@ -566,7 +566,7 @@ class Tracker:
     def set_tempo_action(self):
         log_call()
 
-    def set_variety_action(self):
+    def set_dur_variety_action(self):
         log_call()
 
     def set_play_action(self):
@@ -687,14 +687,14 @@ class Tracker:
         print(f"a_read tempo: {self.timeline.get_tempo()=}, {new_tempo=}")
         self.meta_tempo(tempo=round(new_tempo))
 
-    def set_variety_trk(self, new_variety):
+    def set_dur_variety_trk(self, new_dur_variety):
         log_call()
-        print(f"{self.current_variety=} == {new_variety=}")
-        if self.current_variety == new_variety:
-            print(f"variety not changed {self.current_variety=}")
+        print(f"{self.current_dur_variety=} == {new_dur_variety=}")
+        if self.current_dur_variety == new_dur_variety:
+            print(f"dur_variety not changed {self.current_dur_variety=}")
             return
-        self.current_variety = new_variety
-        self.meta_variety(variety=new_variety)
+        self.current_dur_variety = new_dur_variety
+        self.meta_dur_variety(dur_variety=new_dur_variety)
 
 
     def set_func_trk(self, new_func):
@@ -738,9 +738,9 @@ class Tracker:
         log_call()
         self.write_mid_text_meta(f"tempo:{tempo}")
 
-    def meta_variety(self, variety):
+    def meta_dur_variety(self, dur_variety):
         log_call()
-        self.write_mid_text_meta(f"variety:{variety}")
+        self.write_mid_text_meta(f"dur_variety:{dur_variety}")
 
     def tstop(self):
         log_call()
@@ -771,8 +771,8 @@ class Tracker:
             or self.prev_key != self.key:
 
             self.meta_key_scale(key=self.key, scale=self.key.scale.name)
-        # if self.current_variety!=self.
-        self.set_variety_trk(self.variety)
+        # if self.current_dur_variety!=self.
+        self.set_dur_variety_trk(self.dur_variety)
         self.set_func_trk(self.func_name)
         # self.meta_func(func=self.func_name)
 
@@ -826,7 +826,7 @@ class Tracker:
         root_note = self.key.scale.indexOf(from_note-self.key.tonic%12)
         note = self.key.scale.indexOf(to_note-self.key.tonic%12)
         interval = note - root_note
-        pattern = self.note_patterns.get_pattern(interval, self.current_variety)
+        pattern = self.note_patterns.get_pattern(interval, self.current_dur_variety)
 
         print(f"type of pattern: {type(pattern)=}, {isinstance(pattern, np.ndarray)}")
 

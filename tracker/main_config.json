@@ -6,9 +6,9 @@
       "tempo":125,
       "tempo_min":20,
       "tempo_max":333,
-      "variety":3.5,
-      "variety_min":0,
-      "variety_max":7,
+      "dur_variety":3.5,
+      "dur_variety_min":0,
+      "dur_variety_max":7,
       "play_func":"path",
       "queue_content":[60,64,62,70],
       "rows":7,
@@ -30,12 +30,12 @@
       "cc": 11,
       "knob_type" : "abs"
     },
-    "set_variety_knob" : {
+    "set_dur_variety_knob" : {
       "cc": 72,
       "knob_type" : "rel#3",
       "ratio": 0.025
     },
-    "xset_variety_knob" : {
+    "xset_dur_variety_knob" : {
       "cc": 65,
       "knob_type" : "abs"
     },
