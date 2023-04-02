@@ -82,9 +82,9 @@ ScreenManager:
 #            self.parent.state = 'down' if self.parent.state=='normal' and self.parent.parent.deselect==False else self.state
 #            self.state = 'down' if self.parent.state=='normal' else 'normal'
 #            app.selected_root_note = self.parent.text if self.state=='down' else  app.selected_root_note
-            self.parent.parent.selected = self.parent.text if self.state=='down' else  self.parent.parent.selected
-#            self.parent.parent.selected = self.parent.text
-#            self.parent.parent.state = self.state
+#            self.parent.parent.selected = self.parent.text if self.state=='down' else  self.parent.parent.selected
+            self.parent.parent.selected = self.parent.text
+            self.parent.parent.state = self.state
             print(f"pressed:{self.state=}")
 
         on_state:
@@ -296,6 +296,11 @@ ScreenManager:
                     selected: 'placeholder'
                     state: 'placeholder'
                     on_selected:
+                        print('on_selected')
+                        app.selected_quantize=self.selected
+                        app.selected_quantize_state=self.state
+                    on_state:
+                        print('on_state')
                         app.selected_quantize=self.selected
                         app.selected_quantize_state=self.state
 

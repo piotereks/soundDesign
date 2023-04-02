@@ -220,6 +220,7 @@ class TrackerApp(App):
     scale_set_name_txt = StringProperty()
     selected_root_note = StringProperty()
     selected_quantize = StringProperty()
+    selected_quantize_state = StringProperty()
     selected_align = StringProperty()
     func_init_text = StringProperty()
     func_values = ListProperty()
@@ -495,15 +496,25 @@ class TrackerApp(App):
         print(f'this is selected root note {root_note}, {instance=}')
         keys_scale_action(root_note, my_tracker.key.scale.name)
 
-    def on_selected_quantize(self, instance, quantize):
+    def selected_quantize_and_state(self, instance, quantize):
         log_call()
         print(f'this is selected quantize {quantize}, {instance=}')
         print("-----------------==========-: ", self.root.quants_state)
         print("-----------------==========-x-: ",  {x.text: x.children[0].state for x in self.root.quant_buttons})
 
-        my_tracker.quants_state =  {x.text: x.children[0].state for x in self.root.quant_buttons}
+        my_tracker.quants_state = {x.text: x.children[0].state for x in self.root.quant_buttons}
         # my_tracker.quants_state = self.root.quants_state
         # keys_scale_action(quantize, my_tracker.key.scale.name)
+
+    def on_selected_quantize(self, instance, quantize):
+        log_call()
+        self.selected_quantize_and_state(instance, quantize)
+
+
+    def on_selected_quantize_state(self, instance, quantize):
+        log_call()
+        self.selected_quantize_and_state(instance, quantize)
+
 
     def on_selected_align(self, instance, align):
         log_call()
