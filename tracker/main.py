@@ -219,6 +219,8 @@ class TrackerApp(App):
     scale_values = ListProperty()
     scale_set_name_txt = StringProperty()
     selected_root_note = StringProperty()
+    selected_quantize = StringProperty()
+    selected_align = StringProperty()
     func_init_text = StringProperty()
     func_values = ListProperty()
 
@@ -492,6 +494,16 @@ class TrackerApp(App):
         log_call()
         print(f'this is selected root note {root_note}, {instance=}')
         keys_scale_action(root_note, my_tracker.key.scale.name)
+
+    def on_selected_quantize(self, instance, quantize):
+        log_call()
+        print(f'this is selected quantize {quantize}, {instance=}')
+        # keys_scale_action(quantize, my_tracker.key.scale.name)
+
+    def on_selected_align(self, instance, align):
+        log_call()
+        print(f'this is selected align {align}, {instance=}')
+        # keys_scale_action(align, my_tracker.key.scale.name)
 
     def set_kv_key(self, new_key, new_scale = None):
         if not new_scale:

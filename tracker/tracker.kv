@@ -67,7 +67,8 @@ ScreenManager:
         state: self.parent.state
         on_press:
             self.state = 'down' if self.parent.state=='normal' else self.state
-            app.selected_root_note = self.parent.text if self.state=='down' else  app.selected_root_note
+#            app.selected_root_note = self.parent.text if self.state=='down' else  app.selected_root_note
+            self.parent.parent.selected = self.parent.text if self.state=='down' else  self.parent.parent.selected
             print(f"pressed:{self.state=}")
         on_state:
             print(f"{self.state=}")
@@ -153,7 +154,9 @@ ScreenManager:
                 orientation:'horizontal'
                 size_hint_x: 4
                 group:'keys'
-
+                selected: 'placeholder'
+                on_selected:
+                    app.selected_root_note=self.selected
                 RadioButton:
                     text:'C'
                     state: 'down'
@@ -264,7 +267,10 @@ ScreenManager:
                 BoxLayout:
                     id: quant_group
                     orientation:'horizontal'
-
+                    selected: 'placeholder'
+                    on_selected:
+                        app.selected_quantize=self.selected
+                        print('asdfsdfasdfadsf2222222222222')
     #                group: 'quantize'
                     RadioButton:
                         text:'2'
@@ -277,6 +283,7 @@ ScreenManager:
                 orientation:'vertical'
                 size_hint_x: 8
                 size_hint_y: 1.2
+
                 Label:
                     text:'align'
                     size_hint: [None, None]
@@ -286,6 +293,10 @@ ScreenManager:
                     orientation:'horizontal'
 #                    size_hint_x: 4
                     group: 'align'
+                    selected: 'placeholder'
+                    on_selected:
+                        app.selected_align=self.selected
+                        print('asdfsdfasdfadsf111111111111')
                     RadioButton:
                         text:'2'
                         state: 'down'
