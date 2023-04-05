@@ -189,6 +189,9 @@ def main():
 
 class RadioButton(ToggleButtonBehavior, BoxLayout):
     text = StringProperty('')
+    def on_state(self, *args, **kwargs):
+        print("overloaded on_state for RadioButton")
+        # self.state='down'
     # state = StringProperty('normal')
     pass
 
@@ -518,7 +521,7 @@ class TrackerApp(App):
 
     def on_selected_align(self, instance, align):
         log_call()
-        print(f'this is selected align {align}, {instance=}')
+        print(f'xxxxxxxxxxxxxxxxx this is selected align {align}, {instance=}')
         my_tracker.align_state = align
         # keys_scale_action(align, my_tracker.key.scale.name)
 

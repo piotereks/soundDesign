@@ -67,7 +67,7 @@ ScreenManager:
         size: [-(-self.texture_size[0]//20)*20+10,self.texture_size[1]*2]
 #        group:'keys'
         group:self.parent.parent.group_variable if self.parent.parent.group_variable else None
-        state: self.parent.state
+#        state: self.parent.state   # this has been removed - caused problems when click between buttons
 
         on_press:
             print(f"********* bef: {self.parent.text=}, {self.state=}, {self.parent.state=}, {self.parent.parent.deselect=}")
@@ -85,10 +85,10 @@ ScreenManager:
 #            self.parent.parent.selected = self.parent.text if self.state=='down' else  self.parent.parent.selected
             self.parent.parent.selected = self.parent.text
             self.parent.parent.state = self.state
-            print(f"pressed:{self.state=}")
+            print(f"on_press: pressed:{self.state=}, {self.text=}")
 
         on_state:
-            print(f"{self.state=}")
+            print(f"on_state: {self.state=}, {self.text=}")
 #            self.parent.state = self.state
 
 
@@ -306,7 +306,7 @@ ScreenManager:
 
                     RadioButton:
                         text:'2'
-                        state: 'down'
+#                        state: 'down'
                     RadioButton:
                         text:'3'
                     RadioButton:
@@ -328,8 +328,13 @@ ScreenManager:
                     selected: 'placeholder'
                     deselect: False
                     on_selected:
+                        print('on_selected_box_align')
                         app.selected_align=self.selected
                         print(root.ids)
+                    on_state:
+                        print('on_state_box_align')
+                        app.selected_align=self.selected
+
                     RadioButton:
                         text:'2'
                         state: 'down'

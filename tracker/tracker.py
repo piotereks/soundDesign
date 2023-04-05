@@ -207,6 +207,9 @@ class Tracker:
         self.current_tempo = 0
         self.current_dur_variety = 0
         self.current_func = None
+        self.quants_state = {}
+        self.current_quants_state = {}
+
         self.tmln = self.tracker_timeline()
         self.metro = self.metro_timeline()
 
