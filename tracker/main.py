@@ -189,8 +189,12 @@ def main():
 
 class RadioButton(ToggleButtonBehavior, BoxLayout):
     text = StringProperty('')
+    child_state = StringProperty('')
     def on_state(self, *args, **kwargs):
         print("overloaded on_state for RadioButton")
+        print(*args)
+        print(**kwargs)
+        print(f"{self.child_state=}")
         # self.state='down'
     # state = StringProperty('normal')
     pass

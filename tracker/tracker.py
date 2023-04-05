@@ -209,6 +209,8 @@ class Tracker:
         self.current_func = None
         self.quants_state = {}
         self.current_quants_state = {}
+        self.align_state = 0
+        self.current_align_state = 0
 
         self.tmln = self.tracker_timeline()
         self.metro = self.metro_timeline()
@@ -709,6 +711,24 @@ class Tracker:
         self.current_func = new_func
         self.meta_func(func=new_func)
 
+    def set_align_trk(self, new_align):
+        log_call()
+        print(f"{self.current_align_state=} == {new_align=}")
+        if self.current_align_state == new_align:
+            print(f"align not changed {self.current_func=}")
+            return
+        self.current_align_state = new_align
+        self.meta_align(align=new_align)
+
+    def set_quantize_trk(self, new_quants):
+        log_call()
+        print(f"{self.current_quants_state=} == {new_quants=}")
+        if self.current_quants_state == new_quants:
+            print(f"quants not changed {self.current_quants_state=}")
+            return
+        self.current_quants_state = new_quants
+        self.meta_quants(quants=new_quants)
+
 
 
     def set_program_change(self, program = 0, channel = 0):
@@ -736,6 +756,13 @@ class Tracker:
         log_call()
         self.write_mid_text_meta(f"func:{func}")
 
+    def meta_align(self, align):
+        log_call()
+        self.write_mid_text_meta(f"align:{align}")
+
+    def meta_quants(self, quants):
+        log_call()
+        self.write_mid_text_meta(f"quantize:{quants}")
 
     def meta_tempo(self, tempo):
         log_call()
@@ -777,6 +804,8 @@ class Tracker:
         # if self.current_dur_variety!=self.
         self.set_dur_variety_trk(self.dur_variety)
         self.set_func_trk(self.func_name)
+        self.set_align_trk(self.align_state)
+        self.set_quantize_trk(self.quants_state)
         # self.meta_func(func=self.func_name)
 
         self.prev_key = self.key
