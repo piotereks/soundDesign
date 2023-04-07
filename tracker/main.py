@@ -318,6 +318,16 @@ class TrackerApp(App):
 
 
         self.set_kv_key(self.app_config.get("key"), self.app_config.get("scale"))
+        # self.on_selected_align(None,2)
+        print("al: ",  [al.children[0].text for al in self.root.align_buttons if al.children[0].state =='down'][0])
+        # self.on_selected_align(None,  [al.children[0].text for al in self.root.align_buttons if al.children[0].state =='down'][0])
+        self.on_selected_align(None,  [al.text for al in self.root.align_buttons if al.children[0].state =='down'][0])
+        self.on_selected_quantize(None, {x.text:x.children[0].state for x in self.root.quant_buttons})
+
+        # {x.text: x.children[0].state for x in self.quant_buttons}
+        # my_tracker.align_state = 2
+        # my_tracker.quants_state = 1
+
         self.selected_scale_button = self.app_config.get("scale")
 
 
@@ -527,6 +537,7 @@ class TrackerApp(App):
         log_call()
         print(f'xxxxxxxxxxxxxxxxx this is selected align {align}, {instance=}')
         my_tracker.align_state = align
+
         # keys_scale_action(align, my_tracker.key.scale.name)
 
     def set_kv_key(self, new_key, new_scale = None):

@@ -32,6 +32,7 @@
 ScreenManager:
     id: screen_manager
     quant_buttons: main_scr.ids.quant_group.children
+    align_buttons: main_scr.ids.align_group.children
     quants_state: {x.text:x.children[0].state for x in self.quant_buttons}
     transition: NoTransition()
 #    transition: SlideTransition()
@@ -330,6 +331,7 @@ ScreenManager:
                     selected: 'placeholder'
                     deselect: False
                     on_selected:
+#                    on_value:
                         print('on_selected_box_align')
                         app.selected_align=self.selected
                         print(root.ids)
@@ -338,11 +340,12 @@ ScreenManager:
                         app.selected_align=self.selected
                     RadioButton:
                         text:'1'
-                        child_state:'down'
+#                        child_state:'down'
+#                        app.selected_align='1'
 #                        state: 'down'
                     RadioButton:
                         text:'2'
-#                        child_state:'down'
+                        child_state:'down'
 #                        state: 'down'
                     RadioButton:
                         text:'3'

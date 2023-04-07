@@ -104,11 +104,11 @@ class NotePatterns:
     def mod_duration(func):  #added self, eventual issue
         @wraps(func)
         def split_no(interval, max_len = 16):
-            if interval<=16:
+            if interval <= 16:
                 return [interval]
-            pattern_len=interval
+            pattern_len = interval
             
-            interval -=1
+            interval -= 1
 
             parts_no16 = interval // max_len
             parts_no16 += 1
@@ -126,14 +126,30 @@ class NotePatterns:
         
         
         def inner(self, *args, **kwargs):
-            result = func(self, *args, **kwargs)
-            dur_variety = 999
-            if args[1] is not None:
-                dur_variety = args[1]
-            elif kwargs.get('dur_variety'):
-                dur_variety = kwargs.get('dur_variety')
+            parms = {"interval":0,
+                     "dur_variety":999,
+                     "quantize": {'5': 'normal', '3': 'normal', '2': 'normal'},
+                     "align":1}
+            for idx, arg in enumerate(args):
+                parms[list(parms.keys())[idx]] = arg
+            if kwargs is not None:
+                parms.update(kwargs)
+            # result = func(self, *args, **kwargs)
+            result = func(self, **parms)
+            # dur_variety = 999
+
+
+
+            # if args[1] is not None:
+            #     dur_variety = args[1]
+            # elif kwargs.get('dur_variety'):
+            #     dur_variety = kwargs.get('dur_variety')
             print(f"{args=},{kwargs=}")
-            print(f"-----////////////{dur_variety=}")
+            print(f"-----////////////{parms['dur_variety']=}")
+
+            # dur_variety = self.current_dur_variety,
+            # quantize = self.current_quants_state,
+            # align = self.current_align_state
 
             print(f"xx {len(result[iso.EVENT_NOTE])=}, {result[iso.EVENT_NOTE]=}")
             if not np.any(result.get(iso.EVENT_DURATION)):
@@ -142,8 +158,43 @@ class NotePatterns:
                 splt_array = split_no(pattern_len)
                 durations = []
                 for split_size in splt_array:
-                    dur_part = random.choice([dp["pattern"] for dp in self.dur_patterns.patterns
-                                    if dp["len"]==split_size and dp['pstdev']<=dur_variety] )
+                    print("beff")
+                    if split_size==1:
+                        durations.extend(np.array([1]))
+                        continue
+                    if parms['quantize']['2']==parms['quantize']['3'] and parms['quantize']['3'] == parms['quantize']['5']:
+                        condition = True
+                    else:
+                        condition = False
+                    any_flag2 = parms['quantize']['2'] == 'down'
+                    any_flag3 = parms['quantize']['3'] == 'down'
+                    any_flag5 = parms['quantize']['5'] == 'down'
+                    dur_part = [dp["pattern"] for dp in self.dur_patterns.patterns
+                                    if dp["len"]==split_size
+                                              and dp['pstdev']<=parms['dur_variety']
+                                              and (dp.get('align'+str(parms['align'])) or parms['align'] == '1')
+                                and (((dp.get('any2') or False) == any_flag2
+                                      and (dp.get('any3') or False) == any_flag3
+                                      and (dp.get('any5') or False) == any_flag5
+                                      )
+                                    or condition)
+                                              # and (dp['align'+parms['align']] or parms['align'] == 1)
+                                              ]
+                    print(f"1. {dur_part=}, {split_size=}")
+                    if dur_part == []:
+                        dur_part = [sorted([dp for dp in self.dur_patterns.patterns if dp["len"] == split_size],
+                                          key=lambda dp: dp["pstdev"])[0]['pattern']]
+                        print(f"2. {dur_part=}")
+                        # dur_part=[dp["pattern"] for dp in self.dur_patterns.patterns
+                        #                           if dp["len"] == split_size
+                        #                           and dp['pstdev'] == 0]
+
+                    dur_part = random.choice(dur_part )
+                    print(f"3. {dur_part=}")
+
+                    # = sorted(footballers_and_nums, key=lambda index : index[1])
+                    # dur_part = sorted([dp for dp in self.dur_patterns.patterns if dp["len"] == split_size], key=lambda dp:dp["pstdev"])[0]["pattern"]
+
                     dur_part2 = np.array(dur_part)
                     durations.extend(dur_part2)
 
@@ -163,11 +214,14 @@ class NotePatterns:
 
 
     @mod_duration
-    def get_random_path_pattern(self, *args, **kwargs):
+    # def get_random_path_pattern(self, *args, **kwargs):
+    def get_random_path_pattern(self, **kwargs):
         interval = 0
-        if args[0]:
-            interval = args[0]
-        elif kwargs.get('interval'):
+        # if args[0]:
+        #     interval = args[0]
+        # elif kwargs.get('interval'):
+        #     interval = kwargs.get('interval')
+        if kwargs.get('interval'):
             interval = kwargs.get('interval')
         # return random.choice(self.all_suitable_patterns(interval))
         # return {iso.EVENT_NOTE:random.choice(self.all_suitable_patterns(interval))}
@@ -178,8 +232,10 @@ class NotePatterns:
         octave *= interval_sign 
         interval = abs(interval) % 12
         interval *=interval_sign
-        #
-        
+
+
+
+
         notes_pattern = np.array(random.choice([pattern for pattern in self.all_suitable_patterns(org_interval)]))
         return {
             iso.EVENT_NOTE:notes_pattern,
@@ -194,21 +250,27 @@ class NotePatterns:
         }
 
     @mod_duration
-    def get_one_note_pattern(self, *args, **kwargs):
+    # def get_one_note_pattern(self, *args, **kwargs):
+    def get_one_note_pattern(self, **kwargs):
         interval = 0
-        if args[0]:
-            interval = args[0]
-        elif kwargs.get('interval'):
+        # if args[0]:
+        #     interval = args[0]
+        # elif kwargs.get('interval'):
+        #     interval = kwargs.get('interval')
+        if kwargs.get('interval'):
             interval = kwargs.get('interval')
         return {iso.EVENT_NOTE: np.array([0, interval])
                 }
 
     @mod_duration
-    def get_rest_path_pattern(self, *args, **kwargs):
+    # def get_rest_path_pattern(self, *args, **kwargs):
+    def get_rest_path_pattern(self, **kwargs):
         interval = 0
-        if args[0]:
-            interval = args[0]
-        elif kwargs.get('interval'):
+        # if args[0]:
+        #     interval = args[0]
+        # elif kwargs.get('interval'):
+        #     interval = kwargs.get('interval')
+        if kwargs.get('interval'):
             interval = kwargs.get('interval')
         # if interval == 0:
         if not interval:
@@ -225,11 +287,14 @@ class NotePatterns:
 
     @mod_duration
     # def get_path_pattern(self, interval):
-    def get_path_pattern(self, *args, **kwargs):
+    # def get_path_pattern(self, *args, **kwargs):
+    def get_path_pattern(self, **kwargs):
         interval = 0
-        if args[0]:
-            interval = args[0]
-        elif kwargs.get('interval'):
+        # if args[0]:
+        #     interval = args[0]
+        # elif kwargs.get('interval'):
+        #     interval = kwargs.get('interval')
+        if kwargs.get('interval'):
             interval = kwargs.get('interval')
 
         # if interval == 0:

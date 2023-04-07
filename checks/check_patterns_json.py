@@ -58,8 +58,12 @@ print(lbl)
 
 # lbl = set(ks for p in patterns for ks in p.keys() if 'any' in ks or 'all' in ks)
 for p in patterns:
-    if not [ks for ks in p.keys() if 'any' in ks]:
+    # if not [ks for ks in p.keys() if 'any' in ks]:
+    #     print(p)
+    if not [ks for ks in p.keys() if 'align' in ks]:
         print(p)
+
+
 bins = 10
 hist = np.histogram([p.get("pstdev") for p in patterns], bins=bins)
 
