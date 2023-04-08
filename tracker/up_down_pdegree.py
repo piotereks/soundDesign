@@ -2,6 +2,8 @@ from isobar import PDegree, Scale, Pattern
 # import isobar as iso
 from up_down_scale import *
 import typing
+import inspect
+from pprint import pprint
 
 class UpDownPDegree(PDegree):
     """ PDegree: Map scale index <degree> to MIDI notes in <scale>.
@@ -33,4 +35,5 @@ class UpDownPDegree(PDegree):
             # return scale[degree]
             # return scale.get(degree, self.scale_down)
             # iso.Scale.get = UpDownScale.get
+            pprint(inspect.getmembers(scale.get))
             return scale.get(degree, scale_down=self.scale_down)

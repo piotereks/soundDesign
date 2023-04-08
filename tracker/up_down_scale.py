@@ -14,9 +14,18 @@ class UpDownScale(Scale):
         if name not in Scale.dict:
             Scale.dict[name] = self
 
-    def get(self, n, scale_down = False):
+    # def get(self, n, scale_down = False):
+    def get(self, *args, **kwargs):
         """ Retrieve the n'th degree of this scale. """
         print("UpDownScale get")
+        parms = {"n": None,
+                 "scale_down": False}
+        for idx, arg in enumerate(args):
+            parms[list(parms.keys())[idx]] = arg
+        if kwargs is not None:
+            parms.update(kwargs)
+        n = parms['n']
+        scale_down = parms['scale_down']
         if n is None:
             return None
         semitones = self.semitones_down if scale_down else self.semitones
