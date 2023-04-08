@@ -1,4 +1,6 @@
 import isobar as iso
+from up_down_scale import *
+from up_down_pdegree import *
 import math
 import sys
 # import yaml
@@ -39,10 +41,14 @@ def read_config_file_scales():
     # uuuu = [iso.Scale(scale['semitones'], scale['name']) for scale in loaded_yaml['scales']]
     for scale in loaded_json['scales']:
         for name in scale['name']:
-            new_scale = iso.Scale(scale['semitones'],name)
+            new_scale = iso.Scale(scale['semitones'], name)
 
 
 iso.util.midi_note_to_note_name = midi_note_to_note_name  #Overwrite original function
+iso.Scale.__init__ = UpDownScale.__init__
+iso.Scale.get = UpDownScale.get
+iso.PDegree.__init__ = UpDownPDegree.__init__
+iso.PDegree.__next__ = UpDownPDegree.__next__
 # wrong semitones
 del iso.Scale.minor
 del iso.Scale.dict['minor']
