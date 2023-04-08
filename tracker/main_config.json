@@ -30,7 +30,7 @@
       "cc": 11,
       "knob_type" : "abs"
     },
-    "set_dur_variety_knob" : {
+    "xset_dur_variety_knob" : {
       "cc": 72,
       "knob_type" : "rel#3",
       "ratio": 0.025
