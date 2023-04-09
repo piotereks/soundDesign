@@ -196,7 +196,7 @@
             "semitones": [0,2,3,7,9]
         },
         {
-            "name": ["japanese - yo - up,down"],
+            "name": ["japanese - yo - up/down"],
             "semitones": [0,1,5,7,8],
 			"semitones_down": [0,1,5,7,10]
         },
