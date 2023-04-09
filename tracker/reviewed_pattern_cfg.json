@@ -103,7 +103,7 @@
         },
         {
             "name": ["minor melodic up/down"],
-            "semitones": [0,2,3,5,7,8,9,10,11],
+            "semitones": [0,2,3,5,7,9,11],
             "semitones_down": [0,2,3,5,7,8,10]
         },
         {"name":["minor harmonic","Mohammedan"],

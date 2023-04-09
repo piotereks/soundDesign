@@ -1,16 +1,20 @@
 {
   "app":
     {
-      "key":"F",
-      "scale":"minor",
+      "xkey":"F",
+      "key":"C",
+      "xscale":"minor",
+      "scale":"minor melodic up/down",
       "tempo":125,
       "tempo_min":20,
       "tempo_max":333,
-      "dur_variety":3.5,
+      "xdur_variety":3.5,
+      "dur_variety":0.0,
       "dur_variety_min":0,
       "dur_variety_max":7,
       "play_func":"path",
-      "queue_content":[60,64,62,70],
+      "xqueue_content":[60,64,62,70],
+      "queue_content":[60,72],
       "rows":7,
       "cols":3
     },
@@ -35,7 +39,7 @@
       "knob_type" : "rel#3",
       "ratio": 0.025
     },
-    "xset_dur_variety_knob" : {
+    "set_dur_variety_knob" : {
       "cc": 65,
       "knob_type" : "abs"
     },
