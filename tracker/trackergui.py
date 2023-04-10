@@ -106,8 +106,9 @@ class TrackerGuiApp(App):
 
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
         self._keyboard.bind(on_key_up=self._on_keyboard_up)
-        self.loop_play(instance=None, state=self.root.ids.main_scr.ids.loopq_button.state)
-        self.tracker_ref.metro_start_stop(self.root.ids.main_scr.ids.metronome.state)
+        self.loop_play(instance=None, state=self.root.loopq.state)
+        # self.tracker_ref.metro_start_stop(self.root.ids.main_scr.ids.metronome.state)
+        self.tracker_ref.metro_start_stop(self.root.metronome.state)
         all_scales = sorted([scale.name for scale in iso.Scale.all()])
         self.selected_scale_button = self.tracker_ref.key.scale.name
 
@@ -289,20 +290,26 @@ class TrackerGuiApp(App):
 
 
     def inv_play_pause(self):
-        state = self.root.ids.main_scr.ids.start_stop_button.state
+        # state = self.root.ids.main_scr.ids.start_stop_button.state
+        state = self.root.start_stop.state
         to_state = 'normal' if state == 'down' else 'down'
-        self.root.ids.main_scr.ids.start_stop_button.state = to_state
+        # self.root.ids.main_scr.ids.start_stop_button.state = to_state
+        self.root.start_stop.state = to_state
 
 
     def inv_metro_on_off(self):
-        state = self.root.ids.main_scr.ids.metronome.state
+        # state = self.root.ids.main_scr.ids.metronome.state
+        state = self.root.metronome.state
         to_state = 'normal' if state == 'down' else 'down'
-        self.root.ids.main_scr.ids.metronome.state = to_state
+        # self.root.ids.main_scr.ids.metronome.state = to_state
+        self.root.metronome.state = to_state
 
     def inv_loop_play(self):
-        state = self.root.ids.main_scr.ids.loopq_button.state
+        # state = self.root.ids.main_scr.ids.loopq_button.state
+        state = self.root.loop_state
         to_state = 'normal' if state == 'down' else 'down'
-        self.root.ids.main_scr.ids.loopq_button.state = to_state
+        # self.root.ids.main_scr.ids.loopq_button.state = to_state
+        self.root.loop_state = to_state
 
 
     def set_loop_state(self, loop_button=None):
@@ -310,7 +317,8 @@ class TrackerGuiApp(App):
             return
         state = loop_button.get('state')
         if state:
-            self.root.ids.main_scr.ids.loopq_button.state = state
+            # self.root.ids.main_scr.ids.loopq_button.state = state
+            self.root.loopq.state = state
 
     def set_clearq_state(self, clearq_button=None):
         if not clearq_button:
@@ -322,14 +330,16 @@ class TrackerGuiApp(App):
             return
         state = metronome_button.get('state')
         if state:
-            self.root.ids.main_scr.ids.metronome.state = state
+            # self.root.ids.main_scr.ids.metronome.state = state
+            self.root.metronome.state = state
 
     def set_play_pause_state(self, play_pause_button=None):
         if not play_pause_button:
             return
         state = play_pause_button.get('state')
         if state:
-            self.root.ids.main_scr.ids.start_stop_button.state = state
+            # self.root.ids.main_scr.ids.start_stop_button.state = state
+            self.root.start_stop.state = state
 
     def play_pause(self, instance, state=None, play_pause_button=None):
         log_call()
@@ -415,7 +425,7 @@ class TrackerGuiApp(App):
     def set_kv_key(self, new_key, new_scale = None):
         if not new_scale:
             new_scale = self.tracker_ref.key.scale.name
-        for key in self.root.ids.main_scr.ids.scales_group.children:
+        for key in self.root.scales_buttons:
             print(f"{key.text=} != {new_key}  {key.text != new_key=}")
             if key.text != new_key:
                 key.children[0].state = 'normal'
@@ -434,7 +444,7 @@ class TrackerGuiApp(App):
 
 
     def rand_key(self):
-        keys = list({key.text for key in self.root.ids.main_scr.ids.scales_group.children} \
+        keys = list({key.text for key in self.root.scales_buttons} \
                     - {self.selected_root_note})
         randomized_key = random.choice(keys)
         print(f'this is {randomized_key=}')
