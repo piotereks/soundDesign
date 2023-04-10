@@ -262,6 +262,7 @@ class TrackerGuiApp(App):
 
 
     def close_application(self):
+        pass
         # cleanup attempt
         self.tracker_ref.scale_name_action = lambda: print(None)
         self.tracker_ref.check_notes_action = lambda: print(None)
@@ -279,7 +280,6 @@ class TrackerGuiApp(App):
         self.tracker_ref.set_rnd_scale_action = lambda: print(None)
         self.tracker_ref.set_rnd_key_action = lambda: print(None)
         self.tracker_ref.set_rnd_func_action = lambda: print(None)
-
         self.tracker_ref.ts()
         self.tracker_ref.save_midi(on_exit=True)
 
@@ -521,11 +521,6 @@ class TrackerGuiApp(App):
         self.set_scale_app(instance, value)
 
 
-
-    def close_application(self):
-        # closing application
-        App.get_running_app().stop()
-        Window.close()
 
 
 class MainScreen(Screen):

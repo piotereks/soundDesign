@@ -1,15 +1,15 @@
 # import os
 from queue import Queue
-import mido
 import shutil
 from datetime import datetime
+import mido
 
 from .isobar_fixes import *
 from .patterns import *
 from .log_call import *
 from .midi_dev import *
 
-NO_MIDI_OUT = mido.get_output_names() == [];
+NO_MIDI_OUT = mido.get_output_names() == []
 
 
 class Tracker:
@@ -593,7 +593,22 @@ class Tracker:
 
     def meta_quants(self, quants):
         log_call()
-        self.write_mid_text_meta(f"quantize:{quants}")
+        q2 = quants.get('2') == 'down'
+        q3 = quants.get('3') == 'down'
+        q5 = quants.get('5') == 'down'
+        quant_flag ='x'
+        if not(q2 or q3 or q5):
+            quant_flag += '2/3/5/'
+        else:
+            if q2:
+                quant_flag += '2/'
+            if q3:
+                quant_flag += '3/'
+            if q5:
+                quant_flag += '5/'
+
+        quant_flag = quant_flag[1:-1]
+        self.write_mid_text_meta(f"quantize:{quant_flag}")
 
     def meta_tempo(self, tempo):
         log_call()
