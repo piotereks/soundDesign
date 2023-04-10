@@ -1,13 +1,13 @@
 import isobar as iso
-from up_down_scale import *
-from up_down_pdegree import *
-from up_down_key import *
+import os
+from .up_down_scale import *
+from .up_down_pdegree import *
+from .up_down_key import *
 import math
 import sys
 # import yaml
 import json
-global IN_COLAB
-IN_COLAB = 'google.colab' in sys.modules
+
 print("======================isobar fixex=============")
 def midi_note_to_note_name(note):
     """
@@ -30,10 +30,11 @@ def midi_note_to_note_name(note):
 
 def read_config_file_scales():
     # print('reading config')
-   
-    config_file = 'reviewed_pattern_cfg.json'
-    if IN_COLAB:
-        config_file = '/content/SoundDesign/tracker/' + config_file
+    this_dir = os.path.dirname(os.path.abspath(__file__))
+    config_file = os.path.join(this_dir, 'reviewed_pattern_cfg.json')
+
+    # config_file = 'reviewed_pattern_cfg.json'
+
 
     with open(config_file, 'r') as file:
         # with open('reviewed_pattern_cfg.yaml', 'r') as file:

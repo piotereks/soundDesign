@@ -1,6 +1,3 @@
-from tracker.log_call import *
-
-
 class MaxClass():
     par1 = 5
     par2 ='abc'

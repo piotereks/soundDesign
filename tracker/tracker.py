@@ -1,140 +1,15 @@
-from isobar_fixes import *
-import os
-from patterns import *
-from log_call import *
+# import os
 from queue import Queue
 import mido
 import shutil
 from datetime import datetime
 
-global IN_COLAB
-IN_COLAB = 'google.colab' in sys.modules
+from .isobar_fixes import *
+from .patterns import *
+from .log_call import *
+from .midi_dev import *
+
 NO_MIDI_OUT = mido.get_output_names() == [];
-
-global MULTI_TRACK
-MULTI_TRACK = True
-# MULTI_TRACK = False
-
-
-global my_tracker
-
-if MULTI_TRACK:
-    class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
-
-        def __init__(self, filename):
-            self.filename = filename
-            self.midifile = mido.MidiFile()
-            self.miditrack = [mido.MidiTrack()]
-            self.midifile.tracks.append(self.miditrack[0])
-            self.channel_track = []
-            self.channel_track.append(0)
-            self.time = []
-            self.time.append(0)
-            self.last_event_time = []
-            self.last_event_time.append(0)
-
-        def extra_track(self, channel=None):
-            if channel:
-                if not [x for x in self.channel_track if x == channel]:
-                    track = mido.MidiTrack()
-                    self.miditrack.append(track)
-                    self.midifile.tracks.append(track)
-                    self.channel_track.append(channel)
-                    self.time.append(0)
-                    self.last_event_time.append(0)
-
-        def get_channel_track(self, channel=0):
-            try:
-                track = self.channel_track.index(channel)
-            except:
-                track = 0
-            return track
-
-        def note_on(self, note=60, velocity=64, channel=0):
-            # ------------------------------------------------------------------------
-            # avoid rounding errors
-            # ------------------------------------------------------------------------
-            track = self.get_channel_track(channel)
-            print(f"----------------track var: {channel=} {track=}")
-            if track >= 0:
-                print(f"------------note on: {track=}, {note=}, {channel=}")
-                dt = self.time[track] - self.last_event_time[track]
-                dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
-                self.miditrack[track].append(
-                    mido.Message('note_on', note=note, velocity=velocity, channel=channel, time=dt_ticks))
-                self.last_event_time[track] = self.time[track]
-
-        def note_off(self, note=60, channel=0):
-            track = self.get_channel_track(channel)
-            if track >= 0:
-                print(f"------------note on: {track=}, {note=}, {channel=}")
-                dt = self.time[track] - self.last_event_time[track]
-                dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
-                self.miditrack[track].append(mido.Message('note_off', note=note, channel=channel, time=dt_ticks))
-                self.last_event_time[track] = self.time[track]
-
-        def tick(self):
-            self.time = list(map(lambda x: x + (1.0 / self.ticks_per_beat), self.time))
-
-            pass
-
-if not MULTI_TRACK:
-    class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
-        pass
-
-
-# class FileOut(iso.MidiFileOutputDevice, iso.MidiOutputDevice):
-class FileOut(MidiFileManyTracksOutputDevice, iso.MidiOutputDevice):
-
-    def __init__(self, filename, device_name, send_clock, virtual=False):
-        # iso.MidiFileOutputDevice.__init__(self, filename=filename)
-        MidiFileManyTracksOutputDevice.__init__(self, filename=filename)
-        iso.MidiOutputDevice.__init__(self, device_name=device_name, send_clock=send_clock, virtual=virtual)
-
-    def note_off(self, note, channel):
-        MidiFileManyTracksOutputDevice.note_off(self, note=note, channel=channel)
-        iso.MidiOutputDevice.note_off(self, note=note, channel=channel)
-
-    def note_on(self, note, velocity, channel):
-        MidiFileManyTracksOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
-        iso.MidiOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
-
-    # def program_change(self, program=0, channel=0):
-    # iso.MidiFileOutputDevice.program_change(self, program=program, channel=channel)
-    # MidiFileManyTracksOutputDevice.program_change(self, program=program, channel=channel)
-    # iso.MidiOutputDevice.program_change(self, program=program, channel=channel)
-    # super().program_change(program=program, channel=channel)
-
-    #
-    #
-    # def start(self):
-    #     # iso.MidiFileOutputDevice.start(self)
-    #     # MidiFileManyTracksOutputDevice.start(self)
-    #     # iso.MidiOutputDevice.start(self)
-    #     super().start()
-    #
-    # def stop(self):
-    #     # iso.MidiFileOutputDevice.stop(self)
-    #     # MidiFileManyTracksOutputDevice.stop(self)
-    #     # iso.MidiOutputDevice.stop(self)
-    #     super().stop()
-    #
-    # def tick(self):
-    #     # iso.MidiFileOutputDevice.tick(self)
-    #     # MidiFileManyTracksOutputDevice.tick(self)
-    #     # iso.MidiOutputDevice.tick(self)
-    #     super().tick()
-
-    def write(self):
-        iso.MidiFileOutputDevice.write(self)
-
-    # def ticks_per_beat(self):
-    #     iso.MidiFileOutputDevice.ticks_per_beat
-    #         ticks_per_beat(self, *args, **kwargs)
-    #     iso.MidiOutputDevice.ticks_per_beat(self, *args, **kwargs)
-
-
-# </editor-fold>
 
 
 class Tracker:
@@ -147,7 +22,7 @@ class Tracker:
     def __init__(self, tracker_config=None,
                  midi_out_mode='dummy',
                  midi_mapping={},
-                 filename=os.path.join("saved_midi_files", "xoutput.mid")):
+                 filename=os.path.join(os.path.dirname(os.path.abspath(__file__)), "saved_midi_files", "xoutput.mid")):
 
         self.midi_in = None
         read_config_file_scales()
@@ -348,8 +223,6 @@ class Tracker:
 
             elif message.type == 'control_change':
                 print(f"{message.control=}")
-                # set_tempo_knob = self.midi_mapping.get("set_tempo_knob")
-                # base = set_knob(message=message)
                 knob = get_knob(mess=message)
                 oper_to_func = {
                     'set_tempo_knob': self.set_tempo_action,
@@ -365,24 +238,6 @@ class Tracker:
                     if func:
                         func()
 
-        # #---
-        #                 button = get_button(mess=message)
-        #                 print(f"{button=}")
-        #                 oper_to_func = {
-        #                     'play': self.set_play_action,
-        #                     'metronome': self.set_metronome_action,
-        #                     'loop': self.set_loop_action,
-        #                     'clearq': self.set_clearq_action,
-        #                     'rnd_scale': self.set_rnd_scale_action,
-        #                     'rnd_key': self.set_rnd_key_action,
-        #                     'rnd_func': self.set_rnd_func_action
-        #                 }
-        #                 # print(f"xxx:{button['name']}, {oper_to_func.get(button['name'])}")
-        #                 if button:
-        #                     func = oper_to_func.get(button.get('name'))
-        #                     print(f"xxx:{func=}")
-        #                     if func:
-        #                         func()
 
         midi_in_name = [mids[0] for mids in itertools.product(mido.get_input_names(), midi_in_name) if
                         mids[1] in mids[0]]

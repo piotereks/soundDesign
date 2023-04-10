@@ -1,5 +1,3 @@
-from tracker.log_call import *
-
 def stand_proc():
     log_call()
     return __name__

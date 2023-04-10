@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import itertools
 import random
@@ -9,8 +10,6 @@ import re
 from functools import wraps
 
 
-global IN_COLAB
-IN_COLAB = 'google.colab' in sys.modules
 
 class DurationPatterns:
     def __init__(self):
@@ -18,9 +17,11 @@ class DurationPatterns:
 
     def __read_config_file__(self):
         # print('reading config')
-        config_file = 'duration_patterns.json'
-        if IN_COLAB:
-            config_file = '/content/SoundDesign/tracker/' + config_file
+        this_dir = os.path.dirname(os.path.abspath(__file__))
+        config_file = os.path.join(this_dir, 'duration_patterns.json')
+
+        # config_file = 'duration_patterns.json'
+
 
         with open(config_file, 'r') as file:
 
@@ -59,10 +60,11 @@ class NotePatterns:
 
 
     def __read_config_file__(self):
+        this_dir = os.path.dirname(os.path.abspath(__file__))
+        config_file = os.path.join(this_dir, 'reviewed_pattern_cfg.json')
 
-        config_file = 'reviewed_pattern_cfg.json'
-        if IN_COLAB:
-            config_file = '/content/SoundDesign/tracker/' + config_file
+        # config_file = 'reviewed_pattern_cfg.json'
+
 
         with open(config_file, 'r') as file:
 

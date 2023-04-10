@@ -1,6 +1,6 @@
 from isobar import PDegree, Scale, Pattern
 # import isobar as iso
-from up_down_scale import *
+from .up_down_scale import *
 import typing
 import inspect
 from pprint import pprint
