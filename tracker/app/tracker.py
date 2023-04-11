@@ -23,16 +23,17 @@ class Tracker:
                  midi_out_mode='dummy',
                  midi_mapping={},
                  filename=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..","saved_midi_files", "xoutput.mid")):
+        log_call()
 
-        self.midi_in = None
         read_config_file_scales()
+        self.midi_in = None
         self.key = iso.Key("C", "major")
         self.prev_key = None
         self.loopq = False
         self.midi_out = None
         self.track = None
         self.filename = filename
-        log_call()
+
         self.beat_count = -1 % 4
         self.diff_time = 0
         self.prev_time = 0
@@ -91,9 +92,6 @@ class Tracker:
         target_filename = os.path.splitext(os.path.basename(self.filename))
         target_path_file = os.path.join(target_dir, target_filename[0]+'_'+ date+target_filename[1])
         shutil.copy(self.filename, target_path_file)
-
-    this_dir = os.path.dirname(os.path.abspath(__file__))
-    config_file = os.path.join(this_dir, '../config/duration_patterns.json')
 
     def setup_midi_in(self, midi_in_name):
 
@@ -333,16 +331,6 @@ class Tracker:
 
     # <editor-fold desc="Base beat functions">
     @log_and_schedule
-    def beat1(self):
-        return iso.PDict({
-            iso.EVENT_NOTE: iso.PSequence([1, 3, 2, 4], repeats=1) + 72})
-
-    @log_and_schedule
-    def beat2(self):
-        return iso.PDict({
-            iso.EVENT_NOTE: iso.PSequence([1, 3, 2, 4, 3, 5], repeats=1) + 66})
-
-    @log_and_schedule
     def beat_none(self):
         return iso.PDict({
             iso.EVENT_NOTE: iso.PSequence([None], repeats=4)})
@@ -397,11 +385,11 @@ class Tracker:
     # </editor-fold>
 
     # <editor-fold desc="Gui actions">
-    def loop_play_queue_action(self, flag):
-        if flag == 0:
-            self.loopq = False
-        else:
-            self.loopq = True
+    # def loop_play_queue_action(self, flag):
+    #     if flag == 0:
+    #         self.loopq = False
+    #     else:
+    #         self.loopq = True
 
     def check_notes_action(self):
         log_call()
@@ -450,10 +438,8 @@ class Tracker:
     # <editor-fold desc="Queue functions">
     def get_queue_content(self):
         return 'empty' if self.note_queue.empty() else list(self.note_queue.queue)
-        # return 'empty' if self.note_queue.empty() else xxx
 
     def get_queue_content_full(self):
-        # queue_v = list(['bbbb'])
         queue_v = []
 
         print(f"{self.notes_pair[0]=} {queue_v}")

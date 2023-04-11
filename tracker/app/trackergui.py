@@ -80,6 +80,10 @@ class TrackerGuiApp(App):
     # </editor-fold>
 
     # <editor-fold desc="Initialization">
+    def __set_prop__(self, variable, file_property):
+        if self.app_config.get(file_property) is not None:
+            setattr(self, variable, self.app_config.get(file_property))
+
     def __config_init_file__(self):
         default_app_config = \
             {
@@ -98,35 +102,26 @@ class TrackerGuiApp(App):
         self.app_config = default_app_config
 
         self.set_key_state(self.app_config.get("key"), self.app_config.get("scale"))
-        print("al: ",  [al.children[0].text for al in self.root.align_buttons if al.children[0].state == 'down'][0])
+        # print("al: ",  [al.children[0].text for al in self.root.align_buttons if al.children[0].state == 'down'][0])
         self.on_selected_align(None,  [al.text for al in self.root.align_buttons if al.children[0].state == 'down'][0])
-        self.on_selected_quantize(None, {x.text:x.children[0].state for x in self.root.quant_buttons})
+        self.on_selected_quantize(None, {q.text:q.children[0].state for q in self.root.quant_buttons})
         self.selected_scale_button = self.app_config.get("scale")
 
-        if self.app_config.get("tempo"):
-            self.parm_tempo = self.app_config.get("tempo")
-        if self.app_config.get("tempo_min"):
-            self.parm_tempo_min = self.app_config.get("tempo_min")
-        if self.app_config.get("tempo_max"):
-            self.parm_tempo_max = self.app_config.get("tempo_max")
-
-        if self.app_config.get("dur_variety"):
-            self.parm_dur_variety = self.app_config.get("dur_variety")
-        if self.app_config.get("dur_variety_min"):
-            self.parm_dur_variety_min = self.app_config.get("dur_variety_min")
-        if self.app_config.get("dur_variety_max"):
-            self.parm_dur_variety_max = self.app_config.get("dur_variety_max")
-
-        if self.app_config.get("play_func"):
-            self.func_init_text = self.app_config.get("play_func")
-        if self.app_config.get("queue_content"):
-            self.path_queue_content = self.app_config.get("queue_content")
-
-        if self.app_config.get("rows"):
-            self.parm_rows = self.app_config.get("rows")
-
-        if self.app_config.get("cols"):
-            self.parm_cols = self.app_config.get("cols")
+        properties = \
+            [
+                ('parm_tempo', "tempo"),
+                ('parm_tempo_min', "tempo_min"),
+                ('parm_tempo_max', "tempo_max"),
+                ('parm_dur_variety', "dur_variety"),
+                ('parm_dur_variety_min', "dur_variety_min"),
+                ('parm_dur_variety_max', "dur_variety_max"),
+                ('func_init_text', "play_func"),
+                ('path_queue_content', "queue_content"),
+                ('parm_rows', "rows"),
+                ('parm_cols', "cols")
+            ]
+        # xxx = [self.__set_prop__(prop[0],prop[1]) for prop in properties]
+        _ = list(map(lambda prop: self.__set_prop__(prop[0],prop[1]), properties))
 
         for note in self.path_queue_content or []:
             self.tracker_ref.put_to_queue(note)
@@ -137,70 +132,87 @@ class TrackerGuiApp(App):
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
         self._keyboard.bind(on_key_up=self._on_keyboard_up)
 
-        # self.tracker_ref.metro_start_stop(self.root.ids.main_scr.ids.metronome.state)
-        self.tracker_ref.metro_start_stop(self.root.metronome.state)
-        all_scales = sorted([scale.name for scale in iso.Scale.all()])
-        self.selected_scale_button = self.tracker_ref.key.scale.name
-
-        self.scale_values = all_scales
-        self.func_values = self.tracker_ref.note_patterns.pattern_methods_short_list
-        self.func_init_text = self.func_init_text if self.func_init_text else \
-            self.tracker_ref.note_patterns.pattern_methods_short_list[0]
-
-        self.tracker_ref.scale_name_action = lambda: self.set_scale_set_name_txt('set:' + self.tracker_ref.key.scale.name)
-        self.tracker_ref.check_notes_action = lambda: self.set_check_notes_lbl_text(str(self.tracker_ref.check_notes))
-
-        self.tracker_ref.queue_content_action = lambda: self.set_queue_content_lbl_text(
-            'queue: ' + str(self.tracker_ref.get_queue_content()))
-        self.tracker_ref.curr_notes_pair_action = lambda: self.set_curr_notes_pair_lbl_text(
-            'from to: ' + str(self.tracker_ref.notes_pair))
-
-        self.tracker_ref.fullq_content_action = lambda: self.set_fullq_content_lbl_text(
-            'full queue: ' + str(self.tracker_ref.get_queue_content_full()))
-
-        self.tracker_ref.set_tempo_action = lambda: self.set_tempo_f_main(None, tempo_knob=self.tracker_ref.midi_mapping['set_tempo_knob'])
-        self.tracker_ref.set_dur_variety_action = lambda: self.set_dur_variety_f_main(None, dur_variety_knob=self.tracker_ref.midi_mapping['set_dur_variety_knob'])
+        # Play Button
         self.tracker_ref.set_play_action = lambda: self.set_play_pause_state(
             play_pause_button=self.tracker_ref.midi_mapping['play'])
+
+        # Save Button
+        # Scales
+        all_scales = sorted([scale.name for scale in iso.Scale.all()])
+        self.selected_scale_button = self.tracker_ref.key.scale.name
+        self.scale_values = all_scales
+        self.tracker_ref.scale_name_action = lambda: self.set_scale_set_name_txt('set:' + self.tracker_ref.key.scale.name)
+        self.tracker_ref.set_rnd_scale_action = lambda: self.rand_scale()
+
+        # Key
+        self.tracker_ref.set_rnd_key_action = lambda: self.rand_key()
+
+        # Metronome
+        self.tracker_ref.metro_start_stop(self.root.metronome.state)
         self.tracker_ref.set_metronome_action = lambda: self.set_metronome_state(
             metronome_button=self.tracker_ref.midi_mapping['metronome'])
-        self.loopq_action(instance=None, state=self.root.loopq.state)
-        self.tracker_ref.set_loop_action = lambda: self.set_loopq_state(
-            loopq_button=self.tracker_ref.midi_mapping['loop'])
-        self.tracker_ref.set_clearq_action = lambda: self.set_clearq_state(clearq_button=self.tracker_ref.midi_mapping['clearq'])
 
-        self.tracker_ref.set_rnd_scale_action = lambda: self.rand_scale()
-        self.tracker_ref.set_rnd_key_action = lambda: self.rand_key()
-        self.tracker_ref.set_rnd_func_action= lambda: self.rand_play_func()
-
+        # Tempo
+        self.tracker_ref.set_tempo_action = lambda: self.set_tempo_f_main(None, tempo_knob=self.tracker_ref.midi_mapping['set_tempo_knob'])
         self.tempo_value = self.parm_tempo
         self.tempo_min = self.parm_tempo_min
         self.tempo_max = self.parm_tempo_max
 
+        # Play functions
+        self.func_values = self.tracker_ref.note_patterns.pattern_methods_short_list
+        self.func_init_text = self.func_init_text if self.func_init_text else \
+            self.tracker_ref.note_patterns.pattern_methods_short_list[0]
+        self.tracker_ref.set_rnd_func_action= lambda: self.rand_play_func()
+
+        # Duration variety
+        self.tracker_ref.set_dur_variety_action = lambda: self.set_dur_variety_f_main(None, dur_variety_knob=self.tracker_ref.midi_mapping['set_dur_variety_knob'])
         self.dur_variety_value = self.parm_dur_variety
         self.dur_variety_min = self.parm_dur_variety_min
         self.dur_variety_max = self.parm_dur_variety_max
 
+        # Quantize
+        self.tracker_ref.set_clearq_action = lambda: self.set_clearq_state(clearq_button=self.tracker_ref.midi_mapping['clearq'])
+
+        # Align
+        # LoopQ
+        self.loopq_action(instance=None, state=self.root.loopq.state)
+        self.tracker_ref.set_loopq_action = lambda: self.set_loopq_state(
+            loopq_button=self.tracker_ref.midi_mapping['loop'])
+
+        # ClearQ
+        # Queue
+        self.tracker_ref.check_notes_action = lambda: self.set_check_notes_lbl_text(str(self.tracker_ref.check_notes))
+        self.tracker_ref.queue_content_action = lambda: self.set_queue_content_lbl_text(
+            'queue: ' + str(self.tracker_ref.get_queue_content()))
+        self.tracker_ref.curr_notes_pair_action = lambda: self.set_curr_notes_pair_lbl_text(
+            'from to: ' + str(self.tracker_ref.notes_pair))
+        self.tracker_ref.fullq_content_action = lambda: self.set_fullq_content_lbl_text(
+            'full queue: ' + str(self.tracker_ref.get_queue_content_full()))
+
+
     def close_application(self):
         pass
         # cleanup attempt
+        self.tracker_ref.set_play_action = lambda: print(None)
         self.tracker_ref.scale_name_action = lambda: print(None)
+        self.tracker_ref.set_rnd_scale_action = lambda: print(None)
+        self.tracker_ref.set_rnd_key_action = lambda: print(None)
+
+        self.tracker_ref.set_metronome_action = lambda: print(None)
+        self.tracker_ref.set_tempo_action = lambda: print(None)
+        self.tracker_ref.set_rnd_func_action = lambda: print(None)
+
+        self.tracker_ref.set_dur_variety_action = lambda: print(None)
+
+        self.tracker_ref.set_loopq_action = lambda: print(None)
+        self.tracker_ref.set_clearq_action = lambda: print(None)
+
         self.tracker_ref.check_notes_action = lambda: print(None)
         self.tracker_ref.queue_content_action = lambda: print(None)
         self.tracker_ref.curr_notes_pair_action = lambda: print(None)
         self.tracker_ref.fullq_content_action = lambda: print(None)
 
-        self.tracker_ref.set_tempo_action = lambda: print(None)
-        self.tracker_ref.set_dur_variety_action = lambda: print(None)
-        self.tracker_ref.set_play_action = lambda: print(None)
-        self.tracker_ref.set_metronome_action = lambda: print(None)
-        self.tracker_ref.set_loop_action = lambda: print(None)
-        self.tracker_ref.set_clearq_action = lambda: print(None)
-
-        self.tracker_ref.set_rnd_scale_action = lambda: print(None)
-        self.tracker_ref.set_rnd_key_action = lambda: print(None)
-        self.tracker_ref.set_rnd_func_action = lambda: print(None)
-        self.tracker_ref.ts()
+        self.tracker_ref.tstop()
         self.tracker_ref.save_midi(on_exit=True)
 
         # closing application
@@ -294,7 +306,8 @@ class TrackerGuiApp(App):
     def rand_scale(self):
         log_call()
         all_scales = [scale.name for scale in iso.Scale.all()]
-        random_scale = random.choice(list(set(all_scales) - set([self.tracker_ref.key.scale.name])))
+        # random_scale = random.choice(list(set(all_scales) - set([self.tracker_ref.key.scale.name])))
+        random_scale = random.choice(list(set(all_scales) - {self.tracker_ref.key.scale.name}))
         self.tracker_ref.key = iso.Key(self.tracker_ref.key.tonic, random_scale)
         self.selected_scale_button = self.tracker_ref.key.scale.name
     def keys_scale_action(self, key, scale):
@@ -403,7 +416,8 @@ class TrackerGuiApp(App):
     def rand_play_func(self):
         log_call()
         selected_function = random.choice(
-            list(set(self.tracker_ref.note_patterns.pattern_methods_short_list) - set([self.func_init_text]))
+            # list(set(self.tracker_ref.note_patterns.pattern_methods_short_list) - set([self.func_init_text]))
+            list(set(self.tracker_ref.note_patterns.pattern_methods_short_list) - {self.func_init_text})
         )
         self.set_play_func(None, selected_function)
 

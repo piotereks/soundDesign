@@ -5,6 +5,7 @@ class UpDownScale(Scale):
     dict = {}
 
     def __init__(self, semitones=[0, 2, 4, 5, 7, 9, 11], name="unnamed scale", octave_size=12, semitones_down=None):
+
         self.scale_down = False
 
         self.semitones = semitones
@@ -24,7 +25,9 @@ class UpDownScale(Scale):
         """ Retrieve the n'th degree of this scale. """
         # print("UpDownScale get")
         parms = {"n": None,
-                 "scale_down": self.scale_down}
+                 "scale_down": False}
+        if hasattr(self, 'scale_down'):
+            parms['scale_down'] = self.scale_down
         for idx, arg in enumerate(args):
             parms[list(parms.keys())[idx]] = arg
         if kwargs is not None:
@@ -33,7 +36,11 @@ class UpDownScale(Scale):
         scale_down = parms['scale_down']
         if n is None:
             return None
-        semitones = self.semitones_down if scale_down and self.semitones_down is not None else self.semitones
+        semitones_down = None
+        if hasattr(self, 'semitones_down'):
+            semitones_down = self.semitones
+        # semitones = self.semitones_down if scale_down and self.semitones_down is not None else self.semitones
+        semitones = semitones_down if scale_down and semitones_down is not None else self.semitones
         octave = n // len(semitones)
         degree = n % len(semitones)
         semitone = semitones[degree]

@@ -16,7 +16,8 @@ class UpDownPDegree(PDegree):
     def __init__(self, degree, scale=Scale.major):
         dg_list = list(degree.copy())
 
-        if dg_list!=[None]:
+        if dg_list != [None]:
+            dg_list = [dg for dg in dg_list if dg is not None]
             scale_down = dg_list[0] > dg_list[-1]
         else:
             scale_down = False

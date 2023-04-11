@@ -5,7 +5,7 @@ import random
 import json
 import isobar as iso
 
-import sys
+# import sys
 import re
 from functools import wraps
 
@@ -20,11 +20,7 @@ class DurationPatterns:
         this_dir = os.path.dirname(os.path.abspath(__file__))
         config_file = os.path.join(this_dir, '../config/duration_patterns.json')
 
-        # config_file = 'duration_patterns.json'
-
-
         with open(config_file, 'r') as file:
-
             self.patterns = json.load(file)
 
         print('after list')
@@ -83,7 +79,6 @@ class NotePatterns:
             res_pattern = pattern
             add_pattern = np.array(pattern[1:])
 
-
         for a in range(mult - 1):
             add_pattern = add_pattern + pattern[-1]  # This is to add "step" of pattern, so I expect
 
@@ -94,16 +89,16 @@ class NotePatterns:
         sign = np.sign(interval)
         interval = abs(interval)
         if interval == 0:
-          suitable_patterns = [pattern for pattern in
+            suitable_patterns = [pattern for pattern in
                              self.patterns if pattern[-1] in self.pattern_size_for_interval[interval]]
         else:
-          suitable_patterns = [sign * self.multiply_pattern(pattern, int(interval / pattern[-1])) for pattern in
+            suitable_patterns = [sign * self.multiply_pattern(pattern, int(interval / pattern[-1])) for pattern in
                              self.patterns if pattern[-1] in self.pattern_size_for_interval[interval]]
         # print('sp for n:',suitable_patterns)
         return suitable_patterns
 
 # <editor-fold desc="get pattern functions">
-    def mod_duration(func):  #added self, eventual issue
+    def mod_duration(func):  # added self, eventual issue
         @wraps(func)
         def split_no(interval, max_len = 16):
             if interval <= 16:
@@ -116,8 +111,8 @@ class NotePatterns:
             parts_no16 += 1
             rnd_parts = random.choice([parts_no16, parts_no16 * 2, parts_no16 * 4])
 
-            splt_array=[]
-            while pattern_len>0:
+            splt_array = []
+            while pattern_len > 0:
                 part = -(-pattern_len//rnd_parts)
                 splt_array.append(part)
                 pattern_len -= part
@@ -136,22 +131,12 @@ class NotePatterns:
                 parms[list(parms.keys())[idx]] = arg
             if kwargs is not None:
                 parms.update(kwargs)
-            # result = func(self, *args, **kwargs)
+
             result = func(self, **parms)
-            # dur_variety = 999
 
-
-
-            # if args[1] is not None:
-            #     dur_variety = args[1]
-            # elif kwargs.get('dur_variety'):
-            #     dur_variety = kwargs.get('dur_variety')
             print(f"{args=},{kwargs=}")
             print(f"-----////////////{parms['dur_variety']=}")
 
-            # dur_variety = self.current_dur_variety,
-            # quantize = self.current_quants_state,
-            # align = self.current_align_state
 
             print(f"xx {len(result[iso.EVENT_NOTE])=}, {result[iso.EVENT_NOTE]=}")
             if not np.any(result.get(iso.EVENT_DURATION)):
@@ -184,10 +169,6 @@ class NotePatterns:
                                               ]
                     print(f"1. {dur_part=}, {split_size=}")
                     if dur_part == []:
-                        # dur_part = [sorted([dp for dp in self.dur_patterns.patterns if dp["len"] == split_size],
-                        #                   key=lambda dp: dp["pstdev"])[0]['pattern']]
-                        # dur_part = [dpp['pattern'] for dpp in sorted([dp for dp in self.dur_patterns.patterns if dp["len"] == split_size],
-                        #                    key=lambda dp: dp["pstdev"]) if dpp["pstdev"]==max(dpp["pstdev"])]
                         sdp = self.dur_patterns.patterns
                         dur_part = [dp for dp in sdp if dp["len"] == split_size]
                         min_sdp = min(map(lambda x: x['pstdev'],dur_part))
@@ -195,15 +176,9 @@ class NotePatterns:
 
 
                         print(f"2. {dur_part=}")
-                        # dur_part=[dp["pattern"] for dp in self.dur_patterns.patterns
-                        #                           if dp["len"] == split_size
-                        #                           and dp['pstdev'] == 0]
 
                     dur_part = random.choice(dur_part)
                     print(f"3. {dur_part=}")
-
-                    # = sorted(footballers_and_nums, key=lambda index : index[1])
-                    # dur_part = sorted([dp for dp in self.dur_patterns.patterns if dp["len"] == split_size], key=lambda dp:dp["pstdev"])[0]["pattern"]
 
                     dur_part2 = np.array(dur_part)
                     durations.extend(dur_part2)
@@ -221,7 +196,6 @@ class NotePatterns:
         return {
             iso.EVENT_NOTE: np.append(random.choice([1,-1])*random.choice(self.patterns), 0)
         }
-
 
     @mod_duration
     # def get_random_path_pattern(self, *args, **kwargs):
@@ -241,17 +215,11 @@ class NotePatterns:
         octave = abs(interval) // 12
         octave *= interval_sign 
         interval = abs(interval) % 12
-        interval *=interval_sign
-
-
-
-
+        interval *= interval_sign
         notes_pattern = np.array(random.choice([pattern for pattern in self.all_suitable_patterns(org_interval)]))
         return {
             iso.EVENT_NOTE:notes_pattern,
         }
-
-
 
     @mod_duration
     def get_chord_maj_pattern(self, *args, **kwargs): # interval sould be not needed
@@ -296,14 +264,8 @@ class NotePatterns:
         }
 
     @mod_duration
-    # def get_path_pattern(self, interval):
-    # def get_path_pattern(self, *args, **kwargs):
     def get_path_pattern(self, **kwargs):
         interval = 0
-        # if args[0]:
-        #     interval = args[0]
-        # elif kwargs.get('interval'):
-        #     interval = kwargs.get('interval')
         if kwargs.get('interval'):
             interval = kwargs.get('interval')
 
@@ -324,8 +286,6 @@ class NotePatterns:
 
 
 def main():
-    import pprint
-
     global note_ptrn
     note_ptrn = NotePatterns()
     find_scale([0, 2, 3, 5, 7, 8, 11])
@@ -340,5 +300,3 @@ def find_scale(semitones:list):
 if __name__ == '__main__':
     main()
 
-
-# patterns_config

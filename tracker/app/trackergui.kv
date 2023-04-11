@@ -38,8 +38,6 @@ ScreenManager:
     loopq: main_scr.ids.loopq_button
     metronome: main_scr.ids.metronome
 
-
-#    quants_state: {x.text:x.children[0].state for x in self.quant_buttons}
     transition: NoTransition()
 #    transition: SlideTransition()
 #    transition: CardTransition()
@@ -47,14 +45,12 @@ ScreenManager:
 
     MainScreen:
         id: main_scr
-
         name: 'main_screen'
         manager: 'screen_manager'
 
 
 
     ScalesSelectScreen:
-
         id: scales_opt
         name: 'scales_option'
         manager: 'screen_manager'
@@ -66,16 +62,12 @@ ScreenManager:
 
 
 <RadioButton>:
-#main_scr.ids.quant_group.children
     orientation:'horizontal'
-#    child_state: None
     ToggleButton:
         text:self.parent.text if self.parent.text else 'X'
         size_hint: [None, None]
         size: [-(-self.texture_size[0]//20)*20+10,self.texture_size[1]*2]
-#        group:'keys'
         group:self.parent.parent.group_variable if self.parent.parent.group_variable else None
-#        state: self.parent.state   # this has been removed - caused problems when click between buttons
         state: self.parent.child_state if self.parent.child_state else 'normal'
         on_press:
             print(f"********* bef: {self.parent.text=}, {self.state=}, {self.parent.state=}, {self.parent.parent.deselect=}")
@@ -83,30 +75,19 @@ ScreenManager:
             print("****")
             self.state = 'down' if self.parent.parent.deselect==False else self.state
             print("****")
-            #            self.state = 'down' if self.parent.state=='normal'  else self.state
             print("****")
-#            self.parent.state = 'down' if self.parent.state=='down' and self.parent.parent.deselect==False else self.state
             print(f"********* aft: {self.parent.text=}, {self.state=}, {self.parent.state=}, {self.parent.parent.deselect=}")
-#            self.parent.state = 'down' if self.parent.state=='normal' and self.parent.parent.deselect==False else self.state
-#            self.state = 'down' if self.parent.state=='normal' else 'normal'
-#            app.selected_root_note = self.parent.text if self.state=='down' else  app.selected_root_note
-#            self.parent.parent.selected = self.parent.text if self.state=='down' else  self.parent.parent.selected
             self.parent.parent.selected = self.parent.text
             self.parent.parent.state = self.state
             print(f"on_press: pressed:{self.state=}, {self.text=}")
 
         on_state:
             print(f"on_state: {self.state=}, {self.text=}")
-#            self.parent.state = self.state
 
-
-
- 
 
 <MainScreen>:
 
     BoxLayout:
-    # Widget:
         orientation: 'vertical'
         BoxLayout:
             orientation: 'horizontal'
@@ -287,8 +268,6 @@ ScreenManager:
                 orientation:'vertical'
                 size_hint_x: 3
                 size_hint_y: 1.2
-#                group: None
-
 
                 Label:
                     text:'quantize'
@@ -297,8 +276,6 @@ ScreenManager:
                 BoxLayout:
                     id: quant_group
                     deselect: True
-#                    group_variable: None
-#                    group_variable: 'blabh'
 
                     orientation:'horizontal'
                     selected: 'placeholder'
@@ -332,12 +309,10 @@ ScreenManager:
                 BoxLayout:
                     id: align_group
                     orientation:'horizontal'
-#                    size_hint_x: 4
                     group_variable: 'align'
                     selected: 'placeholder'
                     deselect: False
                     on_selected:
-#                    on_value:
                         print('on_selected_box_align')
                         app.selected_align=self.selected
                         print(root.ids)
@@ -346,9 +321,6 @@ ScreenManager:
                         app.selected_align=self.selected
                     RadioButton:
                         text:'1'
-#                        child_state:'down'
-#                        app.selected_align='1'
-#                        state: 'down'
                     RadioButton:
                         text:'2'
                         child_state:'down'

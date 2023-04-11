@@ -1,5 +1,5 @@
 from isobar import Key
-from isobar import Scale, InvalidKeyException, midi_note_to_note_name, note_name_to_midi_note
+from isobar import Scale, InvalidKeyException,  note_name_to_midi_note
 
 # from .scale import Scale
 # from .note import Note
@@ -11,6 +11,7 @@ class UpDownKey(Key):
     """
 
     def __init__(self, tonic=0, scale=Scale.major):
+
         if type(tonic) == str:
             tonic = note_name_to_midi_note(tonic)
         if type(scale) == str:
