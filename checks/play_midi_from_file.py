@@ -8,9 +8,12 @@ def direct_midi_play():
     names=mido.get_output_names()
     print(names)
 
-    # port = mido.open_output('Microsoft GS Wavetable Synth 0')
+    port = mido.open_output('Microsoft GS Wavetable Synth 0')
+    print("xxx:" , port)
+    print("xxx:" , mido.get_output_names())
+    return
     # port = mido.open_output('Bome Virtual MIDI Port 2')
-    port = mido.open_output('Arturia MiniLab mkII 1')
+    # port = mido.open_output('Arturia MiniLab mkII 1')
 
     # port.close()
 
@@ -80,7 +83,7 @@ where
     # mid=mido.MidiFile('..\\jupyter\\rythm_midi_files\\Dim6_2.mid',clip=True)
     # mid=mido.MidiFile('..\\jupyter\\rythm_midi_files\\Blah.mid',clip=True)
     # mid=mido.MidiFile('..\\jupyter\\rythm_midi_files\\Blah2.mid',clip=True)
-    return
+    # return
     for msg in mid:
         if msg.is_meta:
             print(msg)
