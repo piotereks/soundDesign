@@ -3,7 +3,7 @@ import json
 import numpy as np
 def read_config_file():
     # print('reading config')
-    config_file = '../tracker/duration_patterns.json'
+    config_file = '../tracker/config/duration_patterns.json'
     # if IN_COLAB:
     #     config_file = '/content/SoundDesign/tracker/' + config_file
 

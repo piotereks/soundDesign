@@ -64,7 +64,7 @@ class ScalesSelectScreen(Screen):
         
     def __read_config_file__(self):
         # print('reading config')
-        config_file = '../../tracker/reviewed_pattern_cfg.json'
+        config_file = '../../tracker/config/reviewed_pattern_cfg.json'
         # config_file = '/workspaces/soundDesign/tracker/reviewed_pattern_cfg.json'
 
 

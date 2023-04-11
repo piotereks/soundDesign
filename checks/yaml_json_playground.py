@@ -18,7 +18,7 @@ def read_config_file_json():
 
     # config_file_yaml = Path('tracker/duration_patterns.yaml')
     # config_file_json = Path('tracker/duration_patterns.json')
-    config_file_json = Path('../tracker/reviewed_pattern_cfg.json')
+    config_file_json = Path('../tracker/config/reviewed_pattern_cfg.json')
 
     with open(config_file_json, 'r') as file:
         # with open('reviewed_pattern_cfg.yaml', 'r') as file:
@@ -31,7 +31,7 @@ def cvt_yaml_json():
 
     config_file_yaml = Path('../tracker/reviewed_pattern_cfg.yaml')
 
-    config_file_json = Path('../tracker/reviewed_pattern_cfg.json')
+    config_file_json = Path('../tracker/config/reviewed_pattern_cfg.json')
     # config_file_json = Path('tracker/duration_patterns.json')
 
     with open(config_file_yaml, 'r') as file:
