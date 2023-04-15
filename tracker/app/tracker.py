@@ -56,6 +56,8 @@ class Tracker:
                 "midi_in_name": ["blah_blah_0", "sdfdsf123"],
                 "midi_out_name": ["in_blah_blah_0", "ppp_sdfdsf123"],
                 "default_channel": 1,
+                "legato": 1.0,
+                "program_change": 0,
                 "dummy_hardcoded_config": "asdfsdf"
             }
         if tracker_config:
@@ -64,7 +66,8 @@ class Tracker:
         self.midi_in_name = self.default_tracker_config.get("midi_in_name")
         self.midi_out_name = self.default_tracker_config.get("midi_out_name")
         self.legato = self.default_tracker_config.get("legato")
-
+        self.program_change = self.default_tracker_config.get("program_change")
+        self.current_program = None
         # self.init_timeline(True)
         self.midi_out_mode = midi_out_mode
         self.init_timeline(midi_in_name=self.midi_in_name, midi_out_name=self.midi_out_name,
@@ -82,6 +85,7 @@ class Tracker:
         self.func_name = None
         self.tmln = self.tracker_timeline()
         self.metro = self.metro_timeline()
+        self.set_program_change_trk(program=self.program_change)
 
     def save_midi(self, on_exit=False):
         date = datetime.now().strftime('%Y%m%d%H%M%S')
@@ -204,6 +208,7 @@ class Tracker:
             print(" - Received MIDI: %s" % message)
             print(message.__dict__)
             # self.default_tracker_config['default_channel']
+            print(f"{message=}")
             if message.type == 'note_on' or message.type == 'note_off':
                 if message.channel == self.default_tracker_config['default_channel']:
                     if message.type == 'note_on':
@@ -243,13 +248,18 @@ class Tracker:
                     print(f"xxx:{func=}")
                     if func:
                         func()
+            elif message.type == 'program_change':
+                # print(f"{message.__dict__=}")
+                self.program_change=message.program
+                # self.set_program_change(program=message.program)
 
         midi_in_name = [mids[0] for mids in itertools.product(mido.get_input_names(), midi_in_name) if
                         mids[1] in mids[0]]
 
         if midi_in_name:
             try:
-                self.midi_in = iso.MidiInputDevice(midi_in_name[0])
+                # self.midi_in = iso.MidiInputDevice(midi_in_name[0])
+                self.midi_in = ExtendedMidiInputDevice(midi_in_name[0])
             except iso.DeviceNotFoundException:
                 print(f"Can't open midi in named'{midi_in_name[0]}. Possibly locked by other application'")
                 return
@@ -553,9 +563,13 @@ class Tracker:
         self.current_quants_state = new_quants
         self.meta_quants(quants=new_quants)
 
-    def set_program_change(self, program=0, channel=0):
+    def set_program_change_trk(self, program=0, channel=0):
         log_call()
+        if self.current_program == program:
+            print(f"program was not changed {self.current_program=}")
+            return
         self.midi_out.program_change(program=int(program), channel=int(channel))
+        print("blahblah")
         if MULTI_TRACK:
             self.midi_out.miditrack[0].append(
                 mido.Message('program_change', program=int(program), channel=int(channel)))
@@ -635,12 +649,11 @@ class Tracker:
         if (not self.prev_key and self.key) \
                 or self.prev_key != self.key:
             self.meta_key_scale(key=self.key, scale=self.key.scale.name)
-        # if self.current_dur_variety!=self.
         self.set_dur_variety_trk(self.dur_variety)
         self.set_func_trk(self.func_name)
         self.set_align_trk(self.align_state)
         self.set_quantize_trk(self.quants_state)
-        # self.meta_func(func=self.func_name)
+        self.set_program_change_trk(self.program_change)
 
         self.prev_key = self.key
         print(f"============={self.prev_get_pattern_name=} {self.note_patterns.get_pattern.__name__=}")
