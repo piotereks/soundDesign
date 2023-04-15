@@ -58,6 +58,7 @@ class Tracker:
                 "default_channel": 1,
                 "legato": 1.0,
                 "program_change": 0,
+                "time_signature": {"numerator": 4, "denominator": 4},
                 "dummy_hardcoded_config": "asdfsdf"
             }
         if tracker_config:
@@ -67,6 +68,7 @@ class Tracker:
         self.midi_out_name = self.default_tracker_config.get("midi_out_name")
         self.legato = self.default_tracker_config.get("legato")
         self.program_change = self.default_tracker_config.get("program_change")
+        self.time_signature = self.default_tracker_config.get("time_signature")
         self.current_program = None
         # self.init_timeline(True)
         self.midi_out_mode = midi_out_mode
@@ -296,7 +298,9 @@ class Tracker:
             self.midi_out = iso.DummyOutputDevice()
             print("dummy mode")
         self.setup_midi_in(midi_in_name)
-        self.mid_meta_message('time_signature', numerator=4, denominator=4, time=0)
+        # self.mid_meta_message('time_signature', numerator=3, denominator=4, time=0)
+        self.mid_meta_message('time_signature', numerator=self.time_signature['numerator'],
+                              denominator=self.time_signature['denominator'], time=0)
         print(f"----------- {MULTI_TRACK=}")
         self.timeline = iso.Timeline(120, output_device=self.midi_out)
 
