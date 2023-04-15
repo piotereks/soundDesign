@@ -63,6 +63,7 @@ class Tracker:
 
         self.midi_in_name = self.default_tracker_config.get("midi_in_name")
         self.midi_out_name = self.default_tracker_config.get("midi_out_name")
+        self.legato = self.default_tracker_config.get("legato")
 
         # self.init_timeline(True)
         self.midi_out_mode = midi_out_mode
@@ -686,7 +687,7 @@ class Tracker:
                 iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.key),
                 iso.EVENT_DURATION: iso.PSequence([4], repeats=1),
                 iso.EVENT_AMPLITUDE: 64,
-                iso.EVENT_GATE: 1
+                iso.EVENT_GATE: self.legato
             })
         print('after_check')
         root_note = self.key.scale.indexOf(from_note - self.key.tonic % 12)
@@ -730,7 +731,7 @@ class Tracker:
             pattern_amplitude = np.array([64])
 
         if not isinstance(pattern_gate, np.ndarray):
-            pattern_gate = np.array([1])
+            pattern_gate = np.array([self.legato])
 
         if pattern_duration.size < len_pattern:
             pattern_mult = np.tile(pattern_duration, (int(len_pattern / pattern_duration.size) + 1, 1))
