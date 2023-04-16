@@ -351,7 +351,7 @@ class Tracker:
     @log_and_schedule
     def beat_none(self):
         return iso.PDict({
-            # iso.EVENT_NOTE: iso.PSequence([None], repeats=4)})
+            # iso.EVENT_NOTE: iso.PSequence([None], repeats=4)})  # TODO check beat none for custom time sig
             iso.EVENT_NOTE: iso.PSequence([None], repeats=self.time_signature['numerator'])})
 
     # </editor-fold>
@@ -360,18 +360,22 @@ class Tracker:
 
     def metro_timeline(self):
         log_call()
+        print(f"{time.time()=}")
+        print(f"{4*self.time_signature['numerator']/self.time_signature['denominator']=},{self.metro_beat=}")
         if MULTI_TRACK:
             self.midi_out.extra_track(9)  # for percussion channel 10 (or 9 when counting from 0).
         return self.timeline.schedule({
             "action": lambda: self.metro_beat(),
+            # "duration": 3/2
             # "duration": 4
-            "duration": self.time_signature['numerator']
+            "duration": 4*(self.time_signature['numerator']/self.time_signature['denominator'])
         },
             remove_when_done=False
         )
 
     def metro_none(self):
         log_call()
+        print(f"{time.time()=},{self.metro_beat=}")
         _ = self.timeline.schedule({
             iso.EVENT_NOTE: iso.PSequence([None], repeats=1),
             "duration": 1,
@@ -383,12 +387,17 @@ class Tracker:
 
     def metro_play(self):
         log_call()
+        print(f"{time.time()=},{self.metro_beat=}")
         metro_seq = [32]+[37]*(self.time_signature['numerator']-1)
         metro_amp = [55]+[45]*(self.time_signature['numerator']-1)
+        print(f"{self.time_signature['numerator']/self.time_signature['denominator']=}")
+        print(f"{metro_seq=}, {metro_amp=}")
         _ = self.timeline.schedule({
             # "note": iso.PSequence([32, 37, 37, 37], repeats=1),
             "note": iso.PSequence(metro_seq, repeats=1),
-            "duration": 1 - 0.000000000000002,
+            # "duration": self.time_signature['numerator']/self.time_signature['denominator'] - 0.000000000000002,
+            # "duration": (self.time_signature['numerator']/self.time_signature['denominator']),
+            "duration": 4/self.time_signature['denominator'],
             "channel": 9,
             # "amplitude": iso.PSequence([55, 45, 45, 45], repeats=1)
             "amplitude": iso.PSequence(metro_amp, repeats=1)
@@ -509,10 +518,11 @@ class Tracker:
 
     def tracker_timeline(self):
         log_call()
+        print(f"{self.beat}")
         return self.timeline.schedule({
             "action": lambda: self.beat(),
             # "duration": 4
-            "duration": self.time_signature['numerator']
+            "duration": 4*self.time_signature['numerator']/self.time_signature['denominator']
             # "quantize": 1
         },
             remove_when_done=False)
@@ -655,6 +665,7 @@ class Tracker:
     @log_and_schedule
     def play_from_to(self, from_note, to_note, in_pattern=False):
         print('---------------------')
+        print(f"{time.time()=}")
         print(f"in_pattern: {in_pattern} from_note:{from_note}, to_note: {to_note}")
         print(f"{self.key.scale.name=}, key={iso.Note.names[self.key.tonic % 12]}, {self.key.scale.name=}")
 
@@ -703,8 +714,8 @@ class Tracker:
                 self.beat = self.beat_none
         self.notes_pair = [from_note, to_note]
         self.queue_content_wrk = [from_note, to_note] + [' '] + [
-            list(self.get_queue_content())]  # TODO Inial problem wit 'e','m','p','t','y'
-        self.curr_notes_pair_action()  # TODO action
+            list(self.get_queue_content())]
+        self.curr_notes_pair_action()
         self.fullq_content_action()
         self.last_from_note = from_note
 
@@ -714,7 +725,7 @@ class Tracker:
             return iso.PDict({
                 iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.key),
                 # iso.EVENT_DURATION: iso.PSequence([4], repeats=1),
-                iso.EVENT_DURATION: iso.PSequence([self.time_signature['numerator']], repeats=1),
+                iso.EVENT_DURATION: iso.PSequence([4*self.time_signature['numerator']/self.time_signature['denominator']], repeats=1),
                 iso.EVENT_AMPLITUDE: 64,
                 iso.EVENT_GATE: self.legato
             })
@@ -755,7 +766,7 @@ class Tracker:
         if not isinstance(pattern_duration, np.ndarray):
             # pattern_duration = np.array(None)
             # pattern_duration = np.repeat((4 / len_pattern) - 0.000000000000002, len_pattern)
-            pattern_duration = np.repeat((self.time_signature['numerator'] / len_pattern) - 0.000000000000002, len_pattern)
+            pattern_duration = np.repeat((4*(self.time_signature['numerator']/self.time_signature['denominator']) / len_pattern) - 0.000000000000002, len_pattern)
 
         if not isinstance(pattern_amplitude, np.ndarray):
             pattern_amplitude = np.array([64])
@@ -770,7 +781,8 @@ class Tracker:
 
         # rescale duration of notes
         # pattern_duration = 4 * pattern_duration / pattern_duration.sum() - 0.000000000000002
-        pattern_duration = self.time_signature['numerator'] * pattern_duration / pattern_duration.sum() - 0.000000000000002
+        pattern_duration = 4*(self.time_signature['numerator']/self.time_signature['denominator'])* pattern_duration \
+                           / pattern_duration.sum() - 0.000000000000002
 
         print(f"{pattern_duration=}")
 
