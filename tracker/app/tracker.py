@@ -360,7 +360,8 @@ class Tracker:
             self.midi_out.extra_track(9)  # for percussion channel 10 (or 9 when counting from 0).
         return self.timeline.schedule({
             "action": lambda: self.metro_beat(),
-            "duration": 4
+            # "duration": 4
+            "duration": self.time_signature['numerator']
         },
             remove_when_done=False
         )
@@ -378,8 +379,10 @@ class Tracker:
 
     def metro_play(self):
         log_call()
+        metro_seq = [32]+[37]*(self.time_signature['numerator']-1)
         _ = self.timeline.schedule({
-            "note": iso.PSequence([32, 37, 37, 37], repeats=1),
+            # "note": iso.PSequence([32, 37, 37, 37], repeats=1),
+            "note": iso.PSequence(metro_seq, repeats=1),
             "duration": 1 - 0.000000000000002,
             "channel": 9,
             "amplitude": iso.PSequence([55, 45, 45, 45], repeats=1)
@@ -502,7 +505,8 @@ class Tracker:
         log_call()
         return self.timeline.schedule({
             "action": lambda: self.beat(),
-            "duration": 4
+            # "duration": 4
+            "duration": self.time_signature['numerator']
             # "quantize": 1
         },
             remove_when_done=False)
@@ -702,7 +706,8 @@ class Tracker:
 
             return iso.PDict({
                 iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.key),
-                iso.EVENT_DURATION: iso.PSequence([4], repeats=1),
+                # iso.EVENT_DURATION: iso.PSequence([4], repeats=1),
+                iso.EVENT_DURATION: iso.PSequence([self.time_signature['numerator']], repeats=1),
                 iso.EVENT_AMPLITUDE: 64,
                 iso.EVENT_GATE: self.legato
             })
@@ -742,7 +747,8 @@ class Tracker:
 
         if not isinstance(pattern_duration, np.ndarray):
             # pattern_duration = np.array(None)
-            pattern_duration = np.repeat((4 / len_pattern) - 0.000000000000002, len_pattern)
+            # pattern_duration = np.repeat((4 / len_pattern) - 0.000000000000002, len_pattern)
+            pattern_duration = np.repeat((self.time_signature['numerator'] / len_pattern) - 0.000000000000002, len_pattern)
 
         if not isinstance(pattern_amplitude, np.ndarray):
             pattern_amplitude = np.array([64])
@@ -756,7 +762,8 @@ class Tracker:
         pattern_duration = pattern_duration[:len_pattern]
 
         # rescale duration of notes
-        pattern_duration = 4 * pattern_duration / pattern_duration.sum() - 0.000000000000002
+        # pattern_duration = 4 * pattern_duration / pattern_duration.sum() - 0.000000000000002
+        pattern_duration = self.time_signature['numerator'] * pattern_duration / pattern_duration.sum() - 0.000000000000002
 
         print(f"{pattern_duration=}")
 
