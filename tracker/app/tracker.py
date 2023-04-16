@@ -47,7 +47,21 @@ class Tracker:
         self.notes_pair = [None, None]
         self.queue_content_wrk = None
         self.note_queue = Queue(maxsize=16)
-        self.amp_for_beat_factor = dict(zip([0, 2], [1.5, 1.25]))
+        # self.amp_for_beat_factor = dict(zip([0, 2], [1.5, 1.25]))
+        self.amp_for_beat_factor={
+        1: dict(zip([0, 2], [1.5, 1.25])),
+        2: dict(zip([0, 1], [1.5, 1.25])),
+        3: dict(zip([0, 2], [1.5, 1.25])),
+        4: dict(zip([0, 2], [1.5, 1.25])),
+        5: dict(zip([0, 3], [1.5, 1.25])),
+        6: dict(zip([0, 3], [1.5, 1.25])),
+        7: dict(zip([0, 3, 5], [1.5, 1.25, 1.25])),
+        8: dict(zip([0, 4], [1.5, 1.25])),
+        9: dict(zip([0, 3, 6], [1.5, 1.25, 1.25])),
+        10: dict(zip([0, 5], [1.5, 1.25])),
+        12: dict(zip([0, 3, 6, 9], [1.5, 1.25, 1.25, 1.25]))
+        }
+
         self.midi_mapping = midi_mapping
 
         self.pattern_idx = 0
@@ -309,7 +323,10 @@ class Tracker:
     # </editor-fold>
 
     def get_amp_factor(self):
-        accent = self.amp_for_beat_factor.get(self.beat_count)
+        xxx = self.amp_for_beat_factor.get(self.time_signature['numerator'])
+        print(f"{xxx=},{self.time_signature['numerator']=}")
+        accent = self.amp_for_beat_factor.get(self.time_signature['numerator']).get(self.beat_count)
+        # accent = self.amp_for_beat_factor.get(self.beat_count)
         return accent if accent else 1
 
     def log_and_schedule(func):
@@ -332,10 +349,14 @@ class Tracker:
 
             # create accent depending on beat
             if notes[iso.EVENT_AMPLITUDE]:
+                # xxx = iso.PMapEnumerated(notes[iso.EVENT_AMPLITUDE], lambda n, value: int(
+                #     value * self.get_amp_factor()) if n == 0 else value)
+                # notes[iso.EVENT_AMPLITUDE] = iso.PMap(notes[iso.EVENT_AMPLITUDE], lambda
+                #     midi_amp: None if not midi_amp else None if midi_amp < 0 else None if midi_amp > 127 else midi_amp)
                 notes[iso.EVENT_AMPLITUDE] = iso.PMapEnumerated(notes[iso.EVENT_AMPLITUDE], lambda n, value: int(
                     value * self.get_amp_factor()) if n == 0 else value)
                 notes[iso.EVENT_AMPLITUDE] = iso.PMap(notes[iso.EVENT_AMPLITUDE], lambda
-                    midi_amp: None if not midi_amp else None if midi_amp < 0 else None if midi_amp > 127 else midi_amp)
+                    midi_amp: 0 if not midi_amp else 0 if midi_amp < 0 else 127 if midi_amp > 127 else midi_amp)
 
             self.check_notes = list(notes[iso.EVENT_NOTE].copy())
             print('check notes: ', self.check_notes)
