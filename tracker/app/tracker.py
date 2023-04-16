@@ -35,7 +35,7 @@ class Tracker:
         self.track = None
         self.filename = filename
 
-        self.beat_count = -1 % 4
+        # self.beat_count = -1 % 4
         self.diff_time = 0
         self.prev_time = 0
         self.timeline = None
@@ -69,6 +69,8 @@ class Tracker:
         self.legato = self.default_tracker_config.get("legato")
         self.program_change = self.default_tracker_config.get("program_change")
         self.time_signature = self.default_tracker_config.get("time_signature")
+        self.beat_count = -1 % self.time_signature['numerator']
+
         self.current_program = None
         # self.init_timeline(True)
         self.midi_out_mode = midi_out_mode
@@ -319,7 +321,8 @@ class Tracker:
             self.prev_time = self.timeline.current_time
             print(f"{func.__name__} diff:{self.diff_time}, timeXX: {self.timeline.current_time},"
                   f" {round(self.timeline.current_time)} beat: {self.beat_count}\n")
-            self.beat_count %= 4
+            # self.beat_count %= 4
+            self.beat_count %= self.time_signature['numerator']
             notes = func(self, *args, **kwargs)
             notes[iso.EVENT_NOTE] = iso.PMap(notes[iso.EVENT_NOTE], lambda midi_note:
             (None if not midi_note else None if midi_note < 0 else None if midi_note > 127 else midi_note)
@@ -348,7 +351,8 @@ class Tracker:
     @log_and_schedule
     def beat_none(self):
         return iso.PDict({
-            iso.EVENT_NOTE: iso.PSequence([None], repeats=4)})
+            # iso.EVENT_NOTE: iso.PSequence([None], repeats=4)})
+            iso.EVENT_NOTE: iso.PSequence([None], repeats=self.time_signature['numerator'])})
 
     # </editor-fold>
 
@@ -380,12 +384,14 @@ class Tracker:
     def metro_play(self):
         log_call()
         metro_seq = [32]+[37]*(self.time_signature['numerator']-1)
+        metro_amp = [55]+[45]*(self.time_signature['numerator']-1)
         _ = self.timeline.schedule({
             # "note": iso.PSequence([32, 37, 37, 37], repeats=1),
             "note": iso.PSequence(metro_seq, repeats=1),
             "duration": 1 - 0.000000000000002,
             "channel": 9,
-            "amplitude": iso.PSequence([55, 45, 45, 45], repeats=1)
+            # "amplitude": iso.PSequence([55, 45, 45, 45], repeats=1)
+            "amplitude": iso.PSequence(metro_amp, repeats=1)
         },
             remove_when_done=True)
 
@@ -583,6 +589,7 @@ class Tracker:
                 mido.Message('program_change', program=int(program), channel=int(channel)))
         else:
             self.midi_out.miditrack.append(mido.Message('program_change', program=int(program), channel=int(channel)))
+        self.current_program = program
 
     def write_mid_text_meta(self, message):
         self.mid_meta_message('text', text=message, time=0)
