@@ -27,60 +27,41 @@ class DurationPatterns:
 
         self.new_succ_divdors = \
         {20:
-            [
-                (1,1)
-            ],
-
-        21:  [
-                (1,3),(3,1)
-            ],
-        30: [
-               (1,1,1)
-            ],
-        31: [
-                (1,2),(2,1)
-            ],
-        50: [
-                (1,1,1,1,1)
-            ] #,
-        # 51: [
-        #         (2,1,2),(1,2,1,1),(1,1,2,1),
-        #         (2,3),(3,2),(1,4),(4,1)
-        #     ],
-        # 52: [
-        #         (1,9),(9,1),(3,7),(7,3)
-        #     (1,2,1,2,1,2,1),(1,2,2,2,1,1,1),(1,1,1,2,2,2,1)
-        #     ]
+            [(1,1)],
+        30: [(1,1,1)],
+        50: [(1,1,1,1,1)]
         }
         self.succ_idx = {
-        1:[20,21,30,31,50],
-        2:[20,21,30,31,50],
+        1:[20,30,50],
+        2:[20,30,50],
         3:[20],
-        4:[20,21,30,31],
+        4:[20,30],
         5:[20],
+        8:[20]
+        }
+
+        self.succ_dot_idx = {
+        1:[20,30],
+        # 2:[20,30,50],
+        2:[20],
+        3:[20,50],
+        4:[20],
         6:[20],
         8:[20]
         }
 
-        # self.init_pat_lst=[[1],[4,2,4],[8,4,8,2],[2,8,4,8],[4,8,4,8,4],[6,3,3,6],[10,5,5,5,5,10],
-        #         [10,5,10,5,10,5,10]
-        #         ]
-
         self.init_pat_lst=[[1]]
 
-    def recalc(self):
+    def recalc(self, succesors, type='norm'):
         for (pat_idx,pattern) in enumerate(self.init_pat_lst):
+            print(f"{(pat_idx,pattern)=}")
             for (el_idx, element) in enumerate(pattern):
-                idx_map=self.succ_idx.get(element)
-                # print(f"\nppppppp={pattern=}, {element=}, {idx_map=}")
+                idx_map=succesors.get(element)
                 if not idx_map:
                     continue
                 for idx in idx_map:
-                    # print(f"{idx=}, {self.new_succ_divdors[idx]}")
-                    for dividor_tup in self.new_succ_divdors[idx]: 
-                        
-                        # print(f"{dividor_tup=},{sum(dividor_tup)=},{sum(dividor_tup)/np.array(dividor_tup)}")
-                        
+                    for dividor_tup in self.new_succ_divdors[idx]:
+
                         div_array = element*sum(dividor_tup)/np.array(dividor_tup)
                         xp = pattern.copy()
 
@@ -89,21 +70,12 @@ class DurationPatterns:
                         for x in np.flip(div_array):
                             xp.insert(el_idx, x.tolist())
 
-                        # print(type(xp))
-                        #
-                        #
-                        # dumped_dur = yaml.dump(list(xp), default_flow_style=None, sort_keys=False)
-                        # print(dumped_dur)
-
                         if xp not in self.init_pat_lst:
                             self.init_pat_lst.append(xp)
-                            # print(f"{xp=}")
-
-                        # dumped_dur = yaml.dump(self.init_pat_lst.append, default_flow_style=None, sort_keys=False)
-                        # print(dumped_dur)
-        self.duration_patterns = [{"pattern":pat} for pat in self.init_pat_lst]
+        print("# of patterns: ", len(self.init_pat_lst))
+        self.duration_patterns = [{"pattern":pat, "type": type} for pat in self.init_pat_lst]
         # return(self.patterns)
-        print(len(self.duration_patterns))
+        print("# of patterns: ", len(self.duration_patterns))
 
 
 
@@ -198,7 +170,9 @@ class DurationPatterns:
                 assign_attrib(f"align{dd}",alignment_set & ret_pattern_set == alignment_set)
 
 durPat = DurationPatterns()
-durPat.recalc()
+# durPat.recalc(succesors=durPat.succ_idx, type="norm")
+durPat.recalc(succesors=durPat.succ_dot_idx, type="dot")
+
 # print(f"{durPat=}")
 # durPat.find_all_pattern_splits()
 durPat.calc_attributes()
@@ -214,7 +188,7 @@ print("bef dump")
 # print("aft dump")
 # with open('patterns.yaml', 'w') as f:
 #     data = yaml.dump(durPat.duration_patterns,f, default_flow_style=None, sort_keys=False)
-with open('patterns.json', 'w') as f:
+with open('xpatterns.json', 'w') as f:
     json.dump(durPat.duration_patterns, f, indent = 4)
- 
+
 print('after writing')
