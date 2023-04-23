@@ -126,7 +126,8 @@ class NotePatterns:
             parms = {"interval":0,
                      "dur_variety":999,
                      "quantize": {'5': 'normal', '3': 'normal', '2': 'normal'},
-                     "align":1}
+                     "align": 1,
+                     "dot_beat": False}
             for idx, arg in enumerate(args):
                 parms[list(parms.keys())[idx]] = arg
             if kwargs is not None:
@@ -156,8 +157,9 @@ class NotePatterns:
                     any_flag2 = parms['quantize']['2'] == 'down'
                     any_flag3 = parms['quantize']['3'] == 'down'
                     any_flag5 = parms['quantize']['5'] == 'down'
+                    norm_dot = "dot" if parms['dot_beat'] else "norm"
                     dur_part = [dp["pattern"] for dp in self.dur_patterns.patterns
-                                    if dp.get("norm")
+                                    if dp.get(norm_dot)
                                               and dp["len"]==split_size
                                               and dp['pstdev']<=parms['dur_variety']
                                               and (dp.get('align'+str(parms['align'])) or parms['align'] == '1')

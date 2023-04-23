@@ -757,7 +757,8 @@ class Tracker:
         pattern = self.note_patterns.get_pattern(interval,
                                                  dur_variety=self.current_dur_variety,
                                                  quantize=self.current_quants_state,
-                                                 align=self.current_align_state)
+                                                 align=self.current_align_state,
+                                                 dot_beat=False)
 
         print(f"type of pattern: {type(pattern)=}, {isinstance(pattern, np.ndarray)}")
 
