@@ -21056,15 +21056,6 @@
   "align4": true,
   "align8": true
 }, {
-  "pattern": [66, 66],
-  "norm": true,
-  "len": 2,
-  "mean": 66,
-  "geo_mean": 65.99999999999997,
-  "pstdev": 0.0,
-  "max": 66,
-  "min": 66
-}, {
   "pattern": [15.0, 15.0, 15.0, 15.0, 15.0, 3.0, 3.0],
   "dot": true,
   "len": 7,

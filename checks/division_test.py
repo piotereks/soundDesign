@@ -75,8 +75,8 @@ class DurationPatterns:
 
                         if xp not in self.init_pat_lst:
                             self.init_pat_lst.append(xp)
-        if type == 'norm':
-            self.init_pat_lst.append([66,66])
+        # if type == 'norm':
+        #     self.init_pat_lst.append([66,66])
         print("# of patterns: ", len(self.init_pat_lst))
         duration_patterns = [{"pattern":pat, type: True} for pat in self.init_pat_lst]
         # return(self.patterns)

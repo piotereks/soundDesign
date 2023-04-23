@@ -157,7 +157,8 @@ class NotePatterns:
                     any_flag3 = parms['quantize']['3'] == 'down'
                     any_flag5 = parms['quantize']['5'] == 'down'
                     dur_part = [dp["pattern"] for dp in self.dur_patterns.patterns
-                                    if dp["len"]==split_size
+                                    if dp.get("norm")
+                                              and dp["len"]==split_size
                                               and dp['pstdev']<=parms['dur_variety']
                                               and (dp.get('align'+str(parms['align'])) or parms['align'] == '1')
                                 and (((dp.get('any2') or False) == any_flag2
