@@ -12,19 +12,21 @@
 """
 
 import itertools
-import pprint
+from pprint import pprint
 import statistics
 import yaml
 import json
 import numpy as np
 from fractions import Fraction as F
+import jsbeautifier
+
 
 # succ = [None, {2,3,4},{4,6,10},{6},{8,12}, {10},{12},None,{16}]
 rp = itertools.repeat
 
 class DurationPatterns:
     def __init__(self):
-
+        self.duration_patterns = None
         self.new_succ_divdors = \
         {20:
             [(1,1)],
@@ -50,11 +52,12 @@ class DurationPatterns:
         8:[20]
         }
 
-        self.init_pat_lst=[[1]]
+        # self.init_pat_lst=[[1]]
 
     def recalc(self, succesors, type='norm'):
+        self.init_pat_lst = [[1]]
         for (pat_idx,pattern) in enumerate(self.init_pat_lst):
-            print(f"{(pat_idx,pattern)=}")
+            # print(f"{(pat_idx,pattern)=}")
             for (el_idx, element) in enumerate(pattern):
                 idx_map=succesors.get(element)
                 if not idx_map:
@@ -72,11 +75,37 @@ class DurationPatterns:
 
                         if xp not in self.init_pat_lst:
                             self.init_pat_lst.append(xp)
+        if type == 'norm':
+            self.init_pat_lst.append([66,66])
         print("# of patterns: ", len(self.init_pat_lst))
-        self.duration_patterns = [{"pattern":pat, "type": type} for pat in self.init_pat_lst]
+        duration_patterns = [{"pattern":pat, type: True} for pat in self.init_pat_lst]
         # return(self.patterns)
-        print("# of patterns: ", len(self.duration_patterns))
+        if self.duration_patterns is None:
+            self.duration_patterns = duration_patterns
+        else:
+            pattern_check_list = list(map(lambda x: x["pattern"], self.duration_patterns))
+            for durp in duration_patterns:
+                # if durp in self.duration_patterns:
+                if durp["pattern"] in pattern_check_list:
+                    # idx=self.duration_patterns.index(durp)
+                    idx=pattern_check_list.index(durp["pattern"])
+                    self.duration_patterns[idx].update(durp)
+                else:
+                    self.duration_patterns.append(durp)
+        if type == 'norm':
+            self.duration_patterns_norm = duration_patterns.copy()
+        else:
+            self.duration_patterns_dot = duration_patterns.copy()
 
+            s1 = [s["pattern"] for s in self.duration_patterns_norm]
+            s2 = [s["pattern"] for s in self.duration_patterns_dot]
+            sx = [s for s in s1 if s not in s2]
+            sy = [s for s in s2 if s not in s1]
+            # assert len(sx)>0
+            # assert len(sy)>0
+
+        print("# of patterns: ", len(duration_patterns))
+        return duration_patterns
 
 
     def check_dur_sizes(self,pattern:list, dividor:int, any_all="any"):
@@ -170,8 +199,9 @@ class DurationPatterns:
                 assign_attrib(f"align{dd}",alignment_set & ret_pattern_set == alignment_set)
 
 durPat = DurationPatterns()
-# durPat.recalc(succesors=durPat.succ_idx, type="norm")
-durPat.recalc(succesors=durPat.succ_dot_idx, type="dot")
+_ = durPat.recalc(succesors=durPat.succ_idx, type="norm")
+_ = durPat.recalc(succesors=durPat.succ_dot_idx, type="dot")
+# durPat.duration_patterns.update(durPat.recalc(succesors=durPat.succ_dot_idx, type="dot"))
 
 # print(f"{durPat=}")
 # durPat.find_all_pattern_splits()
@@ -188,7 +218,14 @@ print("bef dump")
 # print("aft dump")
 # with open('patterns.yaml', 'w') as f:
 #     data = yaml.dump(durPat.duration_patterns,f, default_flow_style=None, sort_keys=False)
-with open('xpatterns.json', 'w') as f:
-    json.dump(durPat.duration_patterns, f, indent = 4)
 
+opts = jsbeautifier.default_options()
+opts.indent_size = 2
+
+# jsbeautifier.beautify(json.dumps(d), opts)
+# json.dumps(durPat.duration_patterns)
+
+with open('xpatterns.json', 'w') as f:
+    # jsbeautifier.beautify(json.dump(durPat.duration_patterns, f, indent = 4)
+    print(jsbeautifier.beautify(json.dumps(durPat.duration_patterns), opts),file=f)
 print('after writing')
