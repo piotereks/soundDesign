@@ -108,6 +108,8 @@ class NotePatterns:
                 tmp_splt_array = [('dot', interval - interval*2//3), ('norm', interval*2//3)]
             elif dot_beat and numerator == 11:
                 tmp_splt_array = [('dot', interval - interval // 4), ('norm', interval // 4)]
+            else:
+                tmp_splt_array = [ ('norm', interval)]
             # if dot_beat and numerator in (5,7,10,11):
             #     return splt_array
             # if interval <= 16:
