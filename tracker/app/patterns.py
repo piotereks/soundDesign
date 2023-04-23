@@ -100,23 +100,52 @@ class NotePatterns:
 # <editor-fold desc="get pattern functions">
     def mod_duration(func):  # added self, eventual issue
         @wraps(func)
-        def split_no(interval, max_len = 16):
-            if interval <= 16:
-                return [interval]
-            pattern_len = interval
-            
-            interval -= 1
+        def split_no(interval, max_len = 16, dot_beat=False, numerator=4):
+            # (5, 7, 10, 11)  5 2. 2; 7 2. 2 2, 10 2.2. 2 2, 11 2. 2. 2. 2
+            if dot_beat and numerator in (5, 10):
+                tmp_splt_array = [('dot',interval-interval//2), ('norm', interval//2)]
+            elif dot_beat and numerator == 7:
+                tmp_splt_array = [('dot', interval - interval*2//3), ('norm', interval*2//3)]
+            elif dot_beat and numerator == 11:
+                tmp_splt_array = [('dot', interval - interval // 4), ('norm', interval // 4)]
+            # if dot_beat and numerator in (5,7,10,11):
+            #     return splt_array
+            # if interval <= 16:
+            #     if splt_array[0][1] <= 16:
+                    # return [interval]
 
-            parts_no16 = interval // max_len
-            parts_no16 += 1
-            rnd_parts = random.choice([parts_no16, parts_no16 * 2, parts_no16 * 4])
-
+            # return [('norm', interval)]
             splt_array = []
-            while pattern_len > 0:
-                part = -(-pattern_len//rnd_parts)
-                splt_array.append(part)
-                pattern_len -= part
-                rnd_parts -= 1
+            for splt in tmp_splt_array:
+                if splt[1]<=16:
+                    splt_array.append(splt)
+                else:
+                    pattern_len = splt[1]
+                    interval -= 1
+                    # parts_no16 = interval // max_len
+                    parts_no16 = pattern_len // max_len
+                    parts_no16 += 1
+                    rnd_parts = random.choice([parts_no16, parts_no16 * 2, parts_no16 * 4])
+                    while pattern_len > 0:
+                        part = -(-pattern_len // rnd_parts)
+                        splt_array.append((splt[0],part))
+                        pattern_len -= part
+                        rnd_parts -= 1
+
+            # pattern_len = interval
+            #
+            # interval -= 1
+            #
+            # parts_no16 = interval // max_len
+            # parts_no16 += 1
+            # rnd_parts = random.choice([parts_no16, parts_no16 * 2, parts_no16 * 4])
+            #
+            # splt_array = []
+            # while pattern_len > 0:
+            #     part = -(-pattern_len//rnd_parts)
+            #     splt_array.append(part)
+            #     pattern_len -= part
+            #     rnd_parts -= 1
 
 
             return splt_array
@@ -127,7 +156,8 @@ class NotePatterns:
                      "dur_variety":999,
                      "quantize": {'5': 'normal', '3': 'normal', '2': 'normal'},
                      "align": 1,
-                     "dot_beat": False}
+                     "dot_beat": False,
+                     "numerator": 4}
             for idx, arg in enumerate(args):
                 parms[list(parms.keys())[idx]] = arg
             if kwargs is not None:
@@ -143,12 +173,19 @@ class NotePatterns:
             if not np.any(result.get(iso.EVENT_DURATION)):
                 pattern_len = len(result[iso.EVENT_NOTE])-1
                 
-                splt_array = split_no(pattern_len)
+                # splt_array = split_no(pattern_len, numerator=self.time_signature['numerator'])
+                splt_array = split_no(pattern_len, dot_beat=parms['dot_beat'], numerator=parms['numerator'])
+                print(f"{pattern_len=},{splt_array=}")
                 durations = []
-                for split_size in splt_array:
+                for norm_dot, split_size in splt_array:
                     print("beff")
+                    if split_size==0:
+                        continue
                     if split_size==1:
-                        durations.extend(np.array([1]))
+                        if norm_dot == 'norm':
+                            durations.extend(np.array([1]))
+                        else:
+                            durations.extend(np.array([1.5]))
                         continue
                     if parms['quantize']['2']==parms['quantize']['3'] and parms['quantize']['3'] == parms['quantize']['5']:
                         condition = True
@@ -157,7 +194,8 @@ class NotePatterns:
                     any_flag2 = parms['quantize']['2'] == 'down'
                     any_flag3 = parms['quantize']['3'] == 'down'
                     any_flag5 = parms['quantize']['5'] == 'down'
-                    norm_dot = "dot" if parms['dot_beat'] else "norm"
+                    # norm_dot = "dot" if parms['dot_beat'] else "norm"
+                    # norm_dot = "norm"
                     dur_part = [dp["pattern"] for dp in self.dur_patterns.patterns
                                     if dp.get(norm_dot)
                                               and dp["len"]==split_size
@@ -180,7 +218,11 @@ class NotePatterns:
 
                         print(f"2. {dur_part=}")
 
-                    dur_part = random.choice(dur_part)
+                    if norm_dot == "norm":
+                        dur_part = random.choice(dur_part)
+                    else:
+                        dur_part = list(map(lambda x: x/1.5, random.choice(dur_part)))
+
                     print(f"3. {dur_part=}")
 
                     dur_part2 = np.array(dur_part)

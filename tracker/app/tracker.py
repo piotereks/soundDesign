@@ -94,6 +94,7 @@ class Tracker:
         self.program_change = self.default_tracker_config.get("program_change")
         self.time_signature = self.default_tracker_config.get("time_signature")
         self.beat_count = -1 % self.time_signature['numerator']
+        self.numerator_count = -1 % self.time_signature['numerator']
 
         self.current_program = None
         # self.init_timeline(True)
@@ -343,7 +344,6 @@ class Tracker:
         xxx = self.dot_for_beat.get(self.time_signature['numerator'])
         print(f"dot_for_bear: {xxx=},{self.time_signature['numerator']=}")
         dot_beat = self.beat_count in self.dot_for_beat.get(self.time_signature['numerator'], range(0))
-        # accent = self.amp_for_beat_factor.get(self.beat_count)
         return dot_beat
 
     def log_and_schedule(func):
@@ -745,7 +745,9 @@ class Tracker:
     @log_and_schedule
     def play_from_to(self, from_note, to_note, in_pattern=False):
         print('---------------------')
-        print(f"{time.time()=}")
+        self.numerator_count += 1
+        self.numerator_count %= self.time_signature['numerator']
+        print(f"------------------------------{time.time()=},{self.numerator_count=}")
         print(f"in_pattern: {in_pattern} from_note:{from_note}, to_note: {to_note}")
         print(f"{self.key.scale.name=}, key={iso.Note.names[self.key.tonic % 12]}, {self.key.scale.name=}")
 
@@ -813,11 +815,14 @@ class Tracker:
         root_note = self.key.scale.indexOf(from_note - self.key.tonic % 12)
         note = self.key.scale.indexOf(to_note - self.key.tonic % 12)
         interval = note - root_note
+
         pattern = self.note_patterns.get_pattern(interval,
                                                  dur_variety=self.current_dur_variety,
                                                  quantize=self.current_quants_state,
                                                  align=self.current_align_state,
-                                                 dot_beat=self.get_dot_beat())
+                                                 dot_beat=self.time_signature['numerator'] in (5, 7, 10, 11),
+                                                 numerator=self.time_signature['numerator']
+                                                 )
 
         print(f"type of pattern: {type(pattern)=}, {isinstance(pattern, np.ndarray)}")
 
