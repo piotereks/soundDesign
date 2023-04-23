@@ -24,7 +24,7 @@
     "default_channel" : 0,
     "legato": 1.0,
     "program_change": 0,
-    "time_signature": {"numerator": 7, "denominator": 8},
+    "time_signature": {"numerator": 12, "denominator": 16},
     "dummy_file_config": "qqqq"
   },
   "midi_mapping": {

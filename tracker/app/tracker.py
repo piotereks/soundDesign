@@ -48,18 +48,28 @@ class Tracker:
         self.queue_content_wrk = None
         self.note_queue = Queue(maxsize=16)
         # self.amp_for_beat_factor = dict(zip([0, 2], [1.5, 1.25]))
-        self.amp_for_beat_factor={
-        1: dict(zip([0, 2], [1.5, 1.25])),
-        2: dict(zip([0, 1], [1.5, 1.25])),
-        3: dict(zip([0, 2], [1.5, 1.25])),
-        4: dict(zip([0, 2], [1.5, 1.25])),
-        5: dict(zip([0, 3], [1.5, 1.25])),
-        6: dict(zip([0, 3], [1.5, 1.25])),
-        7: dict(zip([0, 3, 5], [1.5, 1.25, 1.25])),
-        8: dict(zip([0, 4], [1.5, 1.25])),
-        9: dict(zip([0, 3, 6], [1.5, 1.25, 1.25])),
-        10: dict(zip([0, 5], [1.5, 1.25])),
-        12: dict(zip([0, 3, 6, 9], [1.5, 1.25, 1.25, 1.25]))
+        self.amp_for_beat_factor = {
+            1: dict(zip([0, 2], [1.5, 1.25])),
+            2: dict(zip([0, 1], [1.5, 1.25])),
+            3: dict(zip([0, 2], [1.5, 1.25])),
+            4: dict(zip([0, 2], [1.5, 1.25])),
+            5: dict(zip([0, 3], [1.5, 1.25])),
+            6: dict(zip([0, 3], [1.5, 1.25])),
+            7: dict(zip([0, 3, 5], [1.5, 1.25, 1.25])),
+            8: dict(zip([0, 4], [1.5, 1.25])),
+            9: dict(zip([0, 3, 6], [1.5, 1.25, 1.25])),
+            10: dict(zip([0, 5], [1.5, 1.25])),
+            11: dict(zip([0, 6], [1.5, 1.25])),
+            12: dict(zip([0, 3, 6, 9], [1.5, 1.25, 1.25, 1.25]))
+        }
+
+        self.dot_for_beat = {
+            5: range(3),
+            6: range(6),
+            7: range(3),
+            9: range(9),
+            10: range(6),
+            11: range(9)
         }
 
         self.midi_mapping = midi_mapping
@@ -325,9 +335,16 @@ class Tracker:
     def get_amp_factor(self):
         xxx = self.amp_for_beat_factor.get(self.time_signature['numerator'])
         print(f"{xxx=},{self.time_signature['numerator']=}")
-        accent = self.amp_for_beat_factor.get(self.time_signature['numerator']).get(self.beat_count)
+        accent = self.amp_for_beat_factor.get(self.time_signature['numerator'],{}).get(self.beat_count)
         # accent = self.amp_for_beat_factor.get(self.beat_count)
         return accent if accent else 1
+
+    def get_dot_beat(self):
+        xxx = self.dot_for_beat.get(self.time_signature['numerator'])
+        print(f"dot_for_bear: {xxx=},{self.time_signature['numerator']=}")
+        dot_beat = self.beat_count in self.dot_for_beat.get(self.time_signature['numerator'], range(0))
+        # accent = self.amp_for_beat_factor.get(self.beat_count)
+        return dot_beat
 
     def log_and_schedule(func):
         def inner(self, *args, **kwargs):
@@ -413,6 +430,8 @@ class Tracker:
         metro_amp = [55]+[45]*(self.time_signature['numerator']-1)
         print(f"{self.time_signature['numerator']/self.time_signature['denominator']=}")
         print(f"{metro_seq=}, {metro_amp=}")
+        if self.get_dot_beat():
+            metro_seq = list(map(lambda x: x+ 15, metro_seq))
         _ = self.timeline.schedule({
             # "note": iso.PSequence([32, 37, 37, 37], repeats=1),
             "note": iso.PSequence(metro_seq, repeats=1),
@@ -758,7 +777,7 @@ class Tracker:
                                                  dur_variety=self.current_dur_variety,
                                                  quantize=self.current_quants_state,
                                                  align=self.current_align_state,
-                                                 dot_beat=False)
+                                                 dot_beat=self.get_dot_beat())
 
         print(f"type of pattern: {type(pattern)=}, {isinstance(pattern, np.ndarray)}")
 
