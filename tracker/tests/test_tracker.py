@@ -18,6 +18,12 @@ with open(config_file, 'r') as file:
 midi_out_flag = Tracker.MIDI_OUT_MIX_FILE_DEVICE
 tracker = Tracker(tracker_config=tracker_config, midi_mapping=midi_mapping, midi_out_mode=midi_out_flag)
 
+ACCENT_BIG_FACTOR = 1.5
+ACCENT_MED_FACTOR = 1.25
+ACCENT_DEFAULT = 45
+ACCENT_BIG = int(ACCENT_DEFAULT * ACCENT_BIG_FACTOR)
+ACCENT_MED = int(ACCENT_DEFAULT * ACCENT_MED_FACTOR)
+
 
 @pytest.fixture()
 def init_tracker(numerator):
@@ -29,40 +35,40 @@ def init_tracker(numerator):
 
 @pytest.mark.parametrize("numerator, out_patterns", [
     (1, {'note': [32],
-         'amplitude': [55],
+         'amplitude': [ACCENT_BIG],
          'duration': [1]}),
     (2, {'note': [32, 37],
-         'amplitude': [55, 50],
+         'amplitude': [ACCENT_BIG, ACCENT_MED],
          'duration': [1, 1]}),
     (3, {'note': [32, 37, 37],
-         'amplitude': [55, 45, 50],
+         'amplitude': [ACCENT_BIG, ACCENT_DEFAULT, ACCENT_MED],
          'duration': [1, 1, 1]}),
     (4, {'note': [32, 37, 37, 37],
-         'amplitude': [55, 45, 50, 45],
+         'amplitude': [ACCENT_BIG, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT],
          'duration': [1, 1, 1, 1]}),
     (5, {'note': [32, 37, 37, 37],
-         'amplitude': [55, 45, 50, 45],
+         'amplitude': [ACCENT_BIG, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT],
          'duration': [1.5, 1.5, 1, 1]}),
     (6, {'note': [32, 37, 37, 37, 37, 37],
-         'amplitude': [55, 45, 45, 50, 45, 45],
+         'amplitude': [ACCENT_BIG, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT, ACCENT_DEFAULT],
          'duration': [1, 1, 1, 1, 1, 1]}),
     (7, {'note': [32, 37, 37, 37, 37, 37],
-         'amplitude': [55, 45, 45, 45, 50, 45],
+         'amplitude': [ACCENT_BIG, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT],
          'duration': [1.5, 1.5, 1, 1, 1, 1]}),
     (8, {'note': [32, 37, 37, 37, 37, 37, 37, 37],
-         'amplitude': [55, 45, 45, 45, 50, 45, 45, 45],
+         'amplitude': [ACCENT_BIG, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_DEFAULT],
          'duration': [1, 1, 1, 1, 1, 1, 1, 1, ]}),
     (9, {'note': [32, 37, 37, 37, 37, 37, 37, 37, 37],
-         'amplitude': [55, 45, 45, 50, 45, 45, 50, 45, 45],
+         'amplitude': [ACCENT_BIG, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT, ACCENT_DEFAULT],
          'duration': [1, 1, 1, 1, 1, 1, 1, 1, 1]}),
     (10, {'note': [32, 37, 37, 37, 37, 37, 37, 37],
-          'amplitude': [55, 45, 45, 45, 50, 45, 45, 45, ],
+          'amplitude': [ACCENT_BIG, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_DEFAULT, ],
           'duration': [1.5, 1.5, 1.5, 1.5, 1, 1, 1, 1]}),
     (11, {'note': [32, 37, 37, 37, 37, 37, 37, 37],
-          'amplitude': [55, 45, 45, 45, 50, 45, 45, 45],
+          'amplitude': [ACCENT_BIG, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_DEFAULT],
           'duration': [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1, 1]}),
     (12, {'note': [32, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37],
-          'amplitude': [55, 45, 45, 50, 45, 45, 50, 45, 45, 50, 45, 45],
+          'amplitude': [ACCENT_BIG, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT, ACCENT_DEFAULT],
           'duration': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]})
 ])
 def test_metro_play(init_tracker, numerator, out_patterns):
@@ -74,18 +80,18 @@ def test_metro_play(init_tracker, numerator, out_patterns):
 
 
 @pytest.mark.parametrize("numerator, accents_dict",
-                         zip(range(1, 12), [{0: 55}
-                             , {0: 55, 1.0: 50}
-                             , {0: 55, 2.0: 50}
-                             , {0: 55, 2.0: 50}
-                             , {0: 55, 3.0: 50}
-                             , {0: 55, 3.0: 50}
-                             , {0: 55, 5.0: 50}
-                             , {0: 55, 4.0: 50}
-                             , {0: 55, 3.0: 50, 6.0: 50}
-                             , {0: 55, 6.0: 50}
-                             , {0: 55, 6.0: 50}
-                             , {0: 55, 3.0: 50, 6.0: 50, 9.0: 50}]))
+                         zip(range(1, 12), [{0: ACCENT_BIG}
+                             , {0: ACCENT_BIG, 1.0: ACCENT_MED}
+                             , {0: ACCENT_BIG, 2.0: ACCENT_MED}
+                             , {0: ACCENT_BIG, 2.0: ACCENT_MED}
+                             , {0: ACCENT_BIG, 3.0: ACCENT_MED}
+                             , {0: ACCENT_BIG, 3.0: ACCENT_MED}
+                             , {0: ACCENT_BIG, 5.0: ACCENT_MED}
+                             , {0: ACCENT_BIG, 4.0: ACCENT_MED}
+                             , {0: ACCENT_BIG, 3.0: ACCENT_MED, 6.0: ACCENT_MED}
+                             , {0: ACCENT_BIG, 6.0: ACCENT_MED}
+                             , {0: ACCENT_BIG, 6.0: ACCENT_MED}
+                             , {0: ACCENT_BIG, 3.0: ACCENT_MED, 6.0: ACCENT_MED, 9.0: ACCENT_MED}]))
 def test_set_default_duration(init_tracker, numerator, accents_dict):
     tracker.accents_dict = {}
     # print("\nnumerator: ", numerator, accents_dict)

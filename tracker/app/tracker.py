@@ -10,8 +10,13 @@ from .log_call import *
 from .midi_dev import *
 
 NO_MIDI_OUT = mido.get_output_names() == []
-ACCENT_BIG = 55
-ACCENT_MED = 50
+# ACCENT_BIG = 55
+# ACCENT_MED = 50
+ACCENT_BIG_FACTOR = 1.5
+ACCENT_MED_FACTOR = 1.25
+ACCENT_DEFAULT = 45
+ACCENT_BIG = int(ACCENT_DEFAULT * ACCENT_BIG_FACTOR)
+ACCENT_MED = int(ACCENT_DEFAULT * ACCENT_MED_FACTOR)
 
 class Tracker:
     # <editor-fold desc="Class init functions">
@@ -100,18 +105,18 @@ class Tracker:
 
         self.factors = {5: 1, 7: 1, 10: 2, 11: 3}
         self.amp_factors = {
-                        1: {0: ACCENT_BIG},
-                        2: {0: ACCENT_BIG, 1: ACCENT_MED},
-                        3: {0: ACCENT_BIG, 2: ACCENT_MED},
-                        4: {0: ACCENT_BIG, 2: ACCENT_MED},
-                        5: {0: ACCENT_BIG, 2: ACCENT_MED},
-                        6: {0: ACCENT_BIG, 3: ACCENT_MED},
-                        7: {0: ACCENT_BIG, 4: ACCENT_MED},
-                        8: {0: ACCENT_BIG, 4: ACCENT_MED},
-                        9: {0: ACCENT_BIG, 3: ACCENT_MED, 6: ACCENT_MED},
-                        10: {0: ACCENT_BIG, 4: ACCENT_MED},
-                        11: {0: ACCENT_BIG, 4: ACCENT_MED},
-                        12: {0: ACCENT_BIG, 3: ACCENT_MED, 6: ACCENT_MED, 9: ACCENT_MED},
+                        1: {0: ACCENT_BIG_FACTOR},
+                        2: {0: ACCENT_BIG_FACTOR, 1: ACCENT_MED_FACTOR},
+                        3: {0: ACCENT_BIG_FACTOR, 2: ACCENT_MED_FACTOR},
+                        4: {0: ACCENT_BIG_FACTOR, 2: ACCENT_MED_FACTOR},
+                        5: {0: ACCENT_BIG_FACTOR, 2: ACCENT_MED_FACTOR},
+                        6: {0: ACCENT_BIG_FACTOR, 3: ACCENT_MED_FACTOR},
+                        7: {0: ACCENT_BIG_FACTOR, 4: ACCENT_MED_FACTOR},
+                        8: {0: ACCENT_BIG_FACTOR, 4: ACCENT_MED_FACTOR},
+                        9: {0: ACCENT_BIG_FACTOR, 3: ACCENT_MED_FACTOR, 6: ACCENT_MED_FACTOR},
+                        10: {0: ACCENT_BIG_FACTOR, 4: ACCENT_MED_FACTOR},
+                        11: {0: ACCENT_BIG_FACTOR, 4: ACCENT_MED_FACTOR},
+                        12: {0: ACCENT_BIG_FACTOR, 3: ACCENT_MED_FACTOR, 6: ACCENT_MED_FACTOR, 9: ACCENT_MED_FACTOR},
                        }
         self.factor = 0
         self.default_duration = None
@@ -146,12 +151,13 @@ class Tracker:
         self.default_duration = [6 / self.time_signature['denominator']] * (2 * self.factor) + [4 / self.time_signature['denominator']] \
                                 * (self.time_signature['numerator'] - 3*self.factor)
 
-        self.metro_amp = [55] + [45] * (self.time_signature['numerator'] - 1 - self.factor)
-        amp_factor = self.amp_factors.get(self.time_signature['numerator'], [50])
+        # self.metro_amp = [55] + [45] * (self.time_signature['numerator'] - 1 - self.factor)
+        self.metro_amp = [ACCENT_DEFAULT] * (self.time_signature['numerator'] - self.factor)
+        amp_factor = self.amp_factors.get(self.time_signature['numerator'], [ACCENT_DEFAULT])
         for a in amp_factor.keys():
-            self.metro_amp[a] = amp_factor[a]
+            self.metro_amp[a] = int(amp_factor[a]*self.metro_amp[a])
         # print(f"{self.metro_amp=}")
-        print(f"{self.accents_dict=}, {self.time_signature['numerator']=}: {self.metro_amp=}, {self.default_duration=}")
+        # print(f"{self.accents_dict=}, {self.time_signature['numerator']=}: {self.metro_amp=}, {self.default_duration=}")
         agg_duration = 0
         for dur, amp in zip(self.default_duration, self.metro_amp):
             if amp in (ACCENT_BIG, ACCENT_MED):
