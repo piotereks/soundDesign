@@ -421,10 +421,20 @@ class Tracker:
                 #     value * self.get_amp_factor()) if n == 0 else value)
                 # notes[iso.EVENT_AMPLITUDE] = iso.PMap(notes[iso.EVENT_AMPLITUDE], lambda
                 #     midi_amp: None if not midi_amp else None if midi_amp < 0 else None if midi_amp > 127 else midi_amp)
-                notes[iso.EVENT_AMPLITUDE] = iso.PMapEnumerated(notes[iso.EVENT_AMPLITUDE], lambda n, value: int(
-                    value * self.get_amp_factor()) if n == 0 else value)
+                # notes[iso.EVENT_AMPLITUDE] = iso.PMapEnumerated(notes[iso.EVENT_AMPLITUDE], lambda n, value: int(
+                #     value * self.get_amp_factor()) if n == 0 else value)
                 notes[iso.EVENT_AMPLITUDE] = iso.PMap(notes[iso.EVENT_AMPLITUDE], lambda
                     midi_amp: 0 if not midi_amp else 0 if midi_amp < 0 else 127 if midi_amp > 127 else midi_amp)
+                xamp = notes[iso.EVENT_AMPLITUDE].copy()
+                xdur = notes[iso.EVENT_DURATION].copy()
+                # print([x for x in xdur])
+
+                # time_signature['numerator']
+
+                print(f"{list(xdur)=}")
+                print(f"{list(xamp)=}")
+                pass
+
 
             self.check_notes = list(notes[iso.EVENT_NOTE].copy())
             print('check notes: ', self.check_notes)
@@ -839,8 +849,8 @@ class Tracker:
                 iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.key),
                 # iso.EVENT_DURATION: iso.PSequence([4], repeats=1),
                 iso.EVENT_DURATION: iso.PSequence([4*self.time_signature['numerator']/self.time_signature['denominator']], repeats=1),
-                iso.EVENT_AMPLITUDE: 64,
-                iso.EVENT_GATE: self.legato
+                iso.EVENT_AMPLITUDE: iso.PSequence(64,repeats=1),
+                iso.EVENT_GATE: iso.PSequence(self.legato,repeats=1)
             })
         print('after_check')
         root_note = self.key.scale.indexOf(from_note - self.key.tonic % 12)
@@ -912,8 +922,10 @@ class Tracker:
         return iso.PDict({
             iso.EVENT_NOTE: iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key),
             iso.EVENT_DURATION: iso.PSequence(pattern_duration, repeats=1),
-            iso.EVENT_AMPLITUDE: iso.PSequence(pattern_amplitude),
-            iso.EVENT_GATE: iso.PSequence(pattern_gate)
+            # iso.EVENT_AMPLITUDE: iso.PSequence(pattern_amplitude, repeats=1),
+            # iso.EVENT_GATE: iso.PSequence(pattern_gate, repeats=1)
+            iso.EVENT_AMPLITUDE: iso.PSequence(pattern_amplitude, repeats=len(pattern_duration)),
+            iso.EVENT_GATE: iso.PSequence(pattern_gate, repeats=len(pattern_duration))
         })
 
     # </editor-fold>

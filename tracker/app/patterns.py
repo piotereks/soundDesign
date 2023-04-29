@@ -265,7 +265,7 @@ class NotePatterns:
         interval *= interval_sign
         notes_pattern = np.array(random.choice([pattern for pattern in self.all_suitable_patterns(org_interval)]))
         return {
-            iso.EVENT_NOTE:notes_pattern,
+            iso.EVENT_NOTE: notes_pattern,
         }
 
     @mod_duration
