@@ -10,7 +10,8 @@ from .log_call import *
 from .midi_dev import *
 
 NO_MIDI_OUT = mido.get_output_names() == []
-
+ACCENT_BIG = 55
+ACCENT_MED = 50
 
 class Tracker:
     # <editor-fold desc="Class init functions">
@@ -48,45 +49,7 @@ class Tracker:
         self.queue_content_wrk = None
         self.note_queue = Queue(maxsize=16)
         # self.amp_for_beat_factor = dict(zip([0, 2], [1.5, 1.25]))
-        self.amp_for_beat_factor = {
-            1: dict(zip([0, 2], [1.5, 1.25])),
-            2: dict(zip([0, 1], [1.5, 1.25])),
-            3: dict(zip([0, 2], [1.5, 1.25])),
-            4: dict(zip([0, 2], [1.5, 1.25])),
-            5: dict(zip([0, 3], [1.5, 1.25])),
-            6: dict(zip([0, 3], [1.5, 1.25])),
-            7: dict(zip([0, 3, 5], [1.5, 1.25, 1.25])),
-            8: dict(zip([0, 4], [1.5, 1.25])),
-            9: dict(zip([0, 3, 6], [1.5, 1.25, 1.25])),
-            10: dict(zip([0, 5], [1.5, 1.25])),
-            11: dict(zip([0, 6], [1.5, 1.25])),
-            12: dict(zip([0, 3, 6, 9], [1.5, 1.25, 1.25, 1.25]))
-        }
 
-        self.dot_for_beat = {
-            5: range(3),
-            # 6: range(3),
-            7: range(3),
-            # 9: range(6),
-            10: range(6),
-            11: range(9)
-        }
-        self.factors = {5: 1, 7: 1, 10: 2, 11: 3}
-        self.amp_factors = {
-                        1: {0: 55},
-                        2: {0: 55, 1: 50},
-                        3: {0: 55, 2: 50},
-                        4: {0: 55, 2: 50},
-                        5: {0: 55, 2: 50},
-                        6: {0: 55, 3: 50},
-                        7: {0: 55, 4: 50, },
-                        8: {0: 55, 4: 50},
-                        9: {0: 55, 3: 50, 6: 50},
-                        10: {0: 55, 4: 50},
-                        11: {0: 55, 4: 50 },
-                        12: {0: 55, 3: 50, 6: 50, 9: 50},
-
-                       }
         self.midi_mapping = midi_mapping
 
         self.pattern_idx = 0
@@ -111,6 +74,53 @@ class Tracker:
         self.beat_count = -1 % self.time_signature['numerator']
         self.numerator_count = -1 % self.time_signature['numerator']
 
+        self.amp_for_beat_factor = {
+            1: dict(zip([0, 2], [1.5, 1.25])),
+            2: dict(zip([0, 1], [1.5, 1.25])),
+            3: dict(zip([0, 2], [1.5, 1.25])),
+            4: dict(zip([0, 2], [1.5, 1.25])),
+            5: dict(zip([0, 3], [1.5, 1.25])),
+            6: dict(zip([0, 3], [1.5, 1.25])),
+            7: dict(zip([0, 3, 5], [1.5, 1.25, 1.25])),
+            8: dict(zip([0, 4], [1.5, 1.25])),
+            9: dict(zip([0, 3, 6], [1.5, 1.25, 1.25])),
+            10: dict(zip([0, 5], [1.5, 1.25])),
+            11: dict(zip([0, 6], [1.5, 1.25])),
+            12: dict(zip([0, 3, 6, 9], [1.5, 1.25, 1.25, 1.25]))
+        }
+
+        # self.dot_for_beat = {
+        #     5: range(3),
+        #     # 6: range(3),
+        #     7: range(3),
+        #     # 9: range(6),
+        #     10: range(6),
+        #     11: range(9)
+        # }
+
+        self.factors = {5: 1, 7: 1, 10: 2, 11: 3}
+        self.amp_factors = {
+                        1: {0: ACCENT_BIG},
+                        2: {0: ACCENT_BIG, 1: ACCENT_MED},
+                        3: {0: ACCENT_BIG, 2: ACCENT_MED},
+                        4: {0: ACCENT_BIG, 2: ACCENT_MED},
+                        5: {0: ACCENT_BIG, 2: ACCENT_MED},
+                        6: {0: ACCENT_BIG, 3: ACCENT_MED},
+                        7: {0: ACCENT_BIG, 4: ACCENT_MED},
+                        8: {0: ACCENT_BIG, 4: ACCENT_MED},
+                        9: {0: ACCENT_BIG, 3: ACCENT_MED, 6: ACCENT_MED},
+                        10: {0: ACCENT_BIG, 4: ACCENT_MED},
+                        11: {0: ACCENT_BIG, 4: ACCENT_MED},
+                        12: {0: ACCENT_BIG, 3: ACCENT_MED, 6: ACCENT_MED, 9: ACCENT_MED},
+                       }
+        self.factor = 0
+        self.default_duration = None
+        self.metro_seq = None
+        self.metro_amp = None
+        self.accents_dict = {}
+        self.set_default_duration()
+        self.set_metro_seq()
+
         self.current_program = None
         # self.init_timeline(True)
         self.midi_out_mode = midi_out_mode
@@ -130,6 +140,26 @@ class Tracker:
         self.tmln = self.tracker_timeline()
         self.metro = self.metro_timeline()
         self.set_program_change_trk(program=self.program_change)
+
+    def set_default_duration(self):
+        self.factor = self.factors.get(self.time_signature['numerator'], 0)
+        self.default_duration = [6 / self.time_signature['denominator']] * (2 * self.factor) + [4 / self.time_signature['denominator']] \
+                                * (self.time_signature['numerator'] - 3*self.factor)
+
+        self.metro_amp = [55] + [45] * (self.time_signature['numerator'] - 1 - self.factor)
+        amp_factor = self.amp_factors.get(self.time_signature['numerator'], [50])
+        for a in amp_factor.keys():
+            self.metro_amp[a] = amp_factor[a]
+        # print(f"{self.metro_amp=}")
+        print(f"{self.accents_dict=}, {self.time_signature['numerator']=}: {self.metro_amp=}, {self.default_duration=}")
+        agg_duration = 0
+        for dur, amp in zip(self.default_duration, self.metro_amp):
+            if amp in (ACCENT_BIG, ACCENT_MED):
+                self.accents_dict[agg_duration] = amp
+            agg_duration += dur
+
+    def set_metro_seq(self):
+        self.metro_seq = [32]+[37]*(self.time_signature['numerator']-1-self.factor)
 
     def save_midi(self, on_exit=False):
         date = datetime.now().strftime('%Y%m%d%H%M%S')
@@ -355,11 +385,11 @@ class Tracker:
         # accent = self.amp_for_beat_factor.get(self.beat_count)
         return accent if accent else 1
 
-    def get_dot_beat(self):
-        xxx = self.dot_for_beat.get(self.time_signature['numerator'])
-        print(f"dot_for_bear: {xxx=},{self.time_signature['numerator']=}")
-        dot_beat = self.beat_count in self.dot_for_beat.get(self.time_signature['numerator'], range(0))
-        return dot_beat
+    # def get_dot_beat(self):
+    #     xxx = self.dot_for_beat.get(self.time_signature['numerator'])
+    #     print(f"dot_for_bear: {xxx=},{self.time_signature['numerator']=}")
+    #     dot_beat = self.beat_count in self.dot_for_beat.get(self.time_signature['numerator'], range(0))
+    #     return dot_beat
 
     def log_and_schedule(func):
         def inner(self, *args, **kwargs):
@@ -452,17 +482,13 @@ class Tracker:
         # 11: range(9) 2 3 => 9  | 11 -3*3 = 2
 
 
-        factor = self.factors.get(self.time_signature['numerator'], 0)
-        metro_seq = [32]+[37]*(self.time_signature['numerator']-1-factor)
-        metro_amp = [55] + [45] * (self.time_signature['numerator'] - 1-factor)
-        amp_factor = self.amp_factors.get(self.time_signature['numerator'], [50])
-        for a in amp_factor.keys():
-            metro_amp[a] = amp_factor[a]
+
+
 
         # metro_dur = [4/self.time_signature['denominator']] * self.time_signature['numerator']
-        metro_dur = [6 / self.time_signature['denominator']] * (2*factor) + [4 / self.time_signature['denominator']] \
-                    * (self.time_signature['numerator'] - 3*factor)
-
+        metro_dur = self.default_duration
+        metro_seq = self.metro_seq
+        metro_amp = self.metro_amp
 
         print(f"{metro_dur=}")
 
