@@ -71,7 +71,22 @@ class Tracker:
             10: range(6),
             11: range(9)
         }
+        self.factors = {5: 1, 7: 1, 10: 2, 11: 3}
+        self.amp_factors = {
+                        1: {0: 55},
+                        2: {0: 55, 1: 50},
+                        3: {0: 55, 2: 50},
+                        4: {0: 55, 2: 50},
+                        5: {0: 55, 2: 50},
+                        6: {0: 55, 3: 50},
+                        7: {0: 55, 4: 50, },
+                        8: {0: 55, 4: 50},
+                        9: {0: 55, 3: 50, 6: 50},
+                        10: {0: 55, 4: 50},
+                        11: {0: 55, 4: 50 },
+                        12: {0: 55, 3: 50, 6: 50, 9: 50},
 
+                       }
         self.midi_mapping = midi_mapping
 
         self.pattern_idx = 0
@@ -436,26 +451,11 @@ class Tracker:
         # 10: range(6), 4 2 => 6 | 10 -3*2 = 4
         # 11: range(9) 2 3 => 9  | 11 -3*3 = 2
 
-        factors = {5: 1, 7: 1, 10: 2, 11: 3}
-        amp_factors = {
-                        1: {0: 55},
-                        2: {0: 55, 1: 50},
-                        3: {0: 55, 2: 50},
-                        4: {0: 55, 2: 50},
-                        5: {0: 55, 2: 50},
-                        6: {0: 55, 3: 50},
-                        7: {0: 55, 4: 50, },
-                        8: {0: 55, 4: 50},
-                        9: {0: 55, 3: 50, 6: 50},
-                        10: {0: 55, 4: 50},
-                        11: {0: 55, 4: 50 },
-                        12: {0: 55, 3: 50, 6: 50, 9: 50},
 
-                       }
-        factor = factors.get(self.time_signature['numerator'], 0)
+        factor = self.factors.get(self.time_signature['numerator'], 0)
         metro_seq = [32]+[37]*(self.time_signature['numerator']-1-factor)
         metro_amp = [55] + [45] * (self.time_signature['numerator'] - 1-factor)
-        amp_factor = amp_factors.get(self.time_signature['numerator'], [50])
+        amp_factor = self.amp_factors.get(self.time_signature['numerator'], [50])
         for a in amp_factor.keys():
             metro_amp[a] = amp_factor[a]
 
