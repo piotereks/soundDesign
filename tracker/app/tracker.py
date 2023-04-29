@@ -428,50 +428,47 @@ class Tracker:
     def metro_play(self):
         log_call()
         print(f"{time.time()=},{self.metro_beat=}")
-        metro_seq = [32]+[37]*(self.time_signature['numerator']-1)
-        metro_dur = [4/self.time_signature['denominator']] * self.time_signature['numerator']
-        metro_amp = [55]+[45]*(self.time_signature['numerator']-1)
+        # metro_seq = [32]+[37]*(self.time_signature['numerator']-1)
+        # metro_dur = [4/self.time_signature['denominator']] * self.time_signature['numerator']
+        # metro_amp = [55]+[45]*(self.time_signature['numerator']-1)
         # 5: range(3), 2  1 => 3| 5 -3*1 = 2
         # 7: range(3), 4  1  => 3 | 7 -3*1 =4
         # 10: range(6), 4 2 => 6 | 10 -3*2 = 4
         # 11: range(9) 2 3 => 9  | 11 -3*3 = 2
 
         factors = {5: 1, 7: 1, 10: 2, 11: 3}
+        amp_factors = {
+                        1: {0: 55},
+                        2: {0: 55, 1: 50},
+                        3: {0: 55, 2: 50},
+                        4: {0: 55, 2: 50},
+                        5: {0: 55, 2: 50},
+                        6: {0: 55, 3: 50},
+                        7: {0: 55, 4: 50, },
+                        8: {0: 55, 4: 50},
+                        9: {0: 55, 3: 50, 6: 50},
+                        10: {0: 55, 4: 50},
+                        11: {0: 55, 4: 50 },
+                        12: {0: 55, 3: 50, 6: 50, 9: 50},
+
+                       }
         factor = factors.get(self.time_signature['numerator'], 0)
         metro_seq = [32]+[37]*(self.time_signature['numerator']-1-factor)
         metro_amp = [55] + [45] * (self.time_signature['numerator'] - 1-factor)
+        amp_factor = amp_factors.get(self.time_signature['numerator'], [50])
+        for a in amp_factor.keys():
+            metro_amp[a] = amp_factor[a]
+
         # metro_dur = [4/self.time_signature['denominator']] * self.time_signature['numerator']
         metro_dur = [6 / self.time_signature['denominator']] * (2*factor) + [4 / self.time_signature['denominator']] \
                     * (self.time_signature['numerator'] - 3*factor)
 
 
-        # if self.time_signature['numerator'] in (5, 7, 10, 11):
-        #     metro_seq = [32] + [37] * (self.time_signature['numerator'] - 2)
-        #     metro_amp = [55] + [45] * (self.time_signature['numerator'] - 2)
-        #     metro_dur = [6 / self.time_signature['denominator']] * 2 + [4 / self.time_signature['denominator']] \
-        #                 * (self.time_signature['numerator']-3)
-        # elif self.time_signature['numerator'] in (5, 7):
-        #     metro_seq = [32] + [37] * (self.time_signature['numerator'] - 2)
-        #     metro_amp = [55] + [45] * (self.time_signature['numerator'] - 2)
-        #     metro_dur = [6 / self.time_signature['denominator']] * 2 + [4 / self.time_signature['denominator']] \
-        #                 * (self.time_signature['numerator']-3)
-        # elif self.time_signature['numerator'] == 10:
-        #     metro_seq = [32] + [37] * (self.time_signature['numerator'] - 3)
-        #     metro_amp = [55] + [45] * (self.time_signature['numerator'] - 3)
-        #     metro_dur = [6 / self.time_signature['denominator']] * 4 + [4 / self.time_signature['denominator']] \
-        #                 * (self.time_signature['numerator']-3)
-        # elif self.time_signature['numerator'] == 11:
-        #     metro_seq = [32] + [37] * (self.time_signature['numerator'] - 4)
-        #     metro_amp = [55] + [45] * (self.time_signature['numerator'] - 4)
-        #     metro_dur = [6 / self.time_signature['denominator']] * 6 + [4 / self.time_signature['denominator']] \
-        #                 * (self.time_signature['numerator'] - 4)
         print(f"{metro_dur=}")
 
         print(f"{self.time_signature['numerator']/self.time_signature['denominator']=}")
-        print(f"{metro_seq=}, {metro_amp=}")
-        # if self.get_dot_beat():
-        #     metro_seq = list(map(lambda x: x+ 15, metro_seq))
-        _ = self.timeline.schedule({
+        print(f"{metro_seq=}, {metro_amp=}, {metro_dur=}")
+        self.metro_play_patterns = {
             # "note": iso.PSequence([32, 37, 37, 37], repeats=1),
             "note": iso.PSequence(metro_seq, repeats=1),
             # "duration": self.time_signature['numerator']/self.time_signature['denominator'] - 0.000000000000002,
@@ -480,9 +477,11 @@ class Tracker:
             "duration": iso.PSequence(metro_dur, repeats=1),
             "channel": 9,
             # "amplitude": iso.PSequence([55, 45, 45, 45], repeats=1)
-            "amplitude": iso.PSequence(metro_amp, repeats=1)
-        },
-            remove_when_done=True)
+            "amplitude": iso.PSequence(metro_amp, repeats=1)}
+
+        # if self.get_dot_beat():
+        #     metro_seq = list(map(lambda x: x+ 15, metro_seq))
+        _ = self.timeline.schedule(self.metro_play_patterns, remove_when_done=True)
 
     def metro_start_stop(self, state):
         if state == 'down':
