@@ -2,6 +2,7 @@
 from queue import Queue
 import shutil
 from datetime import datetime
+from itertools import accumulate
 # import mido
 
 from .isobar_fixes import *
@@ -17,6 +18,7 @@ ACCENT_MED_FACTOR = 1.25
 ACCENT_DEFAULT = 45
 ACCENT_BIG = int(ACCENT_DEFAULT * ACCENT_BIG_FACTOR)
 ACCENT_MED = int(ACCENT_DEFAULT * ACCENT_MED_FACTOR)
+
 
 class Tracker:
     # <editor-fold desc="Class init functions">
@@ -105,19 +107,19 @@ class Tracker:
 
         self.factors = {5: 1, 7: 1, 10: 2, 11: 3}
         self.amp_factors = {
-                        1: {0: ACCENT_BIG_FACTOR},
-                        2: {0: ACCENT_BIG_FACTOR, 1: ACCENT_MED_FACTOR},
-                        3: {0: ACCENT_BIG_FACTOR, 2: ACCENT_MED_FACTOR},
-                        4: {0: ACCENT_BIG_FACTOR, 2: ACCENT_MED_FACTOR},
-                        5: {0: ACCENT_BIG_FACTOR, 2: ACCENT_MED_FACTOR},
-                        6: {0: ACCENT_BIG_FACTOR, 3: ACCENT_MED_FACTOR},
-                        7: {0: ACCENT_BIG_FACTOR, 4: ACCENT_MED_FACTOR},
-                        8: {0: ACCENT_BIG_FACTOR, 4: ACCENT_MED_FACTOR},
-                        9: {0: ACCENT_BIG_FACTOR, 3: ACCENT_MED_FACTOR, 6: ACCENT_MED_FACTOR},
-                        10: {0: ACCENT_BIG_FACTOR, 4: ACCENT_MED_FACTOR},
-                        11: {0: ACCENT_BIG_FACTOR, 4: ACCENT_MED_FACTOR},
-                        12: {0: ACCENT_BIG_FACTOR, 3: ACCENT_MED_FACTOR, 6: ACCENT_MED_FACTOR, 9: ACCENT_MED_FACTOR},
-                       }
+            1: {0: ACCENT_BIG_FACTOR},
+            2: {0: ACCENT_BIG_FACTOR, 1: ACCENT_MED_FACTOR},
+            3: {0: ACCENT_BIG_FACTOR, 2: ACCENT_MED_FACTOR},
+            4: {0: ACCENT_BIG_FACTOR, 2: ACCENT_MED_FACTOR},
+            5: {0: ACCENT_BIG_FACTOR, 2: ACCENT_MED_FACTOR},
+            6: {0: ACCENT_BIG_FACTOR, 3: ACCENT_MED_FACTOR},
+            7: {0: ACCENT_BIG_FACTOR, 4: ACCENT_MED_FACTOR},
+            8: {0: ACCENT_BIG_FACTOR, 4: ACCENT_MED_FACTOR},
+            9: {0: ACCENT_BIG_FACTOR, 3: ACCENT_MED_FACTOR, 6: ACCENT_MED_FACTOR},
+            10: {0: ACCENT_BIG_FACTOR, 4: ACCENT_MED_FACTOR},
+            11: {0: ACCENT_BIG_FACTOR, 4: ACCENT_MED_FACTOR},
+            12: {0: ACCENT_BIG_FACTOR, 3: ACCENT_MED_FACTOR, 6: ACCENT_MED_FACTOR, 9: ACCENT_MED_FACTOR},
+        }
         self.factor = 0
         self.default_duration = None
         self.metro_seq = None
@@ -148,14 +150,15 @@ class Tracker:
 
     def set_default_duration(self):
         self.factor = self.factors.get(self.time_signature['numerator'], 0)
-        self.default_duration = [6 / self.time_signature['denominator']] * (2 * self.factor) + [4 / self.time_signature['denominator']] \
-                                * (self.time_signature['numerator'] - 3*self.factor)
+        self.default_duration = [6 / self.time_signature['denominator']] * (2 * self.factor) + [
+            4 / self.time_signature['denominator']] \
+                                * (self.time_signature['numerator'] - 3 * self.factor)
 
         # self.metro_amp = [55] + [45] * (self.time_signature['numerator'] - 1 - self.factor)
         self.metro_amp = [ACCENT_DEFAULT] * (self.time_signature['numerator'] - self.factor)
         amp_factor = self.amp_factors.get(self.time_signature['numerator'], [ACCENT_DEFAULT])
         for a in amp_factor.keys():
-            self.metro_amp[a] = int(amp_factor[a]*self.metro_amp[a])
+            self.metro_amp[a] = int(amp_factor[a] * self.metro_amp[a])
         # print(f"{self.metro_amp=}")
         # print(f"{self.accents_dict=}, {self.time_signature['numerator']=}: {self.metro_amp=}, {self.default_duration=}")
         agg_duration = 0
@@ -165,7 +168,7 @@ class Tracker:
             agg_duration += dur
 
     def set_metro_seq(self):
-        self.metro_seq = [32]+[37]*(self.time_signature['numerator']-1-self.factor)
+        self.metro_seq = [32] + [37] * (self.time_signature['numerator'] - 1 - self.factor)
 
     def save_midi(self, on_exit=False):
         date = datetime.now().strftime('%Y%m%d%H%M%S')
@@ -330,7 +333,7 @@ class Tracker:
                         func()
             elif message.type == 'program_change':
                 # print(f"{message.__dict__=}")
-                self.program_change=message.program
+                self.program_change = message.program
                 # self.set_program_change(program=message.program)
 
         midi_in_name = [mids[0] for mids in itertools.product(mido.get_input_names(), midi_in_name) if
@@ -387,7 +390,7 @@ class Tracker:
     def get_amp_factor(self):
         xxx = self.amp_for_beat_factor.get(self.time_signature['numerator'])
         print(f"{xxx=},{self.time_signature['numerator']=}")
-        accent = self.amp_for_beat_factor.get(self.time_signature['numerator'],{}).get(self.beat_count)
+        accent = self.amp_for_beat_factor.get(self.time_signature['numerator'], {}).get(self.beat_count)
         # accent = self.amp_for_beat_factor.get(self.beat_count)
         return accent if accent else 1
 
@@ -427,6 +430,13 @@ class Tracker:
                     midi_amp: 0 if not midi_amp else 0 if midi_amp < 0 else 127 if midi_amp > 127 else midi_amp)
                 xamp = notes[iso.EVENT_AMPLITUDE].copy()
                 xdur = notes[iso.EVENT_DURATION].copy()
+                xdur_s1 = sum(xdur.copy())
+                xdur_2 = map(lambda x : round(x,1), xdur.copy())
+                xdur_s2 = sum(xdur_2)
+
+                xdur_s1x = sum(xdur)
+                xdur_2x = map(lambda x: round(x,1), xdur)
+                xdur_s2x = sum(xdur_2x)
                 # print([x for x in xdur])
 
                 # time_signature['numerator']
@@ -434,7 +444,6 @@ class Tracker:
                 print(f"{list(xdur)=}")
                 print(f"{list(xamp)=}")
                 pass
-
 
             self.check_notes = list(notes[iso.EVENT_NOTE].copy())
             print('check notes: ', self.check_notes)
@@ -467,7 +476,7 @@ class Tracker:
             "action": lambda: self.metro_beat(),
             # "duration": 3/2
             # "duration": 4
-            "duration": 4*(self.time_signature['numerator']/self.time_signature['denominator'])
+            "duration": 4 * (self.time_signature['numerator'] / self.time_signature['denominator'])
             # "duration": 5
 
         },
@@ -496,10 +505,6 @@ class Tracker:
         # 7: range(3), 4  1  => 3 | 7 -3*1 =4
         # 10: range(6), 4 2 => 6 | 10 -3*2 = 4
         # 11: range(9) 2 3 => 9  | 11 -3*3 = 2
-
-
-
-
 
         # metro_dur = [4/self.time_signature['denominator']] * self.time_signature['numerator']
         metro_dur = self.default_duration
@@ -643,7 +648,7 @@ class Tracker:
         return self.timeline.schedule({
             "action": lambda: self.beat(),
             # "duration": 4
-            "duration": 4*self.time_signature['numerator']/self.time_signature['denominator']
+            "duration": 4 * self.time_signature['numerator'] / self.time_signature['denominator']
             # "quantize": 1
         },
             remove_when_done=False)
@@ -848,9 +853,10 @@ class Tracker:
             return iso.PDict({
                 iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.key),
                 # iso.EVENT_DURATION: iso.PSequence([4], repeats=1),
-                iso.EVENT_DURATION: iso.PSequence([4*self.time_signature['numerator']/self.time_signature['denominator']], repeats=1),
-                iso.EVENT_AMPLITUDE: iso.PSequence(64,repeats=1),
-                iso.EVENT_GATE: iso.PSequence(self.legato,repeats=1)
+                iso.EVENT_DURATION: iso.PSequence(
+                    [4 * self.time_signature['numerator'] / self.time_signature['denominator']], repeats=1),
+                iso.EVENT_AMPLITUDE: iso.PSequence(64, repeats=1),
+                iso.EVENT_GATE: iso.PSequence(self.legato, repeats=1)
             })
         print('after_check')
         root_note = self.key.scale.indexOf(from_note - self.key.tonic % 12)
@@ -893,7 +899,11 @@ class Tracker:
         if not isinstance(pattern_duration, np.ndarray):
             # pattern_duration = np.array(None)
             # pattern_duration = np.repeat((4 / len_pattern) - 0.000000000000002, len_pattern)
-            pattern_duration = np.repeat((4*(self.time_signature['numerator']/self.time_signature['denominator']) / len_pattern) - 0.000000000000002, len_pattern)
+            pattern_duration = [4 * (self.time_signature['numerator'] / self.time_signature['denominator'])
+                                / len_pattern] * len_pattern
+            # pattern_duration = np.repeat((4 * (self.time_signature['numerator'] / self.time_signature[
+            #     'denominator']) / len_pattern) , len_pattern)
+                # 'denominator']) / len_pattern) - 0.000000000000002, len_pattern)
 
         if not isinstance(pattern_amplitude, np.ndarray):
             pattern_amplitude = np.array([64])
@@ -908,8 +918,10 @@ class Tracker:
 
         # rescale duration of notes
         # pattern_duration = 4 * pattern_duration / pattern_duration.sum() - 0.000000000000002
-        pattern_duration = 4*(self.time_signature['numerator']/self.time_signature['denominator'])* pattern_duration \
-                           / pattern_duration.sum() - 0.000000000000002
+        pattern_duration = 4 * (
+                self.time_signature['numerator'] / self.time_signature['denominator']) * pattern_duration \
+                        / pattern_duration.sum()
+                        # / pattern_duration.sum() - 0.000000000000002
 
         print(f"{pattern_duration=}")
 

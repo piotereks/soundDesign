@@ -9,6 +9,8 @@ import isobar as iso
 import re
 from functools import wraps
 
+from decimal import *
+from fractions import *
 
 
 class DurationPatterns:
@@ -231,7 +233,7 @@ class NotePatterns:
                     durations.extend(dur_part2)
 
                 print(f"=========>{durations=}")
-                result[iso.EVENT_DURATION] = 1/np.array(durations)
+                result[iso.EVENT_DURATION] = [ x.item() for x in 1/np.array(durations)]
 
             return result
         return inner
