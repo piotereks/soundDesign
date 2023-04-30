@@ -423,7 +423,6 @@ class Tracker:
             if not midi_note or isinstance(midi_note, int)
             else tuple(map(lambda u: None if not u else None if u < 0 else None if u > 127 else u, midi_note)))
 
-
             # create accent depending on beat
             print("bbbb1: ", list(map(type, notes[iso.EVENT_AMPLITUDE].copy())))
             if notes[iso.EVENT_AMPLITUDE]:
@@ -434,12 +433,21 @@ class Tracker:
                 #     midi_amp: None if not midi_amp else None if midi_amp < 0 else None if midi_amp > 127 else midi_amp)
                 # notes[iso.EVENT_AMPLITUDE] = iso.PMapEnumerated(notes[iso.EVENT_AMPLITUDE], lambda n, value: int(
                 #     value * self.get_amp_factor()) if n == 0 else value)
-                print("bbbb1.5: ", list(map(type, notes[iso.EVENT_AMPLITUDE].copy())))
+                # print("bbbb1.5: ", list(map(type, notes[iso.EVENT_AMPLITUDE].copy())))
                 notes[iso.EVENT_AMPLITUDE] = iso.PMap(notes[iso.EVENT_AMPLITUDE], lambda
                     midi_amp: 0 if not midi_amp else 0 if midi_amp < 0 else 127 if midi_amp > 127 else midi_amp)
-                print("bbbb2: ", list(map(type, notes[iso.EVENT_AMPLITUDE].copy())))
-                # xamp = notes[iso.EVENT_AMPLITUDE].copy()
-                # xdur = notes[iso.EVENT_DURATION].copy()
+                # print("bbbb2: ", list(map(type, notes[iso.EVENT_AMPLITUDE].copy())))
+                xamp = list(notes[iso.EVENT_AMPLITUDE].copy())
+                xdur = [0] + list(notes[iso.EVENT_DURATION].copy())
+                xacc = self.accents_dict
+                acxdur = list(accumulate(xdur[:-1]))
+                for key in xacc.keys():
+                    try:
+                        idx = acxdur.index(key)
+                        xamp[idx] = xacc[key]
+                    except ValueError:
+                        print("key not found")
+                notes[iso.EVENT_AMPLITUDE] = iso.PSequence(xamp, repeats=1)
                 # xdur_s1 = sum(xdur.copy())
                 # xdur_2 = map(lambda x : round(x,1), xdur.copy())
                 # xdur_s2 = sum(xdur_2)
@@ -459,10 +467,6 @@ class Tracker:
 
             print('check notes: ', self.check_notes)
             self.check_notes_action()
-            # notes[iso.EVENT_NOTE] = iso.PSequence([60,61,62,63], repeats=1)
-            # notes[iso.EVENT_DURATION] = iso.PSequence([1,1,1,1], repeats=1)
-            # notes[iso.EVENT_AMPLITUDE] = iso.PSequence([64, 64, 64, 64], repeats=1)
-            # notes[iso.EVENT_GATE] = iso.PSequence([1,1,1,1], repeats=1)
             print(list(notes[iso.EVENT_AMPLITUDE].copy()))
             print("bbbb: ", list(map(type, notes[iso.EVENT_AMPLITUDE].copy())))
 
@@ -871,8 +875,10 @@ class Tracker:
             return iso.PDict({
                 iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.key),
                 # iso.EVENT_DURATION: iso.PSequence([4], repeats=1),
+                # iso.EVENT_DURATION: iso.PSequence(
+                #     [4 * self.time_signature['numerator'] / self.time_signature['denominator']], repeats=1),
                 iso.EVENT_DURATION: iso.PSequence(
-                    [4 * self.time_signature['numerator'] / self.time_signature['denominator']], repeats=1),
+                    [Fraction(4 * self.time_signature['numerator'], self.time_signature['denominator'])], repeats=1),
                 iso.EVENT_AMPLITUDE: iso.PSequence(64, repeats=1),
                 iso.EVENT_GATE: iso.PSequence(self.legato, repeats=1)
             })
@@ -894,7 +900,8 @@ class Tracker:
         pattern_amplitude = None
         pattern_gate = None
         pattern_duration = None
-        if isinstance(pattern, np.ndarray):
+        # if isinstance(pattern, np.ndarray):
+        if isinstance(pattern, list):
             pattern_notes = pattern
             print(f"----debugx1----{pattern_notes}")
         elif isinstance(pattern, dict):
@@ -908,27 +915,27 @@ class Tracker:
         else:
             raise Exception("No notes returned!!!")
         print(f"----debug----{pattern_notes}, {root_note=}, {type(pattern_notes)=}")
-        if isinstance(pattern_notes, int) or isinstance(pattern_notes, np.int32) or isinstance(pattern_notes, np.int64):
-            pattern_notes += root_note
-            print(f"----debugz1----{pattern_notes}")
-        else:
-            pattern_notes = [x + root_note if isinstance(x, np.int32) or isinstance(x, np.int64) or isinstance(x, int)
-                             else None if not x
-            else tuple(map(lambda u: u + root_note, x)) for x in pattern_notes]
-            print(f"----debugz2----{pattern_notes}")
+        # if isinstance(pattern_notes, int) or isinstance(pattern_notes, np.int32) or isinstance(pattern_notes, np.int64):
+        #     pattern_notes += root_note
+        #     print(f"----debugz1----{pattern_notes}")
+        # else:
+        pattern_notes = [x + root_note if isinstance(x, np.int32) or isinstance(x, np.int64) or isinstance(x, int)
+                         else None if not x
+        else tuple(map(lambda u: u + root_note, x)) for x in pattern_notes]
+        print(f"----debugz2----{pattern_notes}")
         pattern_notes = pattern_notes[:-1]
         len_pattern = len(pattern_notes)
         print(f"----debug----{pattern_notes} {len_pattern=}")
 
         if pattern_duration is None or pattern_duration == []:
-        # if not isinstance(pattern_duration, np.ndarray):
+            # if not isinstance(pattern_duration, np.ndarray):
             # pattern_duration = np.array(None)
             # pattern_duration = np.repeat((4 / len_pattern) - 0.000000000000002, len_pattern)
             pattern_duration = [4 * (self.time_signature['numerator'] / self.time_signature['denominator'])
                                 / len_pattern] * len_pattern
             # pattern_duration = np.repeat((4 * (self.time_signature['numerator'] / self.time_signature[
             #     'denominator']) / len_pattern) , len_pattern)
-                # 'denominator']) / len_pattern) - 0.000000000000002, len_pattern)
+            # 'denominator']) / len_pattern) - 0.000000000000002, len_pattern)
 
         # if not isinstance(pattern_amplitude, np.ndarray):
         if pattern_amplitude is None or pattern_amplitude == []:
@@ -953,10 +960,10 @@ class Tracker:
         # pattern_duration = 4 * (
         #         self.time_signature['numerator'] / self.time_signature['denominator']) * pattern_duration \
         #                 / pattern_duration.sum()
-                        # / pattern_duration.sum() - 0.000000000000002
-        pattern_duration = list(map(lambda x : 4 * (
+        # / pattern_duration.sum() - 0.000000000000002
+        pattern_duration = list(map(lambda x: 4 * (
                 self.time_signature['numerator'] / self.time_signature['denominator']) * x \
-                        / sum(pattern_duration), pattern_duration))
+                                              / sum(pattern_duration), pattern_duration))
 
         print(f"{pattern_duration=}")
 

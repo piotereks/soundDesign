@@ -179,7 +179,7 @@ class NotePatterns:
             print(f"xx {len(result[iso.EVENT_NOTE])=}, {result[iso.EVENT_NOTE]=}")
             # if not np.any(result.get(iso.EVENT_DURATION)):
             dur_list = result.get(iso.EVENT_DURATION)
-            if not (dur_list is None or dur_list == []):
+            if dur_list is None or dur_list == []:
                 pattern_len = len(result[iso.EVENT_NOTE])-1
                 
                 # splt_array = split_no(pattern_len, numerator=self.time_signature['numerator'])
@@ -242,7 +242,7 @@ class NotePatterns:
 
                 print(f"=========>{durations=}")
                 # result[iso.EVENT_DURATION] = [ x.item() for x in 1/np.array(durations)]
-                result[iso.EVENT_DURATION] = [Fraction(1, x) for x in durations]
+                result[iso.EVENT_DURATION] = [Fraction(1/x).limit_denominator(1000) for x in durations]
 
             return result
         return inner
