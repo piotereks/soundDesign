@@ -238,7 +238,7 @@ class NotePatterns:
                     if norm_dot == "norm":
                         dur_part = random.choice(dur_part)
                     else:
-                        dur_part = list(map(lambda x: x/1.5, random.choice(dur_part)))
+                        dur_part = list(map(lambda x: Fraction(x/1.5).limit_denominator(1000), random.choice(dur_part)))
 
                     print(f"3. {dur_part=}")
 

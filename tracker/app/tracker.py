@@ -448,8 +448,11 @@ class Tracker:
                         amplitudes[idx] = int(self.accents_dict[key]*amplitudes[idx])
                     except ValueError:
                         print("key not found")
-                amplitudes = list(map(lambda  midi_amp: 0 if not midi_amp else 0 if midi_amp < 0 else 127 if midi_amp > 127 else midi_amp ,amplitudes))
+                amplitudes = list(map(lambda midi_amp: 0 if not midi_amp else 0 if midi_amp < 0 else 127 if midi_amp > 127 else midi_amp ,amplitudes))
                 notes[iso.EVENT_AMPLITUDE] = iso.PSequence(amplitudes, repeats=1)
+
+                # Extra fix put just as sanity mod, right before trigerring play. Might be removed if well tested when without
+                notes[iso.EVENT_DURATION] = iso.PSequence(list(map(lambda x: x - 0.000000000000002, notes[iso.EVENT_DURATION])), repeats=1)
                 # xdur_s1 = sum(durations.copy())
                 # xdur_2 = map(lambda x : round(x,1), durations.copy())
                 # xdur_s2 = sum(xdur_2)
