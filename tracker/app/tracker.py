@@ -156,16 +156,17 @@ class Tracker:
 
         # self.metro_amp = [55] + [45] * (self.time_signature['numerator'] - 1 - self.factor)
         self.metro_amp = [ACCENT_DEFAULT] * (self.time_signature['numerator'] - self.factor)
-        amp_factor = self.amp_factors.get(self.time_signature['numerator'], [ACCENT_DEFAULT])
-        for a in amp_factor.keys():
-            self.metro_amp[a] = int(amp_factor[a] * self.metro_amp[a])
+        # amp_factor = self.amp_factors.get(self.time_signature['numerator'], [ACCENT_DEFAULT])
+        self.accents_dict = self.amp_factors.get(self.time_signature['numerator'], [ACCENT_DEFAULT])
+        for a in self.accents_dict.keys():
+            self.metro_amp[a] = int(self.accents_dict[a] * self.metro_amp[a])
         # print(f"{self.metro_amp=}")
         # print(f"{self.accents_dict=}, {self.time_signature['numerator']=}: {self.metro_amp=}, {self.default_duration=}")
         agg_duration = 0
-        for dur, amp in zip(self.default_duration, self.metro_amp):
-            if amp in (ACCENT_BIG, ACCENT_MED):
-                self.accents_dict[agg_duration] = amp
-            agg_duration += dur
+        # for dur, amp in zip(self.default_duration, self.metro_amp):
+        #     if amp in (ACCENT_BIG, ACCENT_MED):
+        #         self.accents_dict[agg_duration] = amp
+        #     agg_duration += dur
 
     def set_metro_seq(self):
         self.metro_seq = [32] + [37] * (self.time_signature['numerator'] - 1 - self.factor)
@@ -434,33 +435,34 @@ class Tracker:
                 # notes[iso.EVENT_AMPLITUDE] = iso.PMapEnumerated(notes[iso.EVENT_AMPLITUDE], lambda n, value: int(
                 #     value * self.get_amp_factor()) if n == 0 else value)
                 # print("bbbb1.5: ", list(map(type, notes[iso.EVENT_AMPLITUDE].copy())))
-                notes[iso.EVENT_AMPLITUDE] = iso.PMap(notes[iso.EVENT_AMPLITUDE], lambda
-                    midi_amp: 0 if not midi_amp else 0 if midi_amp < 0 else 127 if midi_amp > 127 else midi_amp)
+                # notes[iso.EVENT_AMPLITUDE] = iso.PMap(notes[iso.EVENT_AMPLITUDE], lambda
+                #     midi_amp: 0 if not midi_amp else 0 if midi_amp < 0 else 127 if midi_amp > 127 else midi_amp)
                 # print("bbbb2: ", list(map(type, notes[iso.EVENT_AMPLITUDE].copy())))
-                xamp = list(notes[iso.EVENT_AMPLITUDE].copy())
-                xdur = [0] + list(notes[iso.EVENT_DURATION].copy())
-                xacc = self.accents_dict
-                acxdur = list(accumulate(xdur[:-1]))
-                for key in xacc.keys():
+                amplitudes = list(notes[iso.EVENT_AMPLITUDE].copy())
+                durations = [0] + list(notes[iso.EVENT_DURATION].copy())
+                # xacc = self.accents_dict
+                acc_durations = list(accumulate(durations[:-1]))
+                for key in self.accents_dict.keys():
                     try:
-                        idx = acxdur.index(key)
-                        xamp[idx] = xacc[key]
+                        idx = acc_durations.index(key)
+                        amplitudes[idx] = int(self.accents_dict[key]*amplitudes[idx])
                     except ValueError:
                         print("key not found")
-                notes[iso.EVENT_AMPLITUDE] = iso.PSequence(xamp, repeats=1)
-                # xdur_s1 = sum(xdur.copy())
-                # xdur_2 = map(lambda x : round(x,1), xdur.copy())
+                amplitudes = list(map(lambda  midi_amp: 0 if not midi_amp else 0 if midi_amp < 0 else 127 if midi_amp > 127 else midi_amp ,amplitudes))
+                notes[iso.EVENT_AMPLITUDE] = iso.PSequence(amplitudes, repeats=1)
+                # xdur_s1 = sum(durations.copy())
+                # xdur_2 = map(lambda x : round(x,1), durations.copy())
                 # xdur_s2 = sum(xdur_2)
                 #
-                # xdur_s1x = sum(xdur)
-                # xdur_2x = map(lambda x: round(x,1), xdur)
+                # xdur_s1x = sum(durations)
+                # xdur_2x = map(lambda x: round(x,1), durations)
                 # xdur_s2x = sum(xdur_2x)
-                # print([x for x in xdur])
+                # print([x for x in durations])
 
                 # time_signature['numerator']
 
-                # print(f"{list(xdur.copy())=}, {list(map(type,xdur.copy()))=}")
-                # print(f"{list(xamp.copy())=}, {list(map(type,xamp.copy()))=}")
+                # print(f"{list(durations.copy())=}, {list(map(type,durations.copy()))=}")
+                # print(f"{list(amplitudes.copy())=}, {list(map(type,amplitudes.copy()))=}")
                 pass
 
             self.check_notes = list(notes[iso.EVENT_NOTE].copy())
