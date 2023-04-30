@@ -97,7 +97,7 @@ class NotePatterns:
         else:
             # suitable_patterns = [sign * self.multiply_pattern(pattern, int(interval / pattern[-1])) for pattern in
             #                  self.patterns if pattern[-1] in self.pattern_size_for_interval[interval]]
-            suitable_patterns = [map(lambda x: sign *x, pattern) * int(interval / pattern[-1])
+            suitable_patterns = [list(map(lambda x: sign *x, pattern)) * int(interval / pattern[-1])
                                  for pattern in self.patterns
                                  if pattern[-1] in self.pattern_size_for_interval[interval]]
         # print('sp for n:',suitable_patterns)
@@ -179,7 +179,7 @@ class NotePatterns:
             print(f"xx {len(result[iso.EVENT_NOTE])=}, {result[iso.EVENT_NOTE]=}")
             # if not np.any(result.get(iso.EVENT_DURATION)):
             dur_list = result.get(iso.EVENT_DURATION)
-            if not (dur_list is None or dur_list==[]):
+            if not (dur_list is None or dur_list == []):
                 pattern_len = len(result[iso.EVENT_NOTE])-1
                 
                 # splt_array = split_no(pattern_len, numerator=self.time_signature['numerator'])

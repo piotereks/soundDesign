@@ -425,36 +425,47 @@ class Tracker:
 
 
             # create accent depending on beat
+            print("bbbb1: ", list(map(type, notes[iso.EVENT_AMPLITUDE].copy())))
             if notes[iso.EVENT_AMPLITUDE]:
-                print(f"{list(map(type,notes[iso.EVENT_AMPLITUDE]))=}")
+                print(f"{list(map(type,notes[iso.EVENT_AMPLITUDE].copy()))=}")
                 # xxx = iso.PMapEnumerated(notes[iso.EVENT_AMPLITUDE], lambda n, value: int(
                 #     value * self.get_amp_factor()) if n == 0 else value)
                 # notes[iso.EVENT_AMPLITUDE] = iso.PMap(notes[iso.EVENT_AMPLITUDE], lambda
                 #     midi_amp: None if not midi_amp else None if midi_amp < 0 else None if midi_amp > 127 else midi_amp)
                 # notes[iso.EVENT_AMPLITUDE] = iso.PMapEnumerated(notes[iso.EVENT_AMPLITUDE], lambda n, value: int(
                 #     value * self.get_amp_factor()) if n == 0 else value)
+                print("bbbb1.5: ", list(map(type, notes[iso.EVENT_AMPLITUDE].copy())))
                 notes[iso.EVENT_AMPLITUDE] = iso.PMap(notes[iso.EVENT_AMPLITUDE], lambda
                     midi_amp: 0 if not midi_amp else 0 if midi_amp < 0 else 127 if midi_amp > 127 else midi_amp)
-                xamp = notes[iso.EVENT_AMPLITUDE].copy()
-                xdur = notes[iso.EVENT_DURATION].copy()
-                xdur_s1 = sum(xdur.copy())
-                xdur_2 = map(lambda x : round(x,1), xdur.copy())
-                xdur_s2 = sum(xdur_2)
-
-                xdur_s1x = sum(xdur)
-                xdur_2x = map(lambda x: round(x,1), xdur)
-                xdur_s2x = sum(xdur_2x)
+                print("bbbb2: ", list(map(type, notes[iso.EVENT_AMPLITUDE].copy())))
+                # xamp = notes[iso.EVENT_AMPLITUDE].copy()
+                # xdur = notes[iso.EVENT_DURATION].copy()
+                # xdur_s1 = sum(xdur.copy())
+                # xdur_2 = map(lambda x : round(x,1), xdur.copy())
+                # xdur_s2 = sum(xdur_2)
+                #
+                # xdur_s1x = sum(xdur)
+                # xdur_2x = map(lambda x: round(x,1), xdur)
+                # xdur_s2x = sum(xdur_2x)
                 # print([x for x in xdur])
 
                 # time_signature['numerator']
 
-                print(f"{list(xdur.copy())=}, {list(map(type,xdur.copy()))=}")
-                print(f"{list(xamp.copy())=}, {list(map(type,xamp.copy()))=}")
+                # print(f"{list(xdur.copy())=}, {list(map(type,xdur.copy()))=}")
+                # print(f"{list(xamp.copy())=}, {list(map(type,xamp.copy()))=}")
                 pass
 
             self.check_notes = list(notes[iso.EVENT_NOTE].copy())
+
             print('check notes: ', self.check_notes)
             self.check_notes_action()
+            # notes[iso.EVENT_NOTE] = iso.PSequence([60,61,62,63], repeats=1)
+            # notes[iso.EVENT_DURATION] = iso.PSequence([1,1,1,1], repeats=1)
+            # notes[iso.EVENT_AMPLITUDE] = iso.PSequence([64, 64, 64, 64], repeats=1)
+            # notes[iso.EVENT_GATE] = iso.PSequence([1,1,1,1], repeats=1)
+            print(list(notes[iso.EVENT_AMPLITUDE].copy()))
+            print("bbbb: ", list(map(type, notes[iso.EVENT_AMPLITUDE].copy())))
+
             _ = self.timeline.schedule(
                 notes
             )
