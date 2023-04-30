@@ -72,21 +72,24 @@ class NotePatterns:
         self.patterns = list(map(lambda x: x['pattern'], self.patterns_config['play_over']['patterns']))
 
 
-    # @staticmethod
-    # def multiply_pattern(pattern, mult):
-    #     pattern = np.array(pattern)
-    #     if mult == 1:
-    #         return pattern
-    #
-    #     else:
-    #         res_pattern = pattern
-    #         add_pattern = np.array(pattern[1:])
-    #
-    #     for a in range(mult - 1):
-    #         add_pattern = add_pattern + pattern[-1]  # This is to add "step" of pattern, so I expect
-    #
-    #         res_pattern = np.append(res_pattern, add_pattern)
-    #     return res_pattern  # [:-1]
+    @staticmethod
+    def multiply_pattern(pattern: list, mult):
+        # pattern = np.array(pattern)
+        add_pattern = []
+        res_pattern = []
+
+        if mult == 1:
+            return pattern
+
+        else:
+            res_pattern = pattern
+            add_pattern = pattern[1:]
+            shift = pattern[-1]
+        for a in range(mult - 1):
+            # add_pattern.extend(-1)  # This is to add "step" of pattern, so I expect
+            add_pattern = list(map(lambda x: x + shift, add_pattern))
+            res_pattern.extend(add_pattern)
+        return res_pattern  # [:-1]
 
     def all_suitable_patterns(self, interval):
         sign = int(np.sign(interval))
@@ -97,9 +100,12 @@ class NotePatterns:
         else:
             # suitable_patterns = [sign * self.multiply_pattern(pattern, int(interval / pattern[-1])) for pattern in
             #                  self.patterns if pattern[-1] in self.pattern_size_for_interval[interval]]
-            suitable_patterns = [list(map(lambda x: sign *x, pattern)) * int(interval / pattern[-1])
+            suitable_patterns = [list(map(lambda x: sign *x, self.multiply_pattern(pattern, int(interval / pattern[-1]))))
                                  for pattern in self.patterns
                                  if pattern[-1] in self.pattern_size_for_interval[interval]]
+            # suitable_patterns = [list(map(lambda x: sign *x, pattern)) * int(interval / pattern[-1])
+            #                      for pattern in self.patterns
+            #                      if pattern[-1] in self.pattern_size_for_interval[interval]]
         # print('sp for n:',suitable_patterns)
         return suitable_patterns
 
