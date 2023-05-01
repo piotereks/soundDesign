@@ -58,6 +58,7 @@ class UpDownKey(Key):
             octave, pitch = divmod(note, self.scale.octave_size)
             nearest_semi = None
             nearest_dist = None
+            # chk_semitones = self.semitones[-1:]+self.semitones[:-1]
             chk_semitones = self.semitones
             calc_octave = octave
             for semi in chk_semitones:
