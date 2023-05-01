@@ -875,7 +875,8 @@ class Tracker:
         self.last_from_note = from_note
 
         if (to_note is None) or (from_note is None):
-            from_note = None if not from_note else self.key.scale.indexOf(from_note)
+
+            from_note = None if not from_note else self.key.scale.indexOf(self.key.nearest_note(from_note))
 
             return iso.PDict({
                 iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.key),
@@ -888,8 +889,8 @@ class Tracker:
                 iso.EVENT_GATE: iso.PSequence(self.legato, repeats=1)
             })
         print('after_check')
-        root_note = self.key.scale.indexOf(from_note - self.key.tonic % 12)
-        note = self.key.scale.indexOf(to_note - self.key.tonic % 12)
+        root_note = self.key.scale.indexOf(self.key.nearest_note(from_note - self.key.tonic % 12))
+        note = self.key.scale.indexOf(self.key.nearest_note(to_note - self.key.tonic % 12))
         interval = note - root_note
 
         pattern = self.note_patterns.get_pattern(interval,
