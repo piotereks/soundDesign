@@ -55,6 +55,7 @@ iso.Scale.get = UpDownScale.get
 
 iso.Key.__init__ = UpDownKey.__init__
 iso.Key.get = UpDownKey.get
+iso.Key.nearest_note = UpDownKey.nearest_note
 
 iso.PDegree.__init__ = UpDownPDegree.__init__
 iso.PDegree.__next__ = UpDownPDegree.__next__

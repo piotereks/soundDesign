@@ -51,3 +51,23 @@ class UpDownKey(Key):
         semitone = self.scale.get(degree, scale_down=scale_down)
         return semitone + self.tonic
 
+    def nearest_note(self, note):
+        if note in self:
+            return note
+        else:
+            octave, pitch = divmod(note, self.scale.octave_size)
+            nearest_semi = None
+            nearest_dist = None
+            chk_semitones = self.semitones
+            calc_octave = octave
+            for semi in chk_semitones:
+                dist = min(abs(semi - pitch),abs(abs(semi-pitch)-12))
+                if nearest_dist is None or dist < nearest_dist:
+                    nearest_semi = semi
+                    nearest_dist = dist
+                    if dist == abs(abs(semi-pitch)-12):
+                        calc_octave = octave +1
+                    else:
+                        calc_octave = octave
+            octave = calc_octave
+            return (octave * self.scale.octave_size) + nearest_semi
