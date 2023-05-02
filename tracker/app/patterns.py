@@ -78,6 +78,7 @@ class NotePatterns:
         add_pattern = []
         res_pattern = []
 
+        mult = abs(mult)
         if mult == 1:
             return pattern
 
@@ -108,16 +109,19 @@ class NotePatterns:
             # suitable_patterns = [sign * self.multiply_pattern(pattern, int(interval / pattern[-1])) for pattern in
             #                  self.patterns if pattern[-1] in self.pattern_size_for_interval[interval]]
             cntr = 0
-            for pattern in self.patterns:
-                if not abs(pattern[-1]) in self.pattern_size_for_interval[interval]:
+            for patternx in self.patterns:
+                if not abs(patternx[-1]) in self.pattern_size_for_interval[interval]:
                     continue
                 cntr+=1
                 if cntr<=5:
-                    print(pattern)
-                    print(f"{interval=}, {pattern[-1]=},{self.pattern_size_for_interval[interval]=}, {int(interval / pattern[-1])=}")
-                    print(self.multiply_pattern(pattern, int(interval / pattern[-1])))
-            suitable_patterns = [list(map(lambda x:x if sign==int(np.sign(pattern[-1])) else -x
-                                          , self.multiply_pattern(pattern, int(interval / pattern[-1]))))
+                    print(f"{patternx=}, {int(interval / patternx[-1])=}")
+                    print(f"{self.multiply_pattern(patternx[:], int(interval / patternx[-1]))=}")
+                    print(f"2. {patternx=}, {int(interval / patternx[-1])=}")
+                    print(f"{interval=}, {patternx[-1]=},{self.pattern_size_for_interval[interval]=}, {int(interval / patternx[-1])=}")
+                    print(self.multiply_pattern(patternx[:], int(interval / patternx[-1])))
+            # suitable_patterns = [list(map(lambda x:x if sign==int(np.sign(pattern[-1])) else -x
+            suitable_patterns = [list(map(lambda x:x*sign*int(np.sign(pattern[-1]))
+                                          , self.multiply_pattern(pattern[:], int(interval / pattern[-1]))))
                                  for pattern in self.patterns
                                  if abs(pattern[-1]) in self.pattern_size_for_interval[interval]]
             print(f"{suitable_patterns[:5]=}")

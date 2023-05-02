@@ -2,7 +2,8 @@ from tracker.app.patterns import *
 npat = NotePatterns()
 
 def test_all_suitable_patterns():
-    for x in range(10000):
-        print(f"{x=}")
-        # assert len(npat.all_suitable_patterns(-12))>0
-        assert len(random.choice([pattern for pattern in npat.all_suitable_patterns(-12)])) != []
+    _ = npat.all_suitable_patterns(0)
+    for n in range(1, 16):
+        assert all([pattern[-1] > 0 for pattern in npat.all_suitable_patterns(n)])
+    for n in range(-16, -1):
+        assert all([pattern[-1] < 0 for pattern in npat.all_suitable_patterns(n)])
