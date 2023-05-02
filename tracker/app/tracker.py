@@ -11,8 +11,6 @@ from .log_call import *
 from .midi_dev import *
 
 NO_MIDI_OUT = mido.get_output_names() == []
-# ACCENT_BIG = 55
-# ACCENT_MED = 50
 ACCENT_BIG_FACTOR = 1.5
 ACCENT_MED_FACTOR = 1.25
 ACCENT_DEFAULT = 45
@@ -96,15 +94,6 @@ class Tracker:
             12: dict(zip([0, 3, 6, 9], [1.5, 1.25, 1.25, 1.25]))
         }
 
-        # self.dot_for_beat = {
-        #     5: range(3),
-        #     # 6: range(3),
-        #     7: range(3),
-        #     # 9: range(6),
-        #     10: range(6),
-        #     11: range(9)
-        # }
-
         self.factors = {5: 1, 7: 1, 10: 2, 11: 3}
         self.amp_factors = {
             1: {0: ACCENT_BIG_FACTOR},
@@ -129,7 +118,6 @@ class Tracker:
         self.set_metro_seq()
 
         self.current_program = None
-        # self.init_timeline(True)
         self.midi_out_mode = midi_out_mode
         self.init_timeline(midi_in_name=self.midi_in_name, midi_out_name=self.midi_out_name,
                            midi_out_mode=midi_out_mode)
@@ -154,19 +142,11 @@ class Tracker:
             4 / self.time_signature['denominator']] \
                                 * (self.time_signature['numerator'] - 3 * self.factor)
 
-        # self.metro_amp = [55] + [45] * (self.time_signature['numerator'] - 1 - self.factor)
         self.metro_amp = [ACCENT_DEFAULT] * (self.time_signature['numerator'] - self.factor)
-        # amp_factor = self.amp_factors.get(self.time_signature['numerator'], [ACCENT_DEFAULT])
         self.accents_dict = self.amp_factors.get(self.time_signature['numerator'], [ACCENT_DEFAULT])
         for a in self.accents_dict.keys():
             self.metro_amp[a] = int(self.accents_dict[a] * self.metro_amp[a])
-        # print(f"{self.metro_amp=}")
-        # print(f"{self.accents_dict=}, {self.time_signature['numerator']=}: {self.metro_amp=}, {self.default_duration=}")
         agg_duration = 0
-        # for dur, amp in zip(self.default_duration, self.metro_amp):
-        #     if amp in (ACCENT_BIG, ACCENT_MED):
-        #         self.accents_dict[agg_duration] = amp
-        #     agg_duration += dur
 
     def set_metro_seq(self):
         self.metro_seq = [32] + [37] * (self.time_signature['numerator'] - 1 - self.factor)
@@ -342,7 +322,6 @@ class Tracker:
 
         if midi_in_name:
             try:
-                # self.midi_in = iso.MidiInputDevice(midi_in_name[0])
                 self.midi_in = ExtendedMidiInputDevice(midi_in_name[0])
             except iso.DeviceNotFoundException:
                 print(f"Can't open midi in named'{midi_in_name[0]}. Possibly locked by other application'")
@@ -395,12 +374,6 @@ class Tracker:
         # accent = self.amp_for_beat_factor.get(self.beat_count)
         return accent if accent else 1
 
-    # def get_dot_beat(self):
-    #     xxx = self.dot_for_beat.get(self.time_signature['numerator'])
-    #     print(f"dot_for_bear: {xxx=},{self.time_signature['numerator']=}")
-    #     dot_beat = self.beat_count in self.dot_for_beat.get(self.time_signature['numerator'], range(0))
-    #     return dot_beat
-
     def log_and_schedule(func):
         def inner(self, *args, **kwargs):
             log_call()
@@ -413,12 +386,8 @@ class Tracker:
             # self.beat_count %= 4
             self.beat_count %= self.time_signature['numerator']
             notes = func(self, *args, **kwargs)
-            # notes[iso.EVENT_NOTE] = iso.PMap(notes[iso.EVENT_NOTE], lambda midi_note:
-            # (None if not midi_note else None if midi_note < 0 else None if midi_note > 127 else midi_note)
-            # if not midi_note or isinstance(midi_note, np.int64) or isinstance(midi_note, np.int32) or isinstance(
-            #     midi_note, int)
-            # else tuple(map(lambda u: None if not u else None if u < 0 else None if u > 127 else u, midi_note)))
-            xxx = notes[iso.EVENT_NOTE]
+
+            # xxx = notes[iso.EVENT_NOTE]
             notes[iso.EVENT_NOTE] = iso.PMap(notes[iso.EVENT_NOTE], lambda midi_note:
             (None if not midi_note else None if midi_note < 0 else None if midi_note > 127 else midi_note)
             if not midi_note or isinstance(midi_note, int)
@@ -428,19 +397,8 @@ class Tracker:
             print("bbbb1: ", list(map(type, notes[iso.EVENT_AMPLITUDE].copy())))
             if notes[iso.EVENT_AMPLITUDE]:
                 print(f"{list(map(type,notes[iso.EVENT_AMPLITUDE].copy()))=}")
-                # xxx = iso.PMapEnumerated(notes[iso.EVENT_AMPLITUDE], lambda n, value: int(
-                #     value * self.get_amp_factor()) if n == 0 else value)
-                # notes[iso.EVENT_AMPLITUDE] = iso.PMap(notes[iso.EVENT_AMPLITUDE], lambda
-                #     midi_amp: None if not midi_amp else None if midi_amp < 0 else None if midi_amp > 127 else midi_amp)
-                # notes[iso.EVENT_AMPLITUDE] = iso.PMapEnumerated(notes[iso.EVENT_AMPLITUDE], lambda n, value: int(
-                #     value * self.get_amp_factor()) if n == 0 else value)
-                # print("bbbb1.5: ", list(map(type, notes[iso.EVENT_AMPLITUDE].copy())))
-                # notes[iso.EVENT_AMPLITUDE] = iso.PMap(notes[iso.EVENT_AMPLITUDE], lambda
-                #     midi_amp: 0 if not midi_amp else 0 if midi_amp < 0 else 127 if midi_amp > 127 else midi_amp)
-                # print("bbbb2: ", list(map(type, notes[iso.EVENT_AMPLITUDE].copy())))
                 amplitudes = list(notes[iso.EVENT_AMPLITUDE].copy())
                 durations = [0] + list(notes[iso.EVENT_DURATION].copy())
-                # xacc = self.accents_dict
                 acc_durations = list(accumulate(durations[:-1]))
                 for key in self.accents_dict.keys():
                     try:
@@ -453,20 +411,7 @@ class Tracker:
 
                 # Extra fix put just as sanity mod, right before trigerring play. Might be removed if well tested when without
                 notes[iso.EVENT_DURATION] = iso.PSequence(list(map(lambda x: x - 0.000000000000002, notes[iso.EVENT_DURATION])), repeats=1)
-                # xdur_s1 = sum(durations.copy())
-                # xdur_2 = map(lambda x : round(x,1), durations.copy())
-                # xdur_s2 = sum(xdur_2)
-                #
-                # xdur_s1x = sum(durations)
-                # xdur_2x = map(lambda x: round(x,1), durations)
-                # xdur_s2x = sum(xdur_2x)
-                # print([x for x in durations])
 
-                # time_signature['numerator']
-
-                # print(f"{list(durations.copy())=}, {list(map(type,durations.copy()))=}")
-                # print(f"{list(amplitudes.copy())=}, {list(map(type,amplitudes.copy()))=}")
-                pass
 
             self.check_notes = list(notes[iso.EVENT_NOTE].copy())
 
@@ -525,15 +470,6 @@ class Tracker:
     def metro_play(self):
         log_call()
         print(f"{time.time()=},{self.metro_beat=}")
-        # metro_seq = [32]+[37]*(self.time_signature['numerator']-1)
-        # metro_dur = [4/self.time_signature['denominator']] * self.time_signature['numerator']
-        # metro_amp = [55]+[45]*(self.time_signature['numerator']-1)
-        # 5: range(3), 2  1 => 3| 5 -3*1 = 2
-        # 7: range(3), 4  1  => 3 | 7 -3*1 =4
-        # 10: range(6), 4 2 => 6 | 10 -3*2 = 4
-        # 11: range(9) 2 3 => 9  | 11 -3*3 = 2
-
-        # metro_dur = [4/self.time_signature['denominator']] * self.time_signature['numerator']
         metro_dur = self.default_duration
         metro_seq = self.metro_seq
         metro_amp = self.metro_amp
@@ -543,18 +479,11 @@ class Tracker:
         print(f"{self.time_signature['numerator']/self.time_signature['denominator']=}")
         print(f"{metro_seq=}, {metro_amp=}, {metro_dur=}")
         self.metro_play_patterns = {
-            # "note": iso.PSequence([32, 37, 37, 37], repeats=1),
             "note": iso.PSequence(metro_seq, repeats=1),
-            # "duration": self.time_signature['numerator']/self.time_signature['denominator'] - 0.000000000000002,
-            # "duration": (self.time_signature['numerator']/self.time_signature['denominator']),
-            # "duration": 4/self.time_signature['denominator'],
             "duration": iso.PSequence(metro_dur, repeats=1),
             "channel": 9,
-            # "amplitude": iso.PSequence([55, 45, 45, 45], repeats=1)
             "amplitude": iso.PSequence(metro_amp, repeats=1)}
 
-        # if self.get_dot_beat():
-        #     metro_seq = list(map(lambda x: x+ 15, metro_seq))
         _ = self.timeline.schedule(self.metro_play_patterns, remove_when_done=True)
 
     def metro_start_stop(self, state):
@@ -569,11 +498,7 @@ class Tracker:
     # </editor-fold>
 
     # <editor-fold desc="Gui actions">
-    # def loop_play_queue_action(self, flag):
-    #     if flag == 0:
-    #         self.loopq = False
-    #     else:
-    #         self.loopq = True
+
 
     def check_notes_action(self):
         log_call()
@@ -880,9 +805,6 @@ class Tracker:
 
             return iso.PDict({
                 iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.key),
-                # iso.EVENT_DURATION: iso.PSequence([4], repeats=1),
-                # iso.EVENT_DURATION: iso.PSequence(
-                #     [4 * self.time_signature['numerator'] / self.time_signature['denominator']], repeats=1),
                 iso.EVENT_DURATION: iso.PSequence(
                     [Fraction(4 * self.time_signature['numerator'], self.time_signature['denominator'])], repeats=1),
                 iso.EVENT_AMPLITUDE: iso.PSequence(64, repeats=1),
@@ -906,7 +828,6 @@ class Tracker:
         pattern_amplitude = None
         pattern_gate = None
         pattern_duration = None
-        # if isinstance(pattern, np.ndarray):
         if isinstance(pattern, list):
             pattern_notes = pattern
             print(f"----debugx1----{pattern_notes}")
@@ -921,10 +842,6 @@ class Tracker:
         else:
             raise Exception("No notes returned!!!")
         print(f"----debug----{pattern_notes}, {root_note=}, {type(pattern_notes)=}")
-        # if isinstance(pattern_notes, int) or isinstance(pattern_notes, np.int32) or isinstance(pattern_notes, np.int64):
-        #     pattern_notes += root_note
-        #     print(f"----debugz1----{pattern_notes}")
-        # else:
         pattern_notes = [x + root_note if isinstance(x, np.int32) or isinstance(x, np.int64) or isinstance(x, int)
                          else None if not x
         else tuple(map(lambda u: u + root_note, x)) for x in pattern_notes]
@@ -934,39 +851,20 @@ class Tracker:
         print(f"----debug----{pattern_notes} {len_pattern=}")
 
         if pattern_duration is None or pattern_duration == []:
-            # if not isinstance(pattern_duration, np.ndarray):
-            # pattern_duration = np.array(None)
-            # pattern_duration = np.repeat((4 / len_pattern) - 0.000000000000002, len_pattern)
             pattern_duration = [4 * (self.time_signature['numerator'] / self.time_signature['denominator'])
                                 / len_pattern] * len_pattern
-            # pattern_duration = np.repeat((4 * (self.time_signature['numerator'] / self.time_signature[
-            #     'denominator']) / len_pattern) , len_pattern)
-            # 'denominator']) / len_pattern) - 0.000000000000002, len_pattern)
 
-        # if not isinstance(pattern_amplitude, np.ndarray):
         if pattern_amplitude is None or pattern_amplitude == []:
             pattern_amplitude = [64]
-            # pattern_amplitude = np.array([64])
 
-        # if not isinstance(pattern_gate, np.ndarray):
         if pattern_gate is None or pattern_gate == []:
-            # pattern_gate = np.array([self.legato])
             pattern_gate = [self.legato]
 
-        # if pattern_duration.size < len_pattern:
         if len(pattern_duration) < len_pattern:
-            # pattern_mult = np.tile(pattern_duration, (int(len_pattern / pattern_duration.size) + 1, 1))
-            # pattern_duration = pattern_mult.reshape(pattern_mult.shape[0] * pattern_mult.shape[1])
             pattern_duration = pattern_duration * int(len_pattern / pattern_duration.size) + 1
 
         pattern_duration = pattern_duration[:len_pattern]
 
-        # rescale duration of notes
-        # pattern_duration = 4 * pattern_duration / pattern_duration.sum() - 0.000000000000002
-        # pattern_duration = 4 * (
-        #         self.time_signature['numerator'] / self.time_signature['denominator']) * pattern_duration \
-        #                 / pattern_duration.sum()
-        # / pattern_duration.sum() - 0.000000000000002
         pattern_duration = list(map(lambda x: 4 * (
                 self.time_signature['numerator'] / self.time_signature['denominator']) * x \
                                               / sum(pattern_duration), pattern_duration))
@@ -982,8 +880,6 @@ class Tracker:
         return iso.PDict({
             iso.EVENT_NOTE: iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key),
             iso.EVENT_DURATION: iso.PSequence(pattern_duration, repeats=1),
-            # iso.EVENT_AMPLITUDE: iso.PSequence(pattern_amplitude, repeats=1),
-            # iso.EVENT_GATE: iso.PSequence(pattern_gate, repeats=1)
             iso.EVENT_AMPLITUDE: iso.PSequence(pattern_amplitude, repeats=len(pattern_duration)),
             iso.EVENT_GATE: iso.PSequence(pattern_gate, repeats=len(pattern_duration))
         })
