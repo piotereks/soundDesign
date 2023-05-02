@@ -48,6 +48,7 @@ class TrackerGuiApp(App):
     parm_dur_variety_min = NumericProperty()
     parm_dur_variety_max = NumericProperty()
 
+    time_sig_beat_val = StringProperty('time sig/beat')
     tempo_value = NumericProperty(120.0)
     tempo_min = NumericProperty(40)
     tempo_max = NumericProperty(300)
@@ -55,7 +56,6 @@ class TrackerGuiApp(App):
     dur_variety_value = NumericProperty(120.0)
     dur_variety_min = NumericProperty(40)
     dur_variety_max = NumericProperty(300)
-
 
     path_queue_content = ListProperty()
     scale_values = ListProperty()
@@ -125,6 +125,7 @@ class TrackerGuiApp(App):
 
         for note in self.path_queue_content or []:
             self.tracker_ref.put_to_queue(note)
+
     def on_start(self):
         self.__config_init_file__()
         self._keyboard = Window.request_keyboard(self._keyboard_closed, None)
@@ -151,12 +152,18 @@ class TrackerGuiApp(App):
         self.tracker_ref.metro_start_stop(self.root.metronome.state)
         self.tracker_ref.set_metronome_action = lambda: self.set_metronome_state(
             metronome_button=self.tracker_ref.midi_mapping['metronome'])
+        # time signature
+        self.time_sig_beat_val=f"ts: {self.tracker_ref.time_signature['numerator']}/{self.tracker_ref.time_signature['denominator']}, beat:0"
 
         # Tempo
         self.tracker_ref.set_tempo_action = lambda: self.set_tempo_f_main(None, tempo_knob=self.tracker_ref.midi_mapping['set_tempo_knob'])
         self.tempo_value = self.parm_tempo
         self.tempo_min = self.parm_tempo_min
         self.tempo_max = self.parm_tempo_max
+
+        # Time signature and beat action
+        self.tracker_ref.time_sig_beat_val_action \
+            = lambda: self.set_time_sig_beat_lbl(self.tracker_ref.time_signature, self.tracker_ref.beat_count+1)
 
         # Play functions
         self.func_values = self.tracker_ref.note_patterns.pattern_methods_short_list
@@ -291,6 +298,10 @@ class TrackerGuiApp(App):
         print(f"{instance=}, {state=}")
         self.tracker_ref.tstart() if state == 'down' else self.tracker_ref.tstop()
     # </editor-fold>
+
+    def set_time_sig_beat_lbl(self, time_sig, value):
+        label = f"ts: {time_sig['numerator']}/{time_sig['denominator']} beat:{value}"
+        self.time_sig_beat_val = label
 
     # <editor-fold desc="Save Button">
     def save_midi(self, on_exit=False):

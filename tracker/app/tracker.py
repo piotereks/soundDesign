@@ -76,8 +76,10 @@ class Tracker:
         self.legato = self.default_tracker_config.get("legato")
         self.program_change = self.default_tracker_config.get("program_change")
         self.time_signature = self.default_tracker_config.get("time_signature")
-        self.beat_count = -1 % self.time_signature['numerator']
-        self.numerator_count = -1 % self.time_signature['numerator']
+        # self.beat_count = -1 % self.time_signature['numerator']
+        # self.beat_count = -0 % self.time_signature['numerator']
+        self.beat_count = -1%4
+        # self.numerator_count = -1 % self.time_signature['numerator']
 
         self.amp_for_beat_factor = {
             1: dict(zip([0, 2], [1.5, 1.25])),
@@ -378,13 +380,16 @@ class Tracker:
         def inner(self, *args, **kwargs):
             log_call()
             print(func.__name__)
+
             self.beat_count += 1
+            # self.time_sig_beat_val=self.beat_count
+
             self.diff_time = self.timeline.current_time - self.prev_time
             self.prev_time = self.timeline.current_time
             print(f"{func.__name__} diff:{self.diff_time}, timeXX: {self.timeline.current_time},"
                   f" {round(self.timeline.current_time)} beat: {self.beat_count}\n")
-            # self.beat_count %= 4
-            self.beat_count %= self.time_signature['numerator']
+            self.beat_count %= 4
+            # self.beat_count %= self.time_signature['numerator']
             notes = func(self, *args, **kwargs)
 
             # xxx = notes[iso.EVENT_NOTE]
@@ -423,6 +428,7 @@ class Tracker:
             _ = self.timeline.schedule(
                 notes
             )
+
             print('post sched')
 
         return inner
@@ -515,6 +521,8 @@ class Tracker:
     def fullq_content_action(self):
         log_call()
 
+    def time_sig_beat_val_action(self):
+        log_call()
     def set_tempo_action(self):
         log_call()
 
@@ -742,10 +750,11 @@ class Tracker:
 
     @log_and_schedule
     def play_from_to(self, from_note, to_note, in_pattern=False):
+        self.time_sig_beat_val_action()
         print('---------------------')
-        self.numerator_count += 1
-        self.numerator_count %= self.time_signature['numerator']
-        print(f"------------------------------{time.time()=},{self.numerator_count=}")
+        # self.numerator_count += 1
+        # self.numerator_count %= self.time_signature['numerator']
+        # print(f"------------------------------{time.time()=},{self.numerator_count=}")
         print(f"in_pattern: {in_pattern} from_note:{from_note}, to_note: {to_note}")
         print(f"{self.key.scale.name=}, key={iso.Note.names[self.key.tonic % 12]}, {self.key.scale.name=}")
 

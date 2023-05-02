@@ -200,15 +200,27 @@ ScreenManager:
             size_hint_y: None
             padding: [20,20]
             spacing: 20
-            ToggleButton:
-                id:metronome
-                text:'metronome'
-                size_hint: [None, None]
-                size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
-                on_state: app.metro_on_off_action(*args)
 
             BoxLayout:
                 orientation:'vertical'
+                size_hint_x: 0.5
+                Label:
+                    id: time_sig_lbl
+#                    text: 'xxx'
+                    text: app.time_sig_beat_val if app.time_sig_beat_val else 'time_sig/beat'
+#                    text: app.func_init_text  if app.func_init_text else 'func1'
+                    size_hint: [1, None]
+                    size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
+                ToggleButton:
+                    id:metronome
+                    text:'metronome'
+                    size_hint: [1, None]
+                    size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
+                    on_state: app.metro_on_off_action(*args)
+
+            BoxLayout:
+                orientation:'vertical'
+                size_hint_x: 1.5
                 Label:
                     id:tempo_val
                     text:str(int(tempo.value))
