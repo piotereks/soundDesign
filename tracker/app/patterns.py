@@ -92,17 +92,35 @@ class NotePatterns:
         return res_pattern  # [:-1]
 
     def all_suitable_patterns(self, interval):
+        print(f"{interval=}")
         sign = int(np.sign(interval))
+        print(f"{sign=}")
         interval = abs(interval)
+        print(f"{interval=}")
+        print(f"{self.pattern_size_for_interval[interval]=}")
+
         if interval == 0:
+            print("Zero interval")
             suitable_patterns = [pattern for pattern in
                              self.patterns if pattern[-1] in self.pattern_size_for_interval[interval]]
         else:
+            print("NON-Zero interval")
             # suitable_patterns = [sign * self.multiply_pattern(pattern, int(interval / pattern[-1])) for pattern in
             #                  self.patterns if pattern[-1] in self.pattern_size_for_interval[interval]]
-            suitable_patterns = [list(map(lambda x: sign *x, self.multiply_pattern(pattern, int(interval / pattern[-1]))))
+            cntr = 0
+            for pattern in self.patterns:
+                if not abs(pattern[-1]) in self.pattern_size_for_interval[interval]:
+                    continue
+                cntr+=1
+                if cntr<=5:
+                    print(pattern)
+                    print(f"{interval=}, {pattern[-1]=},{self.pattern_size_for_interval[interval]=}, {int(interval / pattern[-1])=}")
+                    print(self.multiply_pattern(pattern, int(interval / pattern[-1])))
+            suitable_patterns = [list(map(lambda x:x if sign==int(np.sign(pattern[-1])) else -x
+                                          , self.multiply_pattern(pattern, int(interval / pattern[-1]))))
                                  for pattern in self.patterns
-                                 if pattern[-1] in self.pattern_size_for_interval[interval]]
+                                 if abs(pattern[-1]) in self.pattern_size_for_interval[interval]]
+            print(f"{suitable_patterns[:5]=}")
             # suitable_patterns = [list(map(lambda x: sign *x, pattern)) * int(interval / pattern[-1])
             #                      for pattern in self.patterns
             #                      if pattern[-1] in self.pattern_size_for_interval[interval]]
@@ -281,8 +299,13 @@ class NotePatterns:
         octave *= interval_sign 
         interval = abs(interval) % 12
         interval *= interval_sign
+        print(f"{org_interval=}, {octave=}, {interval=}")
         # notes_pattern = np.array(random.choice([pattern for pattern in self.all_suitable_patterns(org_interval)]))
-        notes_pattern = random.choice([pattern for pattern in self.all_suitable_patterns(org_interval)])
+        deb = [pattern for pattern in self.all_suitable_patterns(org_interval)]
+        print(f"{len(deb)=}, {self.__dict__=}")
+        print(f"{deb[:5]=}")
+        # notes_pattern = random.choice([pattern for pattern in self.all_suitable_patterns(org_interval)])
+        notes_pattern = random.choice(deb)
         return {
             iso.EVENT_NOTE: notes_pattern,
         }

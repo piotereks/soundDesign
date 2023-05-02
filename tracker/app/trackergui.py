@@ -409,6 +409,8 @@ class TrackerGuiApp(App):
         log_call()
         print('func_name:', func_name)
         # print(instance)
+        if func_name not in  self.tracker_ref.note_patterns.pattern_methods_short_list:
+            func_name = self.tracker_ref.note_patterns.pattern_methods_short_list[0]
         self.tracker_ref.note_patterns.set_pattern_function(func_name)
         self.tracker_ref.func_name = func_name
         self.func_init_text = func_name
