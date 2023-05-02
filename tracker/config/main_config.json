@@ -13,7 +13,7 @@
       "dur_variety":0.0,
       "dur_variety_min":0,
       "dur_variety_max":7,
-      "play_func":"xsimple",
+      "play_func":"simple",
       "xqueue_content":[60,64,62,70],
       "xplay_func":"random_path",
       "queue_content":[60,72],
