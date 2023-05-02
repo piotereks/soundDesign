@@ -38,7 +38,7 @@ class UpDownScale(Scale):
             return None
         semitones_down = None
         if hasattr(self, 'semitones_down'):
-            semitones_down = self.semitones
+            semitones_down = self.semitones_down
         # semitones = self.semitones_down if scale_down and self.semitones_down is not None else self.semitones
         semitones = semitones_down if scale_down and semitones_down is not None else self.semitones
         octave = n // len(semitones)
