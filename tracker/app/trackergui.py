@@ -198,7 +198,6 @@ class TrackerGuiApp(App):
 
 
     def close_application(self):
-        pass
         # cleanup attempt
         self.tracker_ref.set_play_action = lambda: print(None)
         self.tracker_ref.scale_name_action = lambda: print(None)
@@ -206,6 +205,7 @@ class TrackerGuiApp(App):
         self.tracker_ref.set_rnd_key_action = lambda: print(None)
 
         self.tracker_ref.set_metronome_action = lambda: print(None)
+        self.tracker_ref.time_sig_beat_val_action = lambda: print(None)
         self.tracker_ref.set_tempo_action = lambda: print(None)
         self.tracker_ref.set_rnd_func_action = lambda: print(None)
 
