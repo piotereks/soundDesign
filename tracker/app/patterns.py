@@ -129,10 +129,10 @@ class NotePatterns:
             cntr = 0
 
             suitable_patterns = [list(map(lambda x:x*sign*int(np.sign(pattern[-1]))
-                                          ,pattern[:]))
+                                          , pattern[:]))
                                  for pattern in self.patterns['diminunition']
                                  if abs(pattern[-1]) == interval]
-            if suitable_patterns == []:
+            if not suitable_patterns:
                 # suitable_patterns = [[0, sign*interval]]
                 suitable_patterns = [range(0, sign*interval+sign, sign)]
 
