@@ -823,13 +823,16 @@ class Tracker:
         root_note = self.key.scale.indexOf(self.key.nearest_note(from_note - self.key.tonic % 12))
         note = self.key.scale.indexOf(self.key.nearest_note(to_note - self.key.tonic % 12))
         interval = note - root_note
+        scale_interval = to_note - from_note
 
         pattern = self.note_patterns.get_pattern(interval,
                                                  dur_variety=self.current_dur_variety,
                                                  quantize=self.current_quants_state,
                                                  align=self.current_align_state,
                                                  dot_beat=self.time_signature['numerator'] in (5, 7, 10, 11),
-                                                 numerator=self.time_signature['numerator']
+                                                 numerator=self.time_signature['numerator'],
+                                                 scale_interval=scale_interval,
+                                                 key=self.key
                                                  )
 
         print(f"type of pattern: {type(pattern)=}, {isinstance(pattern, np.ndarray)}")

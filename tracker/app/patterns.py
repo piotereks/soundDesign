@@ -348,17 +348,37 @@ class NotePatterns:
 
     @mod_duration
     def get_sine_pattern(self, **kwargs):
-        interval = 0
-        if kwargs.get('interval'):
-            interval = kwargs.get('interval')
+        parms = {"interval": 0,
+                 "dur_variety": 999,
+                 "quantize": {'5': 'normal', '3': 'normal', '2': 'normal'},
+                 "align": 1,
+                 "dot_beat": False,
+                 "numerator": 4}
+        # for idx, arg in enumerate(args):
+        #     parms[list(parms.keys())[idx]] = arg
+        if kwargs is not None:
+            parms.update(kwargs)
+
+        interval = parms.get('interval',0)
+        scale_interval = parms.get('scale_interval',0)
+        key = parms.get('key', None)
         org_interval = interval
         interval_sign = 1 if interval >= 0 else -1
         r = 32
         if interval == 0:
             notes = [int(5*math.sin(2*math.pi*x/r)) for x in range(r+1)]
         else:
-            notes = [int(interval*math.sin(5*math.pi/2*x/r)) for x in range(r+1)]
+            # notes = [round(interval*math.sin(5*math.pi/2*x/r)) for x in range(r+1)]
+            if key is not None:
+                notes = [-5*len(key.scale.semitones)
+                    + key.scale.indexOf(5*key.scale.octave_size+round(scale_interval*math.sin(5*math.pi/2*x/r)))
+                         for x in range(r+1)]
+            else:
+                notes = [
+                    round(scale_interval*math.sin(5*math.pi/2*x/r))
+                         for x in range(r+1)]
 
+        # root_note = self.key.scale.indexOf(self.key.nearest_note(from_note - self.key.tonic % 12))
 
         return {
             iso.EVENT_NOTE: notes
