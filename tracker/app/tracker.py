@@ -780,15 +780,18 @@ class Tracker:
         self.scale_name_action()
         # if  from_note == None:
         #     return None
+        to_note_exists = False
         if in_pattern:
             if loopq and self.last_from_note is not None:
                 print(f'note {self.last_from_note=} back to queue')
                 self.put_to_queue(self.last_from_note, q_action=False)
 
             from_note, to_note = self.get_queue_pair()
+            to_note_exists = to_note is not None
             if loopq and not to_note:
                 to_note = from_note
                 self.put_to_queue(from_note)
+                # self.last_from_note = None
             print("if in_pattern")
             # from_notex = self.last_note
             # self.last_notex = to_note
@@ -809,8 +812,7 @@ class Tracker:
             list(self.get_queue_content())]
         self.curr_notes_pair_action()
         self.fullq_content_action()
-        self.last_from_note = from_note
-
+        self.last_from_note = from_note if to_note_exists else None
         if (to_note is None) or (from_note is None):
 
             from_note = None if not from_note else self.key.scale.indexOf(self.key.nearest_note(from_note))
