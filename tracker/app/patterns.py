@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import math
 import itertools
 import random
 import json
@@ -343,6 +344,27 @@ class NotePatterns:
         return {
             iso.EVENT_NOTE:notes
         }
+
+
+    @mod_duration
+    def get_sine_pattern(self, **kwargs):
+        interval = 0
+        if kwargs.get('interval'):
+            interval = kwargs.get('interval')
+        org_interval = interval
+        interval_sign = 1 if interval >= 0 else -1
+        r = 32
+        if interval == 0:
+            notes = [int(5*math.sin(2*math.pi*x/r)) for x in range(r+1)]
+        else:
+            notes = [int(interval*math.sin(5*math.pi/2*x/r)) for x in range(r+1)]
+
+
+        return {
+            iso.EVENT_NOTE: notes
+            ,iso.EVENT_DURATION: [1]*len(notes)
+        }
+
     # </editor-fold>
 
     def set_pattern_function(self, function_name ):
