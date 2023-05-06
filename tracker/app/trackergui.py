@@ -169,7 +169,7 @@ class TrackerGuiApp(App):
         self.func_values = self.tracker_ref.note_patterns.pattern_methods_short_list
         self.func_init_text = self.func_init_text if self.func_init_text else \
             self.tracker_ref.note_patterns.pattern_methods_short_list[0]
-        self.tracker_ref.set_rnd_func_action= lambda: self.rand_play_func()
+        self.tracker_ref.set_rnd_func_action = lambda: self.rand_play_func()
 
         # Duration variety
         self.tracker_ref.set_dur_variety_action = lambda: self.set_dur_variety_f_main(None, dur_variety_knob=self.tracker_ref.midi_mapping['set_dur_variety_knob'])

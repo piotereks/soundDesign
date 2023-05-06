@@ -32,6 +32,7 @@ class DurationPatterns:
 class NotePatterns:
 
     def __init__(self):
+        self.patterns = {}
         self.__read_config_file__()
         self.pattern_size_for_interval = self.__init_pattern_size_for_interval__()
 
@@ -39,6 +40,7 @@ class NotePatterns:
         self.pattern_methods_short_list  = [re.sub('get_(.*)_pattern', '\g<1>', method) for method in self.__list_get_pattern_methods__()]
         self.get_pattern = getattr(self, self.pattern_methods_list[0])
         self.dur_patterns = DurationPatterns()
+
 
 
     def __list_get_pattern_methods__(self):
@@ -69,7 +71,9 @@ class NotePatterns:
             self.patterns_config = json.load(file)
 
         # self.patterns = list(map(lambda x: np.array(x['pattern']), self.patterns_config['play_over']['patterns']))
-        self.patterns = list(map(lambda x: x['pattern'], self.patterns_config['play_over']['patterns']))
+        self.patterns['play_over'] = list(map(lambda x: x['pattern'], self.patterns_config['play_over']['patterns']))
+        self.patterns['ornament'] = list(map(lambda x: x['pattern'], self.patterns_config['ornament']['patterns']))
+        self.patterns['diminunition'] = list(map(lambda x: x['pattern'], self.patterns_config['diminunition']['patterns']))
 
 
     @staticmethod
@@ -98,7 +102,7 @@ class NotePatterns:
 
         if interval == 0:
             suitable_patterns = [pattern for pattern in
-                             self.patterns if pattern[-1] in self.pattern_size_for_interval[interval]]
+                             self.patterns['play_over'] if pattern[-1] in self.pattern_size_for_interval[interval]]
         else:
             # suitable_patterns = [sign * self.multiply_pattern(pattern, int(interval / pattern[-1])) for pattern in
             #                  self.patterns if pattern[-1] in self.pattern_size_for_interval[interval]]
@@ -106,11 +110,33 @@ class NotePatterns:
 
             suitable_patterns = [list(map(lambda x:x*sign*int(np.sign(pattern[-1]))
                                           , self.multiply_pattern(pattern[:], int(interval / pattern[-1]))))
-                                 for pattern in self.patterns
+                                 for pattern in self.patterns['play_over']
                                  if abs(pattern[-1]) in self.pattern_size_for_interval[interval]]
 
         return suitable_patterns
 
+
+    def all_suitable_diminunitions(self, interval):
+        sign = int(np.sign(interval))
+        interval = abs(interval)
+
+        if interval == 0:
+            suitable_patterns = [pattern for pattern in
+                             self.patterns['diminunition'] if pattern[-1] in self.pattern_size_for_interval[interval]]
+        else:
+            # suitable_patterns = [sign * self.multiply_pattern(pattern, int(interval / pattern[-1])) for pattern in
+            #                  self.patterns if pattern[-1] in self.pattern_size_for_interval[interval]]
+            cntr = 0
+
+            suitable_patterns = [list(map(lambda x:x*sign*int(np.sign(pattern[-1]))
+                                          ,pattern[:]))
+                                 for pattern in self.patterns['diminunition']
+                                 if abs(pattern[-1]) == interval]
+            if suitable_patterns == []:
+                # suitable_patterns = [[0, sign*interval]]
+                suitable_patterns = [range(0, sign*interval+sign, sign)]
+
+        return suitable_patterns
 # <editor-fold desc="get pattern functions">
     def mod_duration(func):  # added self, eventual issue
         @wraps(func)
@@ -231,7 +257,7 @@ class NotePatterns:
     @mod_duration
     def get_simple_pattern(self, *args, **kwargs):  # interval sould be not needed
         return {
-            iso.EVENT_NOTE: list(map(lambda x : x*random.choice([1,-1]),random.choice(self.patterns))) + [0]
+            iso.EVENT_NOTE: list(map(lambda x : x*random.choice([1,-1]),random.choice(self.patterns['play_over']))) + [0]
         }
 
     @mod_duration
@@ -247,6 +273,25 @@ class NotePatterns:
         interval *= interval_sign
         print(f"{org_interval=}, {octave=}, {interval=}")
         notes_pattern = random.choice([pattern for pattern in self.all_suitable_patterns(org_interval)])
+        # notes_pattern = random.choice(deb)
+        return {
+            iso.EVENT_NOTE: notes_pattern,
+        }
+
+
+    @mod_duration
+    def get_random_dim_pattern(self, **kwargs):
+        interval = 0
+        if kwargs.get('interval'):
+            interval = kwargs.get('interval')
+        org_interval=interval
+        interval_sign = 1 if interval>=0 else -1
+        octave = abs(interval) // 12
+        octave *= interval_sign
+        interval = abs(interval) % 12
+        interval *= interval_sign
+        print(f"{org_interval=}, {octave=}, {interval=}")
+        notes_pattern = random.choice([pattern for pattern in self.all_suitable_diminunitions(org_interval)])
         # notes_pattern = random.choice(deb)
         return {
             iso.EVENT_NOTE: notes_pattern,

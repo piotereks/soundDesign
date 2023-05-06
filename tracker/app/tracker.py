@@ -816,8 +816,8 @@ class Tracker:
                 iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.key),
                 iso.EVENT_DURATION: iso.PSequence(
                     [Fraction(4 * self.time_signature['numerator'], self.time_signature['denominator'])], repeats=1),
-                iso.EVENT_AMPLITUDE: iso.PSequence(64, repeats=1),
-                iso.EVENT_GATE: iso.PSequence(self.legato, repeats=1)
+                iso.EVENT_AMPLITUDE: iso.PSequence([64], repeats=1),
+                iso.EVENT_GATE: iso.PSequence([self.legato], repeats=1)
             })
         print('after_check')
         root_note = self.key.scale.indexOf(self.key.nearest_note(from_note - self.key.tonic % 12))
