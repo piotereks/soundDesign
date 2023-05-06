@@ -354,8 +354,7 @@ class NotePatterns:
                  "align": 1,
                  "dot_beat": False,
                  "numerator": 4}
-        # for idx, arg in enumerate(args):
-        #     parms[list(parms.keys())[idx]] = arg
+
         if kwargs is not None:
             parms.update(kwargs)
 
@@ -385,6 +384,57 @@ class NotePatterns:
             ,iso.EVENT_DURATION: [1]*len(notes)
         }
 
+    @mod_duration
+    def get_sine_vlen_pattern(self, **kwargs):
+        parms = {"interval": 0,
+                 "dur_variety": 999,
+                 "quantize": {'5': 'normal', '3': 'normal', '2': 'normal'},
+                 "align": 1,
+                 "dot_beat": False,
+                 "numerator": 4}
+
+        if kwargs is not None:
+            parms.update(kwargs)
+
+        interval = parms.get('interval',0)
+        scale_interval = parms.get('scale_interval',0)
+        key = parms.get('key', None)
+        org_interval = interval
+        interval_sign = 1 if interval >= 0 else -1
+        r = 32
+        if interval == 0:
+            notes = [int(5*math.sin(2*math.pi*x/r)) for x in range(r+1)]
+        else:
+            # notes = [round(interval*math.sin(5*math.pi/2*x/r)) for x in range(r+1)]
+            if key is not None:
+                notes = [-5*len(key.scale.semitones)
+                    + key.scale.indexOf(5*key.scale.octave_size+round(scale_interval*math.sin(5*math.pi/2*x/r)))
+                         for x in range(r+1)]
+            else:
+                notes = [
+                    round(scale_interval*math.sin(5*math.pi/2*x/r))
+                         for x in range(r+1)]
+
+        # root_note = self.key.scale.indexOf(self.key.nearest_note(from_note - self.key.tonic % 12))
+        result_dict = {
+              iso.EVENT_NOTE: notes
+            , iso.EVENT_DURATION: [1]*len(notes)
+        }
+
+        notes_wrk = []
+        dur_wrk = []
+        # for idx, (n,d) in enumerate(zip(xdict['notes'].copy(),xdict['dur'].copy())):
+        for idx in range(len(notes)):
+            if idx == 0 or notes[idx] != notes[idx - 1]:
+                notes_wrk.append(result_dict[iso.EVENT_NOTE][idx])
+                dur_wrk.append(result_dict[iso.EVENT_DURATION][idx])
+            else:
+                dur_wrk[-1] += 1
+
+        result_dict[iso.EVENT_NOTE] = notes_wrk
+        result_dict[iso.EVENT_DURATION] = dur_wrk
+
+        return result_dict
     # </editor-fold>
 
     def set_pattern_function(self, function_name ):
