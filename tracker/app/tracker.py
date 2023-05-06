@@ -583,9 +583,12 @@ class Tracker:
                 self.queue_content_action()
                 self.fullq_content_action()
 
-    def clear_queue(self):
+    def clear_queue(self, q_action=True):
         self.last_from_note = None
         self.note_queue.queue.clear()
+        if q_action:
+            self.queue_content_action()
+            self.fullq_content_action()
         pass
 
     def get_from_queue(self):

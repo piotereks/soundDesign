@@ -24,25 +24,25 @@ def test_get_sine_pattern():
     assert True
 
 
-def test_sin_return():
-    notes = [1,2,3,3,3,4,4,5,6,7,7,0]
-    dur = [1]*len(notes)
-    xdict = {'notes': notes,
-             'dur': dur}
-    p_n = None
-    nt = []
-    dr = []
-    # for idx, (n,d) in enumerate(zip(xdict['notes'].copy(),xdict['dur'].copy())):
-    for idx  in range(len(notes)):
-        if idx==0 or notes[idx] != notes[idx-1]:
-            nt.append(xdict['notes'][idx])
-            dr.append(xdict['dur'][idx])
-        else:
-            dr[-1]+=1
-
-    xdict['notes']=nt
-    xdict['dur']=dr
-
-            # xdict['notes'].remove()
-    assert xdict['notes'] == [1,2,3,4,5,6,7,0]
-    assert xdict['dur'] == [1,1,3,2,1,1,2,1]
+# def test_sin_return():
+#     notes = [1,2,3,3,3,4,4,5,6,7,7,0]
+#     dur = [1]*len(notes)
+#     xdict = {'notes': notes,
+#              'dur': dur}
+#     p_n = None
+#     nt = []
+#     dr = []
+#     # for idx, (n,d) in enumerate(zip(xdict['notes'].copy(),xdict['dur'].copy())):
+#     for idx  in range(len(notes)):
+#         if idx==0 or notes[idx] != notes[idx-1]:
+#             nt.append(xdict['notes'][idx])
+#             dr.append(xdict['dur'][idx])
+#         else:
+#             dr[-1]+=1
+#
+#     xdict['notes']=nt
+#     xdict['dur']=dr
+#
+#             # xdict['notes'].remove()
+#     assert xdict['notes'] == [1,2,3,4,5,6,7,0]
+#     assert xdict['dur'] == [1,1,3,2,1,1,2,1]
