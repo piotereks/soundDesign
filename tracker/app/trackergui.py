@@ -191,9 +191,13 @@ class TrackerGuiApp(App):
         self.tracker_ref.check_notes_action = lambda: self.set_check_notes_lbl_text(str(self.tracker_ref.check_notes))
         self.tracker_ref.queue_content_action = lambda: self.set_queue_content_lbl_text(
             'queue: ' + str(self.tracker_ref.get_queue_content()))
+        self.set_queue_content_lbl_text(
+            'queue: ' + str(self.tracker_ref.get_queue_content()))
         self.tracker_ref.curr_notes_pair_action = lambda: self.set_curr_notes_pair_lbl_text(
             'from to: ' + str(self.tracker_ref.notes_pair))
         self.tracker_ref.fullq_content_action = lambda: self.set_fullq_content_lbl_text(
+            'full queue: ' + str(self.tracker_ref.get_queue_content_full()))
+        self.set_fullq_content_lbl_text(
             'full queue: ' + str(self.tracker_ref.get_queue_content_full()))
 
 
