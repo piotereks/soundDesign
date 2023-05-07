@@ -1,11 +1,11 @@
 {
   "app":
     {
-      "xkey":"F",
-      "key":"C",
-      "xscale":"minor",
+      "key":"F",
+      "ykey":"C",
+      "xscale":"major",
       "yscale":"minor melodic up/down",
-      "scale":"chromatic",
+      "zscale":"chromatic",
       "tempo":125,
       "tempo_min":20,
       "tempo_max":333,
@@ -13,7 +13,7 @@
       "dur_variety":0.0,
       "dur_variety_min":0,
       "dur_variety_max":7,
-      "play_func":"imp_sine",
+      "play_func":"chord_maj",
       "zplay_func":"simple",
       "xqueue_content":[60,64,62,70],
       "xplay_func":"random_path",

@@ -815,7 +815,7 @@ class Tracker:
         self.last_from_note = from_note if to_note_exists else None
         if (to_note is None) or (from_note is None):
 
-            from_note = None if not from_note else self.key.scale.indexOf(self.key.nearest_note(from_note))
+            from_note = None if not from_note else self.key.scale.indexOf(self.key.nearest_note(from_note)-self.key.tonic%12)
 
             return iso.PDict({
                 iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.key),
@@ -837,7 +837,11 @@ class Tracker:
                                                  dot_beat=self.time_signature['numerator'] in (5, 7, 10, 11),
                                                  numerator=self.time_signature['numerator'],
                                                  scale_interval=scale_interval,
-                                                 key=self.key
+                                                 key=self.key,
+                                                 from_note=from_note,
+                                                 to_note=to_note,
+                                                 root_note=root_note,
+                                                 note=note
                                                  )
 
         print(f"type of pattern: {type(pattern)=}, {isinstance(pattern, np.ndarray)}")
@@ -889,13 +893,13 @@ class Tracker:
         print(f"{pattern_duration=}")
 
         print('Pseq:', list(iso.PSequence(pattern_notes, repeats=1)))
-        print('Pseq + Degree - scale:', list(iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key.scale)))
-        print('Pseq + Degree - key:', list(iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key)))
+        print('Pseq + Degree - scale:', list(iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key.scale)+self.key.tonic))
+        # print('Pseq + Degree - key:', list(iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key)))
         print('bef Pdict2')
         print('=====================')
 
         return iso.PDict({
-            iso.EVENT_NOTE: iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key),
+            iso.EVENT_NOTE: iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key.scale) + self.key.tonic,
             iso.EVENT_DURATION: iso.PSequence(pattern_duration, repeats=1),
             iso.EVENT_AMPLITUDE: iso.PSequence(pattern_amplitude, repeats=len(pattern_duration)),
             iso.EVENT_GATE: iso.PSequence(pattern_gate, repeats=len(pattern_duration))
