@@ -893,13 +893,20 @@ class Tracker:
         print(f"{pattern_duration=}")
 
         print('Pseq:', list(iso.PSequence(pattern_notes, repeats=1)))
-        print('Pseq + Degree - scale:', list(iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key.scale)+self.key.tonic))
+        pattern_notes = iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key.scale)
+        pattern_notes = [x + self.key.tonic if isinstance(x, np.int32) or isinstance(x, np.int64) or isinstance(x, int)
+                         else None if not x
+        else tuple(map(lambda u: u + self.key.tonic, x)) for x in pattern_notes]
+
+        # print('Pseq + Degree - scale:', list(iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key.scale)))
+        print('Pseq + Degree - scale:', list(pattern_notes))
         # print('Pseq + Degree - key:', list(iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key)))
         print('bef Pdict2')
         print('=====================')
 
         return iso.PDict({
-            iso.EVENT_NOTE: iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key.scale) + self.key.tonic,
+            # iso.EVENT_NOTE: iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key.scale),
+            iso.EVENT_NOTE: iso.PSequence(pattern_notes, repeats=1),
             iso.EVENT_DURATION: iso.PSequence(pattern_duration, repeats=1),
             iso.EVENT_AMPLITUDE: iso.PSequence(pattern_amplitude, repeats=len(pattern_duration)),
             iso.EVENT_GATE: iso.PSequence(pattern_gate, repeats=len(pattern_duration))
