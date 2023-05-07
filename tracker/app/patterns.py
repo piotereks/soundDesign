@@ -384,6 +384,53 @@ class NotePatterns:
             ,iso.EVENT_DURATION: [1]*len(notes)
         }
 
+    # @mod_duration
+    # def get_imp_sine_pattern(self, **kwargs):
+    #     parms = {"interval": 0,
+    #              "dur_variety": 999,
+    #              "quantize": {'5': 'normal', '3': 'normal', '2': 'normal'},
+    #              "align": 1,
+    #              "dot_beat": False,
+    #              "numerator": 4}
+    #
+    #     if kwargs is not None:
+    #         parms.update(kwargs)
+    #
+    #     interval = parms.get('interval',0)
+    #     scale_interval = parms.get('scale_interval',0)
+    #     key = parms.get('key', None)
+    #     org_interval = interval
+    #     interval_sign = 1 if interval >= 0 else -1
+    #     # y1 = 1.38*np.cos(np.radians(x/2))
+    #     # y2 = np.sin(np.radians(x))
+    #     factor = 1.38 if interval_sign < 0 else 0.46
+    #     # factor = 0.7
+    #     # factor = 0.46
+    #     r = 32
+    #     if interval == 0:
+    #         notes = [int(math.sin(2*math.pi*x/r)) for x in range(r+1)]
+    #     else:
+    #         # notes = [round(interval*math.sin(5*math.pi/2*x/r)) for x in range(r+1)]
+    #         if key is not None:
+    #             notes = [-5 * len(key.scale.semitones)
+    #                      + key.scale.indexOf(5 * key.scale.octave_size + round(
+    #                       abs(scale_interval)/2/factor*(+ math.sin(2*math.pi * x / r) - (interval_sign*factor * math.cos(2*math.pi * x / r / 2)-factor ))
+    #             ))
+    #     # for x in range(33)))
+    #                      for x in range(r + 1)]
+    #         else:
+    #             notes = [
+    #                 round(scale_interval*(math.sin(math.pi * x / r) + factor * math.cos(
+    #                                                math.pi * x / r / 2)))
+    #                      for x in range(r+1)]
+    #
+    #     # root_note = self.key.scale.indexOf(self.key.nearest_note(from_note - self.key.tonic % 12))
+    #
+    #     return {
+    #         iso.EVENT_NOTE: notes
+    #         ,iso.EVENT_DURATION: [1]*len(notes)
+    #     }
+
     @mod_duration
     def get_sine_vlen_pattern(self, **kwargs):
         parms = {"interval": 0,

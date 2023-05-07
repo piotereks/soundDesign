@@ -25,24 +25,10 @@ def test_get_sine_pattern():
 
 
 # def test_sin_return():
-#     notes = [1,2,3,3,3,4,4,5,6,7,7,0]
-#     dur = [1]*len(notes)
-#     xdict = {'notes': notes,
-#              'dur': dur}
-#     p_n = None
-#     nt = []
-#     dr = []
-#     # for idx, (n,d) in enumerate(zip(xdict['notes'].copy(),xdict['dur'].copy())):
-#     for idx  in range(len(notes)):
-#         if idx==0 or notes[idx] != notes[idx-1]:
-#             nt.append(xdict['notes'][idx])
-#             dr.append(xdict['dur'][idx])
-#         else:
-#             dr[-1]+=1
 #
-#     xdict['notes']=nt
-#     xdict['dur']=dr
-#
-#             # xdict['notes'].remove()
-#     assert xdict['notes'] == [1,2,3,4,5,6,7,0]
-#     assert xdict['dur'] == [1,1,3,2,1,1,2,1]
+#     scale = iso.Scale()
+#     key = iso.Key(tonic=0,scale=scale)
+#     scale_interval = 7
+#     interval = scale.indexOf(scale_interval+5*scale.octave_size) - 5*len(scale.semitones)
+#     npat.get_imp_sine_pattern(interval=interval,scale_interval=scale_interval, key=key )
+#     assert True
