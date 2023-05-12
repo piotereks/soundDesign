@@ -3,6 +3,7 @@ from queue import Queue
 import shutil
 from datetime import datetime
 from itertools import accumulate
+from functools import wraps
 # import mido
 
 from .isobar_fixes import *
@@ -377,6 +378,7 @@ class Tracker:
         return accent if accent else 1
 
     def log_and_schedule(func):
+        @wraps(func)
         def inner(self, *args, **kwargs):
             log_call()
             print(func.__name__)
@@ -393,10 +395,10 @@ class Tracker:
             notes = func(self, *args, **kwargs)
 
             # xxx = notes[iso.EVENT_NOTE]
-            notes[iso.EVENT_NOTE] = iso.PMap(notes[iso.EVENT_NOTE], lambda midi_note:
-            (None if not midi_note else None if midi_note < 0 else None if midi_note > 127 else midi_note)
-            if not midi_note or isinstance(midi_note, int)
-            else tuple(map(lambda u: None if not u else None if u < 0 else None if u > 127 else u, midi_note)))
+            # notes[iso.EVENT_NOTE] = iso.PMap(notes[iso.EVENT_NOTE], lambda midi_note:
+            # (None if not midi_note else None if midi_note < 0 else None if midi_note > 127 else midi_note)
+            # if not midi_note or isinstance(midi_note, int)
+            # else tuple(map(lambda u: None if not u else None if u < 0 else None if u > 127 else u, midi_note)))
 
             # create accent depending on beat
             print("bbbb1: ", list(map(type, notes[iso.EVENT_AMPLITUDE].copy())))
@@ -430,6 +432,7 @@ class Tracker:
             )
 
             print('post sched')
+            return notes
 
         return inner
 
@@ -825,8 +828,10 @@ class Tracker:
                 iso.EVENT_GATE: iso.PSequence([self.legato], repeats=1)
             })
         print('after_check')
-        root_note = self.key.scale.indexOf(self.key.nearest_note(from_note - self.key.tonic % 12))
-        note = self.key.scale.indexOf(self.key.nearest_note(to_note - self.key.tonic % 12))
+        # root_note = self.key.scale.indexOf(self.key.nearest_note(from_note - self.key.tonic % 12))
+        # note = self.key.scale.indexOf(self.key.nearest_note(to_note - self.key.tonic % 12))
+        root_note = self.key.scale.indexOf(self.key.nearest_note(from_note)-self.key.tonic)
+        note = self.key.scale.indexOf(self.key.nearest_note(to_note)-self.key.tonic)
         interval = note - root_note
         scale_interval = to_note - from_note
 
@@ -863,9 +868,9 @@ class Tracker:
         else:
             raise Exception("No notes returned!!!")
         print(f"----debug----{pattern_notes}, {root_note=}, {type(pattern_notes)=}")
-        pattern_notes = [x + root_note if isinstance(x, np.int32) or isinstance(x, np.int64) or isinstance(x, int)
+        pattern_notes = [x + root_note  if isinstance(x, np.int32) or isinstance(x, np.int64) or isinstance(x, int)
                          else None if not x
-        else tuple(map(lambda u: u + root_note, x)) for x in pattern_notes]
+        else tuple(map(lambda u: u + root_note , x)) for x in pattern_notes]
         print(f"----debugz2----{pattern_notes}")
         pattern_notes = pattern_notes[:-1]
         len_pattern = len(pattern_notes)
@@ -893,20 +898,21 @@ class Tracker:
         print(f"{pattern_duration=}")
 
         print('Pseq:', list(iso.PSequence(pattern_notes, repeats=1)))
-        pattern_notes = iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key.scale)
-        pattern_notes = [x + self.key.tonic if isinstance(x, np.int32) or isinstance(x, np.int64) or isinstance(x, int)
+        # pattern_notes = iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key.scale)
+        pattern_notes = [x if isinstance(x, np.int32) or isinstance(x, np.int64) or isinstance(x, int)
                          else None if not x
-        else tuple(map(lambda u: u + self.key.tonic, x)) for x in pattern_notes]
+        else tuple(map(lambda u: u , x)) for x in pattern_notes]
 
         # print('Pseq + Degree - scale:', list(iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key.scale)))
         print('Pseq + Degree - scale:', list(pattern_notes))
         # print('Pseq + Degree - key:', list(iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key)))
         print('bef Pdict2')
         print('=====================')
-
+        # return [123456789]
         return iso.PDict({
-            # iso.EVENT_NOTE: iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key.scale),
-            iso.EVENT_NOTE: iso.PSequence(pattern_notes, repeats=1),
+            iso.EVENT_NOTE: iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key),
+            # iso.EVENT_NOTE: iso.PSequence(pattern_notes, repeats=1),
+            # iso.EVENT_NOTE: pattern_notes,
             iso.EVENT_DURATION: iso.PSequence(pattern_duration, repeats=1),
             iso.EVENT_AMPLITUDE: iso.PSequence(pattern_amplitude, repeats=len(pattern_duration)),
             iso.EVENT_GATE: iso.PSequence(pattern_gate, repeats=len(pattern_duration))

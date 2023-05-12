@@ -2,6 +2,7 @@ import pytest
 import os
 import sys
 import json
+from tracker.app.isobar_fixes import *
 
 from tracker.app.tracker import Tracker
 
@@ -56,19 +57,24 @@ def init_tracker(numerator):
          'amplitude': [ACCENT_BIG, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT],
          'duration': [1.5, 1.5, 1, 1, 1, 1]}),
     (8, {'note': [32, 37, 37, 37, 37, 37, 37, 37],
-         'amplitude': [ACCENT_BIG, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_DEFAULT],
+         'amplitude': [ACCENT_BIG, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT,
+                       ACCENT_DEFAULT, ACCENT_DEFAULT],
          'duration': [1, 1, 1, 1, 1, 1, 1, 1, ]}),
     (9, {'note': [32, 37, 37, 37, 37, 37, 37, 37, 37],
-         'amplitude': [ACCENT_BIG, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT, ACCENT_DEFAULT],
+         'amplitude': [ACCENT_BIG, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT, ACCENT_DEFAULT,
+                       ACCENT_MED, ACCENT_DEFAULT, ACCENT_DEFAULT],
          'duration': [1, 1, 1, 1, 1, 1, 1, 1, 1]}),
     (10, {'note': [32, 37, 37, 37, 37, 37, 37, 37],
-          'amplitude': [ACCENT_BIG, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_DEFAULT, ],
+          'amplitude': [ACCENT_BIG, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT,
+                        ACCENT_DEFAULT, ACCENT_DEFAULT, ],
           'duration': [1.5, 1.5, 1.5, 1.5, 1, 1, 1, 1]}),
     (11, {'note': [32, 37, 37, 37, 37, 37, 37, 37],
-          'amplitude': [ACCENT_BIG, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_DEFAULT],
+          'amplitude': [ACCENT_BIG, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT,
+                        ACCENT_DEFAULT, ACCENT_DEFAULT],
           'duration': [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1, 1]}),
     (12, {'note': [32, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37],
-          'amplitude': [ACCENT_BIG, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT, ACCENT_DEFAULT],
+          'amplitude': [ACCENT_BIG, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT, ACCENT_DEFAULT,
+                        ACCENT_MED, ACCENT_DEFAULT, ACCENT_DEFAULT, ACCENT_MED, ACCENT_DEFAULT, ACCENT_DEFAULT],
           'duration': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]})
 ])
 def test_metro_play(init_tracker, numerator, out_patterns):
@@ -101,3 +107,27 @@ def test_metro_play(init_tracker, numerator, out_patterns):
 #     # print("accents dict after: ", tracker.accents_dict)
 #
 #     pass
+
+def test_play_from_to_result():
+    x=1
+    # self.play_from_to(from_note, to_note, in_pattern=True)
+    scale = iso.Scale.major
+    key = iso.Key(4, scale)
+    tracker.key=key
+    tracker.note_patterns.set_pattern_function('path')
+    tracker.put_to_queue(64)
+    tracker.put_to_queue(76)
+    tracker.quants_state = {'5': 'normal', '3': 'normal', '2': 'normal'}
+    patt=tracker.play_from_to(64, 76, in_pattern=True)
+    print(list(patt[iso.EVENT_NOTE]))
+    print()
+    # print(patt[iso.EVENT_NOTE])
+    # return iso.PDict({
+    #     iso.EVENT_NOTE: iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key.scale),
+    #     # iso.EVENT_NOTE: iso.PSequence(pattern_notes, repeats=1),
+    #     # iso.EVENT_NOTE: pattern_notes,
+    #     iso.EVENT_DURATION: iso.PSequence(pattern_duration, repeats=1),
+    #     iso.EVENT_AMPLITUDE: iso.PSequence(pattern_amplitude, repeats=len(pattern_duration)),
+    #     iso.EVENT_GATE: iso.PSequence(pattern_gate, repeats=len(pattern_duration))
+    # })
+    assert list(patt[iso.EVENT_NOTE]) == [64, 66, 68, 69, 71, 73, 75]

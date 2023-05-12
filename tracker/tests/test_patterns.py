@@ -91,7 +91,7 @@ def test_get_chord_improved_pattern():
         pass
     minor = iso.Scale.minor
     xnote = 60
-    cnote = key.nearest_note(60)
+    cnote = key.nearest_note(60)-key.tonic
     cdix = minor.indexOf(cnote)
     sc = iso.Scale.major
     key = iso.Key(tonic=2, scale=sc)
