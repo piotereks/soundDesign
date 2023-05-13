@@ -43,7 +43,8 @@ def read_config_file_scales():
     # uuuu = [iso.Scale(scale['semitones'], scale['name']) for scale in loaded_yaml['scales']]
     for scale in loaded_json['scales']:
         for name in scale['name']:
-            new_scale = iso.Scale(scale['semitones'], name, semitones_down=scale.get('semitones_down'))
+            new_scale = iso.Scale(scale['semitones'], name, semitones_down=scale.get('semitones_down'),
+                                  octave_size=scale.get('octave_size', 12))
 
 
 iso.util.midi_note_to_note_name = midi_note_to_note_name  #Overwrite original function

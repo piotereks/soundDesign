@@ -31,7 +31,7 @@ def test_get_path_pattern():
     print(f"{scale.semitones=}")
     # exp_pattern = list(np.array([0, 2, 4, 5, 7])+key.tonic)
     exp_pattern = list(np.array(scale.semitones)+key.tonic)
-    assert aaa == exp_pattern, "sdfasdfds"
+    assert aaa == exp_pattern
     # assert bbb == exp_pattern
 
     assert True
@@ -42,10 +42,6 @@ def test_generic_get_indexOf():
 
     # scale = iso.Scale.minor
     for scale in iso.Scale.all():
-        if scale.octave_size >12:
-            continue
-        if scale.semitones[-1]>11:
-            continue
         print(scale.name)
         if hasattr(scale, "semitones_down") and scale.semitones_down:
             print("scale_down tested too")

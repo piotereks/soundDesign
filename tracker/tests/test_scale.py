@@ -18,8 +18,6 @@ def test_key_index_of():
     scale = iso.Scale(semitones=[0, 2, 4, 6, 8, 10], name="test_scale", octave_size=12,
                                 semitones_down =[0, 1, 3, 5, 7, 9, 11])
     for scale in iso.Scale.all():
-        if scale.name == 'algerian (long)': # temporary disable this scale Issue #95
-            continue
         key = iso.Key(tonic=0, scale=scale)
         print('\n'+scale.name)
             # test_pattern_midi_nr = list(range(0,13))
@@ -53,3 +51,4 @@ def test_key_index_of():
             # if t>=12:
             #     break
         # break
+
