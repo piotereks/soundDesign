@@ -2,6 +2,8 @@ import pytest
 import os
 import sys
 import json
+import contextlib
+
 from tracker.app.isobar_fixes import *
 
 from tracker.app.tracker import Tracker
@@ -109,25 +111,27 @@ def test_metro_play(init_tracker, numerator, out_patterns):
 #     pass
 
 def test_play_from_to_result():
-    x=1
     # self.play_from_to(from_note, to_note, in_pattern=True)
     scale = iso.Scale.major
-    key = iso.Key(4, scale)
-    tracker.key=key
-    tracker.note_patterns.set_pattern_function('path')
-    tracker.put_to_queue(64)
-    tracker.put_to_queue(76)
-    tracker.quants_state = {'5': 'normal', '3': 'normal', '2': 'normal'}
-    patt=tracker.play_from_to(64, 76, in_pattern=True)
-    print(list(patt[iso.EVENT_NOTE]))
-    print()
-    # print(patt[iso.EVENT_NOTE])
-    # return iso.PDict({
-    #     iso.EVENT_NOTE: iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key.scale),
-    #     # iso.EVENT_NOTE: iso.PSequence(pattern_notes, repeats=1),
-    #     # iso.EVENT_NOTE: pattern_notes,
-    #     iso.EVENT_DURATION: iso.PSequence(pattern_duration, repeats=1),
-    #     iso.EVENT_AMPLITUDE: iso.PSequence(pattern_amplitude, repeats=len(pattern_duration)),
-    #     iso.EVENT_GATE: iso.PSequence(pattern_gate, repeats=len(pattern_duration))
-    # })
-    assert list(patt[iso.EVENT_NOTE]) == [64, 66, 68, 69, 71, 73, 75]
+
+    for scale in iso.Scale.all():
+        print(f"{scale.name=}")
+        for t in range(12):
+            # print(t)
+            key = iso.Key(t%scale.octave_size, scale)
+            test_semitones = [x+60+key.tonic for x in key.scale.semitones]
+            tracker.key=key
+            tracker.note_patterns.set_pattern_function('path')
+            from_note = 60+key.tonic
+            to_note = from_note+key.scale.octave_size
+            tracker.quants_state = {'5': 'normal', '3': 'normal', '2': 'normal'}
+            with contextlib.redirect_stdout(None):
+                tracker.put_to_queue(from_note)
+                tracker.put_to_queue(to_note)
+
+                patt=tracker.play_from_to(from_note, to_note, in_pattern=False)
+
+                print(list(patt[iso.EVENT_NOTE]))
+                print()
+
+            assert list(patt[iso.EVENT_NOTE]) == test_semitones, f"Play_from_to pattern mismatch {(t,from_note,to_note)=}"
