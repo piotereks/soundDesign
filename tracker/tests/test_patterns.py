@@ -1,5 +1,23 @@
 from tracker.app.patterns import *
+
+from tracker.app.isobar_fixes import *
+read_config_file_scales()
+
 npat = NotePatterns()
+
+def test_deb_get_path_pattern():
+
+    scale = iso.Scale(semitones=[0, 2, 4, 6, 8, 10], name="test_scale", octave_size=12,
+                                semitones_down =[0, 1, 3, 5, 7, 9, 11])
+
+    # pattern_notes = list(range(7, -1, -1))
+    # pattern_notes = list(range(0, -7, -1))
+    key = iso.Key(0, scale)
+    scale_interval = -12
+    interval = scale.indexOf(scale_interval, scale_down=True)
+    xxx = npat.get_path_pattern(interval=interval,scale_interval=scale_interval, key=key )
+    aaa = list(iso.PDegree(iso.PSequence(xxx[iso.EVENT_NOTE], repeats=1), scale)+key.tonic)
+    x=1
 
 def test_get_path_pattern():
 
@@ -8,7 +26,8 @@ def test_get_path_pattern():
     scale_interval = 7
     interval = scale.indexOf(scale_interval)
     xxx = npat.get_path_pattern(interval=interval,scale_interval=scale_interval, key=key )
-    aaa = list(iso.PDegree(iso.PSequence(xxx[iso.EVENT_NOTE], repeats=1), scale)+key.tonic)
+    # aaa = list(iso.PDegree(iso.PSequence(xxx[iso.EVENT_NOTE], repeats=1), scale)+key.tonic)
+    aaa = list(iso.PDegree(iso.PSequence(xxx[iso.EVENT_NOTE], repeats=1), key))
     # bbb = list(iso.PDegree(iso.PSequence(xxx[iso.EVENT_NOTE], repeats=1), key))
     exp_pattern = list(np.array([0, 2, 4, 5, 7])+key.tonic)
     assert aaa == exp_pattern
@@ -30,6 +49,8 @@ def test_get_path_pattern():
     assert True
 
 def test_generic_get_indexOf():
+    scale = iso.Scale(semitones=[0, 2, 4, 6, 8, 10], name="test_scale", octave_size=12,
+                      semitones_down=[0, 1, 3, 5, 7, 9, 11])
 
     # scale = iso.Scale.minor
     for scale in iso.Scale.all():
@@ -38,14 +59,21 @@ def test_generic_get_indexOf():
         if scale.semitones[-1]>11:
             continue
         print(scale.name)
+        if hasattr(scale, "semitones_down") and scale.semitones_down:
+            print("scale_down tested too")
     # print(scale.semitones)
         for t in range(0, 12):
             key = iso.Key(tonic=t, scale=scale)
             exp_result = list(np.array(scale.semitones)+key.tonic)
-            assert [key.get(x) for x in range(len(scale.semitones))] == exp_result
+            assert [key.get(x) for x in range(len(scale.semitones))] == exp_result, "IndexOf UP1"
             # print("\nreversed: ", [scale.indexOf(x) for x in exp_result])
-            assert [scale.indexOf(x-key.tonic) for x in exp_result] == list(range(len(scale.semitones)))
+            assert [scale.indexOf(x-key.tonic) for x in exp_result] == list(range(len(scale.semitones))), "IndexOf UP2"
+            if hasattr(scale,"semitones_down") and scale.semitones_down:
+                exp_result = list(np.array(scale.semitones_down) + key.tonic)
+                assert [key.get(x, scale_down=True) for x in range(len(scale.semitones_down))] == exp_result, "IndexOf DOWN1"
+                assert [scale.indexOf(x - key.tonic, scale_down=True) for x in exp_result] == list(range(len(scale.semitones_down))), "IndexOf DOWN2"
 
+    # TODO check for scale_down
 
 def test_all_suitable_patterns():
     _ = npat.all_suitable_patterns(0)

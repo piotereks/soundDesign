@@ -26,7 +26,7 @@ def print_message(message):
     # if message.type == 'note_on':
     #    pass
     # elif message.type == 'control_change':
-    #     if message.control == 22:  # hardcoded TODO change to config.
+    #     if message.control == 22:
     #         if message.control != 0:  # or message.contol==64:
     #             knob_01 += (message.contol + 64) % 128 - 64
     #             print(f"{knob_01}")

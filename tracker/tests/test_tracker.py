@@ -158,10 +158,13 @@ def test_play_from_to_result_rev():
     scale = iso.Scale(semitones=[0, 2, 4, 6, 8, 10], name="test_scale", octave_size=12,
                                 semitones_down =[0, 1, 3, 5, 7, 9, 11])
 
-    pattern_notes = list(range(7, -1, -1))
-    key = iso.Key(0, scale)
-    dgr = iso.PDegree(iso.PSequence(pattern_notes, repeats=1), key)
-    res_lst = list(dgr)
+    # pattern_notes = list(range(7, -1, -1))
+    # pattern_notes = list(range(0, -7, -1))
+    # key = iso.Key(0, scale)
+    # dgr = iso.PDegree(iso.PSequence(pattern_notes, repeats=1), key)
+    # res_lst = list(dgr)
+    # dgr2 = iso.PDegree(iso.PSequence([36, 35, 34, 33, 32, 31], repeats=1), key)
+    # res_lst2 = list(dgr2)
 
     for scale in iso.Scale.all():
         if not hasattr(scale, 'semitones_down') or not scale.semitones_down:

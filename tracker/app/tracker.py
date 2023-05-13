@@ -440,7 +440,6 @@ class Tracker:
     @log_and_schedule
     def beat_none(self):
         return iso.PDict({
-            # iso.EVENT_NOTE: iso.PSequence([None], repeats=4)})  # TODO check beat none for custom time sig
             iso.EVENT_NOTE: iso.PSequence([None], repeats=self.time_signature['numerator'])})
 
     # </editor-fold>
@@ -830,8 +829,12 @@ class Tracker:
         print('after_check')
         # root_note = self.key.scale.indexOf(self.key.nearest_note(from_note - self.key.tonic % 12))
         # note = self.key.scale.indexOf(self.key.nearest_note(to_note - self.key.tonic % 12))
-        root_note = self.key.scale.indexOf(self.key.nearest_note(from_note)-self.key.tonic)
-        note = self.key.scale.indexOf(self.key.nearest_note(to_note)-self.key.tonic)
+
+        scale_down = True if from_note > to_note else False
+        root_note = self.key.scale.indexOf(self.key.nearest_note(from_note, scale_down=scale_down)-self.key.tonic, scale_down=scale_down)
+        note = self.key.scale.indexOf(self.key.nearest_note(to_note, scale_down=scale_down)-self.key.tonic, scale_down=scale_down)
+
+
         interval = note - root_note
         scale_interval = to_note - from_note
 
@@ -905,7 +908,7 @@ class Tracker:
 
         # print('Pseq + Degree - scale:', list(iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key.scale)))
         print('Pseq + Degree - scale:', list(pattern_notes))
-        # print('Pseq + Degree - key:', list(iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key)))
+        print('Pseq + Degree - key:', list(iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key)))
         print('bef Pdict2')
         print('=====================')
         # return [123456789]
