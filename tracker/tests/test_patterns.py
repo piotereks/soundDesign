@@ -5,19 +5,6 @@ read_config_file_scales()
 
 npat = NotePatterns()
 
-def test_deb_get_path_pattern():
-
-    scale = iso.Scale(semitones=[0, 2, 4, 6, 8, 10], name="test_scale", octave_size=12,
-                                semitones_down =[0, 1, 3, 5, 7, 9, 11])
-
-    # pattern_notes = list(range(7, -1, -1))
-    # pattern_notes = list(range(0, -7, -1))
-    key = iso.Key(0, scale)
-    scale_interval = -12
-    interval = scale.indexOf(scale_interval, scale_down=True)
-    xxx = npat.get_path_pattern(interval=interval,scale_interval=scale_interval, key=key )
-    aaa = list(iso.PDegree(iso.PSequence(xxx[iso.EVENT_NOTE], repeats=1), scale)+key.tonic)
-    x=1
 
 def test_get_path_pattern():
 
@@ -38,7 +25,8 @@ def test_get_path_pattern():
     scale_interval = 11
     interval = scale.indexOf(scale_interval)
     xxx = npat.get_path_pattern(interval=interval,scale_interval=scale_interval, key=key )
-    aaa = list(iso.PDegree(iso.PSequence(xxx[iso.EVENT_NOTE], repeats=1), scale)+ key.tonic)
+    # aaa = list(iso.PDegree(iso.PSequence(xxx[iso.EVENT_NOTE], repeats=1), scale)+ key.tonic)
+    aaa = list(iso.PDegree(iso.PSequence(xxx[iso.EVENT_NOTE], repeats=1), key))
     # bbb = list(iso.PDegree(iso.PSequence(xxx[iso.EVENT_NOTE], repeats=1) )+ key.tonic)
     print(f"{scale.semitones=}")
     # exp_pattern = list(np.array([0, 2, 4, 5, 7])+key.tonic)
