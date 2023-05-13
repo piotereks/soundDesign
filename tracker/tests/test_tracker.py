@@ -154,8 +154,10 @@ def test_play_from_to_result(step=3, subset_div=5):
 def test_play_from_to_result_rev():
     # self.play_from_to(from_note, to_note, in_pattern=True)
     scale = iso.Scale.major
+    scale = iso.Scale(semitones=[0, 2, 4, 6, 8, 10], name="test_scale", octave_size=12,
+                                semitones_down =[0, 1, 3, 5, 7, 9, 11])
 
-    for scale in iso.Scale.all():
+    for scalex in iso.Scale.all():
         if not hasattr(scale, 'semitones_down') or not scale.semitones_down:
             continue
         print(f"{scale.name=}")
@@ -169,7 +171,7 @@ def test_play_from_to_result_rev():
             test_semitones.reverse()
             rev_semitones = [test_semitones[-1]+key.scale.octave_size]+test_semitones[:-1]
             test_semitones = rev_semitones
-            tracker.key=key
+            tracker.key = key
             tracker.note_patterns.set_pattern_function('path')
             from_note = 60+key.tonic
             to_note = from_note+key.scale.octave_size
@@ -178,12 +180,12 @@ def test_play_from_to_result_rev():
             tracker.quants_state = {'5': 'normal', '3': 'normal', '2': 'normal'}
             with contextlib.redirect_stdout(None):
                 pass
-            tracker.put_to_queue(from_note)
-            tracker.put_to_queue(to_note)
+                tracker.put_to_queue(from_note)
+                tracker.put_to_queue(to_note)
 
-            patt = tracker.play_from_to(from_note, to_note, in_pattern=False)
+                patt = tracker.play_from_to(from_note, to_note, in_pattern=False)
 
-            print(list(patt[iso.EVENT_NOTE]))
-            print()
+                print(list(patt[iso.EVENT_NOTE]))
+                print()
 
             assert list(patt[iso.EVENT_NOTE]) == test_semitones, f"Play_from_to pattern mismatch {(t,from_note,to_note)=}"

@@ -50,6 +50,7 @@ iso.util.midi_note_to_note_name = midi_note_to_note_name  #Overwrite original fu
 iso.Scale.__init__ = UpDownScale.__init__
 iso.Scale.__getitem__ = UpDownScale.__getitem__
 iso.Scale.get = UpDownScale.get
+iso.Scale.indexOf = UpDownScale.indexOf
 
 
 

@@ -46,3 +46,32 @@ class UpDownScale(Scale):
         semitone = semitones[degree]
         note = (self.octave_size * octave) + semitone
         return note
+
+    # def indexOf(self, note):
+    def indexOf(self, *args, **kwargs):
+        """ Return the index of the given note within this scale. """
+        parms = {"note": None,
+        "scale_down": False}
+        if hasattr(self, 'scale_down'):
+            parms['scale_down'] = self.scale_down
+        for idx, arg in enumerate(args):
+            parms[list(parms.keys())[idx]] = arg
+        if kwargs is not None:
+            parms.update(kwargs)
+        scale_down = parms.get('scale_down')
+        if scale_down and hasattr(self, 'semitones_down') and self.semitones_down:
+            semitones = self.semitones_down
+        else:
+            semitones = self.semitones
+
+        note = parms.get('note')
+        octave = int(note / self.octave_size)
+        index = octave * len(semitones)
+        note -= octave * self.octave_size
+        degree = 0
+
+        while note > semitones[degree] and degree < len(semitones) - 1:
+            degree += 1
+
+        index += degree
+        return index
