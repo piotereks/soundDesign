@@ -3,6 +3,7 @@ import os
 import sys
 import json
 import contextlib
+import random
 
 from tracker.app.isobar_fixes import *
 
@@ -110,17 +111,29 @@ def test_metro_play(init_tracker, numerator, out_patterns):
 #
 #     pass
 
-def test_play_from_to_result():
+def test_play_from_to_result(step=3, subset_div=5):
+    """
+    step=3 to improve time of test in full test suite should be step=1
+    """
     # self.play_from_to(from_note, to_note, in_pattern=True)
+    # random.choices(list, k=n)
     scale = iso.Scale.major
+    scales = iso.Scale.all()
+    if subset_div > 1:
+        scales = random.choices(scales,k=len(scales)//subset_div)
 
-    for scale in iso.Scale.all():
+
+    for scale in scales:
+
         print(f"{scale.name=}")
-        for t in range(12):
+        for t in range(0, 12, step):
             # print(t)
-            key = iso.Key(t%scale.octave_size, scale)
-            test_semitones = [x+60+key.tonic for x in key.scale.semitones]
-            tracker.key=key
+            key = iso.Key(t % scale.octave_size, scale)
+            test_semitones = [x + 60 + key.tonic for x in key.scale.semitones]
+            # test_semitones = [x+60+key.tonic for x in key.scale.semitones]
+            # print(f"{key.scale.__dict__=},{key.scale.__dict__.get('semitones')=}")
+
+            tracker.key = key
             tracker.note_patterns.set_pattern_function('path')
             from_note = 60+key.tonic
             to_note = from_note+key.scale.octave_size
@@ -133,5 +146,44 @@ def test_play_from_to_result():
 
                 print(list(patt[iso.EVENT_NOTE]))
                 print()
+
+
+            assert list(patt[iso.EVENT_NOTE]) == test_semitones, f"Play_from_to pattern mismatch {(t,from_note,to_note)=}"
+
+
+def test_play_from_to_result_rev():
+    # self.play_from_to(from_note, to_note, in_pattern=True)
+    scale = iso.Scale.major
+
+    for scale in iso.Scale.all():
+        if not hasattr(scale, 'semitones_down') or not scale.semitones_down:
+            continue
+        print(f"{scale.name=}")
+
+        for t in range(12):
+            # print(t)
+            key = iso.Key(t%scale.octave_size, scale)
+            # test_semitones = [x+60+key.tonic for x in key.scale.semitones]
+            test_semitones = key.scale.semitones_down if hasattr(key.scale, 'semitones_down') else key.scale.semitones
+            test_semitones = [x+60+key.tonic for x in test_semitones]
+            test_semitones.reverse()
+            rev_semitones = [test_semitones[-1]+key.scale.octave_size]+test_semitones[:-1]
+            test_semitones = rev_semitones
+            tracker.key=key
+            tracker.note_patterns.set_pattern_function('path')
+            from_note = 60+key.tonic
+            to_note = from_note+key.scale.octave_size
+            from_note = 60+key.scale.octave_size+key.tonic
+            to_note = from_note-key.scale.octave_size
+            tracker.quants_state = {'5': 'normal', '3': 'normal', '2': 'normal'}
+            with contextlib.redirect_stdout(None):
+                pass
+            tracker.put_to_queue(from_note)
+            tracker.put_to_queue(to_note)
+
+            patt = tracker.play_from_to(from_note, to_note, in_pattern=False)
+
+            print(list(patt[iso.EVENT_NOTE]))
+            print()
 
             assert list(patt[iso.EVENT_NOTE]) == test_semitones, f"Play_from_to pattern mismatch {(t,from_note,to_note)=}"
