@@ -51,8 +51,26 @@ class UpDownKey(Key):
         semitone = self.scale.get(degree, scale_down=scale_down)
         return semitone + self.tonic
 
-    def nearest_note(self, note):
-        if note in self:
+    def nearest_note(self, *args, ** kwargs):
+        """ Return the index of the given note within this scale. """
+        parms = {"note": None,
+        "scale_down": False}
+        if hasattr(self, 'scale_down'):
+            parms['scale_down'] = self.scale_down
+        for idx, arg in enumerate(args):
+            parms[list(parms.keys())[idx]] = arg
+        if kwargs is not None:
+            parms.update(kwargs)
+
+        note = parms.get('note')
+
+        scale_down = parms.get('scale_down')
+        if scale_down and hasattr(self.scale, 'semitones_down') and self.scale.semitones_down:
+            semitones = self.scale.semitones_down
+        else:
+            semitones = self.scale.semitones
+        # if note in self:
+        if self.__contains__(semitone=note, scale_down=scale_down):
             return note
         else:
             octave, pitch = divmod(note, self.scale.octave_size)
@@ -72,3 +90,34 @@ class UpDownKey(Key):
                         calc_octave = octave
             octave = calc_octave
             return (octave * self.scale.octave_size) + nearest_semi
+
+
+    # def __contains__(self, semitone):
+    def __contains__(self, *args, ** kwargs):
+        """ Return the index of the given note within this scale. """
+        parms = {"note": None,
+        "scale_down": False}
+        if hasattr(self, 'scale_down'):
+            parms['scale_down'] = self.scale_down
+        for idx, arg in enumerate(args):
+            parms[list(parms.keys())[idx]] = arg
+        if kwargs is not None:
+            parms.update(kwargs)
+
+        semitone = parms.get('semitone')
+        scale_down = parms.get('scale_down')
+        if scale_down and hasattr(self.scale, 'semitones_down') and self.scale.semitones_down:
+            semitones = self.semitones_down
+        else:
+            semitones = self.semitones
+
+        # Always return true if None (rest) is queried.
+        if semitone is None:
+            return True
+        return (semitone % self.scale.octave_size) in semitones
+
+    @property
+    def semitones_down(self):
+        semitones_down = [(n + self.tonic) % self.scale.octave_size for n in self.scale.semitones_down]
+        semitones_down.sort()
+        return semitones_down
