@@ -112,7 +112,8 @@ def test_metro_play(init_tracker, numerator, out_patterns):
 #
 #     pass
 
-def test_play_from_to_result(step=3, subset_div=5):
+# def test_play_from_to_result(step=3, subset_div=5):
+def test_play_from_to_result(step=1, subset_div=1):
     """
     step=3 to improve time of test in full test suite should be step=1
     """
@@ -143,13 +144,103 @@ def test_play_from_to_result(step=3, subset_div=5):
                 tracker.put_to_queue(from_note)
                 tracker.put_to_queue(to_note)
 
-                patt=tracker.play_from_to(from_note, to_note, in_pattern=False)
+                patt = tracker.play_from_to(from_note, to_note, in_pattern=False)
 
                 print(list(patt[iso.EVENT_NOTE]))
                 print()
 
 
             assert list(patt[iso.EVENT_NOTE]) == test_semitones, f"Play_from_to pattern mismatch {(t,from_note,to_note)=}"
+
+def test_wrk():
+    scale = iso.Scale.major
+    key = iso.Key(tonic=4, scale=scale)
+
+    r = 32
+    scale_interval = 12
+    print()
+    print(key.nearest_note(0))
+    print(key.nearest_note(0.0))
+    print(key.nearest_note(4))
+    print([(x, key.nearest_note(x)) for x in range(18)])
+    base = key.scale.indexOf(64-key.tonic)
+    print(f"{base=}")
+
+    notes = [(x,-5 * len(key.scale.semitones)
+             + key.scale.indexOf(
+        key.nearest_note(5 * key.scale.octave_size + (scale_interval * math.sin(5 * math.pi / 2 * x / r)))-key.tonic))
+             for x in range(r + 1)]
+    notes = [(x,
+        key.scale.indexOf(key.nearest_note(scale_interval * math.sin(5 * math.pi / 2 * x / r)+key.tonic)-key.tonic))
+             for x in range(r + 1)]
+
+    notes2 = [(-5 * len(key.scale.semitones)
+        +key.scale.indexOf(5 * key.scale.octave_size + key.nearest_note(scale_interval * math.sin(5 * math.pi / 2 * x / r)+key.tonic)-key.tonic))
+             for x in range(r + 1)]
+
+    notes2 = [(-5 * len(key.scale.semitones)+35
+        +key.scale.indexOf(5 * key.scale.octave_size + key.nearest_note(scale_interval*x/r+
+                7 * math.sin(4 * math.pi / 2 * x / r)+key.tonic)-key.tonic))
+             for x in range(r + 1)]
+
+    # notes = [(-5 * len(key.scale.semitones) + interval
+    #           + key.scale.indexOf(5 * key.scale.octave_size + key.nearest_note(
+    #             scale_interval * math.sin(5 * math.pi / 2 * x / r) + key.tonic) - key.tonic))
+    #          for x in range(r + 1)]
+
+    # notes2 = [5 * len(key.scale.semitones)+base
+    #     +key.scale.indexOf(5 * key.scale.octave_size + key.nearest_note(scale_interval * math.sin(5 * math.pi / 2 * x / r)+key.tonic)-key.tonic)
+    #          for x in range(r + 1)]
+
+    print('xxx:',list(iso.PDegree(iso.PSequence(notes2, repeats=1),key)))
+
+    print('\n',notes)
+    print('\n',notes2)
+
+def test_play_from_to_sin(step=3, subset_div=5):
+    """
+    step=3 to improve time of test in full test suite should be step=1
+    """
+    # self.play_from_to(from_note, to_note, in_pattern=True)
+    # random.choices(list, k=n)
+    step, subset_div = 1, 1
+
+    scale = iso.Scale.major
+    # scale = iso.Scale.chromatic
+    scales = iso.Scale.all()
+    if subset_div > 1:
+        scales = random.choices(scales,k=len(scales)//subset_div)
+
+
+    for scale in scales:
+
+        print(f"{scale.name=}")
+        for t in range(4, 12, step):
+            # print(t)
+            key = iso.Key(t % scale.octave_size, scale)
+            test_semitones = [x + 60 + key.tonic for x in key.scale.semitones]
+            # test_semitones = [x+60+key.tonic for x in key.scale.semitones]
+            # print(f"{key.scale.__dict__=},{key.scale.__dict__.get('semitones')=}")
+
+            tracker.key = key
+            tracker.note_patterns.set_pattern_function('sine')
+            from_note = 60+key.tonic
+            to_note = from_note+key.scale.octave_size
+            tracker.quants_state = {'5': 'normal', '3': 'normal', '2': 'normal'}
+            with contextlib.redirect_stdout(None):
+                pass
+            tracker.put_to_queue(from_note)
+            tracker.put_to_queue(to_note)
+
+            patt = tracker.play_from_to(from_note, to_note, in_pattern=False)
+
+            print(list(patt[iso.EVENT_NOTE]))
+            print()
+            break
+        break
+
+
+            # assert list(patt[iso.EVENT_NOTE]) == test_semitones, f"Play_from_to pattern mismatch {(t,from_note,to_note)=}"
 
 
 def test_play_from_to_result_rev():
@@ -182,8 +273,8 @@ def test_play_from_to_result_rev():
             test_semitones = rev_semitones
             tracker.key = key
             tracker.note_patterns.set_pattern_function('path')
-            from_note = 60+key.tonic
-            to_note = from_note+key.scale.octave_size
+            # from_note = 60+key.tonic
+            # to_note = from_note+key.scale.octave_size
             from_note = 60+key.scale.octave_size+key.tonic
             to_note = from_note-key.scale.octave_size
             tracker.quants_state = {'5': 'normal', '3': 'normal', '2': 'normal'}

@@ -328,6 +328,7 @@ class NotePatterns:
         # note = self.key.scale.indexOf(self.key.nearest_note(to_note - self.key.tonic % 12))
 
         key_major = iso.Key(tonic=key.tonic, scale=iso.Scale.major)
+        major = iso.Scale.major
 
         from_note = None if not from_note else self.key.scale.indexOf(self.key.nearest_note(from_note))
         # chord3_ter =
@@ -405,7 +406,7 @@ class NotePatterns:
 
 
     @mod_duration
-    def get_sine_pattern(self, **kwargs):
+    def get_sin_old_pattern(self, **kwargs):
         parms = {"interval": 0,
                  "dur_variety": 999,
                  "quantize": {'5': 'normal', '3': 'normal', '2': 'normal'},
@@ -427,9 +428,79 @@ class NotePatterns:
         else:
             # notes = [round(interval*math.sin(5*math.pi/2*x/r)) for x in range(r+1)]
             if key is not None:
-                notes = [-5*len(key.scale.semitones)
+                notesx = [-5*len(key.scale.semitones)
                          + key.scale.indexOf((5*key.scale.octave_size+round(scale_interval*math.sin(5*math.pi/2*x/r)))-key.tonic%12)
                          for x in range(r+1)]
+                # notes = [-5*len(key.scale.semitones)
+                #          + key.scale.indexOf((5*key.scale.octave_size+(scale_interval*math.sin(5*math.pi/2*x/r)))-key.tonic%12)
+                #          for x in range(r+1)]
+                notes= [(-5 * len(key.scale.semitones) + interval
+                           + key.scale.indexOf(5 * key.scale.octave_size + key.nearest_note(
+                            scale_interval * math.sin(5 * math.pi / 2 * x / r) + key.tonic) - key.tonic))
+                          for x in range(r + 1)]
+            else:
+                notes = [
+                    round(scale_interval*math.sin(5*math.pi/2*x/r))
+                    for x in range(r+1)]
+
+        # root_note = self.key.scale.indexOf(self.key.nearest_note(from_note - self.key.tonic % 12))
+
+        return {
+            iso.EVENT_NOTE: notes
+            ,iso.EVENT_DURATION: [1]*len(notes)
+        }
+
+    @mod_duration
+    def get_sine_pattern(self, **kwargs):
+        parms = {"interval": 0,
+                 "dur_variety": 999,
+                 "quantize": {'5': 'normal', '3': 'normal', '2': 'normal'},
+                 "align": 1,
+                 "dot_beat": False,
+                 "numerator": 4}
+
+        if kwargs is not None:
+            parms.update(kwargs)
+
+        interval = parms.get('interval',0)
+        scale_interval = parms.get('scale_interval',0)
+        key = parms.get('key', None)
+        root_note = parms.get('root_note', None)
+        org_interval = interval
+        interval_sign = 1 if interval >= 0 else -1
+        r = 32
+        if interval == 0:
+            # notes = [int(5*math.sin(2*math.pi*x/r)) for x in range(r+1)]
+            # notes = [-5 * len(key.scale.semitones)
+            #          + key.scale.indexOf(key.nearest_note(
+            #     5 * key.scale.octave_size + (5*math.sin(2*math.pi*x/r))))
+            #          for x in range(r + 1)]
+            notes = [(-5 * len(key.scale.semitones)
+                      + key.scale.indexOf(5 * key.scale.octave_size + key.nearest_note(
+                        7 * math.sin(4 * math.pi / 2 * x / r) + key.tonic) - key.tonic))
+                     for x in range(r + 1)]
+        else:
+            # notes = [round(interval*math.sin(5*math.pi/2*x/r)) for x in range(r+1)]
+            if key is not None:
+                # notes = [-5*len(key.scale.semitones)
+                #          + key.scale.indexOf((5*key.scale.octave_size+round(scale_interval*math.sin(5*math.pi/2*x/r)))-key.tonic%12)
+                #          for x in range(r+1)]
+                notes= [(-5 * len(key.scale.semitones)
+                           + key.scale.indexOf(5 * key.scale.octave_size + key.nearest_note(
+                            scale_interval * math.sin(5 * math.pi / 2 * x / r) + key.tonic) - key.tonic))
+                          for x in range(r + 1)]
+                notes= [(-5 * len(key.scale.semitones)
+                           + key.scale.indexOf(5 * key.scale.octave_size + key.nearest_note(
+                            scale_interval*x/r
+                            +(abs(scale_interval*0.66)+scale_interval*0.33) * math.sin(4 * math.pi / 2 * x / r) + key.tonic) - key.tonic))
+                          for x in range(r + 1)]
+
+                # notes2 = [(-5 * len(key.scale.semitones)
+                #            + key.scale.indexOf(5 * key.scale.octave_size + key.nearest_note(scale_interval * x / r +
+                #                                                                             7 * math.sin(
+                #             4 * math.pi / 2 * x / r) + key.tonic) - key.tonic))
+                #           for x in range(r + 1)]
+
             else:
                 notes = [
                     round(scale_interval*math.sin(5*math.pi/2*x/r))
