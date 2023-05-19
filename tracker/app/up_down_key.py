@@ -77,14 +77,14 @@ class UpDownKey(Key):
             nearest_semi = None
             nearest_dist = None
             # chk_semitones = self.semitones[-1:]+self.semitones[:-1]
-            chk_semitones = self.semitones
+            # chk_semitones = self.semitones
             calc_octave = octave
-            for semi in chk_semitones:
-                dist = min(abs(semi - pitch),abs(abs(semi-pitch)-12))
+            for semi in semitones:
+                dist = min(abs(semi - pitch),abs(abs(semi-pitch)-self.scale.octave_size))
                 if nearest_dist is None or dist < nearest_dist:
                     nearest_semi = semi
                     nearest_dist = dist
-                    if dist == abs(abs(semi-pitch)-12):
+                    if dist == abs(abs(semi-pitch)-self.scale.octave_size):
                         calc_octave = octave +1
                     else:
                         calc_octave = octave

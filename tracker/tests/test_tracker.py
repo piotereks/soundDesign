@@ -112,32 +112,32 @@ def test_metro_play(init_tracker, numerator, out_patterns):
 #
 #     pass
 
-# def test_play_from_to_result(step=3, subset_div=5):
-def test_play_from_to_result(step=1, subset_div=1):
+def test_play_from_to_result(step=3, subset_div=5):
     """
     step=3 to improve time of test in full test suite should be step=1
     """
     # self.play_from_to(from_note, to_note, in_pattern=True)
+    # step, subset_div = 1, 1
     # random.choices(list, k=n)
     scale = iso.Scale.major
     scales = iso.Scale.all()
     if subset_div > 1:
-        scales = random.choices(scales,k=len(scales)//subset_div)
+        scales = random.choices(scales, k=len(scales)//subset_div)
 
 
     for scale in scales:
-
+        octave5_start = 5 * scale.octave_size
         print(f"{scale.name=}")
-        for t in range(0, 12, step):
+        for t in range(0, scale.octave_size, step):
             # print(t)
             key = iso.Key(t % scale.octave_size, scale)
-            test_semitones = [x + 60 + key.tonic for x in key.scale.semitones]
+            test_semitones = [x + octave5_start + key.tonic for x in key.scale.semitones]
             # test_semitones = [x+60+key.tonic for x in key.scale.semitones]
             # print(f"{key.scale.__dict__=},{key.scale.__dict__.get('semitones')=}")
 
             tracker.key = key
             tracker.note_patterns.set_pattern_function('path')
-            from_note = 60+key.tonic
+            from_note = octave5_start+key.tonic
             to_note = from_note+key.scale.octave_size
             tracker.quants_state = {'5': 'normal', '3': 'normal', '2': 'normal'}
             with contextlib.redirect_stdout(None):
@@ -151,6 +151,70 @@ def test_play_from_to_result(step=1, subset_div=1):
 
 
             assert list(patt[iso.EVENT_NOTE]) == test_semitones, f"Play_from_to pattern mismatch {(t,from_note,to_note)=}"
+
+
+def test_wrk2():
+    scale = iso.Scale.byname('algerian (long)')
+    octave5_start = 5 * scale.octave_size
+    key = iso.Key(0, scale)
+    cntain = key.__contains__(semitone=octave5_start)
+
+
+    scale = iso.Scale.major
+    octave5_start = 5 * scale.octave_size
+    key = iso.Key(0, scale)
+    test_note1 = key.nearest_note(octave5_start)
+    key = iso.Key(1, scale)
+    test_note1x = key.nearest_note(octave5_start+1)
+    key = iso.Key(4, scale)
+    test_note2 = key.nearest_note(octave5_start+4)
+
+    key = iso.Key(5, scale)
+    test_note3 = key.nearest_note(octave5_start+5)
+
+    scale = iso.Scale.byname('algerian (long)')
+    octave5_start = 5 * scale.octave_size
+    key = iso.Key(0, scale)
+    test_note4 = key.nearest_note(octave5_start)
+    key = iso.Key(1, scale)
+    test_note4x = key.nearest_note(octave5_start+1)
+    key = iso.Key(4, scale)
+    test_note5 = key.nearest_note(octave5_start+4)
+
+    key = iso.Key(5, scale)
+    test_note6 = key.nearest_note(octave5_start+5)
+
+    scale = iso.Scale.byname('algerian (long)')
+
+    # scale = iso.Scale.chromatic
+    print(f"{scale.name=}")
+
+    octave5_start = 5 * scale.octave_size
+    for t in range(0, scale.octave_size):
+        # print(t)
+        key = iso.Key(t % scale.octave_size, scale)
+        test_note = key.nearest_note(octave5_start)
+        test_semitones = [x + octave5_start + key.tonic for x in key.scale.semitones]
+        # test_semitones = [x+60+key.tonic for x in key.scale.semitones]
+        # print(f"{key.scale.__dict__=},{key.scale.__dict__.get('semitones')=}")
+
+        tracker.key = key
+        tracker.note_patterns.set_pattern_function('sine')
+        from_note = octave5_start + key.tonic
+        to_note = from_note + key.scale.octave_size
+        tracker.quants_state = {'5': 'normal', '3': 'normal', '2': 'normal'}
+        with contextlib.redirect_stdout(None):
+            pass
+        tracker.put_to_queue(from_note)
+        tracker.put_to_queue(to_note)
+
+        patt = tracker.play_from_to(from_note, to_note, in_pattern=False)
+
+        print(list(patt[iso.EVENT_NOTE]))
+        # print()
+        assert list(patt[iso.EVENT_NOTE])[0] == t + octave5_start, f"problem with {scale.name=}, tonic={t}"
+        break
+
 
 def test_wrk():
     scale = iso.Scale.major
@@ -203,41 +267,47 @@ def test_play_from_to_sin(step=3, subset_div=5):
     """
     # self.play_from_to(from_note, to_note, in_pattern=True)
     # random.choices(list, k=n)
-    step, subset_div = 1, 1
+    # step, subset_div = 1, 1
 
     scale = iso.Scale.major
+    # scale = iso.Scale.byname('algerian (long)')
+
     # scale = iso.Scale.chromatic
     scales = iso.Scale.all()
+
     if subset_div > 1:
-        scales = random.choices(scales,k=len(scales)//subset_div)
+        scales = random.choices(scales, k=len(scales)//subset_div)
 
 
     for scale in scales:
-
+        # if scale.name == 'algerian (long)':
+        #     continue
         print(f"{scale.name=}")
-        for t in range(4, 12, step):
+        octave5_start = 5 * scale.octave_size
+        for t in range(0, scale.octave_size, step):
             # print(t)
             key = iso.Key(t % scale.octave_size, scale)
-            test_semitones = [x + 60 + key.tonic for x in key.scale.semitones]
+            test_semitones = [x + octave5_start + key.tonic for x in key.scale.semitones]
             # test_semitones = [x+60+key.tonic for x in key.scale.semitones]
             # print(f"{key.scale.__dict__=},{key.scale.__dict__.get('semitones')=}")
 
             tracker.key = key
             tracker.note_patterns.set_pattern_function('sine')
-            from_note = 60+key.tonic
+            from_note = octave5_start+key.tonic
             to_note = from_note+key.scale.octave_size
             tracker.quants_state = {'5': 'normal', '3': 'normal', '2': 'normal'}
             with contextlib.redirect_stdout(None):
                 pass
-            tracker.put_to_queue(from_note)
-            tracker.put_to_queue(to_note)
+                tracker.put_to_queue(from_note)
+                tracker.put_to_queue(to_note)
 
-            patt = tracker.play_from_to(from_note, to_note, in_pattern=False)
+                patt = tracker.play_from_to(from_note, to_note, in_pattern=False)
 
             print(list(patt[iso.EVENT_NOTE]))
-            print()
-            break
-        break
+            # print()
+            assert list(patt[iso.EVENT_NOTE])[0] == t+octave5_start, f"problem with {scale.name=}, tonic={t}"
+            # break
+        # break
 
 
             # assert list(patt[iso.EVENT_NOTE]) == test_semitones, f"Play_from_to pattern mismatch {(t,from_note,to_note)=}"
@@ -261,13 +331,13 @@ def test_play_from_to_result_rev():
         if not hasattr(scale, 'semitones_down') or not scale.semitones_down:
             continue
         print(f"{scale.name=}")
-
-        for t in range(12):
+        octave5_start = 5 * scale.octave_size
+        for t in range(scale.octave_size):
             # print(t)
             key = iso.Key(t%scale.octave_size, scale)
             # test_semitones = [x+60+key.tonic for x in key.scale.semitones]
             test_semitones = key.scale.semitones_down if hasattr(key.scale, 'semitones_down') else key.scale.semitones
-            test_semitones = [x+60+key.tonic for x in test_semitones]
+            test_semitones = [x+octave5_start+key.tonic for x in test_semitones]
             test_semitones.reverse()
             rev_semitones = [test_semitones[-1]+key.scale.octave_size]+test_semitones[:-1]
             test_semitones = rev_semitones
@@ -275,8 +345,8 @@ def test_play_from_to_result_rev():
             tracker.note_patterns.set_pattern_function('path')
             # from_note = 60+key.tonic
             # to_note = from_note+key.scale.octave_size
-            from_note = 60+key.scale.octave_size+key.tonic
-            to_note = from_note-key.scale.octave_size
+            from_note = octave5_start + key.scale.octave_size + key.tonic
+            to_note = from_note - key.scale.octave_size
             tracker.quants_state = {'5': 'normal', '3': 'normal', '2': 'normal'}
             with contextlib.redirect_stdout(None):
                 pass

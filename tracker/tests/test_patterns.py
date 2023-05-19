@@ -73,32 +73,32 @@ def test_all_suitable_diminunitions():
     for n in range(-16, -1):
         assert all([pattern[-1] < 0 for pattern in npat.all_suitable_diminunitions(n)])
 
-def test_get_sine_pattern():
-    scale = iso.Scale()
-    # scale = iso.Scale.chromatic
-    key = iso.Key(tonic=0,scale=scale)
-    scale_interval = 7
-    interval = scale.indexOf(scale_interval)
-    xxx = npat.get_sine_pattern(interval=interval,scale_interval=scale_interval, key=key )
-    # yyy = npat.get_sine2_pattern(interval=interval,scale_interval=scale_interval, key=key )
-    aaa = [(x, math.sin(key.nearest_note(x/10))) for x in range(-40, 40)]
-    bbb = [(x, math.sin(key.scale.indexOf(x/10))) for x in range(-40, 40)]
-    r = 32
-    tst = key.nearest_note(-6.865496962822613+24)-24
-    tst2 = key.nearest_note(6.865496962822613+24)-24
-    xtst = key.scale.indexOf(-6.865496962822613+24)-14
-    xtst2 = key.scale.indexOf(6.865496962822613+24)-14
-    atst = key.scale.indexOf(key.nearest_note(-6.865496962822613+24))-14
-    atst2 = key.scale.indexOf(key.nearest_note(6.865496962822613+24))-14
-    notes = [-5 * len(key.scale.semitones)
-             + key.scale.indexOf(
-        (5 * key.scale.octave_size + (scale_interval * math.sin(5 * math.pi / 2 * x / r))) - key.tonic % 12)
-             for x in range(r + 1)]
-    idx = [(scale_interval * math.sin(5 * math.pi / 2 * x / r))  for x in range(r + 1)]
-    print(notes)
-    print(idx)
-    print(list(zip(notes,idx)))
-    assert xxx[iso.EVENT_NOTE] == yyy[iso.EVENT_NOTE]
+# def test_get_sine_pattern():
+#     scale = iso.Scale()
+#     # scale = iso.Scale.chromatic
+#     key = iso.Key(tonic=0,scale=scale)
+#     scale_interval = 7
+#     interval = scale.indexOf(scale_interval)
+#     xxx = npat.get_sine_pattern(interval=interval,scale_interval=scale_interval, key=key )
+#     # yyy = npat.get_sine2_pattern(interval=interval,scale_interval=scale_interval, key=key )
+#     aaa = [(x, math.sin(key.nearest_note(x/10))) for x in range(-40, 40)]
+#     bbb = [(x, math.sin(key.scale.indexOf(x/10))) for x in range(-40, 40)]
+#     r = 32
+#     tst = key.nearest_note(-6.865496962822613+24)-24
+#     tst2 = key.nearest_note(6.865496962822613+24)-24
+#     xtst = key.scale.indexOf(-6.865496962822613+24)-14
+#     xtst2 = key.scale.indexOf(6.865496962822613+24)-14
+#     atst = key.scale.indexOf(key.nearest_note(-6.865496962822613+24))-14
+#     atst2 = key.scale.indexOf(key.nearest_note(6.865496962822613+24))-14
+#     notes = [-5 * len(key.scale.semitones)
+#              + key.scale.indexOf(
+#         (5 * key.scale.octave_size + (scale_interval * math.sin(5 * math.pi / 2 * x / r))) - key.tonic % 12)
+#              for x in range(r + 1)]
+#     idx = [(scale_interval * math.sin(5 * math.pi / 2 * x / r))  for x in range(r + 1)]
+#     print(notes)
+#     print(idx)
+#     print(list(zip(notes,idx)))
+#     assert xxx[iso.EVENT_NOTE] == yyy[iso.EVENT_NOTE]
 
 def test_get_chord_improved_pattern():
     # scale = iso.Scale.minor
@@ -108,6 +108,7 @@ def test_get_chord_improved_pattern():
     # npat.get_chord_improved_pattern(interval=interval,scale_interval=scale_interval, key=key )
     key = iso.Key(tonic=0, scale=iso.Scale.minor)
     major = iso.Scale.major
+    octave5_start = 5 * major.octave_size
     key_major = iso.Key(tonic=key.tonic, scale=major)
     chords_list = list()
     n = 3
@@ -121,8 +122,8 @@ def test_get_chord_improved_pattern():
         # tchord = list(tchord - tchord[0])
         pass
     minor = iso.Scale.minor
-    xnote = 60
-    cnote = key.nearest_note(60)-key.tonic
+    xnote = octave5_start
+    cnote = key.nearest_note(octave5_start)-key.tonic
     cdix = minor.indexOf(cnote)
     sc = iso.Scale.major
     key = iso.Key(tonic=2, scale=sc)
