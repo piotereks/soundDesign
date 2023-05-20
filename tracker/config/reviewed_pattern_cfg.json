@@ -573,7 +573,7 @@
                 "def": "Orn kwin"
             }]
     },
-    "diminunition": {
+    "diminution": {
         "patterns": [{
                 "name": "00-dim",
                 "pattern": [0,0],
