@@ -17,8 +17,8 @@ def test_get_path_pattern():
     exp_pattern = list(np.array([0, 2, 4, 5, 7])+key.tonic)
     assert pdegree_pattern == exp_pattern
 
-    scale = iso.Scale.pelog
-    key = iso.Key(tonic=0,scale=scale)
+    scale = iso.Scale.byname('pelog')
+    key = iso.Key(tonic=0, scale=scale)
     scale_interval = 11
     interval = scale.indexOf(scale_interval)
     base_pattern = npat.get_path_pattern(interval=interval,scale_interval=scale_interval, key=key )
@@ -26,6 +26,39 @@ def test_get_path_pattern():
     print(f"{scale.semitones=}")
     exp_pattern = list(np.array(scale.semitones)+key.tonic)
     assert pdegree_pattern == exp_pattern
+
+def test_get_chord_improved_pattern():
+    scale = iso.Scale.major
+    key = iso.Key(tonic=0, scale=scale)
+    from_note = 60
+    # from_note_idx = key.scale.indexOf(key.nearest_note(from_note - key.tonic))
+    chord = npat.get_chord_improved_pattern(from_note=from_note, key=key)
+    assert chord[iso.EVENT_NOTE] == [(0, 2, 4), 0], f"Chord idx for scale {key.scale.name} not correct"
+    chord = npat.get_chord_improved_pattern(from_note=from_note+1, key=key)
+    assert chord[iso.EVENT_NOTE] == [(0, 2, 4), 0], f"Chord idx1 for scale {key.scale.name} not correct"
+    chord = npat.get_chord_improved_pattern(from_note=from_note+6, key=key)
+    assert chord[iso.EVENT_NOTE] == [(0, 2, 4), 0], f"Chord idx6 for scale {key.scale.name} not correct"
+
+    scale = iso.Scale.byname('pelog')  # [0, 1, 3, 7, 8]
+    key = iso.Key(tonic=0, scale=scale)
+    from_note = 60
+    chord = npat.get_chord_improved_pattern(from_note=from_note, key=key)
+    assert chord[iso.EVENT_NOTE] == [(0, 2, 3), 0], f"Chord idx for scale {key.scale.name} not correct"
+    chord = npat.get_chord_improved_pattern(from_note=from_note+1, key=key)
+    assert chord[iso.EVENT_NOTE] == [0, 0], f"Chord idx1 for scale {key.scale.name} not correct"
+    chord = npat.get_chord_improved_pattern(from_note=from_note+6, key=key)
+    assert chord[iso.EVENT_NOTE] == [0, 0], f"Chord idx6 for scale {key.scale.name} not correct"
+
+    scale = iso.Scale.minor
+    key = iso.Key(tonic=0, scale=scale)
+    from_note = 60
+    # from_note_idx = key.scale.indexOf(key.nearest_note(from_note - key.tonic))
+    chord = npat.get_chord_improved_pattern(from_note=from_note, key=key)
+    assert chord[iso.EVENT_NOTE] == [(0, 2, 4), 0], f"Chord idx for scale {key.scale.name} not correct"
+    chord = npat.get_chord_improved_pattern(from_note=from_note+1, key=key)
+    assert chord[iso.EVENT_NOTE] == [(0, 2, 4), 0], f"Chord idx1 for scale {key.scale.name} not correct"
+    chord = npat.get_chord_improved_pattern(from_note=from_note+6, key=key)
+    assert chord[iso.EVENT_NOTE] == [(0, 2, 4), 0], f"Chord idx6 for scale {key.scale.name} not correct"
 
 def test_generic_get_indexOf():
     scale = iso.Scale(semitones=[0, 2, 4, 6, 8, 10], name="test_scale", octave_size=12,
@@ -63,43 +96,8 @@ def test_all_suitable_diminution():
     for n in range(-16, -1):
         assert all([pattern[-1] < 0 for pattern in npat.all_suitable_diminutions(n)])
 
-def test_get_chord_improved_pattern():
-    # scale = iso.Scale.minor
-    # key = iso.Key(tonic=0,scale=scale)
-    # scale_interval = 7
-    # interval = scale.indexOf(scale_interval)
-    # npat.get_chord_improved_pattern(interval=interval,scale_interval=scale_interval, key=key )
-    key = iso.Key(tonic=0, scale=iso.Scale.minor)
-    major = iso.Scale.major
-    octave5_start = 5 * major.octave_size
-    key_major = iso.Key(tonic=key.tonic, scale=major)
-    chords_list = list()
-    n = 3
-    step = 2
-    semit = major.semitones + list(np.array(major.semitones) + major.octave_size)
-    for i in range(len(semit) // 2):
-        tchord = np.array([semit[i + x * step] for x in range(n)])
-        tchord = [semit[i + x * step]-semit[i] for x in range(n)]
-        if tchord not in chords_list:
-            chords_list.append(tchord)
-        # tchord = list(tchord - tchord[0])
-        pass
-    minor = iso.Scale.minor
-    xnote = octave5_start
-    cnote = key.nearest_note(octave5_start)-key.tonic
-    cdix = minor.indexOf(cnote)
-    sc = iso.Scale.major
-    key = iso.Key(tonic=2, scale=sc)
-    # tnc = key.tonic
-    # aaa = [(x,key.nearest_note(x)) for x in range(60,73)]
-    # bbb = [(x,key.nearest_note(x), sc.indexOf(key.nearest_note(x)), sc.indexOf(key.nearest_note(x)+tnc)
-    #         ) for x in range(60,73)]
-    aba = [major.get(x)+key.tonic for x in range(13)]
-    # abb = [(x,key.nearest_note(x),key.nearest_note(x)-1, major.indexOf(key.nearest_note(x)-1)
-    #         ) for x in range(1, 23)]
-    abbc= [(x,  major.indexOf(key.nearest_note(x)-key.tonic)
-            ) for x in aba]
-    assert True
+
+
 
     # Scale.chromatic = Scale([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "chromatic")
     # Scale.major = Scale([0, 2, 4, 5, 7, 9, 11], "major")

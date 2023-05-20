@@ -298,50 +298,41 @@ class NotePatterns:
         if kwargs is not None:
             parameters.update(kwargs)
 
-        interval = parameters.get('interval', 0)
-        scale_interval = parameters.get('scale_interval', 0)
+        from_note = parameters.get('from_note', 60)
         key = parameters.get('key', None)
-        org_interval = interval
-        interval_sign = 1 if interval >= 0 else -1
-        from_note = parameters.get("from_note")
-        root_note = parameters.get("root_note")
+        from_note = key.nearest_note(from_note)  # This is taken from used scale/key not major
 
-        key_major = iso.Key(tonic=key.tonic, scale=iso.Scale.major)
         major = iso.Scale.major
+        key_major = iso.Key(tonic=key.tonic, scale=major)
+        maj_semitones = NotePatterns.multiply_pattern(major.semitones + [major.octave_size], 2)
 
-        from_note = None if not from_note else self.key.scale.indexOf(self.key.nearest_note(from_note))
-        # chord3_ter =
-        n = 3
-        st = 2
-        st = major.semitones + list(np.array(major.semitones) + major.octave_size)
-        for i in range(len(st) // 2):
-            tchord = [st[i + x * st] for x in range(n)]
+        chord_n = 3
+        semitone_step = 2
+        chords_list = []
 
-        iso.EVENT_NOTE: [(0, 2, 4), 0]
-        r = 32
-        if interval == 0:
-            notes = [int(5 * math.sin(2 * math.pi * x / r)) for x in range(r + 1)]
+        for i in range(len(maj_semitones) // 2):
+            chord_set = set([maj_semitones[i + x * semitone_step] - maj_semitones[i] + from_note for x in range(chord_n)])
+            if chord_set not in chords_list:
+                chords_list.append(chord_set)
+
+        # scale = key.scale
+
+        from_note_idx = key.scale.indexOf(from_note - key.tonic)
+        two_octaves = set([key.get(note_idx) for note_idx in range(from_note_idx, from_note_idx + len(key.scale.semitones) * 2 + 1)])
+        chord_found = [ch & two_octaves for ch in chords_list if ch & two_octaves == ch]
+
+        if chord_found:
+            chord = list(random.choice(chord_found))
+            chord.sort()
+            chord = tuple(chord)
+            chord_idx = tuple(key.scale.indexOf(key.nearest_note(x)) - key.tonic - from_note_idx for x in chord)
         else:
-            # notes = [round(interval*math.sin(5*math.pi/2*x/r)) for x in range(r+1)]
-            if key is not None:
-                notes = [-5 * len(key.scale.semitones)
-                         + key.scale.indexOf((5 * key.scale.octave_size + round(
-                    scale_interval * math.sin(5 * math.pi / 2 * x / r)) - key.tonic % 12))
-                         for x in range(r + 1)]
-            else:
-                notes = [
-                    round(scale_interval * math.sin(5 * math.pi / 2 * x / r))
-                    for x in range(r + 1)]
+            chord_idx = 0
 
-        # root_note = self.key.scale.indexOf(self.key.nearest_note(from_note - self.key.tonic % 12))
-        # iso.EVENT_NOTE: [(0, 2, 4), 0]
         return {
-            iso.EVENT_NOTE: notes
-            , iso.EVENT_DURATION: [1] * len(notes)
+            iso.EVENT_NOTE: [chord_idx, 0]
         }
-        # return {
-        #     iso.EVENT_NOTE:  [(0, 2, 4), 0]
-        # }
+
 
     @mod_duration
     def get_one_note_pattern(self, **kwargs):
