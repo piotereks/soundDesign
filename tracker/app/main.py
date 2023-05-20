@@ -56,9 +56,6 @@ import json
 # def sbtt():
 #     my_tracker.beat = my_tracker.beat_test
 
-
-
-
 #
 # def sbft(note_from=60, note_to=64):
 #     my_tracker.beat = lambda: my_tracker.play_from_to(note_from, note_to)
