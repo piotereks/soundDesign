@@ -20,26 +20,24 @@ class UpDownScale(Scale):
     def __getitem__(self, key):
         return self.get(key)
 
-    # def get(self, n, scale_down = False):
     def get(self, *args, **kwargs):
         """ Retrieve the n'th degree of this scale. """
-        # print("UpDownScale get")
-        parms = {"n": None,
-                 "scale_down": False}
+        parameters = {"n": None,
+                      "scale_down": False}
         if hasattr(self, 'scale_down'):
-            parms['scale_down'] = self.scale_down
+            parameters['scale_down'] = self.scale_down
         for idx, arg in enumerate(args):
-            parms[list(parms.keys())[idx]] = arg
+            parameters[list(parameters.keys())[idx]] = arg
         if kwargs is not None:
-            parms.update(kwargs)
-        n = parms['n']
-        scale_down = parms['scale_down']
+            parameters.update(kwargs)
+        n = parameters['n']
+        scale_down = parameters['scale_down']
         if n is None:
             return None
         semitones_down = None
         if hasattr(self, 'semitones_down'):
             semitones_down = self.semitones_down
-        # semitones = self.semitones_down if scale_down and self.semitones_down is not None else self.semitones
+
         semitones = semitones_down if scale_down and semitones_down is not None else self.semitones
         octave = n // len(semitones)
         degree = n % len(semitones)
@@ -47,24 +45,23 @@ class UpDownScale(Scale):
         note = (self.octave_size * octave) + semitone
         return note
 
-    # def indexOf(self, note):
     def indexOf(self, *args, **kwargs):
         """ Return the index of the given note within this scale. """
-        parms = {"note": None,
-        "scale_down": False}
+        parameters = {"note": None,
+                 "scale_down": False}
         if hasattr(self, 'scale_down'):
-            parms['scale_down'] = self.scale_down
+            parameters['scale_down'] = self.scale_down
         for idx, arg in enumerate(args):
-            parms[list(parms.keys())[idx]] = arg
+            parameters[list(parameters.keys())[idx]] = arg
         if kwargs is not None:
-            parms.update(kwargs)
-        scale_down = parms.get('scale_down')
+            parameters.update(kwargs)
+        scale_down = parameters.get('scale_down')
         if scale_down and hasattr(self, 'semitones_down') and self.semitones_down:
             semitones = self.semitones_down
         else:
             semitones = self.semitones
 
-        note = parms.get('note')
+        note = parameters.get('note')
         octave = int(note / self.octave_size)
         index = octave * len(semitones)
         note -= octave * self.octave_size

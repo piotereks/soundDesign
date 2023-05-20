@@ -374,7 +374,6 @@ class Tracker:
         xxx = self.amp_for_beat_factor.get(self.time_signature['numerator'])
         print(f"{xxx=},{self.time_signature['numerator']=}")
         accent = self.amp_for_beat_factor.get(self.time_signature['numerator'], {}).get(self.beat_count)
-        # accent = self.amp_for_beat_factor.get(self.beat_count)
         return accent if accent else 1
 
     def log_and_schedule(func):
@@ -384,21 +383,13 @@ class Tracker:
             print(func.__name__)
 
             self.beat_count += 1
-            # self.time_sig_beat_val=self.beat_count
 
             self.diff_time = self.timeline.current_time - self.prev_time
             self.prev_time = self.timeline.current_time
             print(f"{func.__name__} diff:{self.diff_time}, timeXX: {self.timeline.current_time},"
                   f" {round(self.timeline.current_time)} beat: {self.beat_count}\n")
             self.beat_count %= 4
-            # self.beat_count %= self.time_signature['numerator']
             notes = func(self, *args, **kwargs)
-
-            # xxx = notes[iso.EVENT_NOTE]
-            # notes[iso.EVENT_NOTE] = iso.PMap(notes[iso.EVENT_NOTE], lambda midi_note:
-            # (None if not midi_note else None if midi_note < 0 else None if midi_note > 127 else midi_note)
-            # if not midi_note or isinstance(midi_note, int)
-            # else tuple(map(lambda u: None if not u else None if u < 0 else None if u > 127 else u, midi_note)))
 
             # create accent depending on beat
             print("bbbb1: ", list(map(type, notes[iso.EVENT_AMPLITUDE].copy())))
@@ -458,7 +449,6 @@ class Tracker:
             # "duration": 4
             "duration": 4 * (self.time_signature['numerator'] / self.time_signature['denominator'])
             # "duration": 5
-
         },
             remove_when_done=False
         )
@@ -472,8 +462,6 @@ class Tracker:
             "channel": 9,
         },
             remove_when_done=True)
-
-        # @log_and_schedule
 
     def metro_play(self):
         log_call()
@@ -757,9 +745,6 @@ class Tracker:
     def play_from_to(self, from_note, to_note, in_pattern=False):
         self.time_sig_beat_val_action()
         print('---------------------')
-        # self.numerator_count += 1
-        # self.numerator_count %= self.time_signature['numerator']
-        # print(f"------------------------------{time.time()=},{self.numerator_count=}")
         print(f"in_pattern: {in_pattern} from_note:{from_note}, to_note: {to_note}")
         print(f"{self.key.scale.name=}, key={iso.Note.names[self.key.tonic % 12]}, {self.key.scale.name=}")
 
@@ -780,8 +765,6 @@ class Tracker:
         self.prev_get_pattern_name = self.note_patterns.get_pattern.__name__
 
         self.scale_name_action()
-        # if  from_note == None:
-        #     return None
         to_note_exists = False
         if in_pattern:
             if loopq and self.last_from_note is not None:
@@ -793,11 +776,7 @@ class Tracker:
             if loopq and not to_note:
                 to_note = from_note
                 self.put_to_queue(from_note)
-                # self.last_from_note = None
             print("if in_pattern")
-            # from_notex = self.last_note
-            # self.last_notex = to_note
-            # new_note = to_note
             print(f"in_pattern (next pattern for later):  from_note:{from_note} new_note:{to_note}")
             self.beat = lambda: self.play_from_to(from_note, to_note, in_pattern=True)
             _ = self.get_from_queue()
@@ -827,13 +806,10 @@ class Tracker:
                 iso.EVENT_GATE: iso.PSequence([self.legato], repeats=1)
             })
         print('after_check')
-        # root_note = self.key.scale.indexOf(self.key.nearest_note(from_note - self.key.tonic % 12))
-        # note = self.key.scale.indexOf(self.key.nearest_note(to_note - self.key.tonic % 12))
 
         scale_down = True if from_note > to_note else False
         root_note = self.key.scale.indexOf(self.key.nearest_note(from_note, scale_down=scale_down)-self.key.tonic, scale_down=scale_down)
         note = self.key.scale.indexOf(self.key.nearest_note(to_note, scale_down=scale_down)-self.key.tonic, scale_down=scale_down)
-
 
         interval = note - root_note
         scale_interval = to_note - from_note

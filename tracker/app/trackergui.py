@@ -282,17 +282,14 @@ class TrackerGuiApp(App):
 
     # <editor-fold desc="Play Pause Button">
     def inv_play_pause_state(self):
-        # state = self.root.ids.main_scr.ids.start_stop_button.state
         state = self.root.start_stop.state
         to_state = 'normal' if state == 'down' else 'down'
-        # self.root.ids.main_scr.ids.start_stop_button.state = to_state
         self.root.start_stop.state = to_state
     def set_play_pause_state(self, play_pause_button=None):
         if not play_pause_button:
             return
         state = play_pause_button.get('state')
         if state:
-            # self.root.ids.main_scr.ids.start_stop_button.state = state
             self.root.start_stop.state = state
 
     def play_pause_action(self, instance, state=None, play_pause_button=None):
@@ -316,12 +313,10 @@ class TrackerGuiApp(App):
     def on_selected_scale_button(self, instance, value):
         print(instance, value)
         print(self.selected_scale_button)
-        # self.set_scale_nm_app(instance, value)
         self.set_scale_nm(value)
     def rand_scale(self):
         log_call()
         all_scales = [scale.name for scale in iso.Scale.all()]
-        # random_scale = random.choice(list(set(all_scales) - set([self.tracker_ref.key.scale.name])))
         random_scale = random.choice(list(set(all_scales) - {self.tracker_ref.key.scale.name}))
         self.tracker_ref.key = iso.Key(self.tracker_ref.key.tonic, random_scale)
         self.selected_scale_button = self.tracker_ref.key.scale.name
@@ -379,14 +374,11 @@ class TrackerGuiApp(App):
             return
         state = metronome_button.get('state')
         if state:
-            # self.root.ids.main_scr.ids.metronome.state = state
             self.root.metronome.state = state
 
     def inv_metro_on_off_state(self):
-        # state = self.root.ids.main_scr.ids.metronome.state
         state = self.root.metronome.state
         to_state = 'normal' if state == 'down' else 'down'
-        # self.root.ids.main_scr.ids.metronome.state = to_state
         self.root.metronome.state = to_state
 
     def metro_on_off_action(self, instance, state):
@@ -403,10 +395,8 @@ class TrackerGuiApp(App):
                 tempo = tempo_knob['value']
                 tempo = self.tempo_min+tempo*(self.tempo_max-self.tempo_min)/127
             else:
-                # tempo_increment = tempo_knob['inc_value']
                 tempo_increment = tempo_knob['inc_value'] * tempo_knob['ratio'] if tempo_knob['ratio'] \
                     else tempo_knob['inc_value']
-                # tempo = int(round(self.tempo_value + tempo_increment))
                 tempo = self.tempo_value + tempo_increment
 
             print(f"bef: {self.tempo_value}")
@@ -450,10 +440,8 @@ class TrackerGuiApp(App):
                 dur_variety = dur_variety_knob['value']
                 dur_variety = self.dur_variety_min+dur_variety*(self.dur_variety_max-self.dur_variety_min)/127
             else:
-                # dur_variety_increment = dur_variety_knob['inc_value']
                 dur_variety_increment = dur_variety_knob['inc_value'] * dur_variety_knob['ratio'] if dur_variety_knob['ratio'] \
                     else dur_variety_knob['inc_value']
-                # dur_variety = int(round(self.dur_variety_value + dur_variety_increment))
                 dur_variety = self.dur_variety_value + dur_variety_increment
 
             print(f"bef: {self.dur_variety_value}")
@@ -535,10 +523,7 @@ class TrackerGuiApp(App):
 
     def set_check_notes_lbl_text(self, value):
         self.check_notes_lbl_text = value
-
-
     # </editor-fold>
-
 
 
 class MainScreen(Screen):
@@ -546,7 +531,6 @@ class MainScreen(Screen):
 
 
 class ScalesSelectScreen(Screen):
-
 
     btn = ObjectProperty()
     button_matrix = ListProperty()
@@ -556,13 +540,10 @@ class ScalesSelectScreen(Screen):
     grid_cols = NumericProperty()
     grid_len = NumericProperty()
 
-
     grid_pos = ListProperty()
     last_grid_up_down = StringProperty()
 
     but_id_offset = 0
-
-
 
     def __init__(self, **kwargs):
         super(ScalesSelectScreen, self).__init__(**kwargs)
@@ -576,15 +557,11 @@ class ScalesSelectScreen(Screen):
         this_dir = os.path.dirname(os.path.abspath(__file__))
         config_file = os.path.join(this_dir, '../config/reviewed_pattern_cfg.json')
 
-
-
         with open(config_file, 'r') as file:
 
             self.patterns_config = json.load(file)
 
     def populate_button(self):
-
-
         for button_id in self.button_names[self.but_id_offset:self.but_id_offset + self.grid_len]:
 
             button_text = button_id
@@ -611,22 +588,18 @@ class ScalesSelectScreen(Screen):
             self.rem_buttons()
             if self.but_id_offset + self.grid_len < self.nbr_of_scales:
                 self.but_id_offset += self.grid_len
-
         else:
             for x in range(0, len(self.button_names), self.grid_len):
                 # if scale  in self.button_names[x:x+self.grid_len]:
                 if scale in list(chain(*self.button_names[x:x + self.grid_len])):
                     self.but_id_offset = x
                     break
-
-
         self.populate_button()
 
     def on_touch_down(self, touch):
         self.last_grid_up_down = 'down'
         print(f"down , {touch.px=}, {touch.py=}, {touch.pos=}")
         self.grid_pos = touch.pos
-
 
     def on_touch_up(self, touch):
         prev_last_grid_up_down = self.last_grid_up_down

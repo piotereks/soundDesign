@@ -5,8 +5,6 @@ import itertools
 import random
 import json
 import isobar as iso
-
-# import sys
 import re
 from functools import wraps
 
@@ -29,7 +27,6 @@ class DurationPatterns:
         print('after list')
 
 
-
 class NotePatterns:
 
     def __init__(self):
@@ -42,8 +39,6 @@ class NotePatterns:
         self.get_pattern = getattr(self, self.pattern_methods_list[0])
         self.dur_patterns = DurationPatterns()
 
-
-
     def __list_get_pattern_methods__(self):
         get_patt_search = re.compile('^get_.*_pattern$')
         return [x for x in dir(self) if get_patt_search.search(x)]
@@ -51,11 +46,10 @@ class NotePatterns:
     @staticmethod
     def __init_pattern_size_for_interval__():
         max_range = 128
-
         tuple_range = itertools.product(range(1, max_range), range(1, max_range))
-        filt_range = itertools.filterfalse(lambda xy: xy[0] * xy[1] >= max_range, tuple_range)
+        filter_range = itertools.filterfalse(lambda xy: xy[0] * xy[1] >= max_range, tuple_range)
         pattern_size_for_interval = [{x} for x in range(max_range)]
-        for x, y in filt_range:
+        for x, y in filter_range:
             pattern_size_for_interval[x * y].add(x)
         return pattern_size_for_interval
 
@@ -64,18 +58,12 @@ class NotePatterns:
         this_dir = os.path.dirname(os.path.abspath(__file__))
         config_file = os.path.join(this_dir, '../config/reviewed_pattern_cfg.json')
 
-        # config_file = 'reviewed_pattern_cfg.json'
-
-
         with open(config_file, 'r') as file:
-
             self.patterns_config = json.load(file)
 
-        # self.patterns = list(map(lambda x: np.array(x['pattern']), self.patterns_config['play_over']['patterns']))
         self.patterns['play_over'] = list(map(lambda x: x['pattern'], self.patterns_config['play_over']['patterns']))
         self.patterns['ornament'] = list(map(lambda x: x['pattern'], self.patterns_config['ornament']['patterns']))
         self.patterns['diminunition'] = list(map(lambda x: x['pattern'], self.patterns_config['diminunition']['patterns']))
-
 
     @staticmethod
     def multiply_pattern(pattern: list, mult):
@@ -92,7 +80,6 @@ class NotePatterns:
             add_pattern = pattern[1:]
             shift = pattern[-1]
         for a in range(mult - 1):
-            # add_pattern.extend(-1)  # This is to add "step" of pattern, so I expect
             add_pattern = list(map(lambda x: x + shift, add_pattern))
             res_pattern.extend(add_pattern)
         return res_pattern  # [:-1]
@@ -105,10 +92,7 @@ class NotePatterns:
             suitable_patterns = [pattern for pattern in
                                  self.patterns['play_over'] if pattern[-1] in self.pattern_size_for_interval[interval]]
         else:
-            # suitable_patterns = [sign * self.multiply_pattern(pattern, int(interval / pattern[-1])) for pattern in
-            #                  self.patterns if pattern[-1] in self.pattern_size_for_interval[interval]]
             cntr = 0
-
             suitable_patterns = [list(map(lambda x:x*sign*int(np.sign(pattern[-1]))
                                           , self.multiply_pattern(pattern[:], int(interval / pattern[-1]))))
                                  for pattern in self.patterns['play_over']
@@ -125,20 +109,17 @@ class NotePatterns:
             suitable_patterns = [pattern for pattern in
                                  self.patterns['diminunition'] if pattern[-1] in self.pattern_size_for_interval[interval]]
         else:
-            # suitable_patterns = [sign * self.multiply_pattern(pattern, int(interval / pattern[-1])) for pattern in
-            #                  self.patterns if pattern[-1] in self.pattern_size_for_interval[interval]]
             cntr = 0
-
             suitable_patterns = [list(map(lambda x:x*sign*int(np.sign(pattern[-1]))
                                           , pattern[:]))
                                  for pattern in self.patterns['diminunition']
                                  if abs(pattern[-1]) == interval]
             if not suitable_patterns:
-                # suitable_patterns = [[0, sign*interval]]
                 suitable_patterns = [range(0, sign*interval+sign, sign)]
 
         return suitable_patterns
     # <editor-fold desc="get pattern functions">
+
     def mod_duration(func):  # added self, eventual issue
         @wraps(func)
         def split_no(interval, max_len = 16, dot_beat=False, numerator=4):
@@ -167,11 +148,7 @@ class NotePatterns:
                         splt_array.append((splt[0],part))
                         pattern_len -= part
                         rnd_parts -= 1
-
-
-
             return splt_array
-
 
         def inner(self, *args, **kwargs):
             parms = {"interval":0,
@@ -254,7 +231,6 @@ class NotePatterns:
         return inner
 
 
-
     @mod_duration
     def get_simple_pattern(self, *args, **kwargs):  # interval sould be not needed
         return {
@@ -324,8 +300,6 @@ class NotePatterns:
         interval_sign = 1 if interval >= 0 else -1
         from_note = parms.get("from_note")
         root_note = parms.get("root_note")
-        # root_note = self.key.scale.indexOf(self.key.nearest_note(from_note - self.key.tonic % 12))
-        # note = self.key.scale.indexOf(self.key.nearest_note(to_note - self.key.tonic % 12))
 
         key_major = iso.Key(tonic=key.tonic, scale=iso.Scale.major)
         major = iso.Scale.major
@@ -443,8 +417,6 @@ class NotePatterns:
                     round(scale_interval*math.sin(5*math.pi/2*x/r))
                     for x in range(r+1)]
 
-        # root_note = self.key.scale.indexOf(self.key.nearest_note(from_note - self.key.tonic % 12))
-
         return {
             iso.EVENT_NOTE: notes
             ,iso.EVENT_DURATION: [1]*len(notes)
@@ -470,95 +442,32 @@ class NotePatterns:
         interval_sign = 1 if interval >= 0 else -1
         r = 32
         if interval == 0:
-            # notes = [int(5*math.sin(2*math.pi*x/r)) for x in range(r+1)]
-            # notes = [-5 * len(key.scale.semitones)
-            #          + key.scale.indexOf(key.nearest_note(
-            #     5 * key.scale.octave_size + (5*math.sin(2*math.pi*x/r))))
-            #          for x in range(r + 1)]
             notes = [(-5 * len(key.scale.semitones)
                       + key.scale.indexOf(5 * key.scale.octave_size + key.nearest_note(
                         7 * math.sin(4 * math.pi / 2 * x / r) + key.tonic) - key.tonic))
                      for x in range(r + 1)]
         else:
-            # notes = [round(interval*math.sin(5*math.pi/2*x/r)) for x in range(r+1)]
             if key is not None:
-                # notes = [-5*len(key.scale.semitones)
-                #          + key.scale.indexOf((5*key.scale.octave_size+round(scale_interval*math.sin(5*math.pi/2*x/r)))-key.tonic%12)
-                #          for x in range(r+1)]
-                notes= [(-5 * len(key.scale.semitones)
-                           + key.scale.indexOf(5 * key.scale.octave_size + key.nearest_note(
-                            scale_interval * math.sin(5 * math.pi / 2 * x / r) + key.tonic) - key.tonic))
-                          for x in range(r + 1)]
+                # notes= [(-5 * len(key.scale.semitones)
+                #            + key.scale.indexOf(5 * key.scale.octave_size + key.nearest_note(
+                #             scale_interval * math.sin(5 * math.pi / 2 * x / r) + key.tonic) - key.tonic))
+                #           for x in range(r + 1)]
                 notes= [(-5 * len(key.scale.semitones)
                            + key.scale.indexOf(5 * key.scale.octave_size + key.nearest_note(
                             scale_interval*x/r
                             +(abs(scale_interval*0.66)+scale_interval*0.33) * math.sin(4 * math.pi / 2 * x / r) + key.tonic) - key.tonic))
                           for x in range(r + 1)]
 
-                # notes2 = [(-5 * len(key.scale.semitones)
-                #            + key.scale.indexOf(5 * key.scale.octave_size + key.nearest_note(scale_interval * x / r +
-                #                                                                             7 * math.sin(
-                #             4 * math.pi / 2 * x / r) + key.tonic) - key.tonic))
-                #           for x in range(r + 1)]
-
             else:
                 notes = [
                     round(scale_interval*math.sin(5*math.pi/2*x/r))
                     for x in range(r+1)]
-
-        # root_note = self.key.scale.indexOf(self.key.nearest_note(from_note - self.key.tonic % 12))
 
         return {
             iso.EVENT_NOTE: notes
             ,iso.EVENT_DURATION: [1]*len(notes)
         }
 
-    # @mod_duration
-    # def get_imp_sine_pattern(self, **kwargs):
-    #     parms = {"interval": 0,
-    #              "dur_variety": 999,
-    #              "quantize": {'5': 'normal', '3': 'normal', '2': 'normal'},
-    #              "align": 1,
-    #              "dot_beat": False,
-    #              "numerator": 4}
-    #
-    #     if kwargs is not None:
-    #         parms.update(kwargs)
-    #
-    #     interval = parms.get('interval',0)
-    #     scale_interval = parms.get('scale_interval',0)
-    #     key = parms.get('key', None)
-    #     org_interval = interval
-    #     interval_sign = 1 if interval >= 0 else -1
-    #     # y1 = 1.38*np.cos(np.radians(x/2))
-    #     # y2 = np.sin(np.radians(x))
-    #     factor = 1.38 if interval_sign < 0 else 0.46
-    #     # factor = 0.7
-    #     # factor = 0.46
-    #     r = 32
-    #     if interval == 0:
-    #         notes = [int(math.sin(2*math.pi*x/r)) for x in range(r+1)]
-    #     else:
-    #         # notes = [round(interval*math.sin(5*math.pi/2*x/r)) for x in range(r+1)]
-    #         if key is not None:
-    #             notes = [-5 * len(key.scale.semitones)
-    #                      + key.scale.indexOf(5 * key.scale.octave_size + round(
-    #                       abs(scale_interval)/2/factor*(+ math.sin(2*math.pi * x / r) - (interval_sign*factor * math.cos(2*math.pi * x / r / 2)-factor ))
-    #             ))
-    #     # for x in range(33)))
-    #                      for x in range(r + 1)]
-    #         else:
-    #             notes = [
-    #                 round(scale_interval*(math.sin(math.pi * x / r) + factor * math.cos(
-    #                                                math.pi * x / r / 2)))
-    #                      for x in range(r+1)]
-    #
-    #     # root_note = self.key.scale.indexOf(self.key.nearest_note(from_note - self.key.tonic % 12))
-    #
-    #     return {
-    #         iso.EVENT_NOTE: notes
-    #         ,iso.EVENT_DURATION: [1]*len(notes)
-    #     }
 
     @mod_duration
     def get_sine_vlen_pattern(self, **kwargs):
@@ -591,7 +500,6 @@ class NotePatterns:
                     round(scale_interval*math.sin(5*math.pi/2*x/r))
                     for x in range(r+1)]
 
-        # root_note = self.key.scale.indexOf(self.key.nearest_note(from_note - self.key.tonic % 12))
         result_dict = {
             iso.EVENT_NOTE: notes
             , iso.EVENT_DURATION: [1]*len(notes)
@@ -599,7 +507,6 @@ class NotePatterns:
 
         notes_wrk = []
         dur_wrk = []
-        # for idx, (n,d) in enumerate(zip(xdict['notes'].copy(),xdict['dur'].copy())):
         for idx in range(len(notes)):
             if idx == 0 or notes[idx] != notes[idx - 1]:
                 notes_wrk.append(result_dict[iso.EVENT_NOTE][idx])

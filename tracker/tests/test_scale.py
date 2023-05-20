@@ -20,15 +20,13 @@ def test_key_index_of():
     for scale in iso.Scale.all():
         key = iso.Key(tonic=0, scale=scale)
         print('\n'+scale.name)
-            # test_pattern_midi_nr = list(range(0,13))
+
         for t in range(128):
             key.tonic = t%key.scale.octave_size
             test_pattern_midi_nr = [x+t for x in key.scale.semitones]
-            # print(test_pattern_midi_nr)
             result_pattern = [key.nearest_note(x) for x in test_pattern_midi_nr]
             index_pattern = [key.scale.indexOf(x-key.tonic) for x in result_pattern]
 
-            # assert test_pattern_midi_nr == result_pattern
             rng_start = t//key.scale.octave_size*len(key.scale.semitones)
             pdegree_pattern = list(iso.PDegree(iso.PSequence(index_pattern, repeats=1), key))
             print(result_pattern, index_pattern, pdegree_pattern)
@@ -37,18 +35,12 @@ def test_key_index_of():
             if hasattr(scale, 'semitones_down') and scale.semitones_down:
                 test_pattern_midi_nr = [x + t for x in key.scale.semitones_down]
                 test_pattern_midi_nr.reverse()
-                # test_pattern_midi_nr = [test_pattern_midi_nr[-1]+scale.octave_size] + test_pattern_midi_nr[:-1]
-                # print(test_pattern_midi_nr)
                 result_pattern = [key.nearest_note(x, scale_down=True) for x in test_pattern_midi_nr]
                 index_pattern = [key.scale.indexOf(x - key.tonic, scale_down=True) for x in result_pattern]
 
-                # assert test_pattern_midi_nr == result_pattern
                 rng_start = t // key.scale.octave_size * len(key.scale.semitones_down)
                 pdegree_pattern = list(iso.PDegree(iso.PSequence(index_pattern, repeats=1), key))
                 print(t,result_pattern, index_pattern, pdegree_pattern)
                 assert index_pattern == list(range(rng_start + len(key.scale.semitones_down)-1, rng_start-1, -1)), "Scale Down IndexOf error"
                 assert result_pattern == pdegree_pattern, f"Scale Down PDegree error {(key.tonic,key.scale.name)=}"
-            # if t>=12:
-            #     break
-        # break
 

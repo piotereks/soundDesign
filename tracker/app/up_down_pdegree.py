@@ -27,7 +27,6 @@ class UpDownPDegree(PDegree):
             print("scale down: False -------------------")
 
         self.scale_down = scale_down
-
         self.degree = degree
         self.scale = scale
 
@@ -37,21 +36,9 @@ class UpDownPDegree(PDegree):
         scale = Pattern.value(self.scale)
         if degree is None:
             return None
-        # print(f'Degree new {degree=}, {self.scale_down=}, {scale.get(degree, scale_down=self.scale_down)=}')
-
-        # dg_list = list(degree.copy())
-        # scale_down = dg_list[0] > dg_list[-1]
-        # if scale_down:
-        #     print("scale down----------------------------")
-        # self.scale_down = scale_down
 
         if isinstance(degree, typing.Iterable):
             # return tuple(scale[degree] for degree in degree)
             return tuple(scale.get(degree, scale_down=self.scale_down) for degree in degree)
         else:
-            # return scale[degree]
-            # return scale.get(degree, self.scale_down)
-            # iso.Scale.get = UpDownScale.get
-            # print(type(scale))
-            # pprint(inspect.getmembers(scale.get))
             return scale.get(degree, scale_down=self.scale_down)

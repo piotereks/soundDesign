@@ -12,29 +12,20 @@ def test_get_path_pattern():
     key = iso.Key(tonic=0,scale=scale)
     scale_interval = 7
     interval = scale.indexOf(scale_interval)
-    xxx = npat.get_path_pattern(interval=interval,scale_interval=scale_interval, key=key )
-    # aaa = list(iso.PDegree(iso.PSequence(xxx[iso.EVENT_NOTE], repeats=1), scale)+key.tonic)
-    aaa = list(iso.PDegree(iso.PSequence(xxx[iso.EVENT_NOTE], repeats=1), key))
-    # bbb = list(iso.PDegree(iso.PSequence(xxx[iso.EVENT_NOTE], repeats=1), key))
+    base_pattern = npat.get_path_pattern(interval=interval,scale_interval=scale_interval, key=key )
+    pdegree_pattern = list(iso.PDegree(iso.PSequence(base_pattern[iso.EVENT_NOTE], repeats=1), key))
     exp_pattern = list(np.array([0, 2, 4, 5, 7])+key.tonic)
-    assert aaa == exp_pattern
-    # assert bbb == exp_pattern
+    assert pdegree_pattern == exp_pattern
 
     scale = iso.Scale.pelog
     key = iso.Key(tonic=0,scale=scale)
     scale_interval = 11
     interval = scale.indexOf(scale_interval)
-    xxx = npat.get_path_pattern(interval=interval,scale_interval=scale_interval, key=key )
-    # aaa = list(iso.PDegree(iso.PSequence(xxx[iso.EVENT_NOTE], repeats=1), scale)+ key.tonic)
-    aaa = list(iso.PDegree(iso.PSequence(xxx[iso.EVENT_NOTE], repeats=1), key))
-    # bbb = list(iso.PDegree(iso.PSequence(xxx[iso.EVENT_NOTE], repeats=1) )+ key.tonic)
+    base_pattern = npat.get_path_pattern(interval=interval,scale_interval=scale_interval, key=key )
+    pdegree_pattern = list(iso.PDegree(iso.PSequence(base_pattern[iso.EVENT_NOTE], repeats=1), key))
     print(f"{scale.semitones=}")
-    # exp_pattern = list(np.array([0, 2, 4, 5, 7])+key.tonic)
     exp_pattern = list(np.array(scale.semitones)+key.tonic)
-    assert aaa == exp_pattern
-    # assert bbb == exp_pattern
-
-    assert True
+    assert pdegree_pattern == exp_pattern
 
 def test_generic_get_indexOf():
     scale = iso.Scale(semitones=[0, 2, 4, 6, 8, 10], name="test_scale", octave_size=12,
@@ -45,19 +36,17 @@ def test_generic_get_indexOf():
         print(scale.name)
         if hasattr(scale, "semitones_down") and scale.semitones_down:
             print("scale_down tested too")
-    # print(scale.semitones)
         for t in range(0, 12):
             key = iso.Key(tonic=t, scale=scale)
             exp_result = list(np.array(scale.semitones)+key.tonic)
             assert [key.get(x) for x in range(len(scale.semitones))] == exp_result, "IndexOf UP1"
-            # print("\nreversed: ", [scale.indexOf(x) for x in exp_result])
             assert [scale.indexOf(x-key.tonic) for x in exp_result] == list(range(len(scale.semitones))), "IndexOf UP2"
+            
             if hasattr(scale,"semitones_down") and scale.semitones_down:
                 exp_result = list(np.array(scale.semitones_down) + key.tonic)
                 assert [key.get(x, scale_down=True) for x in range(len(scale.semitones_down))] == exp_result, "IndexOf DOWN1"
                 assert [scale.indexOf(x - key.tonic, scale_down=True) for x in exp_result] == list(range(len(scale.semitones_down))), "IndexOf DOWN2"
 
-    # TODO check for scale_down
 
 def test_all_suitable_patterns():
     _ = npat.all_suitable_patterns(0)
@@ -72,33 +61,6 @@ def test_all_suitable_diminunitions():
         assert all([pattern[-1] > 0 for pattern in npat.all_suitable_diminunitions(n)])
     for n in range(-16, -1):
         assert all([pattern[-1] < 0 for pattern in npat.all_suitable_diminunitions(n)])
-
-# def test_get_sine_pattern():
-#     scale = iso.Scale()
-#     # scale = iso.Scale.chromatic
-#     key = iso.Key(tonic=0,scale=scale)
-#     scale_interval = 7
-#     interval = scale.indexOf(scale_interval)
-#     xxx = npat.get_sine_pattern(interval=interval,scale_interval=scale_interval, key=key )
-#     # yyy = npat.get_sine2_pattern(interval=interval,scale_interval=scale_interval, key=key )
-#     aaa = [(x, math.sin(key.nearest_note(x/10))) for x in range(-40, 40)]
-#     bbb = [(x, math.sin(key.scale.indexOf(x/10))) for x in range(-40, 40)]
-#     r = 32
-#     tst = key.nearest_note(-6.865496962822613+24)-24
-#     tst2 = key.nearest_note(6.865496962822613+24)-24
-#     xtst = key.scale.indexOf(-6.865496962822613+24)-14
-#     xtst2 = key.scale.indexOf(6.865496962822613+24)-14
-#     atst = key.scale.indexOf(key.nearest_note(-6.865496962822613+24))-14
-#     atst2 = key.scale.indexOf(key.nearest_note(6.865496962822613+24))-14
-#     notes = [-5 * len(key.scale.semitones)
-#              + key.scale.indexOf(
-#         (5 * key.scale.octave_size + (scale_interval * math.sin(5 * math.pi / 2 * x / r))) - key.tonic % 12)
-#              for x in range(r + 1)]
-#     idx = [(scale_interval * math.sin(5 * math.pi / 2 * x / r))  for x in range(r + 1)]
-#     print(notes)
-#     print(idx)
-#     print(list(zip(notes,idx)))
-#     assert xxx[iso.EVENT_NOTE] == yyy[iso.EVENT_NOTE]
 
 def test_get_chord_improved_pattern():
     # scale = iso.Scale.minor
@@ -161,11 +123,3 @@ def test_get_chord_improved_pattern():
     # Scale.locrian = Scale([0, 1, 3, 5, 6, 8, 10], "locrian")
     # Scale.fourths = Scale([0, 2, 5, 7], "fourths")
 
-# def test_sin_return():
-#
-#     scale = iso.Scale()
-#     key = iso.Key(tonic=0,scale=scale)
-#     scale_interval = 7
-#     interval = scale.indexOf(scale_interval+5*scale.octave_size) - 5*len(scale.semitones)
-#     npat.get_imp_sine_pattern(interval=interval,scale_interval=scale_interval, key=key )
-#     assert True

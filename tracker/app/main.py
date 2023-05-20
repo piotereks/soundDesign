@@ -2,18 +2,9 @@ from .tracker import Tracker
 from .trackergui import *
 from .log_call import *
 
-# from .patterns import *
-# from .gui import *
-# import kivy_classes
-
-
 import os
 import json
 
-
-# global my_tracker
-
-# global self.yy_tracker
 
 # <editor-fold desc="Interactive simplification functions">
 # def tracker_dec(func):
@@ -137,13 +128,7 @@ def main():
     tracker = Tracker(tracker_config=tracker_config, midi_mapping=midi_mapping, midi_out_mode=midi_out_flag)
     # my_tracker.midi_out.program_change(program=22)
 
-
     TrackerGuiApp(parm_rows=12, parm_cols=5, app_config=app_config, tracker_ref=tracker).run()
-
-
-
-
-
 
 
 if __name__ == '__main__':

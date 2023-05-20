@@ -1,10 +1,6 @@
 from isobar import Key
 from isobar import Scale, InvalidKeyException,  note_name_to_midi_note
 
-# from .scale import Scale
-# from .note import Note
-# from .util import midi_note_to_note_name, note_name_to_midi_note
-# from .exceptions import InvalidKeyException
 
 class UpDownKey(Key):
     """ Represents a harmonic structure, containing a tonic and scale.
@@ -24,8 +20,6 @@ class UpDownKey(Key):
         self.tonic = tonic
         self.scale = scale
 
-
-    # def get(self, degree):
     def get(self,  *args, **kwargs):
         """ Returns the <degree>th semitone within this key. """
         # print("UpDownKey get")
@@ -40,14 +34,6 @@ class UpDownKey(Key):
         if degree is None:
             return None
 
-        # dg_list = list(degree.copy())
-        # scale_down = dg_list[0] > dg_list[-1]
-        # if scale_down:
-        #     print("scale down----------------------------")
-        # self.scale_down = scale_down
-
-        # semitones = self.semitones_down if scale_down else self.semitones
-        # semitone = self.scale[degree]
         semitone = self.scale.get(degree, scale_down=scale_down)
         return semitone + self.tonic
 
@@ -76,8 +62,6 @@ class UpDownKey(Key):
             octave, pitch = divmod(note, self.scale.octave_size)
             nearest_semi = None
             nearest_dist = None
-            # chk_semitones = self.semitones[-1:]+self.semitones[:-1]
-            # chk_semitones = self.semitones
             calc_octave = octave
             for semi in semitones:
                 dist = min(abs(semi - pitch),abs(abs(semi-pitch)-self.scale.octave_size))
@@ -91,8 +75,6 @@ class UpDownKey(Key):
             octave = calc_octave
             return (octave * self.scale.octave_size) + nearest_semi
 
-
-    # def __contains__(self, semitone):
     def __contains__(self, *args, ** kwargs):
         """ Return the index of the given note within this scale. """
         parms = {"note": None,
@@ -111,7 +93,6 @@ class UpDownKey(Key):
         else:
             semitones = self.semitones
 
-        # Always return true if None (rest) is queried.
         if semitone is None:
             return True
         return (semitone % self.scale.octave_size) in semitones

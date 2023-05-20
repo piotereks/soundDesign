@@ -5,8 +5,6 @@ import time
 
 import os
 import queue
-# from ...exceptions import DeviceNotFoundException
-# from ...constants import MIDI_CLOCK_TICKS_PER_BEAT
 
 global MULTI_TRACK
 MULTI_TRACK = True
@@ -130,12 +128,7 @@ class FileOut(MidiFileManyTracksOutputDevice, iso.MidiOutputDevice):
 
 class ExtendedMidiInputDevice(iso.MidiInputDevice):
     def _callback(self, message):
-        """
-        Callback used by mido.
-        Args:
-            message: A mido.Message.
-        """
-        # print(" - xxx xxxx MIDI message received: %s" % message)
+
         log.debug(" - MIDI message received: %s" % message)
 
         if message.type == 'clock':

@@ -5,7 +5,6 @@ from .up_down_pdegree import *
 from .up_down_key import *
 import math
 import sys
-# import yaml
 import json
 
 print("======================isobar fixex=============")
@@ -29,30 +28,22 @@ def midi_note_to_note_name(note):
 
 
 def read_config_file_scales():
-    # print('reading config')
     this_dir = os.path.dirname(os.path.abspath(__file__))
     config_file = os.path.join(this_dir, '../config/reviewed_pattern_cfg.json')
 
-    # config_file = 'reviewed_pattern_cfg.json'
-
-
     with open(config_file, 'r') as file:
-        # with open('reviewed_pattern_cfg.yaml', 'r') as file:
-        # loaded_yaml = yaml.safe_load(file)
         loaded_json = json.load(file)
-    # uuuu = [iso.Scale(scale['semitones'], scale['name']) for scale in loaded_yaml['scales']]
     for scale in loaded_json['scales']:
         for name in scale['name']:
             new_scale = iso.Scale(scale['semitones'], name, semitones_down=scale.get('semitones_down'),
                                   octave_size=scale.get('octave_size', 12))
 
 
-iso.util.midi_note_to_note_name = midi_note_to_note_name  #Overwrite original function
+iso.util.midi_note_to_note_name = midi_note_to_note_name
 iso.Scale.__init__ = UpDownScale.__init__
 iso.Scale.__getitem__ = UpDownScale.__getitem__
 iso.Scale.get = UpDownScale.get
 iso.Scale.indexOf = UpDownScale.indexOf
-
 
 
 iso.Key.__init__ = UpDownKey.__init__
