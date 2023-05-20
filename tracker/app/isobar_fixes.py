@@ -29,7 +29,7 @@ def midi_note_to_note_name(note):
 
 def read_config_file_scales():
     this_dir = os.path.dirname(os.path.abspath(__file__))
-    config_file = os.path.join(this_dir, '../config/reviewed_pattern_cfg.json')
+    config_file = os.path.join(this_dir, '../config/note_patterns.json')
 
     with open(config_file, 'r') as file:
         loaded_json = json.load(file)

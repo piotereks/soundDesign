@@ -169,7 +169,7 @@ class NotePatterns:
 
     def __read_config_file__(self):
         this_dir = os.path.dirname(os.path.abspath(__file__))
-        config_file = os.path.join(this_dir, '../config/reviewed_pattern_cfg.json')
+        config_file = os.path.join(this_dir, '../config/note_patterns.json')
 
         with open(config_file, 'r') as file:
             self.patterns_config = json.load(file)
@@ -236,7 +236,7 @@ class NotePatterns:
     # <editor-fold desc="get pattern functions">
 
     @mod_duration
-    def get_simple_pattern(self):  # interval should be not needed
+    def get_simple_pattern(self, **kwargs):  # interval should be not needed
         return {
             iso.EVENT_NOTE: list(
                 map(lambda x: x * random.choice([1, -1]), random.choice(self.patterns['play_over']))) + [0]
@@ -285,7 +285,7 @@ class NotePatterns:
         }
 
     @mod_duration
-    def get_chord_improved_pattern(self, *args, **kwargs):
+    def get_chord_improved_pattern(self, **kwargs):
         parameters = {"interval": 0,
                       "dur_variety": 999,
                       "quantize": {'5': 'normal', '3': 'normal', '2': 'normal'},
@@ -429,7 +429,7 @@ class NotePatterns:
         }
 
     @mod_duration
-    def get_sine_varlen_pattern(self, **kwargs):
+    def get_sine_var_len_pattern(self, **kwargs):
         parameters = {"interval": 0,
                       "dur_variety": 999,
                       "quantize": {'5': 'normal', '3': 'normal', '2': 'normal'},

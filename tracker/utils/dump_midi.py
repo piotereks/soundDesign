@@ -12,7 +12,7 @@ def direct_midi_play():
     # mid=mido.MidiFile('Def 5 4.mid',clip=True)
     # mid=mido.MidiFile('..\\jupyter\\rythm_midi_files\\Def (5.mid',clip=True)
     this_dir = os.path.dirname(os.path.abspath(__file__))
-    # config_file = os.path.join(this_dir, 'reviewed_pattern_cfg.json')
+    # config_file = os.path.join(this_dir, 'note_patterns.json')
     filename = os.path.join(this_dir, "..","saved_midi_files", "xoutput.mid")
     mid=mido.MidiFile(filename)
     track=mid.tracks[0]

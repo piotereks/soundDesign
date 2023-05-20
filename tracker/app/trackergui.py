@@ -555,7 +555,7 @@ class ScalesSelectScreen(Screen):
 
     def __read_config_file__(self):
         this_dir = os.path.dirname(os.path.abspath(__file__))
-        config_file = os.path.join(this_dir, '../config/reviewed_pattern_cfg.json')
+        config_file = os.path.join(this_dir, '../config/note_patterns.json')
 
         with open(config_file, 'r') as file:
 
