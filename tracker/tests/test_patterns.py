@@ -32,6 +32,8 @@ def test_get_chord_improved_pattern():
     key = iso.Key(tonic=0, scale=scale)
     from_note = 60
     # from_note_idx = key.scale.indexOf(key.nearest_note(from_note - key.tonic))
+    chord = npat.get_chord_maj_pattern(from_note=from_note, key=key)
+    assert chord[iso.EVENT_NOTE] == [(0, 2, 4), 0], f"Chord idx for scale {key.scale.name} not correct"
     chord = npat.get_chord_improved_pattern(from_note=from_note, key=key)
     assert chord[iso.EVENT_NOTE] == [(0, 2, 4), 0], f"Chord idx for scale {key.scale.name} not correct"
     chord = npat.get_chord_improved_pattern(from_note=from_note+1, key=key)

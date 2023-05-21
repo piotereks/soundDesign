@@ -325,7 +325,7 @@ class NotePatterns:
             chord = list(random.choice(chord_found))
             chord.sort()
             chord = tuple(chord)
-            chord_idx = tuple(key.scale.indexOf(key.nearest_note(x)) - key.tonic - from_note_idx for x in chord)
+            chord_idx = tuple(key.scale.indexOf(key.nearest_note(x) - key.tonic) - from_note_idx for x in chord)
         else:
             chord_idx = 0
 
