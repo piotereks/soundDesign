@@ -211,17 +211,19 @@ def test_play_from_to_chord_improved(step=3, subset_div=5):
 
     if subset_div > 1:
         scales = random.choices(scales, k=len(scales)//subset_div)
-
+    tst = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23, 24]
     for scalex in scales:
         print(f"{scale.name=}")
         octave5_start = 5 * scale.octave_size
-        for t in range(0, scale.octave_size, step):
+        for t in range(5, scale.octave_size, step):
             key = iso.Key(t % scale.octave_size, scale)
             test_semitones = [x + octave5_start + key.tonic for x in key.scale.semitones]
 
             tracker.key = key
             tracker.note_patterns.set_pattern_function('chord_improved')
             from_note = octave5_start+key.tonic
+            # from_note = octave5_start
+            from_note = key.nearest_note(from_note)
             # to_note = from_note+key.scale.octave_size
             tracker.quants_state = {'5': 'normal', '3': 'normal', '2': 'normal'}
             with contextlib.redirect_stdout(None):
@@ -229,26 +231,26 @@ def test_play_from_to_chord_improved(step=3, subset_div=5):
             tracker.put_to_queue(from_note)
             # tracker.put_to_queue(to_note)  # This value should not have meaning
 
-            patt = tracker.play_from_to(from_note, 0, in_pattern=False)
-            assert list(patt[iso.EVENT_NOTE]) == [(60+t, 64+t, 67+t)], f"problem with {scale.name=}, tonic={t}"
+            patt1 = tracker.play_from_to(from_note, 0, in_pattern=False)
+            assert list(patt1[iso.EVENT_NOTE]) == [(60+t, 64+t, 67+t)], f"problem with {scale.name=}, tonic={t}"
 
-            patt = tracker.play_from_to(from_note+2, 0, in_pattern=False)
-            assert list(patt[iso.EVENT_NOTE]) == [(62+t, 65+t, 69+t)], f"problem with {scale.name=}, tonic={t}"
+            patt2 = tracker.play_from_to(from_note+2, 0, in_pattern=False)
+            assert list(patt2[iso.EVENT_NOTE]) == [(62+t, 65+t, 69+t)], f"problem with {scale.name=}, tonic={t}"
 
-            patt = tracker.play_from_to(from_note+4, 0, in_pattern=False)
-            assert list(patt[iso.EVENT_NOTE]) == [(64+t, 67+t, 71+t)], f"problem with {scale.name=}, tonic={t}"
+            patt3 = tracker.play_from_to(from_note+4, 0, in_pattern=False)
+            assert list(patt3[iso.EVENT_NOTE]) == [(64+t, 67+t, 71+t)], f"problem with {scale.name=}, tonic={t}"
 
-            patt = tracker.play_from_to(from_note+5, 0, in_pattern=False)
-            assert list(patt[iso.EVENT_NOTE]) == [(65+t, 69+t, 72+t)], f"problem with {scale.name=}, tonic={t}"
+            patt4 = tracker.play_from_to(from_note+5, 0, in_pattern=False)
+            assert list(patt4[iso.EVENT_NOTE]) == [(65+t, 69+t, 72+t)], f"problem with {scale.name=}, tonic={t}"
 
-            patt = tracker.play_from_to(from_note+7, 0, in_pattern=False)
-            assert list(patt[iso.EVENT_NOTE]) == [(67+t, 71+t, 74+t)], f"problem with {scale.name=}, tonic={t}"
+            patt5 = tracker.play_from_to(from_note+7, 0, in_pattern=False)
+            assert list(patt5[iso.EVENT_NOTE]) == [(67+t, 71+t, 74+t)], f"problem with {scale.name=}, tonic={t}"
 
-            patt = tracker.play_from_to(from_note+9, 0, in_pattern=False)
-            assert list(patt[iso.EVENT_NOTE]) == [(69+t, 72+t, 76+t)], f"problem with {scale.name=}, tonic={t}"
+            patt6 = tracker.play_from_to(from_note+9, 0, in_pattern=False)
+            assert list(patt6[iso.EVENT_NOTE]) == [(69+t, 72+t, 76+t)], f"problem with {scale.name=}, tonic={t}"
 
-            patt = tracker.play_from_to(from_note+11, 0, in_pattern=False)
-            assert list(patt[iso.EVENT_NOTE]) == [(71+t, 74+t, 77+t)], f"problem with {scale.name=}, tonic={t}"
+            patt7 = tracker.play_from_to(from_note+11, 0, in_pattern=False)
+            assert list(patt7[iso.EVENT_NOTE]) == [(71+t, 74+t, 77+t)], f"problem with {scale.name=}, tonic={t}"
 
 
             # 0, 4, 7

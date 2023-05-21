@@ -59,7 +59,8 @@ class UpDownKey(Key):
         if self.__contains__(semitone=note, scale_down=scale_down):
             return note
         else:
-            octave, pitch = divmod(note, self.scale.octave_size)
+            note_denominated = note - self.tonic
+            octave, pitch = divmod(note_denominated, self.scale.octave_size)
             nearest_semi = None
             nearest_dist = None
             calc_octave = octave
@@ -73,7 +74,7 @@ class UpDownKey(Key):
                     else:
                         calc_octave = octave
             octave = calc_octave
-            return (octave * self.scale.octave_size) + nearest_semi
+            return (octave * self.scale.octave_size) + nearest_semi + self.tonic
 
     def __contains__(self, *args, ** kwargs):
         """ Return the index of the given note within this scale. """
@@ -87,6 +88,7 @@ class UpDownKey(Key):
             parms.update(kwargs)
 
         semitone = parms.get('semitone')
+        # semitone -= self.tonic
         scale_down = parms.get('scale_down')
         if scale_down and hasattr(self.scale, 'semitones_down') and self.scale.semitones_down:
             semitones = self.semitones_down
