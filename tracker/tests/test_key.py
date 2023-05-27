@@ -12,11 +12,11 @@ read_config_file_scales()
 def test_key_nearest_note():
     scale = iso.Scale.major
 
-    for scalex in iso.Scale.all():
+    for scale in iso.Scale.all():
         key = iso.Key(tonic=0, scale=scale)
 
         # for t in range(128):
-        for t in range(2, 12):
+        for t in range(0, 12):
 
             print('\n' + scale.name)
             key.tonic = t

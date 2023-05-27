@@ -65,12 +65,16 @@ class UpDownKey(Key):
             nearest_dist = None
             calc_octave = octave
             for semi in semitones:
-                dist = min(abs(semi - pitch),abs(abs(semi-pitch)-self.scale.octave_size))
+                """ 
+                0.1 is amendment allowing priority of selecting nearest note from 
+                below when 2 nearest notes are possible (from below and from above)
+                """
+                dist = min(abs(semi - pitch + 0.1), abs(abs(semi-pitch + 0.1)-self.scale.octave_size))
                 if nearest_dist is None or dist < nearest_dist:
                     nearest_semi = semi
-                    nearest_dist = dist
+                    nearest_dist = round(dist)
                     if dist == abs(abs(semi-pitch)-self.scale.octave_size):
-                        calc_octave = octave +1
+                        calc_octave = octave + 1
                     else:
                         calc_octave = octave
             octave = calc_octave
