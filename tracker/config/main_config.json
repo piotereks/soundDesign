@@ -3,7 +3,7 @@
     {
       "key":"E",
       "ykey":"C",
-      "scale":"major",
+      "scale":"pelog",
       "yscale":"minor melodic up/down",
       "zscale":"chromatic",
       "tempo":125,
@@ -20,7 +20,7 @@
       "zplay_func":"simple",
       "xqueue_content":[60, 64, 62, 70],
       "xplay_func":"random_path",
-      "queue_content":[64,76],
+      "queue_content":[60,67],
       "yqueue_content":[60,72],
       "xqueue_content":[60, 65],
       "rows":7,

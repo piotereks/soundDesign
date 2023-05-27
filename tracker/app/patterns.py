@@ -152,6 +152,7 @@ class NotePatterns:
         self.get_pattern = getattr(self, self.pattern_methods_list[0])
         self.dur_patterns = DurationPatterns()
         self.key = iso.Key()
+        self.prev_chord = set()
 
     def __list_get_pattern_methods__(self):
         get_patt_search = re.compile('^get_.*_pattern$')
@@ -311,28 +312,54 @@ class NotePatterns:
         chords_list = []
 
         for i in range(len(maj_semitones) // 2):
-            chord_set = set([maj_semitones[i + x * semitone_step] - maj_semitones[i] + from_note for x in range(chord_n)])
+            chord_set = set(
+                [maj_semitones[i + x * semitone_step] - maj_semitones[i] + from_note for x in range(chord_n)])
+            if chord_set not in chords_list:
+                chords_list.append(chord_set)
+            chord_set = list(chord_set)
+            chord_set.sort()
+            chord_set[0] += major.octave_size
+            chord_set = set([x - chord_set[1] + from_note for x in chord_set])
+            if chord_set not in chords_list:
+                chords_list.append(chord_set)
+            chord_set = list(chord_set)
+            chord_set.sort()
+            chord_set[0] += major.octave_size
+            chord_set = set([x - chord_set[1] + from_note for x in chord_set])
             if chord_set not in chords_list:
                 chords_list.append(chord_set)
 
         # scale = key.scale
 
         from_note_idx = key.scale.indexOf(from_note - key.tonic)
-        two_octaves = set([key.get(note_idx) for note_idx in range(from_note_idx, from_note_idx + len(key.scale.semitones) * 2 + 1)])
+        two_octaves = set(
+            [key.get(note_idx) for note_idx in range(from_note_idx, from_note_idx + len(key.scale.semitones) * 2 + 1)])
         chord_found = [ch & two_octaves for ch in chords_list if ch & two_octaves == ch]
 
         if chord_found:
+            # check how many notes are shared with prev_chord
+            max_match = max([len(x & self.prev_chord) for x in chord_found])
+            chord_found = [x for x in chord_found if len(x & self.prev_chord) == max_match]
+
+            """ 
+            Check proximity of notes by calculating sum of difference between each pair of notes (product of elements).
+            """
+            min_delta = min([sum(abs(p[0] - p[1]) for p in itertools.product(x, self.prev_chord)) for x in chord_found])
+            chord_found = [x for x in chord_found if
+                           sum(abs(p[0] - p[1]) for p in itertools.product(x, self.prev_chord)) == min_delta]
+
             chord = list(random.choice(chord_found))
             chord.sort()
             chord = tuple(chord)
+            self.prev_chord = set(chord)
             chord_idx = tuple(key.scale.indexOf(key.nearest_note(x) - key.tonic) - from_note_idx for x in chord)
         else:
             chord_idx = 0
+            self.prev_chord = set()
 
         return {
             iso.EVENT_NOTE: [chord_idx, 0]
         }
-
 
     @mod_duration
     def get_one_note_pattern(self, **kwargs):
@@ -445,7 +472,7 @@ class NotePatterns:
             if key is not None:
                 notes = [-5 * len(key.scale.semitones)
                          + key.scale.indexOf((5 * key.scale.octave_size + round(
-                          scale_interval * math.sin(5 * math.pi / 2 * x / r))) - key.tonic % 12)
+                    scale_interval * math.sin(5 * math.pi / 2 * x / r))) - key.tonic % 12)
                          for x in range(r + 1)]
             else:
                 notes = [

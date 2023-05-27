@@ -27,17 +27,35 @@ def test_get_path_pattern():
     exp_pattern = list(np.array(scale.semitones)+key.tonic)
     assert pdegree_pattern == exp_pattern
 
+def test_gh():
+    scale = iso.Scale.byname('pelog')
+    key = iso.Key(tonic=4, scale=scale)
+    from_note = 60
+    chord = npat.get_chord_improved_pattern(from_note=from_note, key=key)
+    from_note = 64
+    chord = npat.get_chord_improved_pattern(from_note=from_note, key=key)
+    from_note = 67
+    chord = npat.get_chord_improved_pattern(from_note=from_note, key=key)
+    from_note = 72
+    chord = npat.get_chord_improved_pattern(from_note=from_note, key=key)
+    assert True
+
 def test_get_chord_improved_pattern():
     scale = iso.Scale.major
     key = iso.Key(tonic=0, scale=scale)
     from_note = 60
     # from_note_idx = key.scale.indexOf(key.nearest_note(from_note - key.tonic))
+    npat.prev_chord = []
     chord = npat.get_chord_maj_pattern(from_note=from_note, key=key)
     assert chord[iso.EVENT_NOTE] == [(0, 2, 4), 0], f"Chord idx for scale {key.scale.name} not correct"
+    npat.prev_chord = []
     chord = npat.get_chord_improved_pattern(from_note=from_note, key=key)
     assert chord[iso.EVENT_NOTE] == [(0, 2, 4), 0], f"Chord idx for scale {key.scale.name} not correct"
+    npat.prev_chord = []
     chord = npat.get_chord_improved_pattern(from_note=from_note+1, key=key)
+    npat.prev_chord = []
     assert chord[iso.EVENT_NOTE] == [(0, 2, 4), 0], f"Chord idx1 for scale {key.scale.name} not correct"
+    npat.prev_chord = []
     chord = npat.get_chord_improved_pattern(from_note=from_note+6, key=key)
     assert chord[iso.EVENT_NOTE] == [(0, 2, 4), 0], f"Chord idx6 for scale {key.scale.name} not correct"
 
@@ -50,6 +68,7 @@ def test_get_chord_improved_pattern():
     assert chord[iso.EVENT_NOTE] == [0, 0], f"Chord idx1 for scale {key.scale.name} not correct"
     chord = npat.get_chord_improved_pattern(from_note=from_note+6, key=key)
     assert chord[iso.EVENT_NOTE] == [0, 0], f"Chord idx6 for scale {key.scale.name} not correct"
+
 
     scale = iso.Scale.minor
     key = iso.Key(tonic=0, scale=scale)
