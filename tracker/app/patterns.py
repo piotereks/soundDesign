@@ -296,6 +296,11 @@ class NotePatterns:
                       "from_note": 60,
                       "key": iso.Key()}
 
+        def invert_chord(chord_to_inv: list) -> list:
+            chord_to_inv[0] += major.octave_size
+            chord_to_inv.sort()
+            return [x - chord_to_inv[0] + from_note for x in chord_to_inv]
+
         if kwargs is not None:
             parameters.update(kwargs)
 
@@ -311,30 +316,49 @@ class NotePatterns:
         semitone_step = 2
         chords_list = []
 
-        for i in range(len(maj_semitones) // 2):
-            chord_set = set(
-                [maj_semitones[i + x * semitone_step] - maj_semitones[i] + from_note for x in range(chord_n)])
-            if chord_set not in chords_list:
-                chords_list.append(chord_set)
-            chord_set = list(chord_set)
-            chord_set.sort()
-            chord_set[0] += major.octave_size
-            chord_set = set([x - chord_set[1] + from_note for x in chord_set])
-            if chord_set not in chords_list:
-                chords_list.append(chord_set)
-            chord_set = list(chord_set)
-            chord_set.sort()
-            chord_set[0] += major.octave_size
-            chord_set = set([x - chord_set[1] + from_note for x in chord_set])
-            if chord_set not in chords_list:
-                chords_list.append(chord_set)
+        # chord_3n = 3
+        # chord_4n = 4
 
+        for i in range(len(maj_semitones) // 2):
+            for chord_st in (3, 4):
+                chord = [maj_semitones[i + x * semitone_step] - maj_semitones[i] + from_note for x in range(chord_st)]
+                chord_set = set(chord)
+                if chord_set not in chords_list:
+                    chords_list.append(chord_set)
+                    for _ in range(chord_st-1):
+                        chord_set = set(invert_chord(chord))
+                        if chord_set not in chords_list:
+                            chords_list.append(chord_set)
+        # thirds and fifths
+        thirds_fifths = [{0, 4}, {0, 3}, {0, 5}, {0, 6}, {0, 7}, {0, 8}, {0, 9}]
+        chords_list.extend([{list(x)[0] + from_note, list(x)[1] + from_note} for x in thirds_fifths])
+
+        # chords_list_down = chords_list.copy()
+        # for s in chords_list_down:  # Iterate through each set
+        #     for i, elem in enumerate(s):  # Iterate through each element in the set
+        #         s.remove(elem)  # Remove the element from the set
+        #         s.add(elem - major.octave_size)  # Add the incremented element back to the set
+
+        chords_list_down, chords_list_up = [], []
+
+        for s in chords_list:
+            incremented_set_down = set()
+            incremented_set_up = set()
+            for elem in s:
+                incremented_set_down.add(elem - major.octave_size)
+                incremented_set_up.add(elem + major.octave_size)
+            chords_list_down.append(incremented_set_down)
+            chords_list_up.append(incremented_set_up)
+        chords_list.extend(chords_list_down)
+        chords_list.extend(chords_list_up)
+
+        chords_list = [s for s in chords_list if from_note in s]
         # scale = key.scale
 
         from_note_idx = key.scale.indexOf(from_note - key.tonic)
-        two_octaves = set(
-            [key.get(note_idx) for note_idx in range(from_note_idx, from_note_idx + len(key.scale.semitones) * 2 + 1)])
-        chord_found = [ch & two_octaves for ch in chords_list if ch & two_octaves == ch]
+        three_octaves = set(
+            [key.get(note_idx) for note_idx in range(from_note_idx -1 -len(key.scale.semitones), from_note_idx + len(key.scale.semitones) * 2 + 1)])
+        chord_found = [ch & three_octaves for ch in chords_list if ch & three_octaves == ch]
 
         if chord_found:
             # check how many notes are shared with prev_chord
@@ -344,6 +368,9 @@ class NotePatterns:
             """ 
             Check proximity of notes by calculating sum of difference between each pair of notes (product of elements).
             """
+            max_len = max([len(x) for x in chord_found])
+            chord_found = [x for x in chord_found if len(x) == max_len]
+
             min_delta = min([sum(abs(p[0] - p[1]) for p in itertools.product(x, self.prev_chord)) for x in chord_found])
             chord_found = [x for x in chord_found if
                            sum(abs(p[0] - p[1]) for p in itertools.product(x, self.prev_chord)) == min_delta]

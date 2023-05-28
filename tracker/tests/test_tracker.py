@@ -200,6 +200,35 @@ def test_play_from_to_result_rev():
 
             assert list(patt[iso.EVENT_NOTE]) == test_semitones, f"Play_from_to pattern mismatch {(t,from_note,to_note)=}"
 
+
+def test_ch(step=3, subset_div=5):
+    """
+    step=3 to improve time of test in full test suite should be step=1
+    """
+    scale = iso.Scale.byname('pelog')
+    key = iso.Key(tonic=4, scale=scale)
+    tracker.note_patterns.set_pattern_function('chord_improved')
+    from_note = 60
+    from_note = key.nearest_note(from_note)
+    # to_note = from_note+key.scale.octave_size
+    tracker.quants_state = {'5': 'normal', '3': 'normal', '2': 'normal'}
+    with contextlib.redirect_stdout(None):
+        pass
+    tracker.put_to_queue(from_note)
+    # tracker.put_to_queue(to_note)  # This value should not have meaning
+
+    patt0a = tracker.play_from_to(from_note+0, 0, in_pattern=False)
+    patt4a = tracker.play_from_to(from_note+4, 0, in_pattern=False)
+    patt7a = tracker.play_from_to(from_note+7, 0, in_pattern=False)
+    patt16a = tracker.play_from_to(from_note+16, 0, in_pattern=False)
+    patt12a = tracker.play_from_to(from_note+12, 0, in_pattern=False)
+    patt0b = tracker.play_from_to(from_note+0, 0, in_pattern=False)
+    patt4b = tracker.play_from_to(from_note+4, 0, in_pattern=False)
+    patt7b = tracker.play_from_to(from_note+7, 0, in_pattern=False)
+    patt16b = tracker.play_from_to(from_note+16, 0, in_pattern=False)
+    patt12b = tracker.play_from_to(from_note+12, 0, in_pattern=False)
+    assert True
+
 def test_play_from_to_chord_improved(step=3, subset_div=5):
     """
     step=3 to improve time of test in full test suite should be step=1

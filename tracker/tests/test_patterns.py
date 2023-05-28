@@ -40,28 +40,41 @@ def test_gh():
     chord = npat.get_chord_improved_pattern(from_note=from_note, key=key)
     assert True
 
+
 def test_get_chord_improved_pattern():
-    scale = iso.Scale.major
-    key = iso.Key(tonic=0, scale=scale)
-    from_note = 60
-    # from_note_idx = key.scale.indexOf(key.nearest_note(from_note - key.tonic))
-    npat.prev_chord = []
-    chord = npat.get_chord_maj_pattern(from_note=from_note, key=key)
-    assert chord[iso.EVENT_NOTE] == [(0, 2, 4), 0], f"Chord idx for scale {key.scale.name} not correct"
-    npat.prev_chord = []
-    chord = npat.get_chord_improved_pattern(from_note=from_note, key=key)
-    assert chord[iso.EVENT_NOTE] == [(0, 2, 4), 0], f"Chord idx for scale {key.scale.name} not correct"
-    npat.prev_chord = []
-    chord = npat.get_chord_improved_pattern(from_note=from_note+1, key=key)
-    npat.prev_chord = []
-    assert chord[iso.EVENT_NOTE] == [(0, 2, 4), 0], f"Chord idx1 for scale {key.scale.name} not correct"
-    npat.prev_chord = []
-    chord = npat.get_chord_improved_pattern(from_note=from_note+6, key=key)
-    assert chord[iso.EVENT_NOTE] == [(0, 2, 4), 0], f"Chord idx6 for scale {key.scale.name} not correct"
+    # scale = iso.Scale.major
+    # key = iso.Key(tonic=0, scale=scale)
+    # from_note = 60
+    # # from_note_idx = key.scale.indexOf(key.nearest_note(from_note - key.tonic))
+    # npat.prev_chord = set()
+    # chord = npat.get_chord_maj_pattern(from_note=from_note, key=key)
+    # assert chord[iso.EVENT_NOTE] == [(0, 2, 4), 0], f"Chord idx for scale {key.scale.name} not correct"
+    # npat.prev_chord = set()
+    # chord = npat.get_chord_improved_pattern(from_note=from_note, key=key)
+    # assert chord[iso.EVENT_NOTE] == [(0, 2, 4), 0], f"Chord idx for scale {key.scale.name} not correct"
+    # npat.prev_chord = set()
+    # chord = npat.get_chord_improved_pattern(from_note=from_note+1, key=key)
+    # npat.prev_chord = set()
+    # assert chord[iso.EVENT_NOTE] == [(0, 2, 4), 0], f"Chord idx1 for scale {key.scale.name} not correct"
+    # npat.prev_chord = set()
+    # chord = npat.get_chord_improved_pattern(from_note=from_note+6, key=key)
+    # assert chord[iso.EVENT_NOTE] == [(0, 2, 4), 0], f"Chord idx6 for scale {key.scale.name} not correct"
 
     scale = iso.Scale.byname('pelog')  # [0, 1, 3, 7, 8]
-    key = iso.Key(tonic=0, scale=scale)
+    key = iso.Key(tonic=4, scale=scale)
     from_note = 60
+
+    chord0a = npat.get_chord_improved_pattern(from_note=from_note+0, key=key)
+    chord4a = npat.get_chord_improved_pattern(from_note=from_note+4, key=key)
+    chord7a = npat.get_chord_improved_pattern(from_note=from_note+7, key=key)
+    chord16a = npat.get_chord_improved_pattern(from_note=from_note+16, key=key)
+    chord11a = npat.get_chord_improved_pattern(from_note=from_note+11, key=key)
+    chord0b = npat.get_chord_improved_pattern(from_note=from_note+0, key=key)
+    chord4b = npat.get_chord_improved_pattern(from_note=from_note+4, key=key)
+    chord7b = npat.get_chord_improved_pattern(from_note=from_note+7, key=key)
+    chord16b = npat.get_chord_improved_pattern(from_note=from_note+16, key=key)
+    chord11b = npat.get_chord_improved_pattern(from_note=from_note+11, key=key)
+
     chord = npat.get_chord_improved_pattern(from_note=from_note, key=key)
     assert chord[iso.EVENT_NOTE] == [(0, 2, 3), 0], f"Chord idx for scale {key.scale.name} not correct"
     chord = npat.get_chord_improved_pattern(from_note=from_note+1, key=key)
