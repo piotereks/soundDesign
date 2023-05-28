@@ -297,9 +297,12 @@ class NotePatterns:
                       "key": iso.Key()}
 
         def invert_chord(chord_to_inv: list) -> list:
-            chord_to_inv[0] += major.octave_size
+            # chord_to_inv[0] += major.octave_size
+            # chord_to_inv.sort()
+            # return [x - chord_to_inv[0] + from_note for x in chord_to_inv]
+            chord_to_inv[-1] -= major.octave_size
             chord_to_inv.sort()
-            return [x - chord_to_inv[0] + from_note for x in chord_to_inv]
+            return chord_to_inv
 
         if kwargs is not None:
             parameters.update(kwargs)
