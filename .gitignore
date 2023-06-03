@@ -4,7 +4,7 @@ wrk_*
 .idea/
 .idea/*
 .idea/*.*
-/tracker/saved_midi_files/
+/tracker/saved_midi_files/*
 !/tracker/saved_midi_files/.gitkeep
 tracker/__pycache__/*
 /checks/pyt/tests/.pytest_cache/
