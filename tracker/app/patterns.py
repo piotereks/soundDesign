@@ -374,9 +374,9 @@ class NotePatterns:
             max_len = max([len(x) for x in chord_found])
             chord_found = [x for x in chord_found if len(x) == max_len]
 
-            min_delta = min([sum(abs(p[0] - p[1]) for p in itertools.product(x, self.prev_chord)) for x in chord_found])
+            min_delta = min([sum(abs(p[0] - p[1]) for p in itertools.product(x, self.prev_chord))/len(x) for x in chord_found])
             chord_found = [x for x in chord_found if
-                           sum(abs(p[0] - p[1]) for p in itertools.product(x, self.prev_chord)) == min_delta]
+                           sum(abs(p[0] - p[1]) for p in itertools.product(x, self.prev_chord))/len(x) == min_delta]
 
             chord = list(random.choice(chord_found))
             chord.sort()
