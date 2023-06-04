@@ -1,9 +1,8 @@
 {
   "app":
     {
-      "key":"E",
-      "ykey":"C",
-      "scale":"pelog",
+      "key":"C",
+      "scale":"major",
       "yscale":"minor melodic up/down",
       "zscale":"chromatic",
       "tempo":125,
@@ -13,16 +12,8 @@
       "dur_variety":0.0,
       "dur_variety_min":0,
       "dur_variety_max":7,
-      "play_func":"get_chord_improved_pattern",
-      "pplay_func":"sine",
-      "vplay_func":"one_note",
-      "yplay_func":"chord_maj",
-      "zplay_func":"simple",
-      "xqueue_content":[60, 64, 62, 70],
-      "xplay_func":"random_path",
-      "queue_content":[60,67],
-      "yqueue_content":[60,72],
-      "xqueue_content":[60, 65],
+      "play_func":"one_note",
+      "queue_content":[60, 64, 67, 71, 76, 72, 69, 65, 62],
       "rows":7,
       "cols":3
     },
