@@ -1,129 +1,13 @@
 
-import mido
 import logging
 from isobar import *
+# from isobar.io.midi import MidiInput, MidiOutput
+# from isobar import MIDIScheduler
 import mido
 import time
 import os
+import threading
 
-import logging
-
-log = logging.getLogger(__name__)
-
-global tme
-tme = time.time()
-
-
-class PatchMidiFileInputDevice(MidiFileInputDevice):
-    def read(self, quantize=None):
-        midi_reader = mido.MidiFile(self.filename)
-        log.debug("Loading MIDI data from %s, ticks per beat = %d" % (self.filename, midi_reader.ticks_per_beat))
-        note_tracks = list(filter(lambda track: any(message.type == 'note_on' for message in track),
-                                  midi_reader.tracks))
-        if not note_tracks:
-            raise ValueError("Could not find any tracks with note data")
-
-        #------------------------------------------------------------------------
-        # TODO: Support for multiple tracks
-        #------------------------------------------------------------------------
-        track = note_tracks[0]
-
-        notes = []
-        offset = 0
-        for event in track:
-            if event.type == 'note_on' and event.velocity > 0:
-                #------------------------------------------------------------------------
-                # Found a note_on event.
-                #------------------------------------------------------------------------
-
-                #------------------------------------------------------------------------
-                # Sanitisation (some midifiles seem to give invalid input).
-                #------------------------------------------------------------------------
-                if event.velocity > 127:
-                    event.velocity = 127
-
-                offset += event.time / midi_reader.ticks_per_beat
-                note = MidiNote(event.note, event.velocity, offset)
-                notes.append(note)
-            elif event.type == 'note_off' or (event.type == 'note_on' and event.velocity == 0):
-                #------------------------------------------------------------------------
-                # Found a note_off event.
-                #------------------------------------------------------------------------
-                offset += event.time / midi_reader.ticks_per_beat
-                for note in reversed(notes):
-                    if note.pitch == event.note and note.duration is None:
-                        note.duration = offset - note.location
-                        break
-
-        #------------------------------------------------------------------------
-        # Quantize
-        #------------------------------------------------------------------------
-        for note in notes:
-            if quantize:
-                note.location = round(note.location / quantize) * quantize
-                note.duration = round(note.duration / quantize) * quantize
-
-        #------------------------------------------------------------------------
-        # Construct a sequence which honours chords and relative lengths.
-        # First, group all notes by their starting time.
-        #------------------------------------------------------------------------
-        notes_by_time = {}
-        for note in notes:
-            if not note.duration:
-                continue
-            log.debug(" - MIDI event (t = %.2f): Note %d, velocity %d, duration %.3f" %
-                      (note.location, note.pitch, note.velocity, note.duration))
-            location = note.location
-            if location in notes_by_time:
-                notes_by_time[location].append(note)
-            else:
-                notes_by_time[location] = [note]
-
-        note_dict = {
-            EVENT_NOTE: [],
-            EVENT_AMPLITUDE: [],
-            EVENT_GATE: [],
-            EVENT_DURATION: []
-        }
-
-        #------------------------------------------------------------------------
-        # Next, iterate through groups of notes chronologically, figuring out
-        # appropriate parameters for duration (eg, inter-note distance) and
-        # gate (eg, proportion of distance note extends across).
-        #------------------------------------------------------------------------
-        times = sorted(notes_by_time.keys())
-        for i, t in enumerate(times):
-            t = times[i]
-            notes = notes_by_time[t]
-
-            #------------------------------------------------------------------------
-            # Our duration is always determined by the time of the next note event.
-            # If a next note does not exist, this is the last note of the sequence;
-            # use the maximal length of note currently playing (assuming a chord)
-            #------------------------------------------------------------------------
-            if i < len(times) - 1:
-                next_time = times[i + 1]
-            else:
-                next_time = t + max([note.duration for note in notes])
-
-            time_until_next_note = next_time - t
-            note_dict[EVENT_DURATION].append(time_until_next_note)
-
-            if len(notes) > 1:
-                note_dict[EVENT_NOTE].append(tuple(note.pitch for note in notes))
-                note_dict[EVENT_AMPLITUDE].append(tuple(note.velocity for note in notes))
-                note_dict[EVENT_GATE].append(tuple(note.duration / time_until_next_note for note in notes))
-            else:
-                if time_until_next_note:
-                    note = notes[0]
-                    note_dict[EVENT_NOTE].append(note.pitch)
-                    note_dict[EVENT_AMPLITUDE].append(note.velocity)
-                    note_dict[EVENT_GATE].append(note.duration / time_until_next_note)
-
-        for key, value in note_dict.items():
-            note_dict[key] = PSequence(value, 1)
-
-        return note_dict
 
 def print_tempo():
     global tme
@@ -133,35 +17,112 @@ def print_tempo():
     # if midi_in.tempo:
     #     print("Estimated tempo: %.3f" % midi_in.tempo)
 
+def play_mid_file():
 
-MidiFileInputDevice.read = PatchMidiFileInputDevice.read
-midi_in_name = 'KB loopMIDI Port 0'
-# midi_in = iso.MidiInputDevice(midi_in_name)
-# midi_in = iso.MidiFileInputDevice(filename='example_midi\\Variable_tempo_one_note.mid')
-# pattern = iso.MidiFileInputDevice(filename='example_midi\\Variable_tempo_one_note.mid').read()
-print(os.getcwd())
-file = os.path.join('example_midi', 'Variable_tempo_one_note.mid')
-# file = os.path.join('example_midi', 'prates.mid')
-midi_in = MidiFileInputDevice(filename=file)
-pattern = midi_in.read()
-print("Read pattern containing %d note events" % len(pattern["note"]))
-# iso.Clock
-# timeline = iso.Timeline(120, clock_source=midi_in)
-# timeline = iso.Timeline(clock_source=midi_in)
-# timeline = iso.Timeline()
-# timeline.schedule({
-#     "action": lambda : print_tempo(),
-#     # "action": lambda: beat(),
-#     "duration": 4
+    file_path = os.path.abspath(__file__)
+    # file = os.path.join('example_midi', 'Variable_tempo_one_note_mod.mid')
+    file = os.path.join('example_midi', 'Variable_tempo_one_note.mid')
+    midi_out = midi_out_play_name
+    midi_out = midi_out_loop_name
+    port = mido.open_output(midi_out)
+    # clock_message = mido.Message('clock')
+    mid = mido.MidiFile(file)
+    # microseconds_per_beat = mido.bpm2tempo(120)
+    # ticks_per_beat = mid.ticks_per_beat  # Number of ticks per beat (adjust as needed)
+    # microseconds_per_tick = microseconds_per_beat / ticks_per_beat
+
+    # mid.__dict__
+    # {'filename': 'example_midi\\Variable_tempo_one_note.mid', 'type': 1, 'ticks_per_beat': 480, 'charset': 'latin1',
+    #  'debug': False, 'clip': False, 'tracks': [MidiTrack([
+    #     MetaMessage('time_signature', numerator=4, denominator=4, clocks_per_click=24, notated_32nd_notes_per_beat=8,
+    #                 time=0),
+
+
+    # start_time = time.time()
+    while True:
+        for msg in mid.play():
+
+            port.send(msg)
+
+            # elapsed_time = time.time() - start_time
+            # start_time = time.time()
+            # ticks = int(elapsed_time / (microseconds_per_tick / 1e6))
+            # print(f"{elapsed_time=}")
+            # print("ticks----------"+str(ticks))
+            # for _ in range(ticks):
+            #     port.send(clock_message)
+
+            # Sleep briefly to control the clock rate
+            # time.sleep(0.001)
+
+
+def handle_midi_input(message):
+    """Get data from in midi dev and play it on midi 'wave' dev"""
+    play_device.midi.send(message)  #  midi port taken from isobar device
+    # Print the MIDI message
+    print(message)
+
+midi_in_loop_name = 'KB loopMIDI Port 0'
+midi_out_loop_name = 'KB loopMIDI Port 1'
+midi_out_play_name = 'Microsoft GS Wavetable Synth 0'
+
+
+# play_mid_file()
+# Asynchronous play of file using threading
+player_thread = threading.Thread(target=play_mid_file)  #  Play to loopback mid dev
+player_thread.start()
+# time.sleep(15)
+print('after schedule')
+
+# define mid "wave" output
+play_device = MidiOutputDevice(midi_out_play_name, send_clock=True)
+# play_port = mido.open_output(midi_out_play_name)
+
+# Create a MIDIInput instance to receive MIDI input
+input = MidiInputDevice(midi_in_loop_name)
+input.callback = handle_midi_input
+
+# Create a MIDIOutput instance to send MIDI messages
+# output = MidiOutputDevice(midi_out_play_name)
+# Set the MIDI output device index (change this to the appropriate value)
+# output.open_output(0)
+
+# Start the MIDI input processing
+# input.start()
+# print('input started')
+# Continue with other tasks while receiving MIDI input
+# ...
+
+# Stop the MIDI input processing
+# print('input stopped')
+# input.stop()
+
+# midi_out = MidiOutputDevice(mido.get_input_names()[0])
+# midi_out.callback = lambda : print('blahblah')
 #
-# })
+# play_port = mido.open_output(midi_out_play_name)
+
+print('before schedule')
+def print_tempo():
+    print("in print tempo")
+    if input.tempo:
+        print("Estimated tempo: %.3f" % input.tempo)
 
 
-timeline = Timeline(clock_source=midi_in)
-timeline.schedule(pattern)
-# timeline.run()
 
-# print("Awaiting MIDI clock signal from %s..." % midi_in)
+timeline = Timeline(120, clock_source=input)
+# timeline = Timeline(clock_source=input)
+timeline.schedule({
+    "action" : print("asdfasdfasdfasdfasdfasdfasd")
+    # "action" : sadfasdfadsdfa
+    # "action": print_tempo
+    # "action": lambda:print("inside schedule")
+},
+# output_device=play_device
 
-timeline.run()
-
+output_device=DummyOutputDevice(),
+remove_when_done=False
+)
+print("Awaiting MIDI clock signal from %s..." % input.device_name)
+timeline.background()
+print('after run')
