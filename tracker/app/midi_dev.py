@@ -92,11 +92,11 @@ class FileOut(MidiFileManyTracksOutputDevice, iso.MidiOutputDevice):
         MidiFileManyTracksOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
         iso.MidiOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
 
-    # def program_change(self, program=0, channel=0):
-    # iso.MidiFileOutputDevice.program_change(self, program=program, channel=channel)
-    # MidiFileManyTracksOutputDevice.program_change(self, program=program, channel=channel)
-    # iso.MidiOutputDevice.program_change(self, program=program, channel=channel)
-    # super().program_change(program=program, channel=channel)
+    def program_change(self, program=0, channel=0):
+        # iso.MidiFileOutputDevice.program_change(self, program=program, channel=channel)
+        MidiFileManyTracksOutputDevice.program_change(self, program=program, channel=channel)
+        iso.MidiOutputDevice.program_change(self, program=program, channel=channel)
+        # super().program_change(program=program, channel=channel)
 
     #
     #
@@ -114,9 +114,9 @@ class FileOut(MidiFileManyTracksOutputDevice, iso.MidiOutputDevice):
     #
     # def tick(self):
     #     # iso.MidiFileOutputDevice.tick(self)
-    #     # MidiFileManyTracksOutputDevice.tick(self)
-    #     # iso.MidiOutputDevice.tick(self)
-    #     super().tick()
+    #     MidiFileManyTracksOutputDevice.tick(self)
+    #     iso.MidiOutputDevice.tick(self)
+        # super().tick()
 
     def write(self):
         iso.MidiFileOutputDevice.write(self)
