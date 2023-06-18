@@ -1,4 +1,5 @@
 DEFAULT_TEMPO = 500000
+global MULTI_TRACK
 MULTI_TRACK = True
 # import logging
 
@@ -12,10 +13,10 @@ import time
 import threading
 
 from tracker.app.isobar_fixes import *
-from tracker.app.midi_dev import *
 from mido.midifiles.tracks import MidiTrack, merge_tracks, fix_end_of_track
 from mido.midifiles.units import tick2second
-
+from tracker.app.midi_dev import *
+from types import SimpleNamespace
 
 
 def _to_abstime(messages):
@@ -131,11 +132,25 @@ class CustMidiFile(mido.MidiFile):
             if isinstance(msg, mido.MetaMessage) and not meta_messages:
                 continue
             else:
-                yield msg, msg_track
+                msg_cpy = msg.copy()
+                msg_cpy.time = round(msg_cpy.time)
+                yield msg_cpy, msg_track
 
 
 mido.MidiFile = CustMidiFile
 
+
+def mid_meta_message(msg: mido.MetaMessage = None, *args, **kwargs):
+    # return None
+    # if self.midi_out_mode == self.MIDI_OUT_DEVICE:
+    #     return None
+    if not msg:
+        msg = mido.MetaMessage(*args, **kwargs)
+
+    if MULTI_TRACK:
+        midi_out_device.miditrack[0].append(msg)
+    else:
+        midi_out_device.miditrack.append(msg)
 
 def play_mid_file():
     print("in play_mid_file")
@@ -197,6 +212,7 @@ def play_mid_file():
                     midi_out_device.note_off(channel=msg.channel, note=msg.note)
             elif msg.type == 'program_change':
                 midi_out_device.program_change(program=msg.program, channel=msg.channel)
+                mid_meta_message(msg=msg)
                 print(f"program change {msg=}")
 
 
@@ -204,17 +220,24 @@ def play_mid_file():
                 print(f"{msg=}")
                 if msg.type == 'set_tempo':
                     timeline.set_tempo(tempo=mido.tempo2bpm(msg.tempo))
+                    # mid_meta_message(type='set_tempo', tempo=mido.bpm2tempo(msg.tempo), time=0)
+                    pass
 
-                midi_out_device.miditrack.append(msg)
+                # midi_out_device.miditrack[0].append(msg)
+                mid_meta_message(msg=msg)
 
             # for _ in range(50):
             #     midi_out_device.tick()
         else:
+            ww()
+            break
             continue
         break
 
-
-
+def ww():
+    midi_out_device.write()
+ASYNC = False
+ASYNC = True
 midi_in_loop_name = 'KB loopMIDI Port 0'
 midi_out_loop_name = 'KB loopMIDI Port 1'
 midi_out_play_name = 'Microsoft GS Wavetable Synth 0'
@@ -260,8 +283,11 @@ timeline.schedule(
      }
 
                   )
-# player_thread.start()
-play_mid_file()
+if ASYNC:
+    player_thread.start()
+else:
+    play_mid_file()
+
 timeline.background()
 # define mid "wave" output
 # play_device = MidiOutputDevice(midi_out_play_name, send_clock=True)
