@@ -154,29 +154,15 @@ def mid_meta_message(msg: mido.MetaMessage = None, *args, **kwargs):
 
 def play_mid_file():
     print("in play_mid_file")
-    file_path = os.path.abspath(__file__)
-    file = os.path.join('example_midi', 'Variable_tempo_one_note_mod_double.mid')
+
     # file = os.path.join('example_midi', 'Variable_tempo_one_note_mod.mid')
     # file = os.path.join('example_midi', 'Variable_tempo_one_note')
 
     port = midi_out_device.midi
     # port = mido.open_output(midi_out)
-    mid = mido.MidiFile(file)
+
 
     time_division = mid.ticks_per_beat
-
-
-    # Convert MIDI time to ticks
-    # midi_time = 480  # Example MIDI time value
-    # ticks = mido.second2tick(midi_time, time_division, tempo=500000)  # Replace the tempo with the actual tempo value
-
-    # mid.__dict__
-    # {'filename': 'example_midi\\Variable_tempo_one_note.mid', 'type': 1, 'ticks_per_beat': 480, 'charset': 'latin1',
-    #  'debug': False, 'clip': False, 'tracks': [MidiTrack([
-    #     MetaMessage('time_signature', numerator=4, denominator=4, clocks_per_click=24, notated_32nd_notes_per_beat=8,
-    #                 time=0),
-
-
 
     # start_time = time.time()
     start_time = time.time()
@@ -275,11 +261,21 @@ player_thread = threading.Thread(target=play_mid_file)  #  Play to loopback mid 
 # time.sleep(15)
 print('after schedule')
 
+file_path = os.path.abspath(__file__)
+file = os.path.join('example_midi', 'Variable_tempo_one_note_mod_double_instr.mid')
+mid = mido.MidiFile(file)
+
+available_channels = set(range(16))-set(m.channel for t in mid.tracks
+                                        for m in t if hasattr(m, 'channel'))-{9}
+min_channel = min(available_channels)
+available_channels.remove(min_channel)
+
 timeline = iso.Timeline(123,output_device=midi_out_device)
 timeline.schedule(
 
     {iso.EVENT_NOTE : iso.PSequence([55,70,62,68], repeats=16),
-     iso.EVENT_DURATION : 0.5
+     iso.EVENT_DURATION : 0.5,
+     iso.EVENT_CHANNEL : min_channel
      }
 
                   )
