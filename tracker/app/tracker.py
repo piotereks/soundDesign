@@ -672,7 +672,7 @@ class Tracker:
             print(f"program was not changed {self.current_program=}")
             return
         self.midi_out.program_change(program=int(program), channel=int(channel))
-        print("blahblah")
+        # print("blahblah")
         if MULTI_TRACK:
             self.midi_out.miditrack[0].append(
                 mido.Message('program_change', program=int(program), channel=int(channel)))
