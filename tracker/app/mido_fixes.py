@@ -1,14 +1,11 @@
-# DEFAULT_TEMPO = 500000
-
 import mido
 import time
 
 import threading
 
-from tracker.app.isobar_fixes import *
 from mido.midifiles.tracks import MidiTrack, merge_tracks, fix_end_of_track
 from mido.midifiles.units import tick2second
-# from tracker.app.midi_dev import FileOut
+from tracker.app.midi_dev import FileOut
 
 
 def _to_abstime(messages):
@@ -135,6 +132,7 @@ class CustMidiFile(mido.MidiFile):
                 msg_cpy = msg.copy()
                 msg_cpy.time = round(msg_cpy.time)
                 yield msg_cpy, msg_track
+
 
 
 # mido.MidiFile.__iter__ = CustMidiFile.__iter__

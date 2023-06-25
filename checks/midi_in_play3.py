@@ -10,90 +10,90 @@ import threading
 
 from tracker.app.tracker import *
 from tracker.app.isobar_fixes import *
-from mido.midifiles.tracks import MidiTrack, merge_tracks, fix_end_of_track
-from mido.midifiles.units import tick2second
-from tracker.app.midi_dev import FileOut
+# from mido.midifiles.tracks import MidiTrack, merge_tracks, fix_end_of_track
+# from mido.midifiles.units import tick2second
+# from tracker.app.midi_dev import FileOut
 
 from tracker.app.log_call import *
 
-def mid_meta_message(msg: mido.MetaMessage = None, *args, **kwargs):
-    # return None
-    # if self.midi_out_mode == self.MIDI_OUT_DEVICE:
-    #     return None
-    if not msg:
-        msg = mido.MetaMessage(*args, **kwargs)
+# def mid_meta_message(msg: mido.MetaMessage = None, *args, **kwargs):
+#     # return None
+#     # if self.midi_out_mode == self.MIDI_OUT_DEVICE:
+#     #     return None
+#     if not msg:
+#         msg = mido.MetaMessage(*args, **kwargs)
+#
+#     if MULTI_TRACK:
+#         midi_out_device.miditrack[0].append(msg)
+#     else:
+#         midi_out_device.miditrack.append(msg)
 
-    if MULTI_TRACK:
-        midi_out_device.miditrack[0].append(msg)
-    else:
-        midi_out_device.miditrack.append(msg)
-
-def play_mid_file():
-    print("in play_mid_file")
-
-    # file = os.path.join('example_midi', 'Variable_tempo_one_note_mod.mid')
-    # file = os.path.join('example_midi', 'Variable_tempo_one_note')
-
-    port = midi_out_device.midi
-    # port = mido.open_output(midi_out)
-
-
-    time_division = mid.ticks_per_beat
-
-    # start_time = time.time()
-    start_time = time.time()
-    elapsed_time = start_time
-    while not break_flag.is_set():
-        for msg, msg_track in mid.play(meta_messages=True):
-        # for msg in mid:
-            elapsed_time = time.time() - elapsed_time
-            wait_time = msg.time - elapsed_time
-            print(f"{wait_time=}")
-            # ticks = int(mido.second2tick(msg.time, time_division, tempo=timeline.tempo))
-
-            if wait_time > 0:
-                pass
-                # ticks = int(mido.second2tick(wait_time, time_division, tempo=timeline.tempo))
-                # print(f"{ticks=}")
-                # for _ in range(ticks):
-                #     # timeline.tick()
-                #     midi_out_device.tick()
-                # time.sleep(wait_time)
-            if break_flag.is_set():
-                break
-            # if not run_event.is_set():
-            #     print("Paused")
-            #     run_event.wait()
-            print('running')
-            if msg.type in ('note_on', 'note_off'):
-                # port.send(msg)
-                if msg.type == 'note_on':
-                    midi_out_device.note_on(channel=msg.channel, note=msg.note, velocity=msg.velocity)
-                else:
-                    midi_out_device.note_off(channel=msg.channel, note=msg.note)
-            elif msg.type == 'program_change':
-                midi_out_device.program_change(program=msg.program, channel=msg.channel)
-                mid_meta_message(msg=msg)
-                print(f"program change {msg=}")
-
-
-            else:
-                print(f"{msg=}")
-                if msg.type == 'set_tempo':
-                    timeline.set_tempo(tempo=mido.tempo2bpm(msg.tempo))
-                    # mid_meta_message(type='set_tempo', tempo=mido.bpm2tempo(msg.tempo), time=0)
-                    pass
-
-                # midi_out_device.miditrack[0].append(msg)
-                mid_meta_message(msg=msg)
-
-            # for _ in range(50):
-            #     midi_out_device.tick()
-        else:
-            ww()
-            break
-            continue
-        break
+# def play_mid_file():
+#     print("in play_mid_file")
+#
+#     # file = os.path.join('example_midi', 'Variable_tempo_one_note_mod.mid')
+#     # file = os.path.join('example_midi', 'Variable_tempo_one_note')
+#
+#     port = midi_out_device.midi
+#     # port = mido.open_output(midi_out)
+#
+#
+#     time_division = mid.ticks_per_beat
+#
+#     # start_time = time.time()
+#     start_time = time.time()
+#     elapsed_time = start_time
+#     while not break_flag.is_set():
+#         for msg, msg_track in mid.play(meta_messages=True):
+#         # for msg in mid:
+#             elapsed_time = time.time() - elapsed_time
+#             wait_time = msg.time - elapsed_time
+#             print(f"{wait_time=}")
+#             # ticks = int(mido.second2tick(msg.time, time_division, tempo=timeline.tempo))
+#
+#             if wait_time > 0:
+#                 pass
+#                 # ticks = int(mido.second2tick(wait_time, time_division, tempo=timeline.tempo))
+#                 # print(f"{ticks=}")
+#                 # for _ in range(ticks):
+#                 #     # timeline.tick()
+#                 #     midi_out_device.tick()
+#                 # time.sleep(wait_time)
+#             if break_flag.is_set():
+#                 break
+#             # if not run_event.is_set():
+#             #     print("Paused")
+#             #     run_event.wait()
+#             print('running')
+#             if msg.type in ('note_on', 'note_off'):
+#                 # port.send(msg)
+#                 if msg.type == 'note_on':
+#                     midi_out_device.note_on(channel=msg.channel, note=msg.note, velocity=msg.velocity)
+#                 else:
+#                     midi_out_device.note_off(channel=msg.channel, note=msg.note)
+#             elif msg.type == 'program_change':
+#                 midi_out_device.program_change(program=msg.program, channel=msg.channel)
+#                 mid_meta_message(msg=msg)
+#                 print(f"program change {msg=}")
+#
+#
+#             else:
+#                 print(f"{msg=}")
+#                 if msg.type == 'set_tempo':
+#                     timeline.set_tempo(tempo=mido.tempo2bpm(msg.tempo))
+#                     # mid_meta_message(type='set_tempo', tempo=mido.bpm2tempo(msg.tempo), time=0)
+#                     pass
+#
+#                 # midi_out_device.miditrack[0].append(msg)
+#                 mid_meta_message(msg=msg)
+#
+#             # for _ in range(50):
+#             #     midi_out_device.tick()
+#         else:
+#             ww()
+#             break
+#             continue
+#         break
 
 def ww():
     midi_out_device.write()
@@ -121,7 +121,11 @@ def main():
     midi_out_flag = Tracker.MIDI_OUT_MIX_FILE_DEVICE
     # midi_out_flag = Tracker.MIDI_OUT_FILE
 
-    tracker = Tracker(tracker_config=tracker_config, midi_mapping=midi_mapping, midi_out_mode=midi_out_flag)
+    file_path = os.path.abspath(__file__)
+    file_in = os.path.join('example_midi', 'Variable_tempo_one_note_mod_double_instr.mid')
+
+    tracker = Tracker(tracker_config=tracker_config, midi_mapping=midi_mapping, midi_out_mode=midi_out_flag,
+                      filename_in=file_in)
     # my_tracker.midi_out.program_change(program=22)
 
     # TrackerGuiApp(parm_rows=12, parm_cols=5, app_config=app_config, tracker_ref=tracker).run()
@@ -145,11 +149,7 @@ midi_out_device = tracker.midi_out
 # port = mido.open_output(midi_out)
 # port = out_dev.midi
 
-run_event = threading.Event()
-run_event.set()
 
-break_flag = threading.Event()
-break_flag.clear()
 
 x = 1
 # file = os.path.join('example_midi', 'Variable_tempo_one_note_mod.mid')
@@ -163,26 +163,32 @@ x = 1
 # timeline.background()
 
 
-# play_mid_file()
-# Asynchronous play of file using threading
-player_thread = threading.Thread(target=play_mid_file)  #  Play to loopback mid dev
 
 # time.sleep(15)
 print('after schedule')
 
 file_path = os.path.abspath(__file__)
-file = os.path.join('example_midi', 'Variable_tempo_one_note_mod_double_instr.mid')
-mid = mido.MidiFile(file)
+file_in = os.path.join('example_midi', 'Variable_tempo_one_note_mod_double_instr.mid')
+# mid = mido.MidiFile(file_in)
+mid = tracker.midi_file_in
+# play_mid_file()
+# Asynchronous play of file using threading
+player_thread = threading.Thread(target=tracker.play_mid_file)  #  Play to loopback mid dev
+
+
+mid.run_event.set()
+
+mid.break_flag.clear()
 
 available_channels = set(range(16))-set(m.channel for t in mid.tracks
                                         for m in t if hasattr(m, 'channel'))-{9}
 min_channel = min(available_channels)
 available_channels.remove(min_channel)
 
-timeline = iso.Timeline(123,output_device=midi_out_device)
-timeline.schedule(
+# timeline = iso.Timeline(123,output_device=midi_out_device)
+tracker.timeline.schedule(
 
-    {iso.EVENT_NOTE : iso.PSequence([55,70,62,68], repeats=16),
+    {iso.EVENT_NOTE : iso.PSequence([55, 70, 62, 68], repeats=48),
      iso.EVENT_DURATION : 0.5,
      iso.EVENT_CHANNEL : min_channel
      }
@@ -191,9 +197,9 @@ timeline.schedule(
 if ASYNC:
     player_thread.start()
 else:
-    play_mid_file()
+    mid.play_mid_file()
 
-timeline.background()
+tracker.timeline.background()
 # define mid "wave" output
 # play_device = MidiOutputDevice(midi_out_play_name, send_clock=True)
 # play_device = MidiOutputDevice(midi_out_play_name)

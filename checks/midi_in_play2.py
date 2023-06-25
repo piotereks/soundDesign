@@ -105,7 +105,7 @@ class CustMidiFile(mido.MidiFile):
         for msg, msg_track in self:
             # midi_out_device.tick()
             # print(f"Inside counter {self.counter}")
-            self.counter += 1
+            # self.counter += 1
             time_delta = time.time()-time_variable
             time_variable += time_delta
             # time_real += time_delta
