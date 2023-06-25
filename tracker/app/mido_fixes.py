@@ -1,4 +1,4 @@
-DEFAULT_TEMPO = 500000
+# DEFAULT_TEMPO = 500000
 
 import mido
 import time
@@ -8,7 +8,7 @@ import threading
 from tracker.app.isobar_fixes import *
 from mido.midifiles.tracks import MidiTrack, merge_tracks, fix_end_of_track
 from mido.midifiles.units import tick2second
-from tracker.app.midi_dev import FileOut
+# from tracker.app.midi_dev import FileOut
 
 
 def _to_abstime(messages):
@@ -48,12 +48,20 @@ def merge_tracks(tracks):
 
     return MidiTrack(fix_end_of_track(_to_reltime(messages))), track_idx
 
+
 mido.midifiles.tracks.merge_tracks = merge_tracks
 mido.midifiles.tracks._to_abstime = _to_abstime
 mido.midifiles.tracks._to_reltime = _to_reltime
 
 class CustMidiFile(mido.MidiFile):
     # counter = 0
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.run_event = threading.Event()
+        self.run_event.set()
+
+        self.break_flag = threading.Event()
+        self.break_flag.clear()
 
     def __iter__(self):
         # The tracks of type 2 files are not in sync, so they can
@@ -61,7 +69,7 @@ class CustMidiFile(mido.MidiFile):
         if self.type == 2:
             raise TypeError("can't merge tracks in type 2 (asynchronous) file")
 
-        tempo = DEFAULT_TEMPO
+        tempo = mido.midifiles.midifiles.DEFAULT_TEMPO
         merged_tracks, merged_tracks_idx = merge_tracks(self.tracks)
         for msg in merged_tracks:
             # Convert message time from absolute time
@@ -101,9 +109,9 @@ class CustMidiFile(mido.MidiFile):
             time_delta = time.time()-time_variable
             time_variable += time_delta
             # time_real += time_delta
-            if not run_event.is_set():
+            if not self.run_event.is_set():
                 # print("PausedXX")
-                run_event.wait()
+                self.run_event.wait()
                 # print("After IF...")
                 time_delta = time.time() - time_variable
                 time_variable += time_delta
@@ -129,12 +137,7 @@ class CustMidiFile(mido.MidiFile):
                 yield msg_cpy, msg_track
 
 
-mido.MidiFile.__iter__ = CustMidiFile.__iter__
-mido.MidiFile.play = CustMidiFile.play
+# mido.MidiFile.__iter__ = CustMidiFile.__iter__
+# mido.MidiFile.play = CustMidiFile.play
 
-
-run_event = threading.Event()
-run_event.set()
-
-break_flag = threading.Event()
-break_flag.clear()
+mido.MidiFile = CustMidiFile
