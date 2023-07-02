@@ -433,9 +433,12 @@ class Tracker:
 
     def mid_file_start(self):
         print("start of mid file")
+        if not self.player_thread.is_alive():
+            self.player_thread.start()
         if self.midi_file_in:
             self.midi_file_in.run_event.set()
             self.midi_file_in.break_flag.clear()
+
 
     def mid_file_pause(self):
         if self.midi_file_in:
@@ -865,7 +868,10 @@ class Tracker:
         log_call()
         self.timeline.background()
         self.mid_file_start()
-        self.player_thread.start()
+        x = 1
+        # self.player_thread.start()
+
+        x = 1
 
         # @log_and_schedule
 
