@@ -33,17 +33,39 @@ class Tracker:
                  midi_out_mode='dummy',
                  midi_mapping={},
                  filename=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "saved_midi_files",
-                                       "xoutput.mid"),
-                 filename_in: str = None
+                                       "xoutput.mid")
                  ):
         log_call()
 
         read_config_file_scales()
+        filename_in = tracker_config.get("filename_in")
+        if filename_in:
+            filename_in = os.path.join(os.path.dirname(os.path.abspath(__file__)), *filename_in)
         self.midi_dev_in = None
         print("A1===file midi to be created")
         self.midi_file_in = mido.MidiFile(filename_in) if filename_in else None
-        self.player_thread = threading.Thread(target=self.play_mid_file)
 
+        if self.midi_file_in:
+            # mid = self.midi_file_in
+            self.available_channels = set(range(16)) - set(m.channel for t in self.midi_file_in.tracks
+                                                      for m in t if hasattr(m, 'channel')) - {9}
+            self.min_channel = min(self.available_channels)
+            self.available_channels.remove(self.min_channel)
+
+        self.player_thread = threading.Thread(target=self.play_mid_file)
+        self.filename_in_volume = tracker_config.get("filename_in_volume")
+        if self.filename_in_volume <0:
+            self.filename_in_volume = 0
+        elif self.filename_in_volume >=127:
+            self.filename_in_volume = 127
+        self.generated_notes_volume = tracker_config.get("generated_notes_volume")
+        if self.generated_notes_volume <0:
+            self.generated_notes_volume = 0
+        elif self.generated_notes_volume >=127:
+            self.generated_notes_volume = 127
+
+
+        self.generated_notes_volume = tracker_config.get("generated_notes_volume")
         self.key = iso.Key("C", "major")
         self.prev_key = None
         self.loopq = False
@@ -380,7 +402,7 @@ class Tracker:
                 print('running')
                 if msg.type in ('note_on', 'note_off'):
                     if msg.type == 'note_on':
-                        self.midi_out.note_on(channel=msg.channel, note=msg.note, velocity=msg.velocity)
+                        self.midi_out.note_on(channel=msg.channel, note=msg.note, velocity=int(msg.velocity*self.filename_in_volume/100))
                     else:
                         self.midi_out.note_off(channel=msg.channel, note=msg.note)
                 elif msg.type == 'program_change':
@@ -408,15 +430,18 @@ class Tracker:
 
     def mid_file_start(self):
         print("start of mid file")
-        self.midi_file_in.run_event.set()
-        self.midi_file_in.break_flag.clear()
+        if self.midi_file_in:
+            self.midi_file_in.run_event.set()
+            self.midi_file_in.break_flag.clear()
 
     def mid_file_pause(self):
-        self.midi_file_in.run_event.clear()
+        if self.midi_file_in:
+            self.midi_file_in.run_event.clear()
 
     def mid_file_stop_end(self):
-        self.midi_file_in.run_event.clear()
-        self.midi_file_in.break_flag.set()
+        if self.midi_file_in:
+            self.midi_file_in.run_event.clear()
+            self.midi_file_in.break_flag.set()
 
     def init_timeline(self, midi_in_name, midi_out_name, midi_out_mode='dummy', ):
         log_call()
@@ -490,6 +515,7 @@ class Tracker:
                         amplitudes[idx] = int(self.accents_dict[key]*amplitudes[idx])
                     except ValueError:
                         print("key not found")
+                amplitudes = list(map(lambda midi_amp: int(midi_amp * self.generated_notes_volume/100) ,amplitudes))
                 amplitudes = list(map(lambda midi_amp: 0 if not midi_amp else 0 if midi_amp < 0 else 127 if midi_amp > 127 else midi_amp ,amplitudes))
                 notes[iso.EVENT_AMPLITUDE] = iso.PSequence(amplitudes, repeats=1)
 
@@ -503,6 +529,8 @@ class Tracker:
             self.check_notes_action()
             print(list(notes[iso.EVENT_AMPLITUDE].copy()))
             print("bbbb: ", list(map(type, notes[iso.EVENT_AMPLITUDE].copy())))
+
+            notes[iso.EVENT_CHANNEL] = self.min_channel
 
             _ = self.timeline.schedule(
                 notes
