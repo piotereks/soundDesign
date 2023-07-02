@@ -413,8 +413,11 @@ class Tracker:
                 else:
                     print(f"{msg=}")
                     if msg.type == 'set_tempo':
-                        self.timeline.set_tempo(tempo=mido.tempo2bpm(msg.tempo))
+                        # self.timeline.set_tempo(tempo=mido.tempo2bpm(msg.tempo))
                         # mid_meta_message(type='set_tempo', tempo=mido.bpm2tempo(msg.tempo), time=0)
+                        # print("-"*20+"hey")
+                        self.set_tempo_ui(instance=None, tempo=mido.tempo2bpm(msg.tempo))
+                        # n(self, instance, tempo=None, tempo_knob=None):
                         pass
 
                     # midi_out_device.miditrack[0].append(msg)
@@ -619,6 +622,9 @@ class Tracker:
     def queue_content_action(self):
         log_call()
 
+    # def set_tempo_val_ui(self):
+    #     log_call()
+
     def curr_notes_pair_action(self):
         log_call()
 
@@ -628,6 +634,9 @@ class Tracker:
     def time_sig_beat_val_action(self):
         log_call()
     def set_tempo_action(self):
+        log_call()
+
+    def set_tempo_ui(self):
         log_call()
 
     def set_dur_variety_action(self):

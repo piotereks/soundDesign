@@ -157,6 +157,8 @@ class TrackerGuiApp(App):
 
         # Tempo
         self.tracker_ref.set_tempo_action = lambda: self.set_tempo_f_main(None, tempo_knob=self.tracker_ref.midi_mapping['set_tempo_knob'])
+        self.tracker_ref.set_tempo_ui =  self.set_tempo_f_main
+        # self.tracker_ref.set_tempo_val_ui = lambda: self.set_tempo_val_ui(None, tempo_knob=self.tracker_ref.midi_mapping['set_tempo_knob'])
         self.tempo_value = self.parm_tempo
         self.tempo_min = self.parm_tempo_min
         self.tempo_max = self.parm_tempo_max
