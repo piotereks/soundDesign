@@ -116,6 +116,7 @@ def main():
         app_config = loaded_config['app']
         tracker_config = loaded_config['tracker']
         midi_mapping = loaded_config.get('midi_mapping')
+        # filename_in = os.path.join(loaded_config.get("filename_in"))
 
     # midi_out_flag = Tracker.MIDI_OUT_DEVICE
     midi_out_flag = Tracker.MIDI_OUT_MIX_FILE_DEVICE
@@ -167,8 +168,8 @@ x = 1
 # time.sleep(15)
 print('after schedule')
 
-file_path = os.path.abspath(__file__)
-file_in = os.path.join('example_midi', 'Variable_tempo_one_note_mod_double_instr.mid')
+# file_path = os.path.abspath(__file__)
+# file_in = os.path.join('example_midi', 'Variable_tempo_one_note_mod_double_instr.mid')
 # mid = mido.MidiFile(file_in)
 mid = tracker.midi_file_in
 # play_mid_file()

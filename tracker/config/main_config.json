@@ -20,6 +20,7 @@
   "tracker": {
     "midi_in_name": ["Arturia MiniLab mkII", "KB loopMIDI Port"],
     "midi_out_name": ["Microsoft GS Wavetable Synth","blah","KB loopMIDI Port"],
+    "filename_in" : ["..","..","checks","example_midi", "Variable_tempo_one_note_mod_double_instr.mid"],
     "default_channel" : 0,
     "legato": 1.0,
     "program_change": 0,

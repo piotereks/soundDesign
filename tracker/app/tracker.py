@@ -40,7 +40,10 @@ class Tracker:
 
         read_config_file_scales()
         self.midi_dev_in = None
-        self.midi_file_in = mido.MidiFile(filename_in)  if filename_in else None
+        print("A1===file midi to be created")
+        self.midi_file_in = mido.MidiFile(filename_in) if filename_in else None
+        self.player_thread = threading.Thread(target=self.play_mid_file)
+
         self.key = iso.Key("C", "major")
         self.prev_key = None
         self.loopq = False
@@ -403,6 +406,17 @@ class Tracker:
                 continue
             break
 
+    def mid_file_start(self):
+        print("start of mid file")
+        self.midi_file_in.run_event.set()
+        self.midi_file_in.break_flag.clear()
+
+    def mid_file_pause(self):
+        self.midi_file_in.run_event.clear()
+
+    def mid_file_stop_end(self):
+        self.midi_file_in.run_event.clear()
+        self.midi_file_in.break_flag.set()
 
     def init_timeline(self, midi_in_name, midi_out_name, midi_out_mode='dummy', ):
         log_call()
@@ -418,6 +432,7 @@ class Tracker:
             self.midi_out_name = self.midi_out_name[0]
 
         if midi_out_mode == self.MIDI_OUT_FILE:
+
             self.midi_out = iso.MidiFileOutputDevice(filename)
             print("file mode")
         elif midi_out_mode == self.MIDI_OUT_DEVICE and not NO_MIDI_OUT:
@@ -801,15 +816,19 @@ class Tracker:
 
     def tstop(self):
         log_call()
+        self.mid_file_pause()
         self.timeline.stop()
 
     def ts(self):
         log_call()
+        self.mid_file_pause()
         self.timeline.stop()
 
     def tstart(self):
         log_call()
         self.timeline.background()
+        self.mid_file_start()
+        self.player_thread.start()
 
         # @log_and_schedule
 

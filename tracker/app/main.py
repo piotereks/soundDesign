@@ -117,12 +117,16 @@ def main():
         app_config = loaded_config['app']
         tracker_config = loaded_config['tracker']
         midi_mapping = loaded_config.get('midi_mapping')
+        filename_in = tracker_config.get("filename_in")
+        if filename_in:
+            filename_in = os.path.join(os.path.dirname(os.path.abspath(__file__)), *filename_in)
 
     # midi_out_flag = Tracker.MIDI_OUT_DEVICE
     midi_out_flag = Tracker.MIDI_OUT_MIX_FILE_DEVICE
     # midi_out_flag = Tracker.MIDI_OUT_FILE
 
-    tracker = Tracker(tracker_config=tracker_config, midi_mapping=midi_mapping, midi_out_mode=midi_out_flag)
+    tracker = Tracker(tracker_config=tracker_config, midi_mapping=midi_mapping, midi_out_mode=midi_out_flag,
+                      filename_in=filename_in)
     # my_tracker.midi_out.program_change(program=22)
 
     TrackerGuiApp(parm_rows=12, parm_cols=5, app_config=app_config, tracker_ref=tracker).run()
