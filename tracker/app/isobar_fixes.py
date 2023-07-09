@@ -3,6 +3,7 @@ import os
 from .up_down_scale import *
 from .up_down_pdegree import *
 from .up_down_key import *
+from .cust_iso_midi_file_in import *
 import math
 import sys
 import json
@@ -56,6 +57,9 @@ iso.Key.semitones_down = UpDownKey.semitones_down
 
 iso.PDegree.__init__ = UpDownPDegree.__init__
 iso.PDegree.__next__ = UpDownPDegree.__next__
+
+iso.MidiFileInputDevice.__init__ = CustMidiFileInputDevice.__init__
+iso.MidiFileInputDevice.read = CustMidiFileInputDevice.read
 
 # wrong semitones
 del iso.Scale.minor
