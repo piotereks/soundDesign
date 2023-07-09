@@ -868,10 +868,6 @@ class Tracker:
         log_call()
         self.timeline.background()
         self.mid_file_start()
-        x = 1
-        # self.player_thread.start()
-
-        x = 1
 
         # @log_and_schedule
 
