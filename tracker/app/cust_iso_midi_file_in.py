@@ -1,6 +1,7 @@
 
 import mido
 import logging
+from collections.abc import Iterable
 from isobar import *
 from .iso_midi_message import *
 
@@ -14,6 +15,11 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
         self.filename = filename
 
     def read(self, quantize=None):
+        def print_obj(objects):
+            if not isinstance(objects, Iterable):
+                objects = [objects]
+            print([o.__dict__ for o in objects])
+
         midi_reader = mido.MidiFile(self.filename)
         log.info("Loading MIDI data from %s, ticks per beat = %d" % (self.filename, midi_reader.ticks_per_beat))
         note_tracks = list(filter(lambda track: any(message.type == 'note_on' for message in track),
@@ -161,7 +167,10 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
 
                 if len(notes) > 1:
                     # note_dict[EVENT_ACTION].append(tuple(lambda: print(type(note)) for note in notes if not hasattr(note, 'duration')))
-                    note_dict[EVENT_ACTION].append(tuple(lambda: print(type(note)) for note in notes if not isinstance(note,MidiNote)))
+                    messages = tuple(note for note in notes if not isinstance(note, MidiNote))
+
+                    note_dict[EVENT_ACTION].append(lambda messages=messages: print_obj(messages))
+                    # note_dict[EVENT_ACTION].append(tuple(lambda note=note: print(note.__dict__) for note in notes if not isinstance(note,MidiNote)))
                     note_dict[EVENT_NOTE].append(tuple(note.pitch for note in notes if isinstance(note,MidiNote)))
                     note_dict[EVENT_AMPLITUDE].append(tuple(note.velocity for note in notes if isinstance(note,MidiNote)))
                     note_dict[EVENT_GATE].append(tuple(note.duration / time_until_next_note for note in notes if isinstance(note,MidiNote)))
@@ -173,7 +182,8 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                             note_dict[EVENT_AMPLITUDE].append(note.velocity)
                             note_dict[EVENT_GATE].append(note.duration / time_until_next_note)
                         else:
-                            note_dict[EVENT_ACTION].append(lambda: print(type(note)))
+                            # note_dict[EVENT_ACTION].append( lambda note=note: print(note.__dict__))
+                            note_dict[EVENT_ACTION].append(lambda note=note: print_obj(note))
 
             for key, value in note_dict.items():
                 note_dict[key] = PSequence(value, 1)
