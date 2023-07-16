@@ -25,8 +25,9 @@ timeline = Timeline()
 for pattern in patterns:
 # for pattern in [patterns]:
     action = pattern.pop(EVENT_ACTION, None)
+    action_fun = [f(timeline) for f in action]
     if action:
-        timeline.schedule({EVENT_ACTION: action})
+        timeline.schedule({EVENT_ACTION: action_fun})
     timeline.schedule(pattern)
 timeline.background()
 # timeline.run()

@@ -60,6 +60,8 @@ iso.PDegree.__next__ = UpDownPDegree.__next__
 
 iso.MidiFileInputDevice.__init__ = CustMidiFileInputDevice.__init__
 iso.MidiFileInputDevice.read = CustMidiFileInputDevice.read
+iso.MidiFileInputDevice.print_obj = CustMidiFileInputDevice.print_obj
+
 
 # wrong semitones
 del iso.Scale.minor
