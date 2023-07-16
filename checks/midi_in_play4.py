@@ -21,9 +21,14 @@ patterns = file_input_device.read()
 # file_input_device.callback = handle_midi_input
 
 
-# timeline = Timeline()
-# for pattern in patterns:
-#     timeline.schedule(pattern)
-# timeline.background()
+timeline = Timeline()
+for pattern in patterns:
+# for pattern in [patterns]:
+    action = pattern.pop(EVENT_ACTION, None)
+    if action:
+        timeline.schedule({EVENT_ACTION: action})
+    timeline.schedule(pattern)
+timeline.background()
+# timeline.run()
 
 x = 1

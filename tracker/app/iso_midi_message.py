@@ -1,5 +1,5 @@
 class MidiMessageControl:
-    def __init__(self, channel, cc, value, location, duration=None):
+    def __init__(self, channel, cc, value, location):
         self.channel = channel
         self.cc = cc
         self.value = value
@@ -7,7 +7,7 @@ class MidiMessageControl:
         self.location = location
 
 class MidiMessageProgram:
-    def __init__(self, channel, program,  location, duration=None):
+    def __init__(self, channel, program,  location):
         self.channel = channel
         self.program = program
         self.location = location
@@ -40,13 +40,14 @@ class MidiMetaMessageTempo:
         #   0..16777215
         self.tempo = tempo
         self.location = location
-
+        self.is_meta = True
 
 
 class MidiMetaMessageKey:
     def __init__(self, key: str, location):
         self.key = key
         self.location = location
+        self.is_meta = True
 
 
 class MidiMetaMessageTimeSig:
@@ -58,25 +59,25 @@ class MidiMetaMessageTimeSig:
         self.clocks_per_click = clocks_per_click
         self.notated_32nd_notes_per_beat = notated_32nd_notes_per_beat
         self.location = location
+        self.is_meta = True
 
 
 class MidiMetaMessageTrackName:
     def __init__(self, name: str, location):
         self.name = name
         self.location = location
+        self.is_meta = True
 
 
-class MidiMetaMessageMidPort:
+class MidiMetaMessageMidiPort:
     def __init__(self, port: int, location):
         self.port = port
         self.location = location
+        self.is_meta = True
 
 
 class MidiMetaMessageEndTrack:
     def __init__(self, location):
         self.location = location
+        self.is_meta = True
 
-
-"""
-{'end_of_track', 'midi_port', 'key_signature', 'time_signature', 'set_tempo', 'track_name'}
-"""
