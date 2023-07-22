@@ -69,7 +69,18 @@ if MULTI_TRACK:
         def tick(self):
             self.time = list(map(lambda x: x + (1.0 / self.ticks_per_beat), self.time))
 
-            pass
+        def write(self):
+            # ------------------------------------------------------------------------
+            # When closing the MIDI file, append a dummy `note_off` event to ensure
+            # any rests at the end of the file remain intact
+            # (cf. https://forum.noteworthycomposer.com/?topic=4708.0)
+            # ------------------------------------------------------------------------
+            for idx, track in enumerate(self.midifile.tracks):
+                dt = self.time[idx] - self.last_event_time[idx]
+                dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
+                track.append(mido.Message('note_off', note=0, channel=0, time=dt_ticks))
+            self.midifile.save(self.filename)
+
 
 if not MULTI_TRACK:
     class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
@@ -119,7 +130,8 @@ class FileOut(MidiFileManyTracksOutputDevice, iso.MidiOutputDevice):
         # super().tick()
 
     def write(self):
-        iso.MidiFileOutputDevice.write(self)
+        # iso.MidiFileOutputDevice.write(self)
+        MidiFileManyTracksOutputDevice.write(self)
 
     # def ticks_per_beat(self):
     #     iso.MidiFileOutputDevice.ticks_per_beat
