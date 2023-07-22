@@ -172,7 +172,8 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                     # note_dict[EVENT_ACTION].append(tuple(lambda: print(type(note)) for note in notes if not hasattr(note, 'duration')))
                     messages = tuple(note for note in notes if not isinstance(note, MidiNote))
 
-                    note_dict[EVENT_ACTION].append(lambda timeline, messages=messages: self.print_obj(timeline, messages))
+                    # note_dict[EVENT_ACTION].append(lambda timeline, messages=messages: self.print_obj(timeline, messages))
+                    note_dict[EVENT_ACTION].append((self.print_obj, messages))
                     # note_dict[EVENT_ACTION].append(tuple(lambda note=note: print(note.__dict__) for note in notes if not isinstance(note,MidiNote)))
                     note_dict[EVENT_NOTE].append(tuple(note.pitch for note in notes if isinstance(note,MidiNote)))
                     note_dict[EVENT_AMPLITUDE].append(tuple(note.velocity for note in notes if isinstance(note,MidiNote)))
@@ -186,7 +187,8 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                             note_dict[EVENT_GATE].append(note.duration / time_until_next_note)
                         else:
                             # note_dict[EVENT_ACTION].append( lambda note=note: print(note.__dict__))
-                            note_dict[EVENT_ACTION].append(lambda timeline, note=note: self.print_obj(timeline, note))
+                            # note_dict[EVENT_ACTION].append(lambda timeline, note=note: self.print_obj(timeline, note))
+                            note_dict[EVENT_ACTION].append((self.print_obj, note))
 
             for key, value in note_dict.items():
                 note_dict[key] = PSequence(value, 1)
