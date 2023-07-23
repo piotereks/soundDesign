@@ -23,7 +23,9 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
         print(timeline, [o.__dict__ for o in objects])
 
     def read(self, quantize=None):
-
+        def create_lam_function(messages):
+            lam_function = partial(self.print_obj, objects=messages)
+            note_dict[EVENT_ACTION].append(lam_function)
 
         midi_reader = mido.MidiFile(self.filename)
         log.info("Loading MIDI data from %s, ticks per beat = %d" % (self.filename, midi_reader.ticks_per_beat))
@@ -169,10 +171,8 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
 
                 time_until_next_note = next_time - t
                 note_dict[EVENT_DURATION].append(time_until_next_note)
+                #TODO need to differentiate depending on type of message (note, other or meta)
 
-                def create_lam_function(messages):
-                    lam_function = partial(self.print_obj, objects=messages)
-                    note_dict[EVENT_ACTION].append(lam_function)
                 if len(notes) > 1:
                     # note_dict[EVENT_ACTION].append(tuple(lambda: print(type(note)) for note in notes if not hasattr(note, 'duration')))
                     messages = tuple(note for note in notes if not isinstance(note, MidiNote))
