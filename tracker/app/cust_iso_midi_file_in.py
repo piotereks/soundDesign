@@ -2,6 +2,8 @@
 import mido
 import logging
 from collections.abc import Iterable
+from functools import partial
+
 from isobar import *
 from .iso_midi_message import *
 
@@ -168,12 +170,20 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                 time_until_next_note = next_time - t
                 note_dict[EVENT_DURATION].append(time_until_next_note)
 
+                def create_lam_function(messages):
+                    lam_function = partial(self.print_obj, objects=messages)
+                    note_dict[EVENT_ACTION].append(lam_function)
                 if len(notes) > 1:
                     # note_dict[EVENT_ACTION].append(tuple(lambda: print(type(note)) for note in notes if not hasattr(note, 'duration')))
                     messages = tuple(note for note in notes if not isinstance(note, MidiNote))
-
+                    create_lam_function(messages)
                     # note_dict[EVENT_ACTION].append(lambda timeline, messages=messages: self.print_obj(timeline, messages))
-                    note_dict[EVENT_ACTION].append((self.print_obj, messages))
+                    # note_dict[EVENT_ACTION].append((lambda timeline, messages: self.print_obj(timeline, messages), messages))
+                    # note_dict[EVENT_ACTION].append(partial(lambda timeline: self.print_obj(timeline), messages))
+                    # note_dict[EVENT_ACTION].append((self.print_obj, messages))
+
+                    # partial(f, msg)
+                    # note_dict[EVENT_ACTION].append((self.print_obj, messages))
                     # note_dict[EVENT_ACTION].append(tuple(lambda note=note: print(note.__dict__) for note in notes if not isinstance(note,MidiNote)))
                     note_dict[EVENT_NOTE].append(tuple(note.pitch for note in notes if isinstance(note,MidiNote)))
                     note_dict[EVENT_AMPLITUDE].append(tuple(note.velocity for note in notes if isinstance(note,MidiNote)))
@@ -188,7 +198,9 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                         else:
                             # note_dict[EVENT_ACTION].append( lambda note=note: print(note.__dict__))
                             # note_dict[EVENT_ACTION].append(lambda timeline, note=note: self.print_obj(timeline, note))
-                            note_dict[EVENT_ACTION].append((self.print_obj, note))
+                            # note_dict[EVENT_ACTION].append((self.print_obj, note))
+                            # note_dict[EVENT_ACTION].append(partial(lambda timeline: self.print_obj(timeline), note))
+                            create_lam_function(note)
 
             for key, value in note_dict.items():
                 note_dict[key] = PSequence(value, 1)

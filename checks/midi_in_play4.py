@@ -25,17 +25,18 @@ patterns = file_input_device.read()
 timeline = Timeline()
 for pattern in patterns:
 # for pattern in [patterns]:
-    action = pattern.pop(EVENT_ACTION, None)
+    action_fun = pattern.pop(EVENT_ACTION, None)
+    action_fun = [partial(f, timeline) for f in action_fun]
     # action_fun  = [lambda x=x: f(timeline, x) for f, x in action]
-    # action_funx = iso.PSequence(action_fun)
+    action_fun = iso.PSequence(action_fun)
     # xxx = [lambda msg=msg: f(timeline, msg) for f, msg in action]
-    xxx = [partial(f, msg) for f, msg in action]
+    # xxx = [partial(f, msg) for f, msg in action]
     # yyy = list(xxx)
-    action_fun = iso.PSequence(xxx, repeats=1)
+    # action_fun = iso.PSequence(xxx, repeats=1)
     # action_fun = iso.PSequence([lambda msg=msg: f(timeline, msg) for f, msg in action], repeats=1)
     # xxx = action_fun[11](None)
     flag = True
-    if action:
+    if action_fun:
         # timeline.schedule({EVENT_ACTION: action_fun})
         timeline.schedule({EVENT_ACTION: action_fun}, remove_when_done=flag)
     timeline.schedule(pattern, remove_when_done=flag)
