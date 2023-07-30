@@ -203,7 +203,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                             create_lam_function(note)
 
             for key, value in note_dict.items():
-                note_dict[key] = PSequence(value, 1)
+                note_dict[key] = PSequence(value, repeats=1)
 
             tracks_note_dict.append(note_dict)
 
