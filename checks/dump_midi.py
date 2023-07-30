@@ -14,7 +14,8 @@ def direct_midi_play():
     this_dir = os.path.dirname(os.path.abspath(__file__))
     # config_file = os.path.join(this_dir, 'note_patterns.json')
     filename = os.path.join(this_dir, "..","saved_midi_files", "xoutput.mid")
-    filename = os.path.join('example_midi', 'Var_tempo_2_trks_sax_piano.mid')
+    filename = os.path.join(this_dir, '..','tracker', 'tests', 'x1x1a.mid')
+    # filename = os.path.join('example_midi', 'x1x1')
     # filename = os.path.join('example_midi', 'Var_tempo_1_trk_sax.mid')
     mid=mido.MidiFile(filename)
     track=mid.tracks[0]
