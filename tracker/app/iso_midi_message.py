@@ -1,3 +1,21 @@
+import isobar as iso
+
+
+class CustMidiNote(iso.MidiNote):
+    def __init__(self, channel, pitch, velocity, location, duration=None):
+        self.channel = channel
+        # pitch = MIDI 0..127
+        self.pitch = pitch
+        # velocity = MIDI 0..127
+        self.velocity = velocity
+        # location in time, beats
+        self.location = location
+        # duration in time, beats
+        self.duration = duration
+
+# iso.io.MidiNote = CustMidiNote
+iso.io.MidiNote.__init__ = CustMidiNote.__init__
+
 class MidiMessageControl:
     def __init__(self, channel, cc, value, location):
         self.channel = channel

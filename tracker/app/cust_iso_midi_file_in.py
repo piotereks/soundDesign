@@ -55,7 +55,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                         event.velocity = 127
 
                     offset += event.time / midi_reader.ticks_per_beat
-                    note = MidiNote(event.note, event.velocity, offset)
+                    note = MidiNote(event.channel, event.note, event.velocity, offset)
                     notes.append(note)
                 elif event.type == 'note_off' or (event.type == 'note_on' and event.velocity == 0):
                     # ------------------------------------------------------------------------
@@ -146,7 +146,8 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                 EVENT_NOTE: [],
                 EVENT_AMPLITUDE: [],
                 EVENT_GATE: [],
-                EVENT_DURATION: []
+                EVENT_DURATION: [],
+                EVENT_CHANNEL: []
             }
 
             # ------------------------------------------------------------------------
@@ -188,6 +189,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                     note_dict[EVENT_NOTE].append(tuple(note.pitch for note in notes if isinstance(note,MidiNote)))
                     note_dict[EVENT_AMPLITUDE].append(tuple(note.velocity for note in notes if isinstance(note,MidiNote)))
                     note_dict[EVENT_GATE].append(tuple(note.duration / time_until_next_note for note in notes if isinstance(note,MidiNote)))
+                    note_dict[EVENT_CHANNEL].append(tuple(int(note.channel / time_until_next_note) for note in notes if isinstance(note,MidiNote)))
                 else:
                     if time_until_next_note:
                         note = notes[0]
@@ -195,6 +197,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                             note_dict[EVENT_NOTE].append(note.pitch)
                             note_dict[EVENT_AMPLITUDE].append(note.velocity)
                             note_dict[EVENT_GATE].append(note.duration / time_until_next_note)
+                            note_dict[EVENT_CHANNEL].append(int(note.channel / time_until_next_note))
                         else:
                             # note_dict[EVENT_ACTION].append( lambda note=note: print(note.__dict__))
                             # note_dict[EVENT_ACTION].append(lambda timeline, note=note: self.print_obj(timeline, note))
