@@ -26,8 +26,8 @@ patterns = file_input_device.read()
 # print("Read pattern containing %d note events" % len(pattern["note"]))
 # file_input_device.callback = handle_midi_input
 
-# timeline = iso.Timeline()
-timeline = iso.Timeline(iso.MAX_CLOCK_RATE, output_device=iso.io.DummyOutputDevice(), clock_source=iso.DummyClock())
+timeline = iso.Timeline()
+# timeline = iso.Timeline(iso.MAX_CLOCK_RATE, output_device=iso.io.DummyOutputDevice(), clock_source=iso.DummyClock())
 timeline.stop_when_done = True
 
 for pattern in patterns:
@@ -49,8 +49,8 @@ for pattern in patterns:
         timeline.schedule({iso.EVENT_ACTION: action_fun},   remove_when_done=flag)
         # pass
     timeline.schedule(pattern, remove_when_done=flag)
-timeline.background()
-# timeline.run()
+# timeline.background()
+timeline.run()
 
 x = 1
 print('Processing Done')

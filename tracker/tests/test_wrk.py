@@ -10,6 +10,9 @@ from tracker.app.midi_dev import *
 tmp_filename = 'x1x1a.mid'
 tmp_filename2 = 'x1x1b.mid'
 
+this_dir = os.path.dirname(os.path.abspath(__file__))
+tmp_filenameX = os.path.join(this_dir, '..', '..', 'checks', 'example_midi', 'Var_tempo_1_trk_sax.mid')
+
 @pytest.fixture()
 def dummy_timeline():
     # midi_out_play_name = 'Microsoft GS Wavetable Synth 0'
@@ -97,36 +100,51 @@ def test_timeline_wrk(dummy_timeline, dummy_timeline2):
     }
 
     events_action= {
-        # iso.EVENT_NOTE: iso.PSequence(sequence= [1,2,3], repeats=1)
+        # iso.EVENT_NOTE: iso.PSequence(sequence= [1,2], repeats=1)
         # , iso.EVENT_GATE : iso.PSequence(sequence=[1, 1, 0.5], repeats=1)
-        iso.EVENT_DURATION : iso.PSequence(sequence = [3.5, 1], repeats=1)
-        , iso.EVENT_ACTION : iso.PSequence(sequence = [lambda: set_tempo(30), lambda: set_tempo(180)], repeats=1)
+        # ,iso.EVENT_DURATION : iso.PSequence(sequence = [3.5, 1], repeats=1)
+        iso.EVENT_TIME : iso.PSequence(sequence=[1680, 480], repeats=1)
+        , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda: set_tempo(30), lambda: set_tempo(180)], repeats=1)
         # , iso.EVENT_ACTION : iso.PSequence(sequence = [lambda: print('asdf1'), lambda: print('asdf2')], repeats=1)
         # ,iso.EVENT_ACTION : iso.PSequence(sequence=[None, lambda: print('x'), None], repeats=1)
     }
-    dummy_timeline.schedule(events)
-    dummy_timeline.schedule(events2)
+    # dummy_timeline.schedule(events)
+    # dummy_timeline.schedule(events2)
     dummy_timeline.schedule(events_action)
     dummy_timeline.run()
     # dummy_timeline.background()
-
+    skipp = True
+    skipp = False
+    if not skipp:
+        for track in dummy_timeline.output_device.miditrack:
+            for note in track:
+                if note.type == 'note_off':
+                    note_tmp_dict = note.__dict__
+                    note_tmp_dict['velocity'] = 0
+                    note_tmp_dict['type'] = 'note_on'
+                    note.from_dict(note_tmp_dict)
     x = 1
     dummy_timeline.output_device.write()
     print('-'*20, 'second_timeline')
     file_input_device = iso.MidiFileInputDevice(tmp_filename)
+    # file_input_device = iso.MidiFileInputDevice(tmp_filenameX)
     patterns = file_input_device.read()
 
     for pattern in patterns:
         action_fun = pattern.pop(iso.EVENT_ACTION, None)
+        action_time = pattern.pop(iso.EVENT_TIME, None)
         if action_fun:
             action_fun = [partial(f, dummy_timeline2) for f in action_fun]
             # action_fun  = [lambda x=x: f(timeline, x) for f, x in action]
             action_fun = iso.PSequence(action_fun, repeats=1)
+            # action_time = iso.PSequence(action_time, repeats=1)
 
         flag = True
         if action_fun:
             # timeline.schedule({EVENT_ACTION: action_fun})
-            dummy_timeline2.schedule({iso.EVENT_ACTION: action_fun}, remove_when_done=flag)
+            dummy_timeline2.schedule({iso.EVENT_ACTION: action_fun,
+                                      iso.EVENT_TIME: action_time}, remove_when_done=flag)
+            # dummy_timeline2.schedule({iso.EVENT_TIME: action_time}, remove_when_done=flag)
             # pass
         dummy_timeline2.schedule(pattern, remove_when_done=flag)
 

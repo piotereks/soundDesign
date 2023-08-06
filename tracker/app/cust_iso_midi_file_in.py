@@ -6,6 +6,7 @@ from functools import partial
 
 from isobar import *
 from .iso_midi_message import *
+from .midi_dev import  MULTI_TRACK
 
 log = logging.getLogger(__name__)
 
@@ -20,15 +21,27 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
     def print_obj(self, timeline, objects):
         if not isinstance(objects, Iterable):
             objects = [objects]
-        print(timeline, [o.__dict__ for o in objects])
+        text =  [o.__dict__ for o in objects]
+
+        msg = mido.MetaMessage('text', text=str(text))
+        if MULTI_TRACK:
+            timeline.output_device.miditrack[0].append(msg)
+        else:
+            timeline.output_device.miditrack.append(msg)
+        print(timeline, text)
 
     def read(self, quantize=None):
         def create_lam_function(messages):
             lam_function = partial(self.print_obj, objects=messages)
             note_dict[EVENT_ACTION].append(lam_function)
+            if isinstance(messages, Iterable):
+                msg_loc = messages[0].location
+            else:
+                msg_loc = messages.location
+            note_dict[EVENT_TIME].append(msg_loc)
 
         midi_reader = mido.MidiFile(self.filename)
-        log.info("Loading MIDI data from %s, ticks per beat = %d" % (self.filename, midi_reader.ticks_per_beat))
+        # log.info("Loading MIDI data from %s, ticks per beat = %d" % (self.filename, midi_reader.ticks_per_beat))
         note_tracks = list(filter(lambda track: any(message.type == 'note_on' for message in track),
                                   midi_reader.tracks))
         if not note_tracks:
@@ -143,6 +156,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
 
             note_dict = {
                 EVENT_ACTION: [],
+                EVENT_TIME: [],
                 EVENT_NOTE: [],
                 EVENT_AMPLITUDE: [],
                 EVENT_GATE: [],
