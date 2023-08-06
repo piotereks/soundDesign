@@ -30,22 +30,24 @@ def direct_midi_play():
     # mid=mido.MidiFile('..\\jupyter\\rythm_midi_files\\Dim6_2.mid',clip=True)
     # mid=mido.MidiFile('..\\jupyter\\rythm_midi_files\\Blah.mid',clip=True)
     # mid=mido.MidiFile('..\\jupyter\\rythm_midi_files\\Blah2.mid',clip=True)
-    for msg in mid:
-        if msg.is_meta:
-            print(msg)
-        else:
-            pass
-            print(msg)
-        # print(msg.__dict__)
-        # print(f'{msg.is_cc()=};{msg.is_meta=};{msg.is_realtime=}')
-        # print(msg)
-        # print(f'{msg.time=}')
-        # time.sleep(msg.time)
-        if not msg.is_meta:
-            pass
-            # port.send(msg)
-        print('-'*80)
-        print(mid)
+    for track in mid.tracks or []:
+        print(f'Track #{mid.tracks.index(track)}')
+        for msg in track:
+            if msg.is_meta:
+                print(msg)
+            else:
+                pass
+                print(msg)
+            # print(msg.__dict__)
+            # print(f'{msg.is_cc()=};{msg.is_meta=};{msg.is_realtime=}')
+            # print(msg)
+            # print(f'{msg.time=}')
+            # time.sleep(msg.time)
+            if not msg.is_meta:
+                pass
+                # port.send(msg)
+            print('-'*80)
+            print(mid)
 
 
 direct_midi_play()

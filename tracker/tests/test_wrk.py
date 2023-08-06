@@ -1,18 +1,19 @@
-import isobar as iso
-from tracker.app.midi_dev import FileOut, MidiFileManyTracksOutputDevice
+# import isobar as iso
 from tracker.app.isobar_fixes import *
-
+# from tracker.app.midi_dev import FileOut, MidiFileManyTracksOutputDevice
 
 import pytest
-import mido
+# import mido
+
+from tracker.app.midi_dev import *
 
 tmp_filename = 'x1x1a.mid'
 tmp_filename2 = 'x1x1b.mid'
 
 @pytest.fixture()
 def dummy_timeline():
-    midi_out_play_name = 'Microsoft GS Wavetable Synth 0'
-    midi_out = midi_out_play_name
+    # midi_out_play_name = 'Microsoft GS Wavetable Synth 0'
+    # midi_out = midi_out_play_name
     midi_out_device = MidiFileManyTracksOutputDevice(filename=tmp_filename)
 
     # timeline = iso.Timeline(output_device=iso.io.DummyOutputDevice(), clock_source=iso.DummyClock())
@@ -27,7 +28,8 @@ def dummy_timeline2():
     midi_out_device = FileOut(device_name=midi_out, filename=tmp_filename2, send_clock=True, virtual=False)
 
     # timeline = iso.Timeline(output_device=iso.io.DummyOutputDevice(), clock_source=iso.DummyClock())
-    timeline = iso.Timeline(output_device=midi_out_device, clock_source=iso.DummyClock())
+    # timeline = iso.Timeline(tempo=123, output_device=midi_out_device, clock_source=iso.DummyClock())
+    timeline = iso.Timeline(output_device=midi_out_device)
     timeline.stop_when_done = True
     return timeline
 
@@ -110,7 +112,7 @@ def test_timeline_wrk(dummy_timeline, dummy_timeline2):
 
     x = 1
     dummy_timeline.output_device.write()
-
+    print('-'*20, 'second_timeline')
     file_input_device = iso.MidiFileInputDevice(tmp_filename)
     patterns = file_input_device.read()
 

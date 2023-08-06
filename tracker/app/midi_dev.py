@@ -35,12 +35,14 @@ if MULTI_TRACK:
                     self.channel_track.append(channel)
                     self.time.append(0)
                     self.last_event_time.append(0)
+                    return self.channel_track.index(channel)
 
         def get_channel_track(self, channel=0):
             try:
                 track = self.channel_track.index(channel)
             except:
-                track = 0
+                # track = 0
+                track = self.extra_track(channel)
             return track
 
         def note_on(self, note=60, velocity=64, channel=0):
