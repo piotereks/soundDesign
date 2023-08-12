@@ -102,14 +102,14 @@ def test_timeline_wrk(dummy_timeline, dummy_timeline2):
     events_action= {
         # iso.EVENT_NOTE: iso.PSequence(sequence= [1,2], repeats=1)
         # , iso.EVENT_GATE : iso.PSequence(sequence=[1, 1, 0.5], repeats=1)
-        # ,iso.EVENT_DURATION : iso.PSequence(sequence = [3.5, 1], repeats=1)
-        iso.EVENT_TIME : iso.PSequence(sequence=[1680, 480], repeats=1)
+        iso.EVENT_DURATION : iso.PSequence(sequence = [13.5, 1], repeats=1)
+        # iso.EVENT_TIME : iso.PSequence(sequence=[1680, 480], repeats=1)
         , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda: set_tempo(30), lambda: set_tempo(180)], repeats=1)
         # , iso.EVENT_ACTION : iso.PSequence(sequence = [lambda: print('asdf1'), lambda: print('asdf2')], repeats=1)
         # ,iso.EVENT_ACTION : iso.PSequence(sequence=[None, lambda: print('x'), None], repeats=1)
     }
-    # dummy_timeline.schedule(events)
-    # dummy_timeline.schedule(events2)
+    dummy_timeline.schedule(events)
+    dummy_timeline.schedule(events2)
     dummy_timeline.schedule(events_action)
     dummy_timeline.run()
     # dummy_timeline.background()
@@ -150,4 +150,10 @@ def test_timeline_wrk(dummy_timeline, dummy_timeline2):
 
     dummy_timeline2.run()
     dummy_timeline2.output_device.write()
+
+    # timeline.schedule({
+    #     iso.EVENT_ACTION: lambda: timeline.event_times.append(time.time()),
+    #     iso.EVENT_DURATION: iso.PSequence([ 0.001 ], 50)
+    # })
+    # timeline.run()
     x = 1

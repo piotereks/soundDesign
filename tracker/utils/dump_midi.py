@@ -1,4 +1,6 @@
 import mido
+from tracker.app.mido_fixes import *
+
 import time
 import os
 
@@ -14,10 +16,11 @@ def direct_midi_play():
     this_dir = os.path.dirname(os.path.abspath(__file__))
     # config_file = os.path.join(this_dir, 'note_patterns.json')
     filename = os.path.join(this_dir, "..","saved_midi_files", "xoutput.mid")
-    # filename = os.path.join(this_dir,  "Variable_tempo_one_note_mod_double.mid")
-    # filename = os.path.join(this_dir,  "x1x1.mid")
+    filename = os.path.join(this_dir, '..', 'tests', 'x1x1b.mid')
+    # filename = os.path.join(this_dir, 'example_midi', 'Var_tempo_1_trk_sax_c.mid')
+    # filename = os.path.join('example_midi', 'x1x1')
+    # filename = os.path.join('example_midi', 'Var_tempo_1_trk_sax.mid')
     mid=mido.MidiFile(filename)
-    track=mid.tracks[0]
     ticks_per_beat= mid.ticks_per_beat or 480
     # tempo=[msg.tempo for msg in track if msg.is_meta and msg.type=='set_tempo'][0] or 500000
     tempo = 120 # temporary prevent exception
@@ -46,8 +49,7 @@ def direct_midi_play():
             if not msg.is_meta:
                 pass
                 # port.send(msg)
-            print('-'*80)
-            print(mid)
+
 
 
 direct_midi_play()
