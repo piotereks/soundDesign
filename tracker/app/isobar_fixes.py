@@ -4,6 +4,7 @@ from .up_down_scale import *
 from .up_down_pdegree import *
 from .up_down_key import *
 from .cust_iso_midi_file_in import *
+from .cust_event import *
 import math
 import sys
 import json
@@ -61,6 +62,8 @@ iso.PDegree.__next__ = UpDownPDegree.__next__
 iso.MidiFileInputDevice.__init__ = CustMidiFileInputDevice.__init__
 iso.MidiFileInputDevice.read = CustMidiFileInputDevice.read
 iso.MidiFileInputDevice.print_obj = CustMidiFileInputDevice.print_obj
+
+iso.timeline.event.Event.__init__ = CustEvent.__init__
 
 
 # wrong semitones
