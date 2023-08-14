@@ -9,7 +9,7 @@ import math
 import sys
 import json
 
-print("======================isobar fixex=============")
+print("======================isobar fixes=============")
 def midi_note_to_note_name(note):
     """
     corrected tool function
@@ -84,15 +84,3 @@ iso.Scale.minor = iso.Scale([0, 2, 3, 5, 7, 8, 10], "minor")
 iso.Scale.minor = iso.Scale([0, 2, 3, 5, 7, 8, 10], "minor natural")
 iso.Scale.minor_harm = iso.Scale([0, 2, 3, 5, 7, 8, 11], "minor harmonic")
 
-# read_config_file_scales()
-#
-# scale = iso.Scale.byname('minor melodic up/down')
-# key = iso.Key(0, scale)
-# ppp = scale.get(41, scale_down=True)
-# print(f"{ppp=}")
-# # uuu = iso.PDegree(iso.PSequence([72, 71, 69, 67, 65, 63, 62], repeats=1), key)
-# # uuu = iso.PDegree(iso.PSequence([42, 41, 40, 39, 38, 37, 36, 35], repeats=1), key)
-# uuu = iso.PDegree(iso.PSequence([41, 40, 39, 38, 37, 36, 35], repeats=1), key)
-# ooo = list(uuu)
-# print(f"{ooo=}")
-# x = 1

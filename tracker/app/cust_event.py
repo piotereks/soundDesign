@@ -1,8 +1,9 @@
 from isobar.timeline.event import Event
 from isobar.exceptions import InvalidEventException
 # from isobar.constants import EVENT_NOTE, EVENT_ACTION, EVENT_DEGREE
-from isobar import *
+from isobar import Scale, Key, Pattern
 from isobar.constants import *
+from typing import Iterable
 
 # class XCustEvent(Event):
 #     def __init__(self, event_values):
@@ -12,14 +13,7 @@ from isobar.constants import *
 #             raise InvalidEventException(f"Cannot specify both '{parm[0]}' 'and '{parm[1]}'")
 
 
-class CustEvent(Event):
-    def __xinit__(self, event_values):
-        # event_values = args[0]
-        parm = list(set([EVENT_NOTE, EVENT_ACTION, EVENT_DEGREE]) & set(event_values))
-        if len(parm) >= 2:
-            raise InvalidEventException(f"Cannot specify both '{parm[0]}' 'and '{parm[1]}'")
-        super().__init__(event_values)
-        # super().__init__(*args)
+class CustEvent():
 
     def __init__(self, event_values):
         for key in event_values.keys():
@@ -104,7 +98,8 @@ class CustEvent(Event):
             self.args = {}
             if EVENT_ACTION_ARGS in event_values:
                 self.args = dict((key, Pattern.value(value)) for key, value in event_values[EVENT_ACTION_ARGS].items())
-
+        # elif EVENT_TIME in event_values:
+        #     pass
         elif EVENT_PATCH in event_values:
             self.type = EVENT_TYPE_PATCH
             self.patch = event_values[EVENT_PATCH]

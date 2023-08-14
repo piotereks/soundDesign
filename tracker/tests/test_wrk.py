@@ -100,16 +100,17 @@ def test_timeline_wrk(dummy_timeline, dummy_timeline2):
     }
 
     events_action= {
-        iso.EVENT_NOTE: iso.PSequence(sequence= [60, 72], repeats=1),
+        # iso.EVENT_NOTE: iso.PSequence(sequence= [60, 72], repeats=1),
         # , iso.EVENT_GATE : iso.PSequence(sequence=[1, 1, 0.5], repeats=1)
-        iso.EVENT_DURATION : iso.PSequence(sequence = [2, 1], repeats=1)
+        iso.EVENT_DURATION : iso.PSequence(sequence = [3, 1], repeats=1)
         # iso.EVENT_TIME : iso.PSequence(sequence=[1, 10], repeats=1)
         # , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda: set_tempo(30), lambda: set_tempo(180)], repeats=1)
+        , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda: set_tempo(30), lambda: set_tempo(200)], repeats=1)
         # , iso.EVENT_ACTION : iso.PSequence(sequence = [lambda: print('asdf1'), lambda: print('asdf2')], repeats=1)
         # ,iso.EVENT_ACTION : iso.PSequence(sequence=[None, lambda: print('x'), None], repeats=1)
     }
-    # dummy_timeline.schedule(events)
-    # dummy_timeline.schedule(events2)
+    dummy_timeline.schedule(events)
+    dummy_timeline.schedule(events2)
     dummy_timeline.schedule(events_action)
     dummy_timeline.run()
     # dummy_timeline.background()
@@ -134,31 +135,35 @@ def test_timeline_wrk(dummy_timeline, dummy_timeline2):
     dummy_timeline2.event_times = []
     for pattern in patterns:
         action_fun = pattern.pop(iso.EVENT_ACTION, None)
-        action_time = pattern.pop(iso.EVENT_TIME, None)
-        if action_fun:
-            # action_fun = [partial(f, dummy_timeline2) for f in action_fun]
-            action_fun = [lambda: app_time() for f in action_fun]
-            # action_fun  = [lambda x=x: f(timeline, x) for f, x in action]
-            action_fun = iso.PSequence(action_fun, repeats=1)
-            # action_time = iso.PSequence(action_time, repeats=1)
+        # action_time = pattern.pop(iso.EVENT_TIME, None)
 
         flag = True
         if action_fun:
-            # timeline.schedule({EVENT_ACTION: action_fun})
+            action_fun = [partial(f, dummy_timeline2) for f in action_fun]
+            # action_fun = [lambda: app_time() for f in action_fun]
+            # action_fun = [lambda x=x: f(timeline, x) for f, x in action_fun]
+            action_fun = iso.PSequence(action_fun, repeats=1)
+            # action_time = iso.PSequence(action_time, repeats=1)
+
             dummy_timeline2.schedule({iso.EVENT_ACTION: action_fun,
-                                      iso.EVENT_TIME: action_time}, remove_when_done=flag)
+                                      iso.EVENT_DURATION: pattern.get(iso.EVENT_DURATION, None)}, remove_when_done=flag)
+            # dummy_timeline2.schedule({iso.EVENT_ACTION: iso.PSequence(sequence=[lambda: app_time(), lambda: app_time()], repeats=1),
+            #                           iso.EVENT_DURATION: pattern.get(iso.EVENT_DURATION, None)}, remove_when_done=flag)
+
             # dummy_timeline2.schedule({iso.EVENT_ACTION: action_fun,
             #                           iso.EVENT_TIME: action_time}, remove_when_done=flag)
             # dummy_timeline2.schedule({iso.EVENT_TIME: action_time}, remove_when_done=flag)
             # pass
-        dummy_timeline2.schedule(pattern, remove_when_done=flag)
+        else:
+            dummy_timeline2.schedule(pattern, remove_when_done=flag)
 
-    time_ref = time.time()
+    # time_ref = time.time()
     dummy_timeline2.run()
-    time_gap = [(t-time_ref) for t in dummy_timeline2.event_times]
+    print(dummy_timeline2.event_times)
+    # time_gap = [(t-time_ref) for t in dummy_timeline2.event_times]
     # time_gap = [(120 / 48) * 1.0 /(t-time_ref) for t in dummy_timeline2.event_times]
     dummy_timeline2.output_device.write()
-    print(time_gap)
+    # print(time_gap)
     # timeline.event_times = []
     # timeline.schedule({
     #     iso.EVENT_ACTION: lambda: timeline.event_times.append(time.time()),
