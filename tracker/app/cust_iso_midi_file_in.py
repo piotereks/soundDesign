@@ -28,10 +28,12 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
             if isinstance(obj, MidiMetaMessageTempo):
                 print('inside of MidiMetaMessageTempo')
                 timeline.set_tempo(int(mido.tempo2bpm(obj.tempo)))
-        # if MULTI_TRACK:
-        #     timeline.output_device.miditrack[0].append(msg)
-        # else:
-        #     timeline.output_device.miditrack.append(msg)
+        if MULTI_TRACK:
+            if timeline.output_device.miditrack[0]:
+                timeline.output_device.miditrack[0].append(msg)
+        else:
+            if timeline.output_device.miditrack:
+                timeline.output_device.miditrack.append(msg)
         print(timeline, text)
 
     def read(self, quantize=None):
@@ -150,15 +152,22 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
             # First, group all notes by their starting time.
             # ------------------------------------------------------------------------
             notes_by_time = {}
+            action_by_time = {}
             for note in notes:
                 if isinstance(note, MidiNote):
                     log.debug(" - MIDI event (t = %.2f): Note %d, velocity %d, duration %.3f" %
                               (note.location, note.pitch, note.velocity, note.duration))
                 location = note.location
                 if location in notes_by_time:
-                    notes_by_time[location].append(note)
+                    if isinstance(note, MidiNote):
+                        notes_by_time[location].append(note)
+                    else:
+                        action_by_time[location].append(note)
                 else:
-                    notes_by_time[location] = [note]
+                    if isinstance(note, MidiNote):
+                        notes_by_time[location] = [note]
+                    else:
+                        action_by_time[location] = [note]
 
             note_dict = {
                 # EVENT_ACTION: [],
@@ -179,39 +188,60 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
             # appropriate parameters for duration (eg, inter-note distance) and
             # gate (eg, proportion of distance note extends across).
             # ------------------------------------------------------------------------
+            action_times = sorted(action_by_time.keys())
+            for i, t in enumerate(action_times):
+                t = action_times[i]
+                notes = action_by_time[t]
+                if i < len(action_times) - 1:
+                    next_time = action_times[i + 1]
+                else:
+                    next_time = t + max([note.duration for note in notes if hasattr(note, 'duration')] or [1.0])
+
+                time_until_next_note = next_time - t
+                # action_dict[EVENT_DURATION].append(time_until_next_note)
+                if len(notes) > 1:
+                    # note_dict[EVENT_ACTION].append(tuple(lambda: print(type(note)) for note in notes if not hasattr(note, 'duration')))
+                    messages = tuple(note for note in notes)
+                    create_lam_function(messages)
+                else:
+                    # if time_until_next_note:
+                    note = notes[0]
+                    create_lam_function(note)
+
+
+
             times = sorted(notes_by_time.keys())
             for i, t in enumerate(times):
                 t = times[i]
                 notes = notes_by_time[t]
+
+
 
                 # ------------------------------------------------------------------------
                 # Our duration is always determined by the time of the next note event.
                 # If a next note does not exist, this is the last note of the sequence;
                 # use the maximal length of note currently playing (assuming a chord)
                 # ------------------------------------------------------------------------
-                if i < len(times) - 1:
-                    next_time = times[i + 1]
-                else:
-                    next_time = t + max([note.duration for note in notes if hasattr(note, 'duration')] or [1.0])
-
-                time_until_next_note = next_time - t
+                # if i < len(times) - 1:
+                #     next_time = times[i + 1]
+                # else:
+                #     next_time = t + max([note.duration for note in notes if hasattr(note, 'duration')] or [1.0])
+                #
+                # time_until_next_note = next_time - t
                 # note_dict[EVENT_DURATION].append(time_until_next_note)
                 #TODO need to differentiate depending on type of message (note, other or meta)
 
                 if len(notes) > 1:
                     # note_dict[EVENT_ACTION].append(tuple(lambda: print(type(note)) for note in notes if not hasattr(note, 'duration')))
                     messages = tuple(note for note in notes if not isinstance(note, MidiNote))
-                    create_lam_function(messages)
-                    # note_dict[EVENT_ACTION].append(lambda timeline, messages=messages: self.print_obj(timeline, messages))
-                    # note_dict[EVENT_ACTION].append((lambda timeline, messages: self.print_obj(timeline, messages), messages))
-                    # note_dict[EVENT_ACTION].append(partial(lambda timeline: self.print_obj(timeline), messages))
-                    # note_dict[EVENT_ACTION].append((self.print_obj, messages))
-
-                    # partial(f, msg)
-                    # note_dict[EVENT_ACTION].append((self.print_obj, messages))
-                    # note_dict[EVENT_ACTION].append(tuple(lambda note=note: print(note.__dict__) for note in notes if not isinstance(note,MidiNote)))
-                    note_tuple =  tuple(note.pitch for note in notes if isinstance(note, MidiNote))
+                    # create_lam_function(messages)
+                    note_tuple =  tuple(note.pitch for note in notes if isinstance(note, MidiNote) and isinstance(note, MidiNote))
                     if len(note_tuple):
+                        if i < len(times) - 1:
+                            next_time = times[i + 1]
+                        else:
+                            next_time = t + max([note.duration for note in notes if hasattr(note, 'duration')] or [1.0])
+
                         time_until_next_note = next_time - t
                         note_dict[EVENT_DURATION].append(time_until_next_note)
                         note_dict[EVENT_NOTE].append(note_tuple)
@@ -222,6 +252,12 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                     if time_until_next_note:
                         note = notes[0]
                         if isinstance(note, MidiNote):
+                            if i < len(times) - 1:
+                                next_time = times[i + 1]
+                            else:
+                                next_time = t + max(
+                                    [note.duration for note in notes if hasattr(note, 'duration') and isinstance(note, MidiNote)] or [1.0])
+
                             time_until_next_note = next_time - t
                             note_dict[EVENT_DURATION].append(time_until_next_note)
                             note_dict[EVENT_NOTE].append(note.pitch)
@@ -233,7 +269,8 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                             # note_dict[EVENT_ACTION].append(lambda timeline, note=note: self.print_obj(timeline, note))
                             # note_dict[EVENT_ACTION].append((self.print_obj, note))
                             # note_dict[EVENT_ACTION].append(partial(lambda timeline: self.print_obj(timeline), note))
-                            create_lam_function(note)
+                            # create_lam_function(note)
+                            pass
 
             for key, value in note_dict.items():
                 note_dict[key] = PSequence(value, repeats=1)

@@ -84,8 +84,10 @@ def test_timeline_wrk(dummy_timeline, dummy_timeline2):
 
         print(f'{tempo=}')
     events = {
-        iso.EVENT_NOTE: iso.PSequence(sequence= [71, 62, 64, 65, 67, 69], repeats=1)
-        , iso.EVENT_DURATION : iso.PSequence(sequence=[1, 1, 1], repeats=2)
+        # iso.EVENT_NOTE: iso.PSequence(sequence= [71, 62, 64, 65, 67, 69], repeats=1)
+        # , iso.EVENT_DURATION : iso.PSequence(sequence=[1, 1, 1], repeats=2)
+        iso.EVENT_NOTE: iso.PSequence(sequence=[71, 62, 60], repeats=1)
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[0.5, 1, 1], repeats=1)
         , iso.EVENT_CHANNEL: 0
         # , iso.EVENT_ACTION : iso.PSequence(sequence = [lambda: print('asdf1'), lambda: print('asdf2'), lambda: print('asdf3')], repeats=1)
         # ,iso.EVENT_ACTION : iso.PSequence(sequence=[None, lambda: print('x'), None], repeats=1)
@@ -102,15 +104,15 @@ def test_timeline_wrk(dummy_timeline, dummy_timeline2):
     events_action= {
         # iso.EVENT_NOTE: iso.PSequence(sequence= [60, 72], repeats=1),
         # , iso.EVENT_GATE : iso.PSequence(sequence=[1, 1, 0.5], repeats=1)
-        iso.EVENT_DURATION : iso.PSequence(sequence = [3, 1], repeats=1)
+        iso.EVENT_DURATION : iso.PSequence(sequence = [0.1, 1, 0.1, 1], repeats=1)
         # iso.EVENT_TIME : iso.PSequence(sequence=[1, 10], repeats=1)
         # , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda: set_tempo(30), lambda: set_tempo(180)], repeats=1)
-        , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda: set_tempo(30), lambda: set_tempo(200)], repeats=1)
+        , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda: set_tempo(30), lambda: set_tempo(30),lambda: set_tempo(300), lambda: set_tempo(200)], repeats=1)
         # , iso.EVENT_ACTION : iso.PSequence(sequence = [lambda: print('asdf1'), lambda: print('asdf2')], repeats=1)
         # ,iso.EVENT_ACTION : iso.PSequence(sequence=[None, lambda: print('x'), None], repeats=1)
     }
     dummy_timeline.schedule(events)
-    dummy_timeline.schedule(events2)
+    # dummy_timeline.schedule(events2)
     dummy_timeline.schedule(events_action)
     dummy_timeline.run()
     # dummy_timeline.background()
@@ -131,7 +133,7 @@ def test_timeline_wrk(dummy_timeline, dummy_timeline2):
     file = os.path.join('..', '..', 'checks', 'example_midi', 'Var_tempo_1_trk_sax.mid')
     file_input_device = iso.MidiFileInputDevice(file)
 
-    # file_input_device = iso.MidiFileInputDevice(tmp_filename)
+    file_input_device = iso.MidiFileInputDevice(tmp_filename)
     # file_input_device = iso.MidiFileInputDevice(tmp_filenameX)
     patterns = file_input_device.read()
     def app_time():
