@@ -24,6 +24,16 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
         text =  [(type(o), o.__dict__) for o in objects]
 
         msg = mido.MetaMessage('text', text=str(text), )
+        # TODO Fix here the way it is written to miditrack
+        # for obj in objects:
+        #     # msg2 = mido.MetaMessage(obj)
+        #     if MULTI_TRACK:
+        #         if timeline.output_device.miditrack[0]:
+        #             timeline.output_device.miditrack[0].append(obj)
+        #     else:
+        #         if timeline.output_device.miditrack:
+        #             timeline.output_device.miditrack.append(obj)
+
         for obj in objects:
             if isinstance(obj, MidiMetaMessageTempo):
                 print('inside of MidiMetaMessageTempo')
