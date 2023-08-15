@@ -28,10 +28,10 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
             if isinstance(obj, MidiMetaMessageTempo):
                 print('inside of MidiMetaMessageTempo')
                 timeline.set_tempo(int(mido.tempo2bpm(obj.tempo)))
-        if MULTI_TRACK:
-            timeline.output_device.miditrack[0].append(msg)
-        else:
-            timeline.output_device.miditrack.append(msg)
+        # if MULTI_TRACK:
+        #     timeline.output_device.miditrack[0].append(msg)
+        # else:
+        #     timeline.output_device.miditrack.append(msg)
         print(timeline, text)
 
     def read(self, quantize=None):
@@ -195,7 +195,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                     next_time = t + max([note.duration for note in notes if hasattr(note, 'duration')] or [1.0])
 
                 time_until_next_note = next_time - t
-                note_dict[EVENT_DURATION].append(time_until_next_note)
+                # note_dict[EVENT_DURATION].append(time_until_next_note)
                 #TODO need to differentiate depending on type of message (note, other or meta)
 
                 if len(notes) > 1:
@@ -210,14 +210,20 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                     # partial(f, msg)
                     # note_dict[EVENT_ACTION].append((self.print_obj, messages))
                     # note_dict[EVENT_ACTION].append(tuple(lambda note=note: print(note.__dict__) for note in notes if not isinstance(note,MidiNote)))
-                    note_dict[EVENT_NOTE].append(tuple(note.pitch for note in notes if isinstance(note,MidiNote)))
-                    note_dict[EVENT_AMPLITUDE].append(tuple(note.velocity for note in notes if isinstance(note,MidiNote)))
-                    note_dict[EVENT_GATE].append(tuple(note.duration / time_until_next_note for note in notes if isinstance(note,MidiNote)))
-                    note_dict[EVENT_CHANNEL].append(tuple(int(note.channel / time_until_next_note) for note in notes if isinstance(note,MidiNote)))
+                    note_tuple =  tuple(note.pitch for note in notes if isinstance(note, MidiNote))
+                    if len(note_tuple):
+                        time_until_next_note = next_time - t
+                        note_dict[EVENT_DURATION].append(time_until_next_note)
+                        note_dict[EVENT_NOTE].append(note_tuple)
+                        note_dict[EVENT_AMPLITUDE].append(tuple(note.velocity for note in notes if isinstance(note,MidiNote)))
+                        note_dict[EVENT_GATE].append(tuple(note.duration / time_until_next_note for note in notes if isinstance(note,MidiNote)))
+                        note_dict[EVENT_CHANNEL].append(tuple(int(note.channel / time_until_next_note) for note in notes if isinstance(note,MidiNote)))
                 else:
                     if time_until_next_note:
                         note = notes[0]
                         if isinstance(note, MidiNote):
+                            time_until_next_note = next_time - t
+                            note_dict[EVENT_DURATION].append(time_until_next_note)
                             note_dict[EVENT_NOTE].append(note.pitch)
                             note_dict[EVENT_AMPLITUDE].append(note.velocity)
                             note_dict[EVENT_GATE].append(note.duration / time_until_next_note)
@@ -235,7 +241,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
             #  recalculate EVENT_TIME -> EVENT_DURATION
             time_list = action_dict.pop(EVENT_TIME, None)
             if time_list:
-                action_dict[EVENT_DURATION] = [dur-time_list[i] for (i, dur) in enumerate(time_list[1:])]+ [0]
+                action_dict[EVENT_DURATION] = [dur-time_list[i] for (i, dur) in enumerate(time_list[1:])]+ [1.0]
 
             for key, value in action_dict.copy().items():
                 if len(value) != 0:

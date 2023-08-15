@@ -127,7 +127,11 @@ def test_timeline_wrk(dummy_timeline, dummy_timeline2):
     x = 1
     dummy_timeline.output_device.write()
     print('-'*20, 'second_timeline')
-    file_input_device = iso.MidiFileInputDevice(tmp_filename)
+
+    file = os.path.join('..', '..', 'checks', 'example_midi', 'Var_tempo_1_trk_sax.mid')
+    file_input_device = iso.MidiFileInputDevice(file)
+
+    # file_input_device = iso.MidiFileInputDevice(tmp_filename)
     # file_input_device = iso.MidiFileInputDevice(tmp_filenameX)
     patterns = file_input_device.read()
     def app_time():
