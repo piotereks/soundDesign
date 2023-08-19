@@ -199,3 +199,24 @@ def test_action(dummy_timeline2):
     time_gap = [(t-time_ref) for t in dummy_timeline2.event_times]
     print(time_gap)
     x = 1
+
+class Blah:
+    def __init__(self, aaaa):
+        self.aaaa=1
+
+from abc import ABC, abstractmethod
+class MetaMessageInterface(ABC):
+
+    @abstractmethod
+    def to_meta_message(self):
+        return None
+class MidiMetaMessageTempox(MetaMessageInterface):
+    def __init__(self, tempo: int, location):
+        #   0..16777215
+        self.tempo = tempo
+        self.location = location
+        self.is_meta = True
+
+    def to_meta_message(self):
+        return mido.MetaMessage(tempo=self.tempo, time=self.location, type='set_tempo')
+

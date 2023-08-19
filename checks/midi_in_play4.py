@@ -12,7 +12,7 @@ from tracker.app.mido_fixes import *
 
 # import tracker.app.mido_fixes
 from functools import partial
-
+from collections.abc import Iterable
 
 
 x = 1
@@ -49,8 +49,17 @@ for pattern in patterns:
 # for pattern in [patterns]:
     action_fun = pattern.pop(iso.EVENT_ACTION, None)
     if action_fun:
+        res_fun = []
+        # for fun in action_fun:
+        #     if isinstance(fun, Iterable):
+        #         fun = tuple(partial(f, timeline) for f in fun)
+        #     else:
+        #         fun = partial(fun, timeline)
+        #     res_fun.append(fun)
+        # action_fun = iso.PSequence(res_fun, repeats=1)
+
         action_fun = [partial(f, timeline) for f in action_fun]
-        # action_fun  = [lambda x=x: f(timeline, x) for f, x in action]
+        # # action_fun  = [lambda x=x: f(timeline, x) for f, x in action]
         action_fun = iso.PSequence(action_fun, repeats=1)
 
         timeline.schedule({iso.EVENT_ACTION: action_fun,

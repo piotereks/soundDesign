@@ -1,14 +1,16 @@
-
-import mido
+# import mido
 import logging
+
 from collections.abc import Iterable
 from functools import partial
 
 from isobar import *
+
 from .iso_midi_message import *
-from .midi_dev import  MULTI_TRACK
+from .midi_dev import MULTI_TRACK
 
 log = logging.getLogger(__name__)
+
 
 class CustMidiFileInputDevice(MidiFileInputDevice):
     """ Read events from a MIDI file.
@@ -17,13 +19,16 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
     def __init__(self, filename):
         self.filename = filename
 
-
     def print_obj(self, timeline, objects):
         if not isinstance(objects, Iterable):
             objects = [objects]
-        text =  [(type(o), o.__dict__) for o in objects]
+        text = [(type(o), o.__dict__) for o in objects]
+        if MULTI_TRACK:
+            midi_track = timeline.output_device.miditrack[0]
+        else:
+            midi_track = timeline.output_device.miditrack
 
-        msg = mido.MetaMessage('text', text=str(text), )
+        # msg = mido.MetaMessage('text', text=str(text))
         # TODO Fix here the way it is written to miditrack
         # for obj in objects:
         #     # msg2 = mido.MetaMessage(obj)
@@ -38,12 +43,11 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
             if isinstance(obj, MidiMetaMessageTempo):
                 print('inside of MidiMetaMessageTempo')
                 timeline.set_tempo(int(mido.tempo2bpm(obj.tempo)))
-        if MULTI_TRACK:
-            if timeline.output_device.miditrack[0]:
-                timeline.output_device.miditrack[0].append(msg)
-        else:
-            if timeline.output_device.miditrack:
-                timeline.output_device.miditrack.append(msg)
+            if midi_track is not None:
+                # midi_track.append(msg)
+                if hasattr(obj, 'to_meta_message'):
+                    midi_track.append(obj.to_meta_message())
+
         print(timeline, text)
 
     def read(self, quantize=None):
@@ -55,8 +59,6 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
             else:
                 msg_loc = messages.location
             action_dict[EVENT_TIME].append(msg_loc)
-
-
 
         midi_reader = mido.MidiFile(self.filename)
         # log.info("Loading MIDI data from %s, ticks per beat = %d" % (self.filename, midi_reader.ticks_per_beat))
@@ -105,47 +107,54 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                     notes.append(pgm_chg)
                 elif event.type == 'control_change':
                     offset += event.time / midi_reader.ticks_per_beat
-                    ctrl_chg = MidiMessageControl(channel=event.channel, cc=event.control, value=event.value, location=offset)
+                    ctrl_chg = MidiMessageControl(channel=event.channel, cc=event.control, value=event.value,
+                                                  location=offset, time=event.time)
                     notes.append(ctrl_chg)
                 elif event.type == 'polytouch':
                     offset += event.time / midi_reader.ticks_per_beat
-                    poly_touch = MidiMessagePoly(channel=event.channel, pitch=event.pitch, value=event.value,  location=offset)
+                    poly_touch = MidiMessagePoly(channel=event.channel, pitch=event.pitch, value=event.value,
+                                                 location=offset, time=event.time)
                     notes.append(poly_touch)
                 elif event.type == 'aftertouch':
                     offset += event.time / midi_reader.ticks_per_beat
-                    after_touch = MidiMessageAfter(channel=event.channel, value=event.value,  location=offset)
+                    after_touch = MidiMessageAfter(channel=event.channel, value=event.value, location=offset,
+                                                   time=event.time)
                     notes.append(after_touch)
                 elif event.type == 'pitchwheel':
                     offset += event.time / midi_reader.ticks_per_beat
-                    pitch_wheel = MidiMessagePitch(channel=event.channel, pitch=event.pitch,  location=offset)
+                    pitch_wheel = MidiMessagePitch(channel=event.channel, pitch=event.pitch, location=offset,
+                                                   time=event.time)
                     notes.append(pitch_wheel)
                 #  meta messages
                 elif event.type == 'end_of_track':
                     offset += event.time / midi_reader.ticks_per_beat
-                    end_of_track = MidiMetaMessageEndTrack(location=offset)
+                    end_of_track = MidiMetaMessageEndTrack(location=offset,
+                                                           time=event.time)
                     notes.append(end_of_track)
                 elif event.type == 'midi_port':
                     offset += event.time / midi_reader.ticks_per_beat
-                    midi_port = MidiMetaMessageMidiPort(port=event.port, location=offset)
+                    midi_port = MidiMetaMessageMidiPort(port=event.port, location=offset,
+                                                        time=event.time)
                     notes.append(midi_port)
                 elif event.type == 'key_signature':
                     offset += event.time / midi_reader.ticks_per_beat
-                    key_sig = MidiMetaMessageKey(key=event.key, location=offset)
+                    key_sig = MidiMetaMessageKey(key=event.key, location=offset,
+                                                 time=event.time)
                     notes.append(key_sig)
                 elif event.type == 'time_signature':
                     offset += event.time / midi_reader.ticks_per_beat
                     time_sig = MidiMetaMessageTimeSig(numerator=event.numerator, denominator=event.denominator,
-                                                 clocks_per_click=event.clocks_per_click,
-                                                 notated_32nd_notes_per_beat=event.notated_32nd_notes_per_beat,
-                                                 location=offset)
+                                                      clocks_per_click=event.clocks_per_click,
+                                                      notated_32nd_notes_per_beat=event.notated_32nd_notes_per_beat,
+                                                      location=offset, time=event.time)
                     notes.append(time_sig)
                 elif event.type == 'track_name':
                     offset += event.time / midi_reader.ticks_per_beat
-                    track_name = MidiMetaMessageTrackName(name=event.name, location=offset)
+                    track_name = MidiMetaMessageTrackName(name=event.name, location=offset, time=event.time)
                     notes.append(track_name)
                 elif event.type == 'set_tempo':
                     offset += event.time / midi_reader.ticks_per_beat
-                    tempo = MidiMetaMessageTempo(tempo=event.tempo, location=offset)
+                    tempo = MidiMetaMessageTempo(tempo=event.tempo, location=offset, time=event.time)
                     notes.append(tempo)
 
             # ------------------------------------------------------------------------
@@ -168,14 +177,14 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                     log.debug(" - MIDI event (t = %.2f): Note %d, velocity %d, duration %.3f" %
                               (note.location, note.pitch, note.velocity, note.duration))
                 location = note.location
-                if location in notes_by_time:
-                    if isinstance(note, MidiNote):
+                if isinstance(note, MidiNote):
+                    if location in notes_by_time:
                         notes_by_time[location].append(note)
                     else:
-                        action_by_time[location].append(note)
-                else:
-                    if isinstance(note, MidiNote):
                         notes_by_time[location] = [note]
+                else:
+                    if location in action_by_time:
+                        action_by_time[location].append(note)
                     else:
                         action_by_time[location] = [note]
 
@@ -218,14 +227,10 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                     note = notes[0]
                     create_lam_function(note)
 
-
-
             times = sorted(notes_by_time.keys())
             for i, t in enumerate(times):
                 t = times[i]
                 notes = notes_by_time[t]
-
-
 
                 # ------------------------------------------------------------------------
                 # Our duration is always determined by the time of the next note event.
@@ -239,13 +244,14 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                 #
                 # time_until_next_note = next_time - t
                 # note_dict[EVENT_DURATION].append(time_until_next_note)
-                #TODO need to differentiate depending on type of message (note, other or meta)
+                # TODO need to differentiate depending on type of message (note, other or meta)
 
                 if len(notes) > 1:
                     # note_dict[EVENT_ACTION].append(tuple(lambda: print(type(note)) for note in notes if not hasattr(note, 'duration')))
                     messages = tuple(note for note in notes if not isinstance(note, MidiNote))
                     # create_lam_function(messages)
-                    note_tuple =  tuple(note.pitch for note in notes if isinstance(note, MidiNote) and isinstance(note, MidiNote))
+                    note_tuple = tuple(
+                        note.pitch for note in notes if isinstance(note, MidiNote) and isinstance(note, MidiNote))
                     if len(note_tuple):
                         if i < len(times) - 1:
                             next_time = times[i + 1]
@@ -255,9 +261,12 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                         time_until_next_note = next_time - t
                         note_dict[EVENT_DURATION].append(time_until_next_note)
                         note_dict[EVENT_NOTE].append(note_tuple)
-                        note_dict[EVENT_AMPLITUDE].append(tuple(note.velocity for note in notes if isinstance(note,MidiNote)))
-                        note_dict[EVENT_GATE].append(tuple(note.duration / time_until_next_note for note in notes if isinstance(note,MidiNote)))
-                        note_dict[EVENT_CHANNEL].append(tuple(int(note.channel / time_until_next_note) for note in notes if isinstance(note,MidiNote)))
+                        note_dict[EVENT_AMPLITUDE].append(
+                            tuple(note.velocity for note in notes if isinstance(note, MidiNote)))
+                        note_dict[EVENT_GATE].append(
+                            tuple(note.duration / time_until_next_note for note in notes if isinstance(note, MidiNote)))
+                        note_dict[EVENT_CHANNEL].append(tuple(
+                            int(note.channel / time_until_next_note) for note in notes if isinstance(note, MidiNote)))
                 else:
                     if time_until_next_note:
                         note = notes[0]
@@ -266,7 +275,8 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                                 next_time = times[i + 1]
                             else:
                                 next_time = t + max(
-                                    [note.duration for note in notes if hasattr(note, 'duration') and isinstance(note, MidiNote)] or [1.0])
+                                    [note.duration for note in notes if
+                                     hasattr(note, 'duration') and isinstance(note, MidiNote)] or [1.0])
 
                             time_until_next_note = next_time - t
                             note_dict[EVENT_DURATION].append(time_until_next_note)
@@ -288,7 +298,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
             #  recalculate EVENT_TIME -> EVENT_DURATION
             time_list = action_dict.pop(EVENT_TIME, None)
             if time_list:
-                action_dict[EVENT_DURATION] = [dur-time_list[i] for (i, dur) in enumerate(time_list[1:])]+ [1.0]
+                action_dict[EVENT_DURATION] = [dur - time_list[i] for (i, dur) in enumerate(time_list[1:])] + [1.0]
 
             for key, value in action_dict.copy().items():
                 if len(value) != 0:
@@ -296,9 +306,14 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                 else:
                     action_dict.pop(key, None)
 
-            if bool(note_dict):
-                tracks_note_dict.append(note_dict)
             if bool(action_dict):
                 tracks_note_dict.append(action_dict)
+            if bool(note_dict):
+                tracks_note_dict.append(note_dict)
+
+
+
+
+
 
         return tracks_note_dict

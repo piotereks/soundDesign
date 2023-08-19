@@ -5,6 +5,7 @@ import time
 import os
 
 def print_mid(filename):
+
     mid=mido.MidiFile(filename)
     ticks_per_beat= mid.ticks_per_beat or 480
     # tempo=[msg.tempo for msg in track if msg.is_meta and msg.type=='set_tempo'][0] or 500000
@@ -12,6 +13,7 @@ def print_mid(filename):
     tick_time=tempo/(1000000*ticks_per_beat)   # this is not needed in mido midi file since time is already calculated with this principle
     print(f"{ticks_per_beat=},{tempo=},{tick_time=}")
     print('-'*40)
+    print(filename)
     for track in mid.tracks or []:
         print(f'Track #{mid.tracks.index(track)}')
         for msg in track:
