@@ -24,6 +24,12 @@ class MetaMessageInterface(ABC):
     def to_meta_message(self):
         return None
 
+class MessageInterface(ABC):
+
+    @abstractmethod
+    def to_meta_message(self):
+        return None
+
 class MidiMessageControl:
     def __init__(self, channel, cc, value, location, time=0):
         self.channel = channel
@@ -33,6 +39,8 @@ class MidiMessageControl:
         self.location = location
         self.time = time
 
+    def xto_meta_message(self):
+        return mido.Message(channel=self.channel, cc=self.cc, value=self.value, time=self.time, type='control_change')
 
 class MidiMessageProgram:
     def __init__(self, channel, program,  location, time=0):
@@ -42,6 +50,9 @@ class MidiMessageProgram:
         # duration in time, beats
         self.time = time
 
+    def xto_meta_message(self):
+        return None
+        # return mido.Message(tempo=self.tempo, time=self.time, type='set_tempo')
 
 class MidiMessagePoly:
     def __init__(self, channel, pitch, value, location, time=0):
@@ -51,6 +62,9 @@ class MidiMessagePoly:
         self.location = location
         self.time = time
 
+    def xto_meta_message(self):
+        return None
+        # return mido.Message(tempo=self.tempo, time=self.time, type='set_tempo')
 
 class MidiMessagePitch:
     def __init__(self, channel, pitch, location, time=0):
@@ -59,6 +73,9 @@ class MidiMessagePitch:
         self.location = location
         self.time = time
 
+    def xto_meta_message(self):
+        return None
+        # return mido.Message(tempo=self.tempo, time=self.time, type='set_tempo')
 
 class MidiMessageAfter:
     def __init__(self, channel, value, location, time=0):
@@ -67,6 +84,9 @@ class MidiMessageAfter:
         self.location = location
         self.time = time
 
+    def xto_meta_message(self):
+        return None
+        # return mido.Message(tempo=self.tempo, time=self.time, type='set_tempo')
 
 
 

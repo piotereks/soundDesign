@@ -83,6 +83,25 @@ if MULTI_TRACK:
                 track.append(mido.Message('note_off', note=0, channel=0, time=dt_ticks))
             self.midifile.save(self.filename)
 
+        def control(self, control=0, value=0, channel=0):
+            track = self.get_channel_track(channel)
+            print(f"----------------track var: {channel=} {track=}")
+            if track >= 0:
+                dt = self.time[track] - self.last_event_time[track]
+                dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
+                self.miditrack[track].append(
+                    mido.Message('control_change', control=int(control), value=int(value), channel=int(channel)))
+                self.last_event_time[track] = self.time[track]
+
+        def program_change(self, program=0, channel=0):
+            log.debug("[midi] Program change (channel %d, program_change %d)" % (channel, program))
+            track = self.get_channel_track(channel)
+            if track >= 0:
+                dt = self.time[track] - self.last_event_time[track]
+                dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
+                self.miditrack[track].append(
+                    mido.Message('program_change', program=int(program), channel=int(channel)))
+                self.last_event_time[track] = self.time[track]
 
 if not MULTI_TRACK:
     class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
@@ -111,6 +130,11 @@ class FileOut(MidiFileManyTracksOutputDevice, iso.MidiOutputDevice):
         iso.MidiOutputDevice.program_change(self, program=program, channel=channel)
         # super().program_change(program=program, channel=channel)
 
+    def control(self, control=0, value=0, channel=0):
+        # iso.MidiFileOutputDevice.control(self, control=control, value=value, channel=channel)
+        MidiFileManyTracksOutputDevice.control(self, control=control, value=value, channel=channel)
+        iso.MidiOutputDevice.control(self, control=control, value=value, channel=channel)
+        # super().control(control=control, value=value, channel=channel)
     #
     #
     # def start(self):

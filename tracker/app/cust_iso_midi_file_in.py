@@ -3,6 +3,7 @@ import logging
 
 from collections.abc import Iterable
 from functools import partial
+from typing import Union
 
 from isobar import *
 
@@ -43,6 +44,10 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
             if isinstance(obj, MidiMetaMessageTempo):
                 print('inside of MidiMetaMessageTempo')
                 timeline.set_tempo(int(mido.tempo2bpm(obj.tempo)))
+            elif isinstance(obj, MidiMessageControl):
+                timeline.output_device.control(control=obj.cc, value=obj.value, channel=obj.channel)
+            elif isinstance(obj, MidiMessageProgram):
+                timeline.output_device.program_change(program=obj.program, channel=obj.channel)
             if midi_track is not None:
                 # midi_track.append(msg)
                 if hasattr(obj, 'to_meta_message'):
@@ -96,7 +101,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                     # ------------------------------------------------------------------------
                     offset += event.time / midi_reader.ticks_per_beat
                     for note in reversed(notes):
-                        if not isinstance(note, MidiNote):
+                        if not isinstance(note,  MidiNote):
                             continue
                         if note.pitch == event.note and note.duration is None:
                             note.duration = offset - note.location
@@ -173,7 +178,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
             notes_by_time = {}
             action_by_time = {}
             for note in notes:
-                if isinstance(note, MidiNote):
+                if isinstance(note,  MidiNote):
                     log.debug(" - MIDI event (t = %.2f): Note %d, velocity %d, duration %.3f" %
                               (note.location, note.pitch, note.velocity, note.duration))
                 location = note.location
@@ -251,7 +256,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                     messages = tuple(note for note in notes if not isinstance(note, MidiNote))
                     # create_lam_function(messages)
                     note_tuple = tuple(
-                        note.pitch for note in notes if isinstance(note, MidiNote) and isinstance(note, MidiNote))
+                        note.pitch for note in notes if isinstance(note, MidiNote))
                     if len(note_tuple):
                         if i < len(times) - 1:
                             next_time = times[i + 1]
