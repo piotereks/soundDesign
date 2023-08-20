@@ -23,7 +23,7 @@ x = 1
 # file = os.path.join('example_midi', 'Var_tempo_2_trks_sax_piano.mid')
 file = os.path.join('example_midi', 'Var_tempo_1_trk_sax_short.mid')
 file = os.path.join('example_midi', 'Var_tempo_1_trk_sax_sh2.mid')
-# file = os.path.join('example_midi', 'Var_tempo_1_trk_sax.mid')
+file = os.path.join('example_midi', 'Var_tempo_1_trk_sax.mid')
 file_input_device = iso.MidiFileInputDevice(file)
 patterns = file_input_device.read()
 # print("Read pattern containing %d note events" % len(pattern["note"]))

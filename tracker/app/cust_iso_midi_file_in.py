@@ -44,10 +44,21 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
             if isinstance(obj, MidiMetaMessageTempo):
                 print('inside of MidiMetaMessageTempo')
                 timeline.set_tempo(int(mido.tempo2bpm(obj.tempo)))
+                msg = mido.MetaMessage('text', text=f"tempo:{int(mido.tempo2bpm(obj.tempo))}")
+                midi_track.append(msg)
             elif isinstance(obj, MidiMessageControl):
                 timeline.output_device.control(control=obj.cc, value=obj.value, channel=obj.channel)
             elif isinstance(obj, MidiMessageProgram):
                 timeline.output_device.program_change(program=obj.program, channel=obj.channel)
+            elif isinstance(obj, MidiMessagePitch):
+                timeline.output_device.pitch_bend(self, pitch=obj.pitch, channel=obj.channel)
+            elif isinstance(obj, MidiMessageAfter):
+                timeline.output_device.aftertouch(self, control=obj.control, value=obj.value,
+                                                  channel=obj.channel)
+            elif isinstance(obj, MidiMessagePoly):
+                timeline.output_device.polytouch(self, control=obj.control, note=obj.note,
+                                                 channel=obj.channel)
+
             if midi_track is not None:
                 # midi_track.append(msg)
                 if hasattr(obj, 'to_meta_message'):

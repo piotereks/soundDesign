@@ -93,6 +93,15 @@ if MULTI_TRACK:
                     mido.Message('control_change', control=int(control), value=int(value), channel=int(channel)))
                 self.last_event_time[track] = self.time[track]
 
+        def pitch_bend(self, pitch=0, channel=0):
+            track = self.get_channel_track(channel)
+            if track >= 0:
+                dt = self.time[track] - self.last_event_time[track]
+                dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
+                self.miditrack[track].append(
+                    mido.Message('pitchwheel', pitch=int(pitch), channel=int(channel)))
+                self.last_event_time[track] = self.time[track]
+
         def program_change(self, program=0, channel=0):
             log.debug("[midi] Program change (channel %d, program_change %d)" % (channel, program))
             track = self.get_channel_track(channel)
@@ -102,6 +111,27 @@ if MULTI_TRACK:
                 self.miditrack[track].append(
                     mido.Message('program_change', program=int(program), channel=int(channel)))
                 self.last_event_time[track] = self.time[track]
+
+
+        def aftertouch(self, control=0, value=0, channel=0):
+            track = self.get_channel_track(channel)
+            if track >= 0:
+                dt = self.time[track] - self.last_event_time[track]
+                dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
+                self.miditrack[track].append(
+                    msg = mido.Message('aftertouch', control=int(control), value=value, channel=int(channel)))
+                self.last_event_time[track] = self.time[track]
+
+        def polytouch(self, control=0, note=0, channel=0):
+            track = self.get_channel_track(channel)
+            if track >= 0:
+                dt = self.time[track] - self.last_event_time[track]
+                dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
+                self.miditrack[track].append(
+                    msg = mido.Message('polytouch', control=int(control), note=note, channel=int(channel)))
+                self.last_event_time[track] = self.time[track]
+
+
 
 if not MULTI_TRACK:
     class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
@@ -135,6 +165,18 @@ class FileOut(MidiFileManyTracksOutputDevice, iso.MidiOutputDevice):
         MidiFileManyTracksOutputDevice.control(self, control=control, value=value, channel=channel)
         iso.MidiOutputDevice.control(self, control=control, value=value, channel=channel)
         # super().control(control=control, value=value, channel=channel)
+
+    def pitch_bend(self, pitch=0, channel=0):
+        MidiFileManyTracksOutputDevice.pitch_bend(self, pitch=pitch, channel=channel)
+        iso.MidiOutputDevice.pitch_bend(self, pitch=pitch, channel=channel)
+
+    def aftertouch(self, control=0, value=0, channel=0):
+        MidiFileManyTracksOutputDevice.aftertouch(self, control=control, value=value, channel=channel)
+
+    def polytouch(self, control=0, note=0, channel=0):
+        MidiFileManyTracksOutputDevice.polytouch(self, control=control, note=note, channel=channel)
+
+
     #
     #
     # def start(self):

@@ -1,6 +1,9 @@
 import isobar as iso
 import mido
 from abc import ABC, abstractmethod
+import logging
+
+log = logging.getLogger(__name__)
 
 class CustMidiNote(iso.MidiNote):
     def __init__(self, channel, pitch, velocity, location, duration=None):
@@ -39,9 +42,6 @@ class MidiMessageControl:
         self.location = location
         self.time = time
 
-    def xto_meta_message(self):
-        return mido.Message(channel=self.channel, cc=self.cc, value=self.value, time=self.time, type='control_change')
-
 class MidiMessageProgram:
     def __init__(self, channel, program,  location, time=0):
         self.channel = channel
@@ -50,9 +50,12 @@ class MidiMessageProgram:
         # duration in time, beats
         self.time = time
 
-    def xto_meta_message(self):
-        return None
-        # return mido.Message(tempo=self.tempo, time=self.time, type='set_tempo')
+class MidiMessagePitch:
+    def __init__(self, channel, pitch, location, time=0):
+        self.channel = channel
+        self.pitch = pitch
+        self.location = location
+        self.time = time
 
 class MidiMessagePoly:
     def __init__(self, channel, pitch, value, location, time=0):
@@ -66,16 +69,18 @@ class MidiMessagePoly:
         return None
         # return mido.Message(tempo=self.tempo, time=self.time, type='set_tempo')
 
-class MidiMessagePitch:
-    def __init__(self, channel, pitch, location, time=0):
-        self.channel = channel
-        self.pitch = pitch
-        self.location = location
-        self.time = time
+class CustMidiOutputDevice(iso.MidiOutputDevice):
+    def aftertouch(self, control=0, value=0, channel=0):
+        log.debug("[midi] Pitch bend (channel %d, pitch %d)" % (channel, pitch))
+        msg = mido.Message('aftertouch', control=int(control), value=value, channel=int(channel))
+        self.midi.send(msg)
 
-    def xto_meta_message(self):
-        return None
-        # return mido.Message(tempo=self.tempo, time=self.time, type='set_tempo')
+    def polytouch(self, control=0, note=0, channel=0):
+        log.debug("[midi] Pitch bend (channel %d, pitch %d)" % (channel, pitch))
+        msg = mido.Message('polytouch', control=int(control), note=note, channel=int(channel))
+
+iso.MidiOutputDevice.aftertouch=CustMidiOutputDevice.aftertouch
+iso.MidiOutputDevice.polytouch=CustMidiOutputDevice.polytouch
 
 class MidiMessageAfter:
     def __init__(self, channel, value, location, time=0):
