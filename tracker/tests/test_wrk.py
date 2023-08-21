@@ -186,7 +186,7 @@ def test_action(dummy_timeline2):
         # , iso.EVENT_GATE : iso.PSequence(sequence=[1, 1, 0.5], repeats=1)
         iso.EVENT_DURATION : iso.PSequence(sequence = [2, 1], repeats=1)
         # iso.EVENT_TIME: iso.PSequence(sequence=[1111, 10], repeats=1)
-        , iso.EVENT_ACTION: iso.PSequence(sequence=[lambda: app_time(), lambda: app_time()], repeats=1)
+        # , iso.EVENT_ACTION: iso.PSequence(sequence=[lambda: app_time(), lambda: app_time()], repeats=1)
         }
     # timeline.schedule({
     #     iso.EVENT_ACTION: lambda: timeline.event_times.append(time.time()),

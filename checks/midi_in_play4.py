@@ -45,28 +45,22 @@ timeline.stop_when_done = True
 
 
 flag = True
-for pattern in patterns:
-# for pattern in [patterns]:
-    action_fun = pattern.pop(iso.EVENT_ACTION, None)
-    if action_fun:
-        res_fun = []
-        # for fun in action_fun:
-        #     if isinstance(fun, Iterable):
-        #         fun = tuple(partial(f, timeline) for f in fun)
-        #     else:
-        #         fun = partial(fun, timeline)
-        #     res_fun.append(fun)
-        # action_fun = iso.PSequence(res_fun, repeats=1)
+if False:
+    for pattern in patterns:
+    # for pattern in [patterns]:
+        action_fun = pattern.pop(iso.EVENT_ACTION, None)
+        if action_fun:
+            res_fun = []
 
-        action_fun = [partial(f, timeline) for f in action_fun]
-        # # action_fun  = [lambda x=x: f(timeline, x) for f, x in action]
-        action_fun = iso.PSequence(action_fun, repeats=1)
+            action_fun = [partial(f, timeline) for f in action_fun]
+            action_fun = iso.PSequence(action_fun, repeats=1)
 
-        timeline.schedule({iso.EVENT_ACTION: action_fun,
-                                  iso.EVENT_DURATION: pattern.get(iso.EVENT_DURATION, None)}, remove_when_done=flag)
-    else:
-        timeline.schedule(pattern, remove_when_done=flag)
+            timeline.schedule({iso.EVENT_ACTION: action_fun,
+                                      iso.EVENT_DURATION: pattern.get(iso.EVENT_DURATION, None)}, remove_when_done=flag)
+        else:
+            timeline.schedule(pattern, remove_when_done=flag)
 
+timeline.schedule(patterns)
 # timeline.background()
 timeline.run()
 timeline.output_device.write()
