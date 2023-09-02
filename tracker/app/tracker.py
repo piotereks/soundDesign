@@ -43,7 +43,11 @@ class Tracker:
             filename_in = os.path.join(os.path.dirname(os.path.abspath(__file__)), *filename_in)
         self.midi_dev_in = None
         print("A1===file midi to be created")
-        self.midi_file_in = mido.MidiFile(filename_in) if filename_in else None
+        self.midi_file_in = None
+        # self.midi_file_in = mido.MidiFile(filename_in) if filename_in else None
+        if filename_in:
+            self.file_input_device = iso.MidiFileInputDevice(filename_in) if filename_in else None
+            self.patterns_from_file = self.file_input_device.read()
 
         if self.midi_file_in:
             # mid = self.midi_file_in
@@ -52,11 +56,11 @@ class Tracker:
             self.min_channel = min(self.available_channels)
             self.available_channels.remove(self.min_channel)
 
-        self.player_thread = threading.Thread(target=self.play_mid_file)
+        # self.player_thread = threading.Thread(target=self.play_mid_file)
         self.filename_in_volume = tracker_config.get("filename_in_volume")
-        if self.filename_in_volume <0:
+        if self.filename_in_volume < 0:
             self.filename_in_volume = 0
-        elif self.filename_in_volume >=127:
+        elif self.filename_in_volume >= 127:
             self.filename_in_volume = 127
         self.generated_notes_volume = tracker_config.get("generated_notes_volume")
         if self.generated_notes_volume <0:
@@ -856,18 +860,18 @@ class Tracker:
 
     def tstop(self):
         log_call()
-        self.mid_file_pause()
+        # self.mid_file_pause()
         self.timeline.stop()
 
     def ts(self):
         log_call()
-        self.mid_file_pause()
+        # self.mid_file_pause()
         self.timeline.stop()
 
     def tstart(self):
         log_call()
         self.timeline.background()
-        self.mid_file_start()
+        # self.mid_file_start()
 
         # @log_and_schedule
 
