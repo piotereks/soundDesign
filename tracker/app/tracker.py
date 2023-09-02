@@ -540,7 +540,7 @@ class Tracker:
             print(list(notes[iso.EVENT_AMPLITUDE].copy()))
             print("bbbb: ", list(map(type, notes[iso.EVENT_AMPLITUDE].copy())))
 
-            notes[iso.EVENT_CHANNEL] = self.min_channel
+            # notes[iso.EVENT_CHANNEL] = self.min_channel
 
             _ = self.timeline.schedule(
                 notes
