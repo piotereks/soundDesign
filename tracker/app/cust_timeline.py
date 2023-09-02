@@ -2,7 +2,7 @@ import math
 import copy
 
 # import isobar
-from isobar import Timeline, Track, PSequence
+from isobar import Timeline, Track, PSequence, PDict
 from isobar.constants import EVENT_TIME, EVENT_ACTION, INTERPOLATION_NONE
 from isobar.io import MidiOutputDevice
 from isobar.exceptions import TrackLimitReachedException
@@ -70,6 +70,9 @@ class CustTimeline(Timeline):
             params_list = params
         tracks_list = []
         for params in params_list:
+            if isinstance(params, PDict):
+                params = dict(params)
+            # params = copy.copy(params)
             action_fun = params.pop(EVENT_ACTION, None)
 
             if action_fun and isinstance(action_fun, Iterable):
@@ -84,9 +87,11 @@ class CustTimeline(Timeline):
                 attributes['sequence'] = action_fun
                 # action_fun = PSequence(action_fun, repeats=1)
                 action_fun = PSequence(**attributes)
+            elif action_fun:
                 params[EVENT_ACTION] = action_fun
+            params = PDict(params)
 
-            params = copy.copy(params)
+
 
         if not output_device:
             # --------------------------------------------------------------------------------
@@ -155,7 +160,7 @@ class CustTimeline(Timeline):
 
         if len(tracks_list) > 1:
             track = tracks_list
-        elif len(tracks_list) > 1:
+        elif len(tracks_list) == 1:
             track = tracks_list[0]
         else:
             track = None
