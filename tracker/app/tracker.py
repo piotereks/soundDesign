@@ -171,6 +171,7 @@ class Tracker:
         self.dur_variety = 0
         self.func_name = None
         self.tmln = self.tracker_timeline()
+        self.xxx = self.file_in_timeline() # file_in_timeline
         self.metro = self.metro_timeline()
         self.set_program_change_trk(program=self.program_change)
 
@@ -725,6 +726,10 @@ class Tracker:
 
     # <editor-fold desc="play definitions">
 
+
+    def file_in_timeline(self):
+        log_call()
+        return self.timeline.schedule(self.patterns_from_file)
     def tracker_timeline(self):
         log_call()
         print(f"{self.beat}")
