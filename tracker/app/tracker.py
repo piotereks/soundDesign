@@ -4,7 +4,9 @@ import shutil
 from datetime import datetime
 from itertools import accumulate
 from functools import wraps
+import copy
 
+import isobar
 import mido
 from .mido_fixes import *
 
@@ -48,6 +50,13 @@ class Tracker:
         if filename_in:
             self.file_input_device = iso.MidiFileInputDevice(filename_in) if filename_in else None
             self.patterns_from_file = self.file_input_device.read()
+            # self.patterns_from_file_duration
+            if not isinstance(self.patterns_from_file, list):
+                self.patterns_from_file = [self.patterns_from_file]
+            self.patterns_from_file_duration = max([sum(pat[iso.EVENT_DURATION].sequence)
+                                                   for pat in self.patterns_from_file if pat.get(iso.EVENT_DURATION)])
+
+
         else:
             self.patterns_from_file = None
 
@@ -732,12 +741,42 @@ class Tracker:
 
     # <editor-fold desc="play definitions">
 
+    def file_beat(self):
+        log_call()
+        if not self.patterns_from_file:
+            print("in")
+            return None
+        print("out")
+        print(self.patterns_from_file)
+        _ = self.timeline.schedule(copy.deepcopy(self.patterns_from_file), remove_when_done=True)
+        # return self.timeline.schedule(self.patterns_from_file.copy(), remove_when_done=True)
+        # sum(y['duration'].sequence)
 
     def file_in_timeline(self):
         log_call()
-        if not self.patterns_from_file:
-            return None
-        return self.timeline.schedule(self.patterns_from_file)
+        factor = self.time_signature['numerator'] * 4 / self.time_signature['denominator']
+        print(f"{factor=}")
+        dur = self.patterns_from_file_duration
+        print(dur)
+        # dur = self.patterns_from_file_duration*self.time_signature['denominator']/self.time_signature['numerator']
+        dur = dur / factor
+        print(dur)
+        if dur>int(dur):
+            dur = int(dur) + 1
+            print(dur)
+        dur = dur * factor
+        print(dur)
+        # print(self.patterns_from_file_duration)
+        # print(self.patterns_from_file_duration*self.time_signature['denominator']/self.time_signature['numerator'])
+        # print(round(self.patterns_from_file_duration*self.time_signature['denominator']/self.time_signature['numerator']))
+        # print(round(self.patterns_from_file_duration*self.time_signature['denominator']/self.time_signature['numerator'])
+        #                 * self.time_signature['numerator'] / self.time_signature['denominator'])
+        return self.timeline.schedule({"action": lambda: self.file_beat(),
+            iso.EVENT_DURATION: dur
+            # "duration": 4 * self.time_signature['numerator'] / self.time_signature['denominator']
+            # "quantize": 1
+        },
+            remove_when_done=False)
 
     def tracker_timeline(self):
         log_call()

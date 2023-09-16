@@ -14,8 +14,8 @@
       "dur_variety_max":7,
       "play_func":"one_note",
       "xqueue_content":[60, 64, 67, 71, 76, 72, 69, 65, 62],
-      "ccqueue_content":[57, 67, 77, 68],
-      "queue_content":[null, null, null, null],
+      "queue_content":[57, 67, 77, 68],
+      "dqueue_content":[null, null, null, null],
       "rows":7,
       "cols":3
     },
@@ -31,7 +31,7 @@
     "default_channel" : 0,
     "legato": 1.0,
     "program_change": 0,
-    "time_signature": {"numerator":4, "denominator": 4},
+    "time_signature": {"numerator": 4, "denominator": 4},
     "dummy_file_config": "qqqq"
   },
   "midi_mapping": {
