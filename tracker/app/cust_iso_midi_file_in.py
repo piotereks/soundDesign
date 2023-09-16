@@ -190,6 +190,8 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
             action_by_time = {}
             for note in notes:
                 if isinstance(note,  MidiNote):
+                    if not note.duration:
+                        note.duration = 1  #  default lenght for hanging notes
                     log.debug(" - MIDI event (t = %.2f): Note %d, velocity %d, duration %.3f" %
                               (note.location, note.pitch, note.velocity, note.duration))
                 location = note.location

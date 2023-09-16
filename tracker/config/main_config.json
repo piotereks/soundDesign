@@ -13,7 +13,9 @@
       "dur_variety_min":0,
       "dur_variety_max":7,
       "play_func":"one_note",
-      "queue_content":[60, 64, 67, 71, 76, 72, 69, 65, 62],
+      "xqueue_content":[60, 64, 67, 71, 76, 72, 69, 65, 62],
+      "ccqueue_content":[57, 67, 77, 68],
+      "queue_content":[null, null, null, null],
       "rows":7,
       "cols":3
     },
@@ -23,6 +25,7 @@
     "xfilename_in" : ["..","..","checks","example_midi", "Variable_tempo_one_note_mod_double_instr.mid"],
     "yfilename_in" : ["..","..","checks","example_midi", "Variable_tempo_one_note.mid"],
     "afilename_in" : ["..","..","checks","example_midi", "Var_tempo_1_trk.mid"],
+    "filename_in" : ["..","..","checks","example_midi", "4_notes.mid"],
     "filename_in_volume" : 55,
     "generated_notes_volume" : 200,
     "default_channel" : 0,
