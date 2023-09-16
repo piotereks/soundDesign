@@ -22,7 +22,7 @@
     "midi_out_name": ["Microsoft GS Wavetable Synth","blah","KB loopMIDI Port"],
     "xfilename_in" : ["..","..","checks","example_midi", "Variable_tempo_one_note_mod_double_instr.mid"],
     "yfilename_in" : ["..","..","checks","example_midi", "Variable_tempo_one_note.mid"],
-    "filename_in" : ["..","..","checks","example_midi", "Var_tempo_1_trk.mid"],
+    "afilename_in" : ["..","..","checks","example_midi", "Var_tempo_1_trk.mid"],
     "filename_in_volume" : 55,
     "generated_notes_volume" : 200,
     "default_channel" : 0,

@@ -48,6 +48,8 @@ class Tracker:
         if filename_in:
             self.file_input_device = iso.MidiFileInputDevice(filename_in) if filename_in else None
             self.patterns_from_file = self.file_input_device.read()
+        else:
+            self.patterns_from_file = None
 
         if self.midi_file_in:
             # mid = self.midi_file_in
@@ -170,9 +172,13 @@ class Tracker:
         self.current_align_state = 0
         self.dur_variety = 0
         self.func_name = None
-        self.tmln = self.tracker_timeline()
-        self.xxx = self.file_in_timeline() # file_in_timeline
-        self.metro = self.metro_timeline()
+        # self.tmln = self.tracker_timeline()
+        # self.xxx = self.file_in_timeline() # file_in_timeline
+        # self.metro = self.metro_timeline()
+
+        _ = self.tracker_timeline()
+        _ = self.file_in_timeline() # file_in_timeline
+        _ = self.metro_timeline()
         self.set_program_change_trk(program=self.program_change)
 
     def set_default_duration(self):
@@ -729,7 +735,10 @@ class Tracker:
 
     def file_in_timeline(self):
         log_call()
+        if not self.patterns_from_file:
+            return None
         return self.timeline.schedule(self.patterns_from_file)
+
     def tracker_timeline(self):
         log_call()
         print(f"{self.beat}")
