@@ -87,76 +87,77 @@ class CustTimeline(Timeline):
                 attributes['sequence'] = action_fun
                 # action_fun = PSequence(action_fun, repeats=1)
                 action_fun = PSequence(**attributes)
+                params[EVENT_ACTION] = action_fun
             elif action_fun:
                 params[EVENT_ACTION] = action_fun
-            params = PDict(params)
+            # params = PDict(params)
 
 
 
-        if not output_device:
+            if not output_device:
+                # --------------------------------------------------------------------------------
+                # If no output device exists, send to the system default MIDI output.
+                # --------------------------------------------------------------------------------
+                if not self.output_devices:
+                    self.add_output_device(MidiOutputDevice())
+                output_device = self.output_devices[0]
+
             # --------------------------------------------------------------------------------
-            # If no output device exists, send to the system default MIDI output.
+            # If replace=True is specified, updated the params of any existing track
+            # with the same name. If none exists, proceed to create it as usual.
             # --------------------------------------------------------------------------------
-            if not self.output_devices:
-                self.add_output_device(MidiOutputDevice())
-            output_device = self.output_devices[0]
+            if replace:
+                if name is None:
+                    raise ValueError("Must specify a track name if `replace` is specified")
+                for existing_track in self.tracks:
+                    if existing_track.name == name:
+                        existing_track.update(params, quantize=quantize)
+                        return
 
-        # --------------------------------------------------------------------------------
-        # If replace=True is specified, updated the params of any existing track
-        # with the same name. If none exists, proceed to create it as usual.
-        # --------------------------------------------------------------------------------
-        if replace:
-            if name is None:
-                raise ValueError("Must specify a track name if `replace` is specified")
-            for existing_track in self.tracks:
-                if existing_track.name == name:
-                    existing_track.update(params, quantize=quantize)
-                    return
+            if self.max_tracks and len(self.tracks) >= self.max_tracks:
+                raise TrackLimitReachedException("Timeline: Refusing to schedule track (hit limit of %d)" % self.max_tracks)
 
-        if self.max_tracks and len(self.tracks) >= self.max_tracks:
-            raise TrackLimitReachedException("Timeline: Refusing to schedule track (hit limit of %d)" % self.max_tracks)
+            def add_track(track):
+                # --------------------------------------------------------------------------------
+                # Add a new track.
+                # --------------------------------------------------------------------------------
+                if track_index is not None:
+                    self.tracks.insert(track_index, track)
+                else:
+                    self.tracks.append(track)
+                log.info("Timeline: Scheduled new track (total tracks: %d)" % len(self.tracks))
 
-        def add_track(track):
-            # --------------------------------------------------------------------------------
-            # Add a new track.
-            # --------------------------------------------------------------------------------
-            if track_index is not None:
-                self.tracks.insert(track_index, track)
+            if isinstance(params, Track):
+                track = params
+                track.reset()
             else:
-                self.tracks.append(track)
-            log.info("Timeline: Scheduled new track (total tracks: %d)" % len(self.tracks))
+                # --------------------------------------------------------------------------------
+                # Take a copy of params to avoid modifying the original
+                # --------------------------------------------------------------------------------
+                track = Track(self,
+                              events=copy.copy(params),
+                              max_event_count=count,
+                              interpolate=interpolate,
+                              output_device=output_device,
+                              remove_when_done=remove_when_done,
+                              name=name)
+                tracks_list.append(track)
 
-        if isinstance(params, Track):
-            track = params
-            track.reset()
-        else:
-            # --------------------------------------------------------------------------------
-            # Take a copy of params to avoid modifying the original
-            # --------------------------------------------------------------------------------
-            track = Track(self,
-                          events=copy.copy(params),
-                          max_event_count=count,
-                          interpolate=interpolate,
-                          output_device=output_device,
-                          remove_when_done=remove_when_done,
-                          name=name)
-            tracks_list.append(track)
-
-        if quantize is None:
-            quantize = self.defaults.quantize
-        if quantize or delay:
-            # --------------------------------------------------------------------------------
-            # We don't want to begin events right away -- either wait till
-            # the next beat boundary (quantize), or delay a number of beats.
-            # --------------------------------------------------------------------------------
-            self._schedule_action(function=lambda: add_track(track),
-                                  quantize=quantize,
-                                  delay=delay)
-        else:
-            # --------------------------------------------------------------------------------
-            # Begin events on this track right away.
-            # --------------------------------------------------------------------------------
-            add_track(track)
+            if quantize is None:
+                quantize = self.defaults.quantize
+            if quantize or delay:
+                # --------------------------------------------------------------------------------
+                # We don't want to begin events right away -- either wait till
+                # the next beat boundary (quantize), or delay a number of beats.
+                # --------------------------------------------------------------------------------
+                self._schedule_action(function=lambda: add_track(track),
+                                      quantize=quantize,
+                                      delay=delay)
+            else:
+                # --------------------------------------------------------------------------------
+                # Begin events on this track right away.
+                # --------------------------------------------------------------------------------
+                add_track(track)
 
         if len(tracks_list) > 1:
             track = tracks_list

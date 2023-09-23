@@ -62,7 +62,7 @@ if False:
         else:
             timeline.schedule(pattern, remove_when_done=flag)
 
-timeline.schedule(patterns)
+xxx = timeline.schedule(patterns)
 # timeline.background()
 timeline.run()
 timeline.output_device.write()

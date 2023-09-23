@@ -88,6 +88,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
         # ------------------------------------------------------------------------
         # track = note_tracks[0]
         tracks_note_dict = []
+        channel_calc = 0
         for track in note_tracks:
             notes = []
             offset = 0
@@ -325,7 +326,9 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                     action_dict.pop(key, None)
 
             if bool(action_dict):
+                action_dict[iso.EVENT_CHANNEL] = channel_calc
                 tracks_note_dict.append(action_dict)
+                channel_calc += 1
             if bool(note_dict):
                 tracks_note_dict.append(note_dict)
 

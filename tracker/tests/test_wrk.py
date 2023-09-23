@@ -220,3 +220,40 @@ class MidiMetaMessageTempox(MetaMessageInterface):
     def to_meta_message(self):
         return mido.MetaMessage(tempo=self.tempo, time=self.location, type='set_tempo')
 
+
+def test_track_play(dummy_timeline2):
+    from isobar import MidiFileInputDevice
+    events_trk1 = {
+        iso.EVENT_NOTE: iso.PSequence(sequence= [1,2], repeats=1),
+        iso.EVENT_DURATION : iso.PSequence(sequence = [2, 1], repeats=1),
+        iso.EVENT_CHANNEL : 0
+        }
+
+    events_trk2 = {
+        iso.EVENT_NOTE: iso.PSequence(sequence= [3,4], repeats=1),
+        iso.EVENT_DURATION : iso.PSequence(sequence = [2, 1], repeats=1),
+        iso.EVENT_CHANNEL : 5
+        }
+    # timeline.schedule({
+    #     iso.EVENT_ACTION: lambda: timeline.event_times.append(time.time()),
+    #     iso.EVENT_DURATION: iso.PSequence([ 0.001 ], 50)
+    # })
+    # MidiFileInputDevice.print_obj(dummy_timeline2, MidiMessageProgram(channel=2, program=3, location=0))
+
+
+    events_action = {
+        # iso.EVENT_ACTION: iso.PSequence(sequence= [MidiMessageProgram(channel=2, program=3, location=0)], repeats=1),
+        iso.EVENT_ACTION:  lambda: dummy_timeline2.output_device.program_change(program=2, channel=5),
+        # iso.EVENT_ACTION: iso.PSequence(sequence= [lambda: print('lambda')], repeats=1),
+        # iso.EVENT_ACTION: lambda: print('lambda'),
+        iso.EVENT_DURATION : iso.PSequence(sequence = [3], repeats=1)
+        }
+
+
+    # print_obj(self, timeline, objects)
+    dummy_timeline2.schedule(events_trk1)
+    dummy_timeline2.schedule(events_trk2)
+    dummy_timeline2.schedule(events_action)
+    dummy_timeline2.run()
+
+    x = 1
