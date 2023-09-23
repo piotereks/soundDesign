@@ -10,7 +10,7 @@ import isobar as iso
 from tracker.app.isobar_fixes import *
 from tracker.app.mido_fixes import *
 
-import tracker.app.mido_fixes
+# import tracker.app.mido_fixes
 from functools import partial
 from collections.abc import Iterable
 
@@ -26,6 +26,7 @@ file = os.path.join('example_midi', 'Var_tempo_1_trk_sax_sh2.mid')
 file = os.path.join('example_midi', 'Var_tempo_1_trk_sax.mid')
 file = os.path.join('example_midi', 'Var_tempo_2_trks_sax_piano.mid')
 file = os.path.join('example_midi', '4_notes3.mid')
+file = os.path.join('example_midi', '4_notes4.mid')
 file_input_device = iso.MidiFileInputDevice(file)
 patterns = file_input_device.read()
 # print("Read pattern containing %d note events" % len(pattern["note"]))
@@ -61,8 +62,9 @@ if False:
                                       iso.EVENT_DURATION: pattern.get(iso.EVENT_DURATION, None)}, remove_when_done=flag)
         else:
             timeline.schedule(pattern, remove_when_done=flag)
-
-xxx = timeline.schedule(patterns)
+timeline.schedule(patterns)
+xxx = list(patterns[0]['action'])[0]
+xxx()
 # timeline.background()
 timeline.run()
 timeline.output_device.write()
