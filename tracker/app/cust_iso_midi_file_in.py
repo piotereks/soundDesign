@@ -20,7 +20,9 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
     def __init__(self, filename):
         self.filename = filename
 
-    def print_obj(self, timeline, objects):
+    def print_obj(self, timeline, objects=None):
+
+        print(f"{type(objects)}=")
         if not isinstance(objects, Iterable):
             objects = [objects]
         text = [(type(o), o.__dict__) for o in objects]
@@ -69,6 +71,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
     def read(self, quantize=None):
         def create_lam_function(messages):
             lam_function = partial(self.print_obj, objects=messages)
+            # lam_function = partial(self.print_obj, objects=None)
             action_dict[EVENT_ACTION].append(lam_function)
             if isinstance(messages, Iterable):
                 msg_loc = messages[0].location

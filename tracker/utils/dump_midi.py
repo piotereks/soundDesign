@@ -52,7 +52,7 @@ def direct_midi_play():
 
     filename = os.path.join(this_dir, '..','..','checks', 'example_midi', 'Var_tempo_1_trk_sax.mid')
     filename = os.path.join(this_dir, '..','..','checks', 'example_midi', 'Var_tempo_1_trk_sax_sh2.mid')
-    filename = os.path.join(this_dir, '..','..','checks', 'example_midi', '4_notes.mid')
+    filename = os.path.join(this_dir, '..','..','checks', 'example_midi', '4_notes4.mid')
     # filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
     # filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
 
@@ -65,6 +65,6 @@ def direct_midi_play():
     filename = os.path.join(this_dir, '..','..','checks', 'example_midi', '4_notes4.mid')
     # filename = os.path.join(this_dir, '..','..','checks', 'test2.mid')
 
-    print_mid(filename)
+    # print_mid(filename)
 
 direct_midi_play()
