@@ -324,8 +324,9 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
     }
 
     dummy_tim.schedule(pgm)
-    dummy_tim.schedule(pgm2)
+
     dummy_tim.schedule(events)
+    dummy_tim.schedule(pgm2)
     dummy_tim.schedule(events2)
 
     dummy_tim.schedule(events_action)
@@ -349,30 +350,32 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
     def app_time():
         dummy_tim2.event_times.append(time.time())
     dummy_tim2.event_times = []
-    for pattern in patterns:
-        action_fun = pattern.pop(iso.EVENT_ACTION, None)
-        # action_time = pattern.pop(iso.EVENT_TIME, None)
+    if False:
+        for pattern in patterns:
+            action_fun = pattern.pop(iso.EVENT_ACTION, None)
+            # action_time = pattern.pop(iso.EVENT_TIME, None)
 
-        flag = True
-        if action_fun:
-            # action_fun = [partial(f, dummy_tim2) for f in action_fun]
-            # action_fun = [lambda: app_time() for f in action_fun]
-            # action_fun = [lambda x=x: f(timeline, x) for f, x in action_fun]
-            # action_fun = iso.PSequence(action_fun, repeats=1)
-            # action_time = iso.PSequence(action_time, repeats=1)
+            flag = True
+            if action_fun:
+                # action_fun = [partial(f, dummy_tim2) for f in action_fun]
+                # action_fun = [lambda: app_time() for f in action_fun]
+                # action_fun = [lambda x=x: f(timeline, x) for f, x in action_fun]
+                # action_fun = iso.PSequence(action_fun, repeats=1)
+                # action_time = iso.PSequence(action_time, repeats=1)
 
-            dummy_tim2.schedule({iso.EVENT_ACTION: action_fun,
-                                      iso.EVENT_DURATION: pattern.get(iso.EVENT_DURATION, None)}, remove_when_done=flag)
-            # dummy_timeline2.schedule({iso.EVENT_ACTION: iso.PSequence(sequence=[lambda: app_time(), lambda: app_time()], repeats=1),
-            #                           iso.EVENT_DURATION: pattern.get(iso.EVENT_DURATION, None)}, remove_when_done=flag)
+                dummy_tim2.schedule({iso.EVENT_ACTION: action_fun,
+                                          iso.EVENT_DURATION: pattern.get(iso.EVENT_DURATION, None)}, remove_when_done=flag)
+                # dummy_timeline2.schedule({iso.EVENT_ACTION: iso.PSequence(sequence=[lambda: app_time(), lambda: app_time()], repeats=1),
+                #                           iso.EVENT_DURATION: pattern.get(iso.EVENT_DURATION, None)}, remove_when_done=flag)
 
-            # dummy_timeline2.schedule({iso.EVENT_ACTION: action_fun,
-            #                           iso.EVENT_TIME: action_time}, remove_when_done=flag)
-            # dummy_timeline2.schedule({iso.EVENT_TIME: action_time}, remove_when_done=flag)
-            # pass
-        else:
-            dummy_tim2.schedule(pattern, remove_when_done=flag)
-
+                # dummy_timeline2.schedule({iso.EVENT_ACTION: action_fun,
+                #                           iso.EVENT_TIME: action_time}, remove_when_done=flag)
+                # dummy_timeline2.schedule({iso.EVENT_TIME: action_time}, remove_when_done=flag)
+                # pass
+            else:
+                dummy_tim2.schedule(pattern, remove_when_done=flag)
+    flag = True
+    dummy_tim2.schedule(patterns, remove_when_done=flag)
     # time_ref = time.time()
     dummy_tim2.run()
     print(dummy_tim2.event_times)

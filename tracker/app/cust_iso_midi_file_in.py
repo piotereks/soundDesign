@@ -20,14 +20,14 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
     def __init__(self, filename):
         self.filename = filename
 
-    def print_obj(self, timeline, objects=None):
+    def print_obj(self, timeline, objects=None, track_idx=0):
 
         print(f"{type(objects)}=")
         if not isinstance(objects, Iterable):
             objects = [objects]
         text = [(type(o), o.__dict__) for o in objects]
         if MULTI_TRACK:
-            midi_track = timeline.output_device.miditrack[0]
+            midi_track = timeline.output_device.miditrack[track_idx]
         else:
             midi_track = timeline.output_device.miditrack
 
@@ -69,8 +69,8 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
         print(timeline, text)
 
     def read(self, quantize=None):
-        def create_lam_function(messages):
-            lam_function = partial(self.print_obj, objects=messages)
+        def create_lam_function(messages, track_idx = 0):
+            lam_function = partial(self.print_obj, objects=messages, track_idx=track_idx)
             # lam_function = partial(self.print_obj, objects=None)
             action_dict[EVENT_ACTION].append(lam_function)
             if isinstance(messages, Iterable):
@@ -93,6 +93,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
         tracks_note_dict = []
         channel_calc = 0
         for track in note_tracks:
+            track_idx = note_tracks.index(track)
             notes = []
             offset = 0
             for event in track:
@@ -243,11 +244,11 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                 if len(notes) > 1:
                     # note_dict[EVENT_ACTION].append(tuple(lambda: print(type(note)) for note in notes if not hasattr(note, 'duration')))
                     messages = tuple(note for note in notes)
-                    create_lam_function(messages)
+                    create_lam_function(messages, track_idx)
                 else:
                     # if time_until_next_note:
                     note = notes[0]
-                    create_lam_function(note)
+                    create_lam_function(note, track_idx)
 
             times = sorted(notes_by_time.keys())
             for i, t in enumerate(times):
