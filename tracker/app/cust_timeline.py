@@ -132,6 +132,11 @@ class CustTimeline(Timeline):
                     self.tracks.append(track)
                 log.info("Timeline: Scheduled new track (total tracks: %d)" % len(self.tracks))
 
+            if not bool(event_args):
+                event_args = {"track_idx": len(self.tracks)}
+            if not bool(params.get(EVENT_ACTION_ARGS, {})):
+                params[EVENT_ACTION_ARGS] = event_args
+
             if isinstance(params, Track):
                 track = params
                 track.reset()
@@ -146,7 +151,7 @@ class CustTimeline(Timeline):
                               output_device=output_device,
                               remove_when_done=remove_when_done,
                               name=name)
-                tracks_list.append(track)
+            tracks_list.append(track)
 
             if quantize is None:
                 quantize = self.defaults.quantize

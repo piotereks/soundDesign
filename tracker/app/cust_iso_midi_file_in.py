@@ -129,58 +129,61 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                             break
                 elif event.type == 'program_change':
                     offset += event.time / midi_reader.ticks_per_beat
-                    pgm_chg = MidiMessageProgram(channel=event.channel, program=event.program, location=offset)
+                    pgm_chg = MidiMessageProgram(channel=event.channel, program=event.program, location=offset,
+                                                 track_idx=track_idx)
                     notes.append(pgm_chg)
                 elif event.type == 'control_change':
                     offset += event.time / midi_reader.ticks_per_beat
                     ctrl_chg = MidiMessageControl(channel=event.channel, cc=event.control, value=event.value,
-                                                  location=offset, time=event.time)
+                                                  location=offset, time=event.time, track_idx=track_idx)
                     notes.append(ctrl_chg)
                 elif event.type == 'polytouch':
                     offset += event.time / midi_reader.ticks_per_beat
                     poly_touch = MidiMessagePoly(channel=event.channel, pitch=event.pitch, value=event.value,
-                                                 location=offset, time=event.time)
+                                                 location=offset, time=event.time, track_idx=track_idx)
                     notes.append(poly_touch)
                 elif event.type == 'aftertouch':
                     offset += event.time / midi_reader.ticks_per_beat
                     after_touch = MidiMessageAfter(channel=event.channel, value=event.value, location=offset,
-                                                   time=event.time)
+                                                   time=event.time, track_idx=track_idx)
                     notes.append(after_touch)
                 elif event.type == 'pitchwheel':
                     offset += event.time / midi_reader.ticks_per_beat
                     pitch_wheel = MidiMessagePitch(channel=event.channel, pitch=event.pitch, location=offset,
-                                                   time=event.time)
+                                                   time=event.time, track_idx=track_idx)
                     notes.append(pitch_wheel)
                 #  meta messages
                 elif event.type == 'end_of_track':
                     offset += event.time / midi_reader.ticks_per_beat
                     end_of_track = MidiMetaMessageEndTrack(location=offset,
-                                                           time=event.time)
+                                                           time=event.time, track_idx=track_idx)
                     notes.append(end_of_track)
                 elif event.type == 'midi_port':
                     offset += event.time / midi_reader.ticks_per_beat
                     midi_port = MidiMetaMessageMidiPort(port=event.port, location=offset,
-                                                        time=event.time)
+                                                        time=event.time, track_idx=track_idx)
                     notes.append(midi_port)
                 elif event.type == 'key_signature':
                     offset += event.time / midi_reader.ticks_per_beat
                     key_sig = MidiMetaMessageKey(key=event.key, location=offset,
-                                                 time=event.time)
+                                                 time=event.time, track_idx=track_idx)
                     notes.append(key_sig)
                 elif event.type == 'time_signature':
                     offset += event.time / midi_reader.ticks_per_beat
                     time_sig = MidiMetaMessageTimeSig(numerator=event.numerator, denominator=event.denominator,
                                                       clocks_per_click=event.clocks_per_click,
                                                       notated_32nd_notes_per_beat=event.notated_32nd_notes_per_beat,
-                                                      location=offset, time=event.time)
+                                                      location=offset, time=event.time, track_idx=track_idx)
                     notes.append(time_sig)
                 elif event.type == 'track_name':
                     offset += event.time / midi_reader.ticks_per_beat
-                    track_name = MidiMetaMessageTrackName(name=event.name, location=offset, time=event.time)
+                    track_name = MidiMetaMessageTrackName(name=event.name, location=offset, time=event.time,
+                                                          track_idx=track_idx)
                     notes.append(track_name)
                 elif event.type == 'set_tempo':
                     offset += event.time / midi_reader.ticks_per_beat
-                    tempo = MidiMetaMessageTempo(tempo=event.tempo, location=offset, time=event.time)
+                    tempo = MidiMetaMessageTempo(tempo=event.tempo, location=offset, time=event.time,
+                                                 track_idx=track_idx)
                     notes.append(tempo)
 
             # ------------------------------------------------------------------------

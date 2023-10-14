@@ -50,6 +50,7 @@ if MULTI_TRACK:
             # avoid rounding errors
             # ------------------------------------------------------------------------
             track = self.get_channel_track(channel)
+            track = track_idx  #  tmp change
             print(f"----------------track var: {channel=} {track=}")
             if track >= 0:
                 print(f"------------note on: {track=}, {note=}, {channel=}")
@@ -61,6 +62,7 @@ if MULTI_TRACK:
 
         def note_off(self, note=60, channel=0, track_idx=0):
             track = self.get_channel_track(channel)
+            track = track_idx  #  tmp change
             if track >= 0:
                 print(f"------------note on: {track=}, {note=}, {channel=}")
                 dt = self.time[track] - self.last_event_time[track]
@@ -85,6 +87,7 @@ if MULTI_TRACK:
 
         def control(self, control=0, value=0, channel=0, track_idx=0):
             track = self.get_channel_track(channel)
+            track = track_idx  #  tmp change
             print(f"----------------track var: {channel=} {track=}")
             if track >= 0:
                 dt = self.time[track] - self.last_event_time[track]
@@ -95,6 +98,7 @@ if MULTI_TRACK:
 
         def pitch_bend(self, pitch=0, channel=0, track_idx=0):
             track = self.get_channel_track(channel)
+            track = track_idx  #  tmp change
             if track >= 0:
                 dt = self.time[track] - self.last_event_time[track]
                 dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
@@ -105,6 +109,7 @@ if MULTI_TRACK:
         def program_change(self, program=0, channel=0, track_idx=0):
             log.debug("[midi] Program change (channel %d, program_change %d)" % (channel, program))
             track = self.get_channel_track(channel)
+            track = track_idx  #  tmp change
             if track >= 0:
                 dt = self.time[track] - self.last_event_time[track]
                 dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
@@ -115,6 +120,7 @@ if MULTI_TRACK:
 
         def aftertouch(self, control=0, value=0, channel=0, track_idx=0):
             track = self.get_channel_track(channel)
+            track = track_idx  #  tmp change
             if track >= 0:
                 dt = self.time[track] - self.last_event_time[track]
                 dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
@@ -124,6 +130,7 @@ if MULTI_TRACK:
 
         def polytouch(self, control=0, note=0, channel=0, track_idx=0):
             track = self.get_channel_track(channel)
+            track = track_idx  #  tmp change
             if track >= 0:
                 dt = self.time[track] - self.last_event_time[track]
                 dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
