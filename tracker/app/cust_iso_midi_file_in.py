@@ -27,9 +27,13 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
             objects = [objects]
         text = [(type(o), o.__dict__) for o in objects]
         if MULTI_TRACK:
-            midi_track = timeline.output_device.miditrack[track_idx]
+            # if len(timeline.output_device.miditrack)-1 < track_idx:
+                # timeline.output_device.extra_track(track_idx)
+            # midi_track0 = timeline.output_device.miditrack[track_idx]
+            midi_track0 = timeline.output_device.miditrack[0]
+
         else:
-            midi_track = timeline.output_device.miditrack
+            midi_track0 = timeline.output_device.miditrack
 
         # msg = mido.MetaMessage('text', text=str(text))
         # TODO Fix here the way it is written to miditrack
@@ -47,7 +51,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                 print('inside of MidiMetaMessageTempo')
                 timeline.set_tempo(int(mido.tempo2bpm(obj.tempo)))
                 msg = mido.MetaMessage('text', text=f"tempo:{int(mido.tempo2bpm(obj.tempo))}")
-                midi_track.append(msg)
+                midi_track0.append(msg)
             elif isinstance(obj, MidiMessageControl):
                 timeline.output_device.control(control=obj.cc, value=obj.value, channel=obj.channel)
             elif isinstance(obj, MidiMessageProgram):
@@ -61,10 +65,11 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                 timeline.output_device.polytouch(self, control=obj.control, note=obj.note,
                                                  channel=obj.channel)
 
-            if midi_track is not None:
-                # midi_track.append(msg)
-                if hasattr(obj, 'to_meta_message'):
-                    midi_track.append(obj.to_meta_message())
+            if midi_track0 is not None and hasattr(obj, 'to_meta_message'):
+                if len(timeline.output_device.miditrack) - 1 < track_idx:
+                    timeline.output_device.extra_track(track_idx)
+                timeline.output_device.miditrack[track_idx].append(obj.to_meta_message())
+
 
         print(timeline, text)
 
