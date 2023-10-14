@@ -45,7 +45,7 @@ if MULTI_TRACK:
                 track = self.extra_track(channel)
             return track
 
-        def note_on(self, note=60, velocity=64, channel=0):
+        def note_on(self, note=60, velocity=64, channel=0, track_idx=0):
             # ------------------------------------------------------------------------
             # avoid rounding errors
             # ------------------------------------------------------------------------
@@ -59,7 +59,7 @@ if MULTI_TRACK:
                     mido.Message('note_on', note=note, velocity=velocity, channel=channel, time=dt_ticks))
                 self.last_event_time[track] = self.time[track]
 
-        def note_off(self, note=60, channel=0):
+        def note_off(self, note=60, channel=0, track_idx=0):
             track = self.get_channel_track(channel)
             if track >= 0:
                 print(f"------------note on: {track=}, {note=}, {channel=}")
@@ -83,7 +83,7 @@ if MULTI_TRACK:
                 track.append(mido.Message('note_off', note=0, channel=0, time=dt_ticks))
             self.midifile.save(self.filename)
 
-        def control(self, control=0, value=0, channel=0):
+        def control(self, control=0, value=0, channel=0, track_idx=0):
             track = self.get_channel_track(channel)
             print(f"----------------track var: {channel=} {track=}")
             if track >= 0:
@@ -93,7 +93,7 @@ if MULTI_TRACK:
                     mido.Message('control_change', control=int(control), value=int(value), channel=int(channel)))
                 self.last_event_time[track] = self.time[track]
 
-        def pitch_bend(self, pitch=0, channel=0):
+        def pitch_bend(self, pitch=0, channel=0, track_idx=0):
             track = self.get_channel_track(channel)
             if track >= 0:
                 dt = self.time[track] - self.last_event_time[track]
@@ -102,7 +102,7 @@ if MULTI_TRACK:
                     mido.Message('pitchwheel', pitch=int(pitch), channel=int(channel)))
                 self.last_event_time[track] = self.time[track]
 
-        def program_change(self, program=0, channel=0):
+        def program_change(self, program=0, channel=0, track_idx=0):
             log.debug("[midi] Program change (channel %d, program_change %d)" % (channel, program))
             track = self.get_channel_track(channel)
             if track >= 0:
@@ -113,7 +113,7 @@ if MULTI_TRACK:
                 self.last_event_time[track] = self.time[track]
 
 
-        def aftertouch(self, control=0, value=0, channel=0):
+        def aftertouch(self, control=0, value=0, channel=0, track_idx=0):
             track = self.get_channel_track(channel)
             if track >= 0:
                 dt = self.time[track] - self.last_event_time[track]
@@ -122,7 +122,7 @@ if MULTI_TRACK:
                     msg = mido.Message('aftertouch', control=int(control), value=value, channel=int(channel)))
                 self.last_event_time[track] = self.time[track]
 
-        def polytouch(self, control=0, note=0, channel=0):
+        def polytouch(self, control=0, note=0, channel=0, track_idx=0):
             track = self.get_channel_track(channel)
             if track >= 0:
                 dt = self.time[track] - self.last_event_time[track]
@@ -146,35 +146,35 @@ class FileOut(MidiFileManyTracksOutputDevice, iso.MidiOutputDevice):
         MidiFileManyTracksOutputDevice.__init__(self, filename=filename)
         iso.MidiOutputDevice.__init__(self, device_name=device_name, send_clock=send_clock, virtual=virtual)
 
-    def note_off(self, note, channel):
-        MidiFileManyTracksOutputDevice.note_off(self, note=note, channel=channel)
+    def note_off(self, note, channel, track_idx=0):
+        MidiFileManyTracksOutputDevice.note_off(self, note=note, channel=channel, track_idx=track_idx)
         iso.MidiOutputDevice.note_off(self, note=note, channel=channel)
 
-    def note_on(self, note, velocity, channel):
-        MidiFileManyTracksOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
+    def note_on(self, note, velocity, channel, track_idx=0):
+        MidiFileManyTracksOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel, track_idx=track_idx)
         iso.MidiOutputDevice.note_on(self, note=note, velocity=velocity, channel=channel)
 
-    def program_change(self, program=0, channel=0):
+    def program_change(self, program=0, channel=0, track_idx=0):
         # iso.MidiFileOutputDevice.program_change(self, program=program, channel=channel)
-        MidiFileManyTracksOutputDevice.program_change(self, program=program, channel=channel)
+        MidiFileManyTracksOutputDevice.program_change(self, program=program, channel=channel, track_idx=track_idx)
         iso.MidiOutputDevice.program_change(self, program=program, channel=channel)
         # super().program_change(program=program, channel=channel)
 
-    def control(self, control=0, value=0, channel=0):
+    def control(self, control=0, value=0, channel=0, track_idx=0):
         # iso.MidiFileOutputDevice.control(self, control=control, value=value, channel=channel)
-        MidiFileManyTracksOutputDevice.control(self, control=control, value=value, channel=channel)
+        MidiFileManyTracksOutputDevice.control(self, control=control, value=value, channel=channel, track_idx=track_idx)
         iso.MidiOutputDevice.control(self, control=control, value=value, channel=channel)
         # super().control(control=control, value=value, channel=channel)
 
-    def pitch_bend(self, pitch=0, channel=0):
-        MidiFileManyTracksOutputDevice.pitch_bend(self, pitch=pitch, channel=channel)
+    def pitch_bend(self, pitch=0, channel=0, track_idx=0):
+        MidiFileManyTracksOutputDevice.pitch_bend(self, pitch=pitch, channel=channel, track_idx=track_idx)
         iso.MidiOutputDevice.pitch_bend(self, pitch=pitch, channel=channel)
 
-    def aftertouch(self, control=0, value=0, channel=0):
-        MidiFileManyTracksOutputDevice.aftertouch(self, control=control, value=value, channel=channel)
+    def aftertouch(self, control=0, value=0, channel=0, track_idx=0):
+        MidiFileManyTracksOutputDevice.aftertouch(self, control=control, value=value, channel=channel, track_idx=track_idx)
 
-    def polytouch(self, control=0, note=0, channel=0):
-        MidiFileManyTracksOutputDevice.polytouch(self, control=control, note=note, channel=channel)
+    def polytouch(self, control=0, note=0, channel=0, track_idx=0):
+        MidiFileManyTracksOutputDevice.polytouch(self, control=control, note=note, channel=channel, track_idx=track_idx)
 
 
     #
