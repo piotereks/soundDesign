@@ -3,7 +3,7 @@ import copy
 
 # import isobar
 from isobar import Timeline, Track, PSequence, PDict
-from isobar.constants import EVENT_TIME, EVENT_ACTION, INTERPOLATION_NONE
+from isobar.constants import EVENT_TIME, EVENT_ACTION, EVENT_ACTION_ARGS, INTERPOLATION_NONE
 from isobar.io import MidiOutputDevice
 from isobar.exceptions import TrackLimitReachedException
 from functools import partial
@@ -74,6 +74,9 @@ class CustTimeline(Timeline):
                 params = dict(params)
             # params = copy.copy(params)
             action_fun = params.pop(EVENT_ACTION, None)
+            event_args = params.get(EVENT_ACTION_ARGS, {})
+            if bool(event_args):
+                track_idx = event_args.get('track_idx')
 
             if action_fun and isinstance(action_fun, Iterable):
                 attributes = vars(action_fun)
@@ -88,8 +91,10 @@ class CustTimeline(Timeline):
                 # action_fun = PSequence(action_fun, repeats=1)
                 action_fun = PSequence(**attributes)
                 params[EVENT_ACTION] = action_fun
+                params[EVENT_ACTION_ARGS] = event_args
             elif action_fun:
                 params[EVENT_ACTION] = action_fun
+                params[EVENT_ACTION_ARGS] = event_args
             # params = PDict(params)
 
 

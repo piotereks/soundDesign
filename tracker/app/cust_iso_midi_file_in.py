@@ -335,10 +335,12 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                     action_dict.pop(key, None)
 
             if bool(action_dict):
-                action_dict[iso.EVENT_CHANNEL] = channel_calc
+                # action_dict[iso.EVENT_CHANNEL] = channel_calc
+                action_dict[iso.EVENT_ACTION_ARGS] = {"track_idx": track_idx}
                 tracks_note_dict.append(action_dict)
-                channel_calc += 1
+                # channel_calc += 1
             if bool(note_dict):
+                note_dict[iso.EVENT_ACTION_ARGS] = {"track_idx": track_idx}
                 tracks_note_dict.append(note_dict)
 
 

@@ -138,7 +138,7 @@ class MidiMetaMessageTimeSig(MetaMessageInterface):
 
 
 class MidiMetaMessageTrackName(MetaMessageInterface):
-    def __init__(self, name: str, location, time=0):
+    def __init__(self,  name: str, location, time=0):
         self.name = name
         self.location = location
         self.is_meta = True
