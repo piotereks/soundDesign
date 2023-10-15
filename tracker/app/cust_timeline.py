@@ -25,7 +25,8 @@ class CustTimeline(Timeline):
                  remove_when_done=True,
                  name=None,
                  replace=False,
-                 track_index=None):
+                 track_index=None,
+                 sel_track_idx=None):
         """
         Schedule a new track within this Timeline.
 
@@ -133,7 +134,7 @@ class CustTimeline(Timeline):
                 log.info("Timeline: Scheduled new track (total tracks: %d)" % len(self.tracks))
 
             if not bool(event_args):
-                event_args = {"track_idx": len(self.tracks)}
+                event_args = {"track_idx": sel_track_idx if sel_track_idx is not None else len(self.tracks)}
             if not bool(params.get(EVENT_ACTION_ARGS, {})):
                 params[EVENT_ACTION_ARGS] = event_args
 

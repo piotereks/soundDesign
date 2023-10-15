@@ -323,11 +323,11 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
 
     }
 
-    dummy_tim.schedule(pgm)
+    dummy_tim.schedule(pgm, sel_track_idx=0)
 
-    dummy_tim.schedule(events)
-    dummy_tim.schedule(pgm2)
-    dummy_tim.schedule(events2)
+    dummy_tim.schedule(events, sel_track_idx=0)
+    dummy_tim.schedule(pgm2, sel_track_idx=1)
+    dummy_tim.schedule(events2, sel_track_idx=1)
 
     dummy_tim.schedule(events_action)
     dummy_tim.run()
