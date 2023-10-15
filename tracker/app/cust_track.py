@@ -14,6 +14,111 @@ log = logging.getLogger(__name__)
 
 class CustTrack(Track):
 
+    def tick(self):
+        """
+        Step forward one tick.
+
+        Args:
+            tick_duration (float): Duration, in beats.
+        """
+
+        #----------------------------------------------------------------------
+        # Process note_offs before we play the next note, else a repeated note
+        # with gate = 1.0 will immediately be cancelled.
+        #----------------------------------------------------------------------
+        if self.event_stream['args']['track_idx'].constant is not None:
+            track_idx = self.event_stream['args']['track_idx'].constant
+        else:
+            track_idx = 0
+
+        for n, note in enumerate(self.note_offs[:]):
+            # TODO: Use a MidiNote object to represent these note_off events
+            if round(note[0], 8) <= round(self.current_time, 8):
+                index = note[1]
+                channel = note[2]
+                self.output_device.note_off(index, channel, track_idx=track_idx)
+                self.note_offs.remove(note)
+
+        try:
+            if self.interpolate is INTERPOLATION_NONE:
+                if round(self.current_time, 8) >= round(self.next_event_time, 8):
+                    while round(self.current_time, 8) >= round(self.next_event_time, 8):
+                        #--------------------------------------------------------------------------------
+                        # Retrieve the next event.
+                        # If no more events are available, this raises StopIteration.
+                        #--------------------------------------------------------------------------------
+                        self.current_event = self.get_next_event()
+                        self.next_event_time += float(self.current_event.duration)
+
+                    #--------------------------------------------------------------------------------
+                    # Perform the event.
+                    #--------------------------------------------------------------------------------
+                    self.perform_event(self.current_event)
+            else:
+                #--------------------------------------------------------------------------------
+                # Track has interpolation enabled.
+                # Interpolation is done by wrapping the evolving event in an
+                # interpolating_event, which generates a new value each tick until it is
+                # exhausted.
+                #--------------------------------------------------------------------------------
+                try:
+                    interpolated_values = next(self.interpolating_event)
+                    interpolated_event = Event(interpolated_values, self.timeline.defaults)
+                    self.perform_event(interpolated_event)
+                except StopIteration:
+                    is_first_event = False
+                    if self.next_event is None:
+                        #--------------------------------------------------------------------------------
+                        # The current and next events are needed to perform interpolation.
+                        # No events have yet been obtained, so query the current and next events off
+                        # the stack.
+                        #--------------------------------------------------------------------------------
+                        self.next_event = self.get_next_event()
+                        is_first_event = True
+
+                    self.current_event = self.next_event
+                    self.next_event = self.get_next_event()
+
+                    #--------------------------------------------------------------------------------
+                    # Special case to handle zero-duration events: continue to pop new
+                    # events from the pattern.
+                    #--------------------------------------------------------------------------------
+                    while int(self.current_event.duration * self.timeline.ticks_per_beat) <= 0:
+                        self.current_event = self.next_event
+                        self.next_event = self.get_next_event()
+
+                    if self.current_event.type != EVENT_TYPE_CONTROL or self.next_event.type != EVENT_TYPE_CONTROL:
+                        raise InvalidEventException("Interpolation is only valid for control event")
+
+                    interpolating_event_fields = copy.copy(self.current_event.fields)
+                    duration = self.current_event.duration
+                    duration_ticks = duration * self.timeline.ticks_per_beat
+                    for key, value in self.current_event.fields.items():
+                        #--------------------------------------------------------------------------------
+                        # Create a new interpolating_event with patterns for each parameter to
+                        # interpolate.
+                        #--------------------------------------------------------------------------------
+                        if key == EVENT_TYPE or key == EVENT_DURATION:
+                            continue
+                        if type(value) is not float and type(value) is not int:
+                            continue
+                        interpolating_event_fields[key] = PInterpolate(PSequence([self.current_event.fields[key],
+                                                                                  self.next_event.fields[key]], 1),
+                                                                       duration_ticks,
+                                                                       self.interpolate)
+
+                    self.interpolating_event = PDict(interpolating_event_fields)
+                    if not is_first_event:
+                        next(self.interpolating_event)
+                    event = Event(next(self.interpolating_event), self.timeline.defaults)
+                    self.perform_event(event)
+
+        except StopIteration:
+            if len(self.note_offs) == 0:
+                self.is_finished = True
+
+        self.current_time += self.tick_duration
+
     def perform_event(self, event):
 
         if event.fields['args']['track_idx'] is not None:
@@ -59,7 +164,7 @@ class CustTrack(Track):
         elif event.type == EVENT_TYPE_CONTROL:
             log.debug("Control (channel %d, control %d, value %d)",
                       event.channel, event.control, event.value)
-            self.output_device.control(event.control, event.value, event.channel)
+            self.output_device.control(event.control, event.value, event.channel, track_idx=track_idx)
 
         #------------------------------------------------------------------------
         # Program change
@@ -67,19 +172,19 @@ class CustTrack(Track):
         elif event.type == EVENT_TYPE_PROGRAM_CHANGE:
             log.debug("Program change (channel %d, program %d)",
                       event.channel, event.program_change)
-            self.output_device.program_change(event.program_change, event.channel)
+            self.output_device.program_change(event.program_change, event.channel, track_idx=track_idx)
 
         #------------------------------------------------------------------------
         # address: Send a value to an OSC endpoint
         #------------------------------------------------------------------------
         elif event.type == EVENT_TYPE_OSC:
-            self.output_device.send(event.osc_address, event.osc_params)
+            self.output_device.send(event.osc_address, event.osc_params, track_idx=track_idx)
 
         #------------------------------------------------------------------------
         # SuperCollider synth
         #------------------------------------------------------------------------
         elif event.type == EVENT_TYPE_SUPERCOLLIDER:
-            self.output_device.create(event.synth_name, event.synth_params)
+            self.output_device.create(event.synth_name, event.synth_params, track_idx=track_idx)
 
         #------------------------------------------------------------------------
         # SignalFlow patch
@@ -98,9 +203,9 @@ class CustTrack(Track):
                     if note > 0:
                         # TODO: Should use None to denote rests
                         params["frequency"] = midi_note_to_frequency(note)
-                        self.output_device.create(event.patch, params, output=event.output)
+                        self.output_device.create(event.patch, params, output=event.output, track_idx=track_idx)
             else:
-                self.output_device.create(event.patch, params, output=event.output)
+                self.output_device.create(event.patch, params, output=event.output, track_idx=track_idx)
 
         elif event.type == EVENT_TYPE_PATCH_SET or event.type == EVENT_TYPE_PATCH_TRIGGER:
             #------------------------------------------------------------------------
@@ -120,7 +225,7 @@ class CustTrack(Track):
                 if not hasattr(self.output_device, "trigger"):
                     raise InvalidEventException("Device %s does not support this kind of event" % self.output_device)
                 params = dict((key, Pattern.value(value)) for key, value in event.params.items())
-                self.output_device.trigger(event.patch, event.trigger_name, event.trigger_value)
+                self.output_device.trigger(event.patch, event.trigger_name, event.trigger_value, track_idx=track_idx)
 
         #------------------------------------------------------------------------
         # Note: Classic MIDI note
@@ -173,15 +278,20 @@ class CustTrack(Track):
                     # TODO: Add an EVENT_SUSTAIN that allows absolute note lengths to be specified
 
                     if (amp is not None and amp > 0) and (gate is not None and gate > 0):
-                        self.output_device.note_on(note, amp, channel)
+                        self.output_device.note_on(note, amp, channel, track_idx=track_idx)
 
                         note_dur = event.duration * gate
-                        self.schedule_note_off(self.current_time + note_dur, note, channel)
+                        self.schedule_note_off(self.current_time + note_dur, note, channel, track_idx=track_idx )
         else:
             raise InvalidEventException("Invalid event type: %s" % event.type)
 
         if self.timeline.on_event_callback:
             self.timeline.on_event_callback(self, event)
 
+    def schedule_note_off(self, time, note, channel, track_idx=0):
+        self.note_offs.append([time, note, channel, track_idx])
 
+
+Track.tick=CustTrack.tick
 Track.perform_event=CustTrack.perform_event
+Track.schedule_note_off=CustTrack.schedule_note_off
