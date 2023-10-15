@@ -5,6 +5,7 @@ from .up_down_pdegree import *
 from .up_down_key import *
 from .cust_iso_midi_file_in import *
 from .cust_event import *
+from .cust_track import *
 from .cust_timeline import *
 import math
 import sys
