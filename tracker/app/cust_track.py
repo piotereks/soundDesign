@@ -3,10 +3,13 @@ import inspect
 
 from isobar import Track
 from isobar.pattern import Pattern
+from isobar.pattern import PInterpolate, PSequence, PDict
 
 from isobar.constants import *
 from isobar.exceptions import InvalidEventException
 from isobar.util import midi_note_to_frequency
+
+from tracker.app.cust_event import *
 
 import logging
 

@@ -287,6 +287,23 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
         # tempo = mido.tempo2bpm(msg.tempo)
         mid_meta_message(type='track_name', name=name, time=0, track_idx=track_idx)
 
+    # def test_pr(name='xxx', track_idx=0):
+    def test_pr(name='xxx'):
+        print(f"{name=}")
+
+    # def test_pr(*args):
+    #     name = args[0]
+    #     track_idx = args[1] if len(args) > 1 else 0
+    #     print(f"{name=}, {track_idx=}")
+
+    dummy_events = {
+
+        iso.EVENT_NOTE: iso.PSequence(sequence=[12], repeats=1)
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[0.5], repeats=1)
+        , iso.EVENT_CHANNEL: 0
+        # , iso.EVENT_PROGRAM_CHANGE: 0
+    }
+
     events = {
 
         iso.EVENT_NOTE: iso.PSequence(sequence=[50, 52, 55], repeats=1)
@@ -317,8 +334,11 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
     events_action= {
 
         iso.EVENT_DURATION : iso.PSequence(sequence = [1, 1, 1, 1], repeats=1)
+        # iso.EVENT_DURATION : iso.PSequence(sequence = [1], repeats=1)
         # , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda: (set_tempo(31), set_tempo(35), track_name('blah'), track_name('blaxx',1)), lambda: set_tempo(30),lambda: set_tempo(300), lambda: set_tempo(200)], repeats=1)
-        , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda: (set_tempo(31),  track_name('blah'), track_name('blaxx',1)), lambda: set_tempo(30),lambda: set_tempo(300), lambda: set_tempo(200)], repeats=1)
+        , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda track_idx: (set_tempo(31),  track_name('blah'), track_name('blaxx',1)), lambda track_idx: set_tempo(30),
+                                                     lambda track_idx: set_tempo(300), lambda track_idx: set_tempo(200)], repeats=1)
+        # , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda track_idx: test_pr('qqq')], repeats=1)
         # , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda: set_tempo(31), lambda: set_tempo(30),lambda: set_tempo(300), lambda: set_tempo(200)], repeats=1)
 
     }
@@ -328,11 +348,12 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
     dummy_tim.schedule(events, sel_track_idx=0)
     dummy_tim.schedule(pgm2, sel_track_idx=1)
     dummy_tim.schedule(events2, sel_track_idx=1)
+    # dummy_tim.schedule(dummy_events, sel_track_idx=0)
 
     dummy_tim.schedule(events_action)
     dummy_tim.run()
     # dummy_timeline.background()
-
+    # return
     dummy_tim.output_device.write()
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
     print(dummy_tim.output_devices[0].filename)
