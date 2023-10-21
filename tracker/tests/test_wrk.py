@@ -311,7 +311,6 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
         , iso.EVENT_CHANNEL: 0
         # , iso.EVENT_PROGRAM_CHANGE: 0
     }
-
     events2 = {
         iso.EVENT_NOTE: iso.PSequence(sequence= [75,  69,  72], repeats=1)
         , iso.EVENT_DURATION : iso.PSequence(sequence=[2, 2, 2], repeats=1)
@@ -320,7 +319,6 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
         # , iso.EVENT_ACTION : iso.PSequence(sequence = [lambda: print('asdf1'), lambda: print('asdf2'), lambda: print('asdf3')], repeats=1)
         # ,iso.EVENT_ACTION : iso.PSequence(sequence=[None, lambda: print('x'), None], repeats=1)
     }
-
     pgm = {
 
         iso.EVENT_CHANNEL : 0
