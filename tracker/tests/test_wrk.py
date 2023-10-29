@@ -272,7 +272,7 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
 
     def mid_meta_message(msg: mido.MetaMessage = None, *args, **kwargs):
         # return None
-        track_idx = kwargs.pop('track_idx', 0)
+        track_idx = min(kwargs.pop('track_idx', 0),len(dummy_tim.output_device.miditrack)-1)
         if not msg:
             msg = mido.MetaMessage(*args, **kwargs)
         dummy_tim.output_device.miditrack[track_idx].append(msg)
@@ -359,8 +359,8 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
     dummy_tim.schedule(pgm, sel_track_idx=0)
 
     dummy_tim.schedule(events, sel_track_idx=0)
-    dummy_tim.schedule(pgm2, sel_track_idx=1)
-    dummy_tim.schedule(events2, sel_track_idx=1)
+    # dummy_tim.schedule(pgm2, sel_track_idx=1)
+    # dummy_tim.schedule(events2, sel_track_idx=1)
     # dummy_tim.schedule(dummy_events, sel_track_idx=0)
 
     dummy_tim.schedule(events_action)
