@@ -272,7 +272,7 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
 
     def mid_meta_message(msg: mido.MetaMessage = None, *args, **kwargs):
         # return None
-        track_idx = kwargs.pop('track_idx', 0)
+        track_idx = min(kwargs.pop('track_idx', 0),len(dummy_tim.output_device.miditrack)-1)
         if not msg:
             msg = mido.MetaMessage(*args, **kwargs)
         dummy_tim.output_device.miditrack[track_idx].append(msg)
@@ -307,13 +307,15 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
     events = {
 
         iso.EVENT_NOTE: iso.PSequence(sequence=[50, 52, 55], repeats=1)
+        # iso.EVENT_NOTE: iso.PSequence(sequence=[50, 52], repeats=1)
         , iso.EVENT_DURATION: iso.PSequence(sequence=[0.5, 1, 1], repeats=1)
+        # , iso.EVENT_DURATION: iso.PSequence(sequence=[1.5, 1.5], repeats=1)
         , iso.EVENT_CHANNEL: 0
         # , iso.EVENT_PROGRAM_CHANGE: 0
     }
     events2 = {
         iso.EVENT_NOTE: iso.PSequence(sequence= [75,  69,  72], repeats=1)
-        , iso.EVENT_DURATION : iso.PSequence(sequence=[2, 2, 2], repeats=1)
+        , iso.EVENT_DURATION : iso.PSequence(sequence=[1, 1, 1], repeats=1)
         , iso.EVENT_CHANNEL : 2
         # , iso.EVENT_PROGRAM_CHANGE : 56
         # , iso.EVENT_ACTION : iso.PSequence(sequence = [lambda: print('asdf1'), lambda: print('asdf2'), lambda: print('asdf3')], repeats=1)
@@ -334,6 +336,19 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
         iso.EVENT_DURATION : iso.PSequence(sequence = [1, 1, 1, 1], repeats=1)
         # iso.EVENT_DURATION : iso.PSequence(sequence = [1], repeats=1)
         # , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda: (set_tempo(31), set_tempo(35), track_name('blah'), track_name('blaxx',1)), lambda: set_tempo(30),lambda: set_tempo(300), lambda: set_tempo(200)], repeats=1)
+        , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda track_idx: (set_tempo(31), set_tempo(35), track_name('blah'), track_name('blaxx',1)), lambda track_idx: set_tempo(30),
+                                                     lambda track_idx: set_tempo(300), lambda track_idx: set_tempo(200)], repeats=1)
+        # , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda track_idx: (set_tempo(31),  track_name('blah'), track_name('blaxx',1)), lambda track_idx: set_tempo(30)], repeats=1)
+        # , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda track_idx: test_pr('qqq')], repeats=1)
+        # , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda: set_tempo(31), lambda: set_tempo(30),lambda: set_tempo(300), lambda: set_tempo(200)], repeats=1)
+
+    }
+
+    events_actionb = {
+
+        iso.EVENT_DURATION : iso.PSequence(sequence = [1, 1, 1, 1], repeats=1)
+        # iso.EVENT_DURATION : iso.PSequence(sequence = [1], repeats=1)
+        # , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda: (set_tempo(31), set_tempo(35), track_name('blah'), track_name('blaxx',1)), lambda: set_tempo(30),lambda: set_tempo(300), lambda: set_tempo(200)], repeats=1)
         , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda track_idx: (set_tempo(31),  track_name('blah'), track_name('blaxx',1)), lambda track_idx: set_tempo(30),
                                                      lambda track_idx: set_tempo(300), lambda track_idx: set_tempo(200)], repeats=1)
         # , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda track_idx: test_pr('qqq')], repeats=1)
@@ -341,33 +356,31 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
 
     }
 
-
-
     dummy_tim.schedule(pgm, sel_track_idx=0)
 
     dummy_tim.schedule(events, sel_track_idx=0)
-    dummy_tim.schedule(pgm2, sel_track_idx=1)
-    dummy_tim.schedule(events2, sel_track_idx=1)
+    # dummy_tim.schedule(pgm2, sel_track_idx=1)
+    # dummy_tim.schedule(events2, sel_track_idx=1)
     # dummy_tim.schedule(dummy_events, sel_track_idx=0)
 
     dummy_tim.schedule(events_action)
 
 
-    control_series = iso.PSeries(start=1, step=20, length=5)
-    dummy_tim.schedule({
-        iso.EVENT_CONTROL: 0,
-        iso.EVENT_VALUE: control_series,
-        iso.EVENT_DURATION: 0.25,
-        iso.EVENT_CHANNEL: 5
-    }, sel_track_idx=0)
-
-    control_series = iso.PSeries(start=1, step=2, length=3)
-    dummy_tim.schedule({
-        iso.EVENT_CONTROL: 12,
-        iso.EVENT_VALUE: control_series,
-        iso.EVENT_DURATION: 2,
-        iso.EVENT_CHANNEL: 0
-    }, sel_track_idx=1)
+    # control_series = iso.PSeries(start=1, step=20, length=5)
+    # dummy_tim.schedule({
+    #     iso.EVENT_CONTROL: 0,
+    #     iso.EVENT_VALUE: control_series,
+    #     iso.EVENT_DURATION: 0.25,
+    #     iso.EVENT_CHANNEL: 5
+    # }, sel_track_idx=0)
+    #
+    # control_series = iso.PSeries(start=1, step=2, length=3)
+    # dummy_tim.schedule({
+    #     iso.EVENT_CONTROL: 12,
+    #     iso.EVENT_VALUE: control_series,
+    #     iso.EVENT_DURATION: 2,
+    #     iso.EVENT_CHANNEL: 0
+    # }, sel_track_idx=1)
 
     dummy_tim.run()
     # dummy_timeline.background()

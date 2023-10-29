@@ -210,7 +210,12 @@ class Tracker:
         if self.midi_out_mode == self.MIDI_OUT_DEVICE:
             return None
         if on_exit:
-            self.mid_meta_message(type='end_of_track', time=0)
+            if MULTI_TRACK:
+                for idx in range(len(self.midi_out.miditrack)):
+                    self.mid_meta_message(type='end_of_track', time=0, track_idx=idx)
+            else:
+                self.mid_meta_message(type='end_of_track', time=0)
+
 
         self.midi_out.write()
         target_dir = os.path.dirname(self.filename)
@@ -430,6 +435,12 @@ class Tracker:
                     self.mid_meta_message(msg=msg)
                     print(f"program change {msg=}")
 
+                    if MULTI_TRACK:
+                        for idx in range(len(self.midi_out.miditrack)):
+                            self.mid_meta_message(type='end_of_track', time=0, track_idx=idx)
+                    else:
+                        self.mid_meta_message(type='end_of_track', time=0)
+
                 else:
                     print(f"{msg=}")
                     if msg.type == 'set_tempo':
@@ -584,7 +595,7 @@ class Tracker:
         if MULTI_TRACK:
             self.midi_out.extra_track(9)  # for percussion channel 10 (or 9 when counting from 0).
         return self.timeline.schedule({
-            "action": lambda: self.metro_beat(),
+            "action": lambda track_idx: self.metro_beat(),
             # "duration": 3/2
             # "duration": 4
             "duration": 4 * (self.time_signature['numerator'] / self.time_signature['denominator'])
@@ -771,7 +782,7 @@ class Tracker:
         # print(round(self.patterns_from_file_duration*self.time_signature['denominator']/self.time_signature['numerator']))
         # print(round(self.patterns_from_file_duration*self.time_signature['denominator']/self.time_signature['numerator'])
         #                 * self.time_signature['numerator'] / self.time_signature['denominator'])
-        return self.timeline.schedule({"action": lambda: self.file_beat(),
+        return self.timeline.schedule({"action": lambda track_idx: self.file_beat(),
             iso.EVENT_DURATION: dur
             # "duration": 4 * self.time_signature['numerator'] / self.time_signature['denominator']
             # "quantize": 1
@@ -782,7 +793,7 @@ class Tracker:
         log_call()
         print(f"{self.beat}")
         return self.timeline.schedule({
-            "action": lambda: self.beat(),
+            "action": lambda track_idx: self.beat(),
             # "duration": 4
             "duration": 4 * self.time_signature['numerator'] / self.time_signature['denominator']
             # "quantize": 1
@@ -794,10 +805,12 @@ class Tracker:
         # return None
         if self.midi_out_mode == self.MIDI_OUT_DEVICE:
             return None
+        track_idx = min(kwargs.pop('track_idx', 0), len(self.midi_out.miditrack) - 1)
+
         if not msg:
             msg = mido.MetaMessage(*args, **kwargs)
         if MULTI_TRACK:
-            self.midi_out.miditrack[0].append(msg)
+            self.midi_out.miditrack[track_idx].append(msg)
         else:
             self.midi_out.miditrack.append(msg)
 
@@ -866,8 +879,8 @@ class Tracker:
             self.midi_out.miditrack.append(mido.Message('program_change', program=int(program), channel=int(channel)))
         self.current_program = program
 
-    def write_mid_text_meta(self, message):
-        self.mid_meta_message(type='text', text=message, time=0)
+    def write_mid_text_meta(self, message, track_idx=0):
+        self.mid_meta_message(type='text', text=message, time=0, track_idx=track_idx)
 
     def meta_key_scale(self, key, scale):
         log_call()
