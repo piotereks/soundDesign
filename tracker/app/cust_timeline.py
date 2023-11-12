@@ -53,7 +53,7 @@ class CustTimeline(Timeline):
                                      new Track, this updates the parameters of an existing track with the same name.
             track_index (int):       When specified, inserts the Track at the given index.
                                      This can be used to set the priority of an event and ensure that it happens
-                                     before another Track is evaluted, used in (e.g.) Track.update().
+                                     before another Track is evaluated, used in (e.g.) Track.update().
 
         Returns:
             The new `Track` object.
