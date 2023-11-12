@@ -77,15 +77,15 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
         print(timeline, text)
 
     def read(self, quantize=None):
-        def create_lam_function(messages, track_idx = 0):
+        def create_lam_function(tgt_dict, messages, track_idx = 0):
             lam_function = partial(self.print_obj, objects=messages, track_idx=track_idx)
             # lam_function = partial(self.print_obj, objects=None)
-            action_dict[EVENT_ACTION].append(lam_function)
+            tgt_dict[EVENT_ACTION].append(lam_function)
             if isinstance(messages, Iterable):
                 msg_loc = messages[0].location
             else:
                 msg_loc = messages.location
-            action_dict[EVENT_TIME].append(msg_loc)
+            tgt_dict[EVENT_TIME].append(msg_loc)
 
         midi_reader = mido.MidiFile(self.filename)
         # log.info("Loading MIDI data from %s, ticks per beat = %d" % (self.filename, midi_reader.ticks_per_beat))
@@ -204,6 +204,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
             # ------------------------------------------------------------------------
             notes_by_time = {}
             action_by_time = {}
+            non_meta_by_time = {}
             for note in notes:
                 if isinstance(note,  MidiNote):
                     if not note.duration:
@@ -216,11 +217,16 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                         notes_by_time[location].append(note)
                     else:
                         notes_by_time[location] = [note]
-                else:
+                elif getattr(note, 'is_meta', False):
                     if location in action_by_time:
                         action_by_time[location].append(note)
                     else:
                         action_by_time[location] = [note]
+                else:
+                    if location in non_meta_by_time:
+                        non_meta_by_time[location].append(note)
+                    else:
+                        non_meta_by_time[location] = [note]
 
             note_dict = {
                 # EVENT_ACTION: [],
@@ -236,11 +242,37 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                 EVENT_TIME: [],
                 EVENT_DURATION: []
             }
+
+            non_meta_dict = {
+                EVENT_ACTION: [],
+                EVENT_TIME: [],
+                EVENT_DURATION: []
+            }
             # ------------------------------------------------------------------------
             # Next, iterate through groups of notes chronologically, figuring out
             # appropriate parameters for duration (eg, inter-note distance) and
             # gate (eg, proportion of distance note extends across).
             # ------------------------------------------------------------------------
+            non_meta_times = sorted(non_meta_by_time.keys())
+            for i, t in enumerate(non_meta_times):
+                t = non_meta_times[i]
+                notes = non_meta_by_time[t]
+                if i < len(non_meta_times) - 1:
+                    next_time = non_meta_times[i + 1]
+                else:
+                    next_time = t + max([note.duration for note in notes if hasattr(note, 'duration')] or [1.0])
+
+                time_until_next_note = next_time - t
+                # action_dict[EVENT_DURATION].append(time_until_next_note)
+                if len(notes) > 1:
+                    # note_dict[EVENT_ACTION].append(tuple(lambda: print(type(note)) for note in notes if not hasattr(note, 'duration')))
+                    messages = tuple(note for note in notes)
+                    create_lam_function(non_meta_dict, messages, track_idx)
+                else:
+                    # if time_until_next_note:
+                    note = notes[0]
+                    create_lam_function(non_meta_dict, note, track_idx)
+
             action_times = sorted(action_by_time.keys())
             for i, t in enumerate(action_times):
                 t = action_times[i]
@@ -255,11 +287,11 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                 if len(notes) > 1:
                     # note_dict[EVENT_ACTION].append(tuple(lambda: print(type(note)) for note in notes if not hasattr(note, 'duration')))
                     messages = tuple(note for note in notes)
-                    create_lam_function(messages, track_idx)
+                    create_lam_function(action_dict, messages, track_idx)
                 else:
                     # if time_until_next_note:
                     note = notes[0]
-                    create_lam_function(note, track_idx)
+                    create_lam_function(action_dict, note, track_idx)
 
             times = sorted(notes_by_time.keys())
             for i, t in enumerate(times):
@@ -340,15 +372,32 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                 else:
                     action_dict.pop(key, None)
 
-            if bool(action_dict):
-                # action_dict[iso.EVENT_CHANNEL] = channel_calc
-                action_dict[iso.EVENT_ACTION_ARGS] = {"track_idx": track_idx}
-                tracks_note_dict.append(action_dict)
+            #  recalculate EVENT_TIME -> EVENT_DURATION
+            time_list = non_meta_dict.pop(EVENT_TIME, None)
+            if time_list:
+                non_meta_dict[EVENT_DURATION] = [dur - time_list[i] for (i, dur) in enumerate(time_list[1:])] + [1.0]
+
+            for key, value in non_meta_dict.copy().items():
+                if len(value) != 0:
+                    non_meta_dict[key] = PSequence(value, repeats=1)
+                else:
+                    non_meta_dict.pop(key, None)
+
+
                 # channel_calc += 1
+
+            if bool(non_meta_dict):
+                non_meta_dict[iso.EVENT_ACTION_ARGS] = {"track_idx": track_idx}
+                tracks_note_dict.append(non_meta_dict)
+
             if bool(note_dict):
                 note_dict[iso.EVENT_ACTION_ARGS] = {"track_idx": track_idx}
                 tracks_note_dict.append(note_dict)
 
+            if bool(action_dict):
+                # action_dict[iso.EVENT_CHANNEL] = channel_calc
+                action_dict[iso.EVENT_ACTION_ARGS] = {"track_idx": track_idx}
+                tracks_note_dict.append(action_dict)
 
 
 

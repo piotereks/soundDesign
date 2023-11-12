@@ -362,8 +362,8 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
     dummy_tim.schedule(pgm2, sel_track_idx=1)
     dummy_tim.schedule(events2, sel_track_idx=1)
     # dummy_tim.schedule(dummy_events, sel_track_idx=0)
+    dummy_tim.schedule(events_action, sel_track_idx=0)
 
-    dummy_tim.schedule(events_action)
 
 
     # control_series = iso.PSeries(start=1, step=20, length=5)
