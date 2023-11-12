@@ -937,6 +937,7 @@ class Tracker:
     def tstart(self):
         log_call()
         self.timeline.background()
+        # self.timeline.run()
         # self.mid_file_start()
 
         # @log_and_schedule

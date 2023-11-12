@@ -1,9 +1,11 @@
 import math
 import copy
 
+import isobar
 # import isobar
 from isobar import Timeline, Track, PSequence, PDict
-from isobar.constants import EVENT_TIME, EVENT_ACTION, EVENT_ACTION_ARGS, INTERPOLATION_NONE
+from isobar.constants import (EVENT_TIME, EVENT_ACTION, EVENT_ACTION_ARGS, INTERPOLATION_NONE,
+                              EVENT_DURATION)
 from isobar.io import MidiOutputDevice
 from isobar.exceptions import TrackLimitReachedException
 from functools import partial
@@ -16,7 +18,7 @@ log = logging.getLogger(__name__)
 class CustTimeline(Timeline):
 
     def schedule(self,
-                 params=None,
+                 paramsx=None,
                  quantize=None,
                  delay=0,
                  count=None,
@@ -65,12 +67,55 @@ class CustTimeline(Timeline):
         # --------------------------------------------------------------------------------
         # Take a copy of params to avoid modifying the original
         # --------------------------------------------------------------------------------
-        if not isinstance(params, list):
-            params_list = [params]
+        if not isinstance(paramsx, list):
+            params_list = [paramsx]
         else:
-            params_list = params
+            params_list = paramsx
         tracks_list = []
+        params_list2 = []
         for params in params_list:
+            action_fun = params.get(EVENT_ACTION, None)
+            event_args = params.get(EVENT_ACTION_ARGS, {})
+            if action_fun and isinstance(action_fun, Iterable):
+                attributes = vars(action_fun)
+                # Get the attributes used by the class constructor
+                constructor_attributes = list(PSequence.__init__.__code__.co_varnames[1:])
+
+                # Filter the modified attributes to include only those used by the constructor
+                attributes = {k: v for k, v in attributes.copy().items() if
+                              k in constructor_attributes}
+                attributes2 = {k: v for k, v in attributes.copy().items() if
+                              k in constructor_attributes}
+                action_fun2 = [f for f in action_fun.copy()][0:1]
+                attributes2['sequence'] = action_fun2
+                action_fun2 = PSequence(**attributes2)
+                params2 = params.copy()
+                params2[EVENT_ACTION] = action_fun2
+                if event_args:
+                    params2[EVENT_ACTION_ARGS] = event_args
+                dur2 = params2.pop(EVENT_DURATION, None)
+                if dur2:
+                    params2[EVENT_DURATION] = PSequence(list(dur2)[0:1], repeats=1)
+                params_list2.append(params2)
+
+                action_fun = [f for f in action_fun]
+                # action_fun = [lambda x: print(None)] + [f for f in action_fun][1:]
+                attributes['sequence'] = action_fun
+                # attributes[EVENT_DURATION] = action_fun
+                # action_fun = PSequence(action_fun, repeats=1)
+                action_fun = PSequence(**attributes)
+                params[EVENT_ACTION] = action_fun
+                # if event_args:
+                params[EVENT_ACTION_ARGS] = event_args
+            elif action_fun:
+                params[EVENT_ACTION] = action_fun
+                # if event_args:
+                params[EVENT_ACTION_ARGS] = event_args
+
+            params_list2.append(params)
+        params_list = copy.copy(params_list2)
+        for params in params_list:
+        # for params in params_list2:
             if isinstance(params, PDict):
                 params = dict(params)
             # params = copy.copy(params)

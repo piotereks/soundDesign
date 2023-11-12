@@ -34,13 +34,39 @@ class CustTrack(Track):
         else:
             track_idx = 0
 
-        for n, note in enumerate(self.note_offs[:]):
+        # action_dur = []
+        # if self.event_stream.dict.get('action', None):
+        #     action_dur = self.event_stream.dict.get('duration', [])
+        #
+        #     # action_dur = []
+        #     if bool(action_dur):
+        #         pass
+                # action_dur = [[x, 0, 0, 0] for x in action_dur.copy()]
+                # print(action_dur)
+        # else:
+        #     # pass
+        #     action_dur = []
+
+        # if action_dur:
+        #     # action_dur = [ [x, 0, 0, 0] for x in action_dur.copy() ]
+        #     # mixed_list = [item for sublist in zip(numbers, [0] * len(numbers)) for item in sublist]
+        #     # [a for x in [1, 2, 3] for a in (x, 0)]
+        #     pass
+            # action_dur = []
+
+        # for n, note in enumerate(self.note_offs[:] or action_dur):
+        for n, note in enumerate(self.note_offs[:] ):
             # TODO: Use a MidiNote object to represent these note_off events
+            # try:
             if round(note[0], 8) <= round(self.current_time, 8):
                 index = note[1]
                 channel = note[2]
                 self.output_device.note_off(index, channel, track_idx=track_idx)
+                # if self.note_offs:
                 self.note_offs.remove(note)
+            # except Exception as e:
+            #     x = 1
+
 
         try:
             if self.interpolate is INTERPOLATION_NONE:
