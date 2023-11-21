@@ -28,7 +28,8 @@ if MULTI_TRACK:
 
         def extra_track(self, channel=None):
             if channel:
-                if not [x for x in self.channel_track if x == channel]:
+                # if not [x for x in self.channel_track if x == channel]:
+                if channel not in self.channel_track:
                     track = mido.MidiTrack()
                     self.miditrack.append(track)
                     self.midifile.tracks.append(track)

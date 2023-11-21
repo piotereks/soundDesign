@@ -67,6 +67,11 @@ iso.MidiFileInputDevice.print_obj = CustMidiFileInputDevice.print_obj  #  this c
 
 iso.timeline.event.Event.__init__ = CustEvent.__init__
 
+iso.timeline.Timeline.__init__ = CustTimeline.__init__
+iso.timeline.Timeline.schedule = CustTimeline.schedule
+iso.timeline.Timeline.tick = CustTimeline.tick
+iso.timeline.Timeline.run = CustTimeline.run
+
 
 # wrong semitones
 del iso.Scale.minor

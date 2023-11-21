@@ -400,16 +400,19 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
     #     iso.EVENT_DURATION: 2,
     #     iso.EVENT_CHANNEL: 0
     # }, sel_track_idx=1)
-
+    # if isinstance(dummy_tim.tracks, list):
+    #     dummy_tim.tracks = [item for sublist in dummy_tim.tracks for item in
+    #                    (sublist if isinstance(sublist, list) else [sublist])]
     dummy_tim.run()
     # dummy_timeline.background()
-    # return
     dummy_tim.output_device.write()
+    # return
+
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
     print(dummy_tim.output_devices[0].filename)
     print_mid(dummy_tim.output_devices[0].filename)
 
-    # return
+    return
     print('-'*20, 'second_timeline')
     dummy_tim2 = dummy_timeline2
     # file = os.path.join('..', '..', 'checks', 'example_midi', 'Var_tempo_1_trk_sax.mid')

@@ -1,24 +1,76 @@
-import math
 import copy
-
-import isobar
-# import isobar
-from isobar import Timeline, Track, PSequence, PDict
-from isobar.constants import (EVENT_TIME, EVENT_ACTION, EVENT_ACTION_ARGS, INTERPOLATION_NONE,
-                              EVENT_DURATION)
-from isobar.io import MidiOutputDevice
-from isobar.exceptions import TrackLimitReachedException
-from functools import partial
-from collections.abc import Iterable
 import logging
+import math
+from collections.abc import Iterable
+from dataclasses import dataclass
+from typing import Callable
+from itertools import chain
+
+from isobar import Timeline, Track, PSequence, Clock, Key, Scale
+# from isobar.constants import (EVENT_ACTION, EVENT_ACTION_ARGS, INTERPOLATION_NONE,
+#                               EVENT_DURATION, DEFAULT_TEMPO,DEFAULT_TICKS_PER_BEAT)
+from isobar.constants import *
+from isobar.exceptions import TrackLimitReachedException
+from isobar.io import MidiOutputDevice
 
 log = logging.getLogger(__name__)
+class EventDefaults:
+    def __init__(self):
+        default_values = {
+            EVENT_ACTIVE: True,
+            EVENT_CHANNEL: DEFAULT_EVENT_CHANNEL,
+            EVENT_DURATION: DEFAULT_EVENT_DURATION,
+            EVENT_GATE: DEFAULT_EVENT_GATE,
+            EVENT_AMPLITUDE: DEFAULT_EVENT_AMPLITUDE,
+            EVENT_OCTAVE: DEFAULT_EVENT_OCTAVE,
+            EVENT_TRANSPOSE: DEFAULT_EVENT_TRANSPOSE,
+            EVENT_KEY: Key("C", Scale.default),
+            EVENT_QUANTIZE: DEFAULT_EVENT_QUANTIZE
+        }
+        for key, value in default_values.items():
+            setattr(self, key, value)
+# @dataclass
+# class Action:
+#     time: float
+#     function: Callable
+class CustTimeline():
+    def __init__(self,
+                 tempo=DEFAULT_TEMPO,
+                 output_device=None,
+                 clock_source=None,
+                 ticks_per_beat=DEFAULT_TICKS_PER_BEAT):
+        """ Expect to receive one tick per beat, generate events at 120bpm """
+        self._clock_source = None
+        if clock_source is None:
+            clock_source = Clock(self, tempo, ticks_per_beat)
+        self.set_clock_source(clock_source)
+
+        self.output_devices = []
+        self.clock_multipliers = {}
+        if output_device:
+            self.add_output_device(output_device)
+
+        self.current_time = 0
+        self.max_tracks = 0
+        self.tracks = []
+
+        self.thread = None
+        self.stop_when_done = False
+        self.events = []
+        self.running = False
+        self.ignore_exceptions = False
+
+        self.defaults = EventDefaults()
+
+        # --------------------------------------------------------------------------------
+        # Optional callback to trigger each time an event is performed.
+        # --------------------------------------------------------------------------------
+        self.on_event_callback = None
 
 
-class CustTimeline(Timeline):
 
     def schedule(self,
-                 paramsx=None,
+                 params=None,
                  quantize=None,
                  delay=0,
                  count=None,
@@ -33,10 +85,10 @@ class CustTimeline(Timeline):
         Schedule a new track within this Timeline.
 
         Args:
-            params (dict):           Event dictionary. Keys are generally EVENT_* values, defined in constants.py.
-                                     If params is None, a new empty Track will be scheduled and returned.
+            param (dict):           Event dictionary. Keys are generally EVENT_* values, defined in constants.py.
+                                     If param is None, a new empty Track will be scheduled and returned.
                                      This can be updated with Track.update().
-                                     params can alternatively be a Pattern that generates a dict output.
+                                     param can alternatively be a Pattern that generates a dict output.
             name (str):              Optional name for the track.
             quantize (float):        Quantize level, in beats. For example, 1.0 will begin executing the
                                      events on the next whole beats.
@@ -65,110 +117,153 @@ class CustTimeline(Timeline):
         """
 
         # --------------------------------------------------------------------------------
-        # Take a copy of params to avoid modifying the original
+        # Take a copy of param to avoid modifying the original
         # --------------------------------------------------------------------------------
-        if not isinstance(paramsx, list):
-            params_list = [paramsx]
+        if not isinstance(params, list):
+            params_list = [params]
         else:
-            params_list = paramsx
+            params_list = params
         tracks_list = []
         params_list2 = []
-        for params in params_list:
-            action_fun = params.get(EVENT_ACTION, None)
-            event_args = params.get(EVENT_ACTION_ARGS, {})
+        for param in params_list:
+            print(param)
+            if EVENT_DURATION in param:
+                print(f"-5.{list(param[EVENT_DURATION])=}")
+                print(param)
+
+            action_fun = param.get(EVENT_ACTION, None)
+            event_args = param.get(EVENT_ACTION_ARGS, {})
             if action_fun and isinstance(action_fun, Iterable):
-                attributes = vars(action_fun)
+                attributes1 = vars(action_fun)
                 # Get the attributes used by the class constructor
                 constructor_attributes = list(PSequence.__init__.__code__.co_varnames[1:])
 
                 # Filter the modified attributes to include only those used by the constructor
-                attributes = {k: v for k, v in attributes.copy().items() if
+                attributes = {k: v for k, v in attributes1.copy().items() if
                               k in constructor_attributes}
-                attributes2 = {k: v for k, v in attributes.copy().items() if
+                attributes2 = {k: v for k, v in attributes1.copy().items() if
                               k in constructor_attributes}
-                action_fun2 = [f for f in action_fun.copy()][0:1]
+                action_fun2 = [f for f in copy.copy(action_fun)][0:1]
                 attributes2['sequence'] = action_fun2
                 action_fun2 = PSequence(**attributes2)
-                params2 = params.copy()
+                params2 = copy.copy(param)
                 params2[EVENT_ACTION] = action_fun2
+                if EVENT_DURATION in param:
+                    print(f"-4.{list(param[EVENT_DURATION])=}")
+                    print(param)
                 if event_args:
                     params2[EVENT_ACTION_ARGS] = event_args
-                dur2 = params2.pop(EVENT_DURATION, None)
+                print(f"{params2=}")
+                dur2 = list(params2.pop(EVENT_DURATION, None))
+                print(f"{params2=} {dur2=}")
+                if EVENT_DURATION in param:
+                    print(f"-3.{list(param[EVENT_DURATION])=}")
+                    print(param)
+                # print(f"before dur2 {dur2=} {bool(dur2)=}")
                 if dur2:
-                    params2[EVENT_DURATION] = PSequence(list(dur2)[0:1], repeats=1)
+                    params2[EVENT_DURATION] = PSequence(dur2[0:1], repeats=1)
                 params_list2.append(params2)
-
-                action_fun = [f for f in action_fun]
-                # action_fun = [lambda x: print(None)] + [f for f in action_fun][1:]
+                print(f"{params_list2=}")
+                if EVENT_DURATION in param:
+                    print(f"-2.{list(param[EVENT_DURATION])=}")
+                    print(param)
+                action_fun = [f for f in action_fun][1:]
+                # action_fun = [lambda *args, **kwargs: None] + [f for f in action_fun][1:]
+                # action_fun = [f for f in action_fun]
                 attributes['sequence'] = action_fun
                 # attributes[EVENT_DURATION] = action_fun
                 # action_fun = PSequence(action_fun, repeats=1)
                 action_fun = PSequence(**attributes)
-                params[EVENT_ACTION] = action_fun
-                # if event_args:
-                params[EVENT_ACTION_ARGS] = event_args
+                param[EVENT_ACTION] = action_fun
+                if event_args:
+                    param[EVENT_ACTION_ARGS] = event_args
+
+                if EVENT_DURATION in param:
+                    print(f"-1.{list(param[EVENT_DURATION])=}")
+                    print(param)
+                dur = list(param.pop(EVENT_DURATION, None))
+                print(f"-1.5.{dur=}")
+                if EVENT_DURATION in param:
+                    print(f"1.{list(param[EVENT_DURATION])=} {dur=}")
+                    print(param)
+                print("after 1")
+                if dur:
+                    param["delay"] = dur[0]
+                    param[EVENT_DURATION] = PSequence(dur[1:], repeats=1)
+                    print("after 1-2")
+                print("after 2")
+                    # param[EVENT_DURATION] = PSequence(list(dur), repeats=1)
+                if EVENT_DURATION in param:
+                    print(f"2.{list(param[EVENT_DURATION])=} {dur=}")
+                    print(param)
+                    print("after 2-3")
+                print("after 3")
             elif action_fun:
-                params[EVENT_ACTION] = action_fun
+                param[EVENT_ACTION] = action_fun
                 # if event_args:
-                params[EVENT_ACTION_ARGS] = event_args
+                param[EVENT_ACTION_ARGS] = event_args
 
-            params_list2.append(params)
-        params_list = copy.copy(params_list2)
-        for params in params_list:
-        # for params in params_list2:
-            if isinstance(params, PDict):
-                params = dict(params)
-            # params = copy.copy(params)
-            action_fun = params.pop(EVENT_ACTION, None)
-            event_args = params.get(EVENT_ACTION_ARGS, {})
-            if bool(event_args):
-                track_idx = event_args.get('track_idx')
+            params_list2.append(param)
+            print(f"{params_list2=}")
+        # params_list = copy.copy(params_list2)
+        # for param in params_list:
+        # # for param in params_list2:
+        #     if isinstance(param, PDict):
+        #         param = dict(param)
+        #     # param = copy.copy(param)
+        #     action_fun = param.pop(EVENT_ACTION, None)
+        #     event_args = param.get(EVENT_ACTION_ARGS, {})
+        #     if bool(event_args):
+        #         track_idx = event_args.get('track_idx')
+        #
+        #     if action_fun and isinstance(action_fun, Iterable):
+        #         attributes = vars(action_fun)
+        #         # Get the attributes used by the class constructor
+        #         constructor_attributes = list(PSequence.__init__.__code__.co_varnames[1:])
+        #
+        #         # Filter the modified attributes to include only those used by the constructor
+        #         attributes = {k: v for k, v in attributes1.copy().items() if
+        #                       k in constructor_attributes}
+        #         action_fun = [partial(f, self) if isinstance(f, partial) else f for f in action_fun]
+        #         attributes['sequence'] = action_fun
+        #         # action_fun = PSequence(action_fun, repeats=1)
+        #         action_fun = PSequence(**attributes)
+        #         param[EVENT_ACTION] = action_fun
+        #         param[EVENT_ACTION_ARGS] = event_args
+        #     elif action_fun:
+        #         param[EVENT_ACTION] = action_fun
+        #         param[EVENT_ACTION_ARGS] = event_args
+            # param = PDict(param)
 
-            if action_fun and isinstance(action_fun, Iterable):
-                attributes = vars(action_fun)
-                # Get the attributes used by the class constructor
-                constructor_attributes = list(PSequence.__init__.__code__.co_varnames[1:])
 
-                # Filter the modified attributes to include only those used by the constructor
-                attributes = {k: v for k, v in attributes.copy().items() if
-                              k in constructor_attributes}
-                action_fun = [partial(f, self) if isinstance(f, partial) else f for f in action_fun]
-                attributes['sequence'] = action_fun
-                # action_fun = PSequence(action_fun, repeats=1)
-                action_fun = PSequence(**attributes)
-                params[EVENT_ACTION] = action_fun
-                params[EVENT_ACTION_ARGS] = event_args
-            elif action_fun:
-                params[EVENT_ACTION] = action_fun
-                params[EVENT_ACTION_ARGS] = event_args
-            # params = PDict(params)
+        print(params_list2)
+        if not output_device:
+            # --------------------------------------------------------------------------------
+            # If no output device exists, send to the system default MIDI output.
+            # --------------------------------------------------------------------------------
+            if not self.output_devices:
+                self.add_output_device(MidiOutputDevice())
+            output_device = self.output_devices[0]
 
-
-
-            if not output_device:
-                # --------------------------------------------------------------------------------
-                # If no output device exists, send to the system default MIDI output.
-                # --------------------------------------------------------------------------------
-                if not self.output_devices:
-                    self.add_output_device(MidiOutputDevice())
-                output_device = self.output_devices[0]
 
             # --------------------------------------------------------------------------------
-            # If replace=True is specified, updated the params of any existing track
+            # If replace=True is specified, updated the param of any existing track
             # with the same name. If none exists, proceed to create it as usual.
             # --------------------------------------------------------------------------------
+        for param in params_list2:
+            extra_delay = param.pop("delay", None)
             if replace:
                 if name is None:
                     raise ValueError("Must specify a track name if `replace` is specified")
                 for existing_track in self.tracks:
                     if existing_track.name == name:
-                        existing_track.update(params, quantize=quantize)
+                        existing_track.update(param, quantize=quantize)
                         return
 
             if self.max_tracks and len(self.tracks) >= self.max_tracks:
                 raise TrackLimitReachedException("Timeline: Refusing to schedule track (hit limit of %d)" % self.max_tracks)
 
-            def add_track(track):
+            def start_track(track):
                 # --------------------------------------------------------------------------------
                 # Add a new track.
                 # --------------------------------------------------------------------------------
@@ -180,18 +275,18 @@ class CustTimeline(Timeline):
 
             if not bool(event_args):
                 event_args = {"track_idx": sel_track_idx if sel_track_idx is not None else len(self.tracks)}
-            if not bool(params.get(EVENT_ACTION_ARGS, {})):
-                params[EVENT_ACTION_ARGS] = event_args
+            if not bool(param.get(EVENT_ACTION_ARGS, {})):
+                param[EVENT_ACTION_ARGS] = event_args
 
-            if isinstance(params, Track):
-                track = params
+            if isinstance(param, Track):
+                track = param
                 track.reset()
             else:
                 # --------------------------------------------------------------------------------
-                # Take a copy of params to avoid modifying the original
+                # Take a copy of param to avoid modifying the original
                 # --------------------------------------------------------------------------------
                 track = Track(self,
-                              events=copy.copy(params),
+                              copy.copy(param),
                               max_event_count=count,
                               interpolate=interpolate,
                               output_device=output_device,
@@ -201,19 +296,26 @@ class CustTimeline(Timeline):
 
             if quantize is None:
                 quantize = self.defaults.quantize
+            # if quantize or delay or extra_delay:
             if quantize or delay:
                 # --------------------------------------------------------------------------------
                 # We don't want to begin events right away -- either wait till
                 # the next beat boundary (quantize), or delay a number of beats.
                 # --------------------------------------------------------------------------------
-                self._schedule_action(function=lambda: add_track(track),
-                                      quantize=quantize,
-                                      delay=delay)
+                scheduled_time = self.current_time
+                if quantize:
+                    scheduled_time = quantize * math.ceil(float(self.current_time) / quantize)
+                # scheduled_time += delay or extra_delay
+                scheduled_time += delay
+                self.events.append({
+                    EVENT_TIME: scheduled_time,
+                    EVENT_ACTION: lambda t = track: start_track(t)
+                })
             else:
                 # --------------------------------------------------------------------------------
                 # Begin events on this track right away.
                 # --------------------------------------------------------------------------------
-                add_track(track)
+                start_track(track)
 
         if len(tracks_list) > 1:
             track = tracks_list
@@ -225,4 +327,114 @@ class CustTimeline(Timeline):
         return track
 
 
-Timeline.schedule = CustTimeline.schedule
+    def tick(self):
+        """
+        Called once every tick to trigger new events.
+
+        Raises:
+            StopIteration: If `stop_when_done` is true and no more events are scheduled.
+        """
+        #--------------------------------------------------------------------------------
+        # Each time we arrive at precisely a new beat, generate a debug msg.
+        # Round to several decimal places to avoid 7.999999999 syndrome.
+        # http://docs.python.org/tutorial/floatingpoint.html
+        #--------------------------------------------------------------------------------
+
+        if round(self.current_time, 8) % 1 == 0:
+            log.debug("--------------------------------------------------------------------------------")
+            log.debug("Tick (%d active tracks, %d pending events)" % (len(self.tracks), len(self.events)))
+
+        #--------------------------------------------------------------------------------
+        # Copy self.events because removing from it whilst using it = bad idea.
+        # Perform events before tracks are executed because an event might
+        # include scheduling a quantized track, which should then be
+        # immediately evaluated.
+        #--------------------------------------------------------------------------------
+        for event in self.events[:]:
+            #--------------------------------------------------------------------------------
+            # The only event we currently get in a Timeline are add_track events
+            #  -- which have a function object associated with them.
+            #
+            # Round to work around rounding errors.
+            # http://docs.python.org/tutorial/floatingpoint.html
+            #--------------------------------------------------------------------------------
+            if round(event[EVENT_TIME], 8) <= round(self.current_time, 8):
+                event[EVENT_ACTION]()
+                self.events.remove(event)
+
+        #--------------------------------------------------------------------------------
+        # Copy self.tracks because removing from it whilst using it = bad idea
+        #--------------------------------------------------------------------------------
+        # print(f"before:{self.tracks}")
+        # if isinstance(self.tracks, list):
+        #     self.tracks = [item for sublist in self.tracks for item in (sublist if isinstance(sublist, list) else [sublist])]
+        # print(f"after:{self.tracks}")
+        for track in self.tracks[:]:
+            try:
+                track.tick()
+            except Exception as e:
+                if self.ignore_exceptions:
+                    print("*** Exception in track: %s" % e)
+                else:
+                    raise
+            if track.is_finished and track.remove_when_done:
+                self.tracks.remove(track)
+                log.info("Timeline: Track finished, removing from scheduler (total tracks: %d)" % len(self.tracks))
+
+        #--------------------------------------------------------------------------------
+        # If we've run out of notes, raise a StopIteration.
+        #--------------------------------------------------------------------------------
+        if len(self.tracks) == 0 and len(self.events) == 0 and self.stop_when_done:
+            # TODO: Don't do this if we've never played any events, e.g.
+            #       right after calling timeline.background(). Should at least
+            #       wait for some events to happen first.
+            raise StopIteration
+
+        #--------------------------------------------------------------------------------
+        # Tell our output devices to move forward a step.
+        #--------------------------------------------------------------------------------
+        for device in self.output_devices:
+            clock_multiplier = self.clock_multipliers[device]
+            ticks = next(clock_multiplier)
+
+            for tick in range(ticks):
+                device.tick()
+
+        #--------------------------------------------------------------------------------
+        # Increment beat count according to our current tick_length.
+        #--------------------------------------------------------------------------------
+        self.current_time += self.tick_duration
+        pass
+
+    def run(self, stop_when_done=None):
+        """ Run this Timeline in the foreground.
+
+        If stop_when_done is set, returns when no tracks are currently
+        scheduled; otherwise, keeps running indefinitely. """
+
+        self.start()
+
+        if stop_when_done is not None:
+            self.stop_when_done = stop_when_done
+
+        try:
+            #--------------------------------------------------------------------------------
+            # Start the clock. This might internal (eg a Clock object, running on
+            # an independent thread), or external (eg a MIDI clock).
+            #--------------------------------------------------------------------------------
+            for device in self.output_devices:
+                device.start()
+            self.running = True
+            self.clock_source.run()
+
+        except StopIteration:
+            #--------------------------------------------------------------------------------
+            # This will be hit if every Pattern in a timeline is exhausted.
+            #--------------------------------------------------------------------------------
+            log.info("Timeline: Finished")
+            self.running = False
+
+        except Exception as e:
+            print((" *** Exception in Timeline thread: %s" % e))
+            if not self.ignore_exceptions:
+                raise e
