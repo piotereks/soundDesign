@@ -177,8 +177,11 @@ class CustTrack(Track):
                     # without validation.
                     #------------------------------------------------------------------------
                     pass
-
-                event.action(**event.args)
+                # with snoop(watch_expand=('event.action')):
+                # with snoop(level=2):
+                with snoop:
+                    snoop.pp(event.action)
+                    event.action(**event.args)
             except StopIteration:
                 raise StopIteration()
             except Exception as e:

@@ -1,20 +1,13 @@
 # import os
-from queue import Queue
 import shutil
 from datetime import datetime
 from itertools import accumulate
-from functools import wraps
-import copy
-
-import isobar
-import mido
-from .mido_fixes import *
+from queue import Queue
 
 from .isobar_fixes import *
-from .patterns import *
 from .log_call import *
 from .midi_dev import *
-
+from .patterns import *
 
 NO_MIDI_OUT = mido.get_output_names() == []
 ACCENT_BIG_FACTOR = 1.5
@@ -23,6 +16,7 @@ ACCENT_DEFAULT = 45
 ACCENT_BIG = int(ACCENT_DEFAULT * ACCENT_BIG_FACTOR)
 ACCENT_MED = int(ACCENT_DEFAULT * ACCENT_MED_FACTOR)
 
+snoop.install(enabled=False)
 
 class Tracker:
     # <editor-fold desc="Class init functions">

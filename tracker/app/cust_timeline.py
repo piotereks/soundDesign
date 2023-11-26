@@ -2,11 +2,10 @@ import copy
 import logging
 import math
 from collections.abc import Iterable
-from dataclasses import dataclass
-from typing import Callable
-from itertools import chain
+from functools import partial
 
-from isobar import Timeline, Track, PSequence, Clock, Key, Scale
+import snoop
+from isobar import Track, PSequence, Clock, Key, Scale
 # from isobar.constants import (EVENT_ACTION, EVENT_ACTION_ARGS, INTERPOLATION_NONE,
 #                               EVENT_DURATION, DEFAULT_TEMPO,DEFAULT_TICKS_PER_BEAT)
 from isobar.constants import *
@@ -67,8 +66,8 @@ class CustTimeline():
         # --------------------------------------------------------------------------------
         self.on_event_callback = None
 
-
-
+    # @pysnooper.snoop(output='output.log', watch=('self.tracks'))
+    # @snoop( watch=('self.tracks'))
     def schedule(self,
                  params=None,
                  quantize=None,
@@ -126,11 +125,11 @@ class CustTimeline():
         tracks_list = []
         params_list2 = []
         for param in params_list:
+            # with snoop:
+            #     x = self.tracks
             print(param)
-            if EVENT_DURATION in param:
-                print(f"-5.{list(param[EVENT_DURATION])=}")
-                print(param)
-
+            if not isinstance(param, dict):
+                param = dict(param)
             action_fun = param.get(EVENT_ACTION, None)
             event_args = param.get(EVENT_ACTION_ARGS, {})
             if action_fun and isinstance(action_fun, Iterable):
@@ -143,31 +142,30 @@ class CustTimeline():
                               k in constructor_attributes}
                 attributes2 = {k: v for k, v in attributes1.copy().items() if
                               k in constructor_attributes}
-                action_fun2 = [f for f in copy.copy(action_fun)][0:1]
+                # action_fun2 = [f for f in copy.copy(action_fun)][0:1]
+                # action_fun2 = [f for f in copy.copy(action_fun)]
+                action_fun2 = [partial(f, self) if isinstance(f, partial) else f for f in copy.copy(action_fun)][0:1]
                 attributes2['sequence'] = action_fun2
                 action_fun2 = PSequence(**attributes2)
                 params2 = copy.copy(param)
                 params2[EVENT_ACTION] = action_fun2
-                if EVENT_DURATION in param:
-                    print(f"-4.{list(param[EVENT_DURATION])=}")
-                    print(param)
+                #         action_fun = [partial(f, self) if isinstance(f, partial) else f for f in action_fun]
+                #         attributes['sequence'] = action_fun
+                #         # action_fun = PSequence(action_fun, repeats=1)
+                #         action_fun = PSequence(**attributes)
                 if event_args:
                     params2[EVENT_ACTION_ARGS] = event_args
-                print(f"{params2=}")
                 dur2 = list(params2.pop(EVENT_DURATION, None))
-                print(f"{params2=} {dur2=}")
-                if EVENT_DURATION in param:
-                    print(f"-3.{list(param[EVENT_DURATION])=}")
-                    print(param)
+
                 # print(f"before dur2 {dur2=} {bool(dur2)=}")
                 if dur2:
                     params2[EVENT_DURATION] = PSequence(dur2[0:1], repeats=1)
+                    # params2[EVENT_DURATION] = PSequence(dur2, repeats=1)
                 params_list2.append(params2)
-                print(f"{params_list2=}")
-                if EVENT_DURATION in param:
-                    print(f"-2.{list(param[EVENT_DURATION])=}")
-                    print(param)
-                action_fun = [f for f in action_fun][1:]
+
+
+
+                action_fun = [partial(f, self) if isinstance(f, partial) else f for f in copy.copy(action_fun)][1:]
                 # action_fun = [lambda *args, **kwargs: None] + [f for f in action_fun][1:]
                 # action_fun = [f for f in action_fun]
                 attributes['sequence'] = action_fun
@@ -178,33 +176,22 @@ class CustTimeline():
                 if event_args:
                     param[EVENT_ACTION_ARGS] = event_args
 
-                if EVENT_DURATION in param:
-                    print(f"-1.{list(param[EVENT_DURATION])=}")
-                    print(param)
+
                 dur = list(param.pop(EVENT_DURATION, None))
-                print(f"-1.5.{dur=}")
-                if EVENT_DURATION in param:
-                    print(f"1.{list(param[EVENT_DURATION])=} {dur=}")
-                    print(param)
-                print("after 1")
+
+
                 if dur:
                     param["delay"] = dur[0]
                     param[EVENT_DURATION] = PSequence(dur[1:], repeats=1)
-                    print("after 1-2")
-                print("after 2")
+
                     # param[EVENT_DURATION] = PSequence(list(dur), repeats=1)
-                if EVENT_DURATION in param:
-                    print(f"2.{list(param[EVENT_DURATION])=} {dur=}")
-                    print(param)
-                    print("after 2-3")
-                print("after 3")
+
             elif action_fun:
                 param[EVENT_ACTION] = action_fun
                 # if event_args:
                 param[EVENT_ACTION_ARGS] = event_args
 
             params_list2.append(param)
-            print(f"{params_list2=}")
         # params_list = copy.copy(params_list2)
         # for param in params_list:
         # # for param in params_list2:
@@ -296,8 +283,8 @@ class CustTimeline():
 
             if quantize is None:
                 quantize = self.defaults.quantize
-            # if quantize or delay or extra_delay:
-            if quantize or delay:
+            if quantize or delay or extra_delay:
+            # if quantize or delay:
                 # --------------------------------------------------------------------------------
                 # We don't want to begin events right away -- either wait till
                 # the next beat boundary (quantize), or delay a number of beats.
@@ -305,8 +292,8 @@ class CustTimeline():
                 scheduled_time = self.current_time
                 if quantize:
                     scheduled_time = quantize * math.ceil(float(self.current_time) / quantize)
-                # scheduled_time += delay or extra_delay
-                scheduled_time += delay
+                scheduled_time += delay or extra_delay
+                # scheduled_time += delay
                 self.events.append({
                     EVENT_TIME: scheduled_time,
                     EVENT_ACTION: lambda t = track: start_track(t)
@@ -327,6 +314,10 @@ class CustTimeline():
         return track
 
 
+
+    @snoop(watch=('self.current_time','self.current_time/self.tick_duration',
+                  'self.current_event','self.tracks.index(track)'),
+           watch_explode = ('self.tracks','self.output_device.miditrack','self.output_device.miditrack[0]'))
     def tick(self):
         """
         Called once every tick to trigger new events.
@@ -406,6 +397,7 @@ class CustTimeline():
         self.current_time += self.tick_duration
         pass
 
+    # @snoop(depth=2)
     def run(self, stop_when_done=None):
         """ Run this Timeline in the foreground.
 

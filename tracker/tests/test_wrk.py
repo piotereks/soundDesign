@@ -378,11 +378,15 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
 
     dummy_tim.schedule(pgm, sel_track_idx=0)
     dummy_tim.schedule(pgm2, sel_track_idx=1)
+    # with pysnooper.snoop(output='output.log', watch=('self.tracks')):
+    # with pysnooper.snoop(watch_explode=('self.tracks'), output='output.log'):
     dummy_tim.schedule(events_action, sel_track_idx=0)
-
+    snoop.install(enabled=True)
+    snoop.install(out='output.log', overwrite=True)
+    snoop.install(enabled=False)
     dummy_tim.schedule(events, sel_track_idx=0)
     # dummy_tim.schedule(events_none, sel_track_idx=0)
-    # dummy_tim.schedule(events2, sel_track_idx=1)
+    dummy_tim.schedule(events2, sel_track_idx=1)
     # dummy_tim.schedule(dummy_events, sel_track_idx=0)
 
     # control_series = iso.PSeries(start=1, step=20, length=5)
@@ -403,16 +407,19 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
     # if isinstance(dummy_tim.tracks, list):
     #     dummy_tim.tracks = [item for sublist in dummy_tim.tracks for item in
     #                    (sublist if isinstance(sublist, list) else [sublist])]
+    # with pysnooper.snoop(output='output.log'):
+    # with snoop(depth=2):
+    # dummy_tim.tracks = dummy_tim.tracks[-1:]
     dummy_tim.run()
     # dummy_timeline.background()
     dummy_tim.output_device.write()
     # return
-
+    #
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
     print(dummy_tim.output_devices[0].filename)
     print_mid(dummy_tim.output_devices[0].filename)
 
-    return
+    # return
     print('-'*20, 'second_timeline')
     dummy_tim2 = dummy_timeline2
     # file = os.path.join('..', '..', 'checks', 'example_midi', 'Var_tempo_1_trk_sax.mid')
@@ -421,15 +428,20 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
     file_input_device = iso.MidiFileInputDevice(dummy_tim.output_devices[0].filename)
     # file_input_device = iso.MidiFileInputDevice(tmp_filenameX)
     patterns = file_input_device.read()
-    def app_time():
-        dummy_tim2.event_times.append(time.time())
-    dummy_tim2.event_times = []
+    # def app_time():
+    #     dummy_tim2.event_times.append(time.time())
+    # dummy_tim2.event_times = []
+
+    snoop.install(enabled=True)
+    snoop.install(out='output.log', overwrite=True)
+    snoop.install(enabled=False)
 
     flag = True
+
     dummy_tim2.schedule(patterns, remove_when_done=flag)
     # time_ref = time.time()
     dummy_tim2.run()
-    print(dummy_tim2.event_times)
+    # print(dummy_tim2.event_times)
     # time_gap = [(t-time_ref) for t in dummy_timeline2.event_times]
     # time_gap = [(120 / 48) * 1.0 /(t-time_ref) for t in dummy_timeline2.event_times]
     dummy_tim2.output_device.write()
