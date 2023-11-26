@@ -133,6 +133,8 @@ class TrackerGuiApp(App):
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
         self._keyboard.bind(on_key_up=self._on_keyboard_up)
 
+
+
         # Play Button
         self.tracker_ref.set_play_action = lambda: self.set_play_pause_state(
             play_pause_button=self.tracker_ref.midi_mapping['play'])
@@ -157,12 +159,15 @@ class TrackerGuiApp(App):
 
         # Tempo
         self.tracker_ref.set_tempo_action = lambda: self.set_tempo_f_main(None, tempo_knob=self.tracker_ref.midi_mapping['set_tempo_knob'])
-        self.tracker_ref.set_tempo_ui =  self.set_tempo_f_main
+        # self.tracker_ref.set_tempo_ui =  self.set_tempo_f_main
         # self.tracker_ref.set_tempo_val_ui = lambda: self.set_tempo_val_ui(None, tempo_knob=self.tracker_ref.midi_mapping['set_tempo_knob'])
         self.tempo_value = self.parm_tempo
         self.tempo_min = self.parm_tempo_min
         self.tempo_max = self.parm_tempo_max
-
+        # self.tracker_ref.set_tempo_callback =  self.tracker_ref.set_tempo_ui
+        # self.tracker_ref.file_input_device.set_tempo_callback = lambda tempo: print(f"this is tempo for callbackx {tempo=}")
+        self.tracker_ref.file_input_device.set_tempo_callback = lambda tempo: self.set_tempo_f_main(instance=None, tempo=tempo)
+        #
         # Time signature and beat action
         self.tracker_ref.time_sig_beat_val_action \
             = lambda: self.set_time_sig_beat_lbl(self.tracker_ref.time_signature, self.tracker_ref.beat_count+1)
@@ -389,6 +394,7 @@ class TrackerGuiApp(App):
     # </editor-fold>
 
     # <editor-fold desc="Tempo">
+    # @snoop
     def set_tempo_f_main(self, instance, tempo=None, tempo_knob=None):
         log_call()
 

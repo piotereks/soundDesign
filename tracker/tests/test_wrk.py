@@ -305,6 +305,16 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
         # , iso.EVENT_PROGRAM_CHANGE: 0
     }
 
+    events0 = {
+
+        iso.EVENT_NOTE: iso.PSequence(sequence=[(50,51,66), 52, (43, 55, 57, 77)], repeats=1)
+        # iso.EVENT_NOTE: iso.PSequence(sequence=[50, 52], repeats=1)
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[0.5, 1, 1], repeats=1)
+        # , iso.EVENT_DURATION: iso.PSequence(sequence=[1.5, 1.5], repeats=1)
+        , iso.EVENT_CHANNEL: 0
+        # , iso.EVENT_PROGRAM_CHANGE: 0
+    }
+
     events = {
 
         iso.EVENT_NOTE: iso.PSequence(sequence=[50, 52, 55], repeats=1)
@@ -384,7 +394,7 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
     snoop.install(enabled=True)
     snoop.install(out='output.log', overwrite=True)
     snoop.install(enabled=False)
-    dummy_tim.schedule(events, sel_track_idx=0)
+    dummy_tim.schedule(events0, sel_track_idx=0)
     # dummy_tim.schedule(events_none, sel_track_idx=0)
     dummy_tim.schedule(events2, sel_track_idx=1)
     # dummy_tim.schedule(dummy_events, sel_track_idx=0)

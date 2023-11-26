@@ -20,6 +20,10 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
     def __init__(self, filename):
         self.filename = filename
 
+    # def set_tempo_callback(self, tempo):
+    def set_tempo_callback(self, *args, **kwargs):
+        pass
+
     def print_obj(self, timeline, objects=None, track_idx=0):
 
         print(f"{type(objects)}=")
@@ -50,6 +54,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
             if isinstance(obj, MidiMetaMessageTempo):
                 print('inside of MidiMetaMessageTempo')
                 timeline.set_tempo(int(mido.tempo2bpm(obj.tempo)))
+                self.set_tempo_callback(int(mido.tempo2bpm(obj.tempo)))
                 msg = mido.MetaMessage('text', text=f"tempo:{int(mido.tempo2bpm(obj.tempo))}")
                 midi_track0.append(msg)
             elif isinstance(obj, MidiMessageControl):

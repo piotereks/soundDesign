@@ -64,6 +64,7 @@ iso.PDegree.__next__ = UpDownPDegree.__next__
 iso.MidiFileInputDevice.__init__ = CustMidiFileInputDevice.__init__
 iso.MidiFileInputDevice.read = CustMidiFileInputDevice.read
 iso.MidiFileInputDevice.print_obj = CustMidiFileInputDevice.print_obj  #  this creates function, not patches
+iso.MidiFileInputDevice.set_tempo_callback = CustMidiFileInputDevice.set_tempo_callback  #  this creates function, not patches
 
 iso.timeline.event.Event.__init__ = CustEvent.__init__
 

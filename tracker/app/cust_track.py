@@ -1,6 +1,7 @@
 import copy
 import inspect
 
+import snoop
 from isobar import Track
 from isobar.pattern import Pattern
 from isobar.pattern import PInterpolate, PSequence, PDict
@@ -179,9 +180,10 @@ class CustTrack(Track):
                     pass
                 # with snoop(watch_expand=('event.action')):
                 # with snoop(level=2):
-                with snoop:
-                    snoop.pp(event.action)
-                    event.action(**event.args)
+
+                # with snoop:
+                #     snoop.pp(event.action)
+                event.action(**event.args)
             except StopIteration:
                 raise StopIteration()
             except Exception as e:

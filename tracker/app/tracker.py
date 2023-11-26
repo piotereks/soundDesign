@@ -4,6 +4,9 @@ from datetime import datetime
 from itertools import accumulate
 from queue import Queue
 
+import snoop
+import pysnooper
+
 from .isobar_fixes import *
 from .log_call import *
 from .midi_dev import *
@@ -16,7 +19,11 @@ ACCENT_DEFAULT = 45
 ACCENT_BIG = int(ACCENT_DEFAULT * ACCENT_BIG_FACTOR)
 ACCENT_MED = int(ACCENT_DEFAULT * ACCENT_MED_FACTOR)
 
+snoop.install(out='output.log', overwrite=True)
 snoop.install(enabled=False)
+snoop.install(enabled=True)
+# snoop.install(enabled=False)
+
 
 class Tracker:
     # <editor-fold desc="Class init functions">
@@ -44,6 +51,9 @@ class Tracker:
         if filename_in:
             self.file_input_device = iso.MidiFileInputDevice(filename_in) if filename_in else None
             self.patterns_from_file = self.file_input_device.read()
+            # # self.file_input_device.set_tempo_callback = self.set_tempo_ui
+            # self.file_input_device.set_tempo_callback = lambda tempo : print(f"this is tempo for callback {tempo=}")
+            # self.file_input_device.set_tempo_callback = lambda tempo : self.set_tempo_ui(tempo)
             # self.patterns_from_file_duration
             if not isinstance(self.patterns_from_file, list):
                 self.patterns_from_file = [self.patterns_from_file]
@@ -930,6 +940,11 @@ class Tracker:
 
     def tstart(self):
         log_call()
+        # snoop.install()
+        # snoop.install(enabled=True, out='output.log', overwrite=True)
+        # snoop.pp(self)
+        # with snoop(depth=2):
+        # with pysnooper.snoop(depth=4):
         self.timeline.background()
         # self.timeline.run()
         # self.mid_file_start()

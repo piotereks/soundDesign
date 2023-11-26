@@ -315,9 +315,9 @@ class CustTimeline():
 
 
 
-    @snoop(watch=('self.current_time','self.current_time/self.tick_duration',
-                  'self.current_event','self.tracks.index(track)'),
-           watch_explode = ('self.tracks','self.output_device.miditrack','self.output_device.miditrack[0]'))
+    # @snoop(watch=('self.current_time','self.current_time/self.tick_duration',
+    #               'self.current_event','self.tracks.index(track)'),
+    #        watch_explode = ('self.tracks','self.output_device.miditrack','self.output_device.miditrack[0]'))
     def tick(self):
         """
         Called once every tick to trigger new events.
