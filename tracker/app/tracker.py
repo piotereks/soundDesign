@@ -777,22 +777,29 @@ class Tracker:
         log_call()
 
         # xxx = list(self.patterns_from_file)
-        channels = set(flatten(list(pf[EVENT_CHANNEL]) for pf in copy.deepcopy(self.patterns_from_file) if pf.get(EVENT_CHANNEL, None)))
-        for c in channels:
-            self.midi_out.extra_track(c)
-
         factor = self.time_signature['numerator'] * 4 / self.time_signature['denominator']
         print(f"{factor=}")
-        dur = self.patterns_from_file_duration
-        print(dur)
-        # dur = self.patterns_from_file_duration*self.time_signature['denominator']/self.time_signature['numerator']
-        dur = dur / factor
-        print(dur)
-        if dur>int(dur):
-            dur = int(dur) + 1
+        if self.patterns_from_file:
+            channels = set(flatten(list(pf[EVENT_CHANNEL]) for pf in copy.deepcopy(self.patterns_from_file) if pf.get(EVENT_CHANNEL, None)))
+            for c in channels:
+                self.midi_out.extra_track(c)
+
+            dur = self.patterns_from_file_duration
             print(dur)
-        dur = dur * factor
-        print(dur)
+            dur = dur / factor
+            print(dur)
+            if dur > int(dur):
+                dur = int(dur) + 1
+                print(dur)
+            dur = dur * factor
+            print(dur)
+        else:
+            dur = 4*factor
+        #     dur = self.patterns_from_file_duration*self.time_signature['denominator']/self.time_signature['numerator']
+
+
+
+
         # print(self.patterns_from_file_duration)
         # print(self.patterns_from_file_duration*self.time_signature['denominator']/self.time_signature['numerator'])
         # print(round(self.patterns_from_file_duration*self.time_signature['denominator']/self.time_signature['numerator']))

@@ -166,7 +166,8 @@ class TrackerGuiApp(App):
         self.tempo_max = self.parm_tempo_max
         # self.tracker_ref.set_tempo_callback =  self.tracker_ref.set_tempo_ui
         # self.tracker_ref.file_input_device.set_tempo_callback = lambda tempo: print(f"this is tempo for callbackx {tempo=}")
-        self.tracker_ref.file_input_device.set_tempo_callback = lambda tempo: self.set_tempo_f_main(instance=None, tempo=tempo)
+        if hasattr(self.tracker_ref, 'file_input_device'):
+            self.tracker_ref.file_input_device.set_tempo_callback = lambda tempo: self.set_tempo_f_main(instance=None, tempo=tempo)
         #
         # Time signature and beat action
         self.tracker_ref.time_sig_beat_val_action \
