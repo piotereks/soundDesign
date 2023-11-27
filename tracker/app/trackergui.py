@@ -219,6 +219,7 @@ class TrackerGuiApp(App):
         self.tracker_ref.time_sig_beat_val_action = lambda: print(None)
         self.tracker_ref.set_tempo_action = lambda: print(None)
         self.tracker_ref.set_rnd_func_action = lambda: print(None)
+        self.tracker_ref.file_input_device.set_tempo_callback = lambda: print(None)
 
         self.tracker_ref.set_dur_variety_action = lambda: print(None)
 

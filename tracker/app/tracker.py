@@ -1,7 +1,7 @@
 # import os
 import shutil
 from datetime import datetime
-from itertools import accumulate
+from itertools import accumulate, chain
 from queue import Queue
 
 import snoop
@@ -189,8 +189,8 @@ class Tracker:
         # self.xxx = self.file_in_timeline() # file_in_timeline
         # self.metro = self.metro_timeline()
 
-        _ = self.tracker_timeline()
         _ = self.file_in_timeline() # file_in_timeline
+        _ = self.tracker_timeline()
         _ = self.metro_timeline()
         self.set_program_change_trk(program=self.program_change)
 
@@ -768,7 +768,19 @@ class Tracker:
         # sum(y['duration'].sequence)
 
     def file_in_timeline(self):
+        def flatten(lst):
+            for item in lst:
+                if isinstance(item, list) or isinstance(item, tuple):
+                    yield from flatten(item)
+                else:
+                    yield item
         log_call()
+
+        # xxx = list(self.patterns_from_file)
+        channels = set(flatten(list(pf[EVENT_CHANNEL]) for pf in copy.deepcopy(self.patterns_from_file) if pf.get(EVENT_CHANNEL, None)))
+        for c in channels:
+            self.midi_out.extra_track(c)
+
         factor = self.time_signature['numerator'] * 4 / self.time_signature['denominator']
         print(f"{factor=}")
         dur = self.patterns_from_file_duration
