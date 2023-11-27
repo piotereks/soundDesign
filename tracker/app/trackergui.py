@@ -122,6 +122,10 @@ class TrackerGuiApp(App):
             ]
         # xxx = [self.__set_prop__(prop[0],prop[1]) for prop in properties]
         _ = list(map(lambda prop: self.__set_prop__(prop[0],prop[1]), properties))
+        if hasattr(self.tracker_ref, 'patterns_from_file'):
+            if self.tracker_ref.patterns_from_file:
+                print(self.tracker_ref.patterns_from_file)
+                setattr(self, 'path_queue_content', [None]*4)
 
         for note in self.path_queue_content or []:
             self.tracker_ref.put_to_queue(note)
@@ -220,7 +224,8 @@ class TrackerGuiApp(App):
         self.tracker_ref.time_sig_beat_val_action = lambda: print(None)
         self.tracker_ref.set_tempo_action = lambda: print(None)
         self.tracker_ref.set_rnd_func_action = lambda: print(None)
-        self.tracker_ref.file_input_device.set_tempo_callback = lambda: print(None)
+        if hasattr(self.tracker_ref, 'file_input_device'):
+            self.tracker_ref.file_input_device.set_tempo_callback = lambda: print(None)
 
         self.tracker_ref.set_dur_variety_action = lambda: print(None)
 
