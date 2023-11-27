@@ -2,6 +2,8 @@ import mido
 import isobar as iso
 import logging
 import time
+import snoop
+
 
 import os
 import queue
@@ -46,15 +48,16 @@ if MULTI_TRACK:
                 track = self.extra_track(channel)
             return track
 
+        @snoop
         def note_on(self, note=60, velocity=64, channel=0, track_idx=0):
             # ------------------------------------------------------------------------
             # avoid rounding errors
             # ------------------------------------------------------------------------
             track = self.get_channel_track(channel)
-            track = track_idx  #  tmp change
-            print(f"----------------track var: {channel=} {track=}")
+            # track = track_idx  #  tmp change
+            print(f"----------------track va: r{channel=} {track=}")
             if track >= 0:
-                print(f"------------note on: {track=}, {note=}, {channel=}")
+                # print(f"------------note on: {track=}, {note=}, {channel=}")
                 dt = self.time[track] - self.last_event_time[track]
                 dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
                 self.miditrack[track].append(
@@ -63,7 +66,7 @@ if MULTI_TRACK:
 
         def note_off(self, note=60, channel=0, track_idx=0):
             track = self.get_channel_track(channel)
-            track = track_idx  #  tmp change
+            # track = track_idx  #  tmp change
             if track >= 0:
                 print(f"------------note on: {track=}, {note=}, {channel=}")
                 dt = self.time[track] - self.last_event_time[track]

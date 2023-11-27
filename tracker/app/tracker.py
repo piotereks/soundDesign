@@ -19,9 +19,9 @@ ACCENT_DEFAULT = 45
 ACCENT_BIG = int(ACCENT_DEFAULT * ACCENT_BIG_FACTOR)
 ACCENT_MED = int(ACCENT_DEFAULT * ACCENT_MED_FACTOR)
 
-snoop.install(out='output.log', overwrite=True)
+# snoop.install(out='output.log', overwrite=True)
 snoop.install(enabled=False)
-snoop.install(enabled=True)
+# snoop.install(enabled=True)
 # snoop.install(enabled=False)
 
 
