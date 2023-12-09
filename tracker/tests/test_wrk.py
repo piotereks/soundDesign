@@ -535,8 +535,8 @@ def test_deduplication():
         new_mid.tracks.append(new_track)
 
     # Add the filtered meta messages to the new track
-    for key, msg in latest_meta_messages.items():
-        new_track.append(msg)
+    # for key, msg in latest_meta_messages.items():
+    #     new_track.append(msg)
 
     # Save the new MIDI file
     new_mid.save(output_filename)
@@ -544,4 +544,29 @@ def test_deduplication():
     x = 1
 
 
+def test_deduplication_tgt(dummy_timeline2):
+    snoop.install(enabled=False)
+    filename = os.path.join(this_dir, '..', 'tests', 'x1x1_many_repeatitions.mid')
+    output_filename = os.path.join(this_dir, '..', 'tests', 'x1x1_dedup_tgt.mid')
+    # mid = mido.MidiFile(filename)
+    file_input_device = iso.MidiFileInputDevice(filename)
+    patterns = file_input_device.read()
 
+    # input_file.
+    # mid.save(output_filename)
+
+    dummy_tim2 = dummy_timeline2
+    dummy_tim2.filename = output_filename
+    flag = True
+    dummy_tim2.schedule(patterns, remove_when_done=flag)
+    # time_ref = time.time()
+    dummy_tim2.run()
+    # print(dummy_tim2.event_times)
+    # time_gap = [(t-time_ref) for t in dummy_timeline2.event_times]
+    # time_gap = [(120 / 48) * 1.0 /(t-time_ref) for t in dummy_timeline2.event_times]
+
+    dummy_tim2.output_device.write(dedup=False)
+    # print(dummy_tim2.output_devices[0].filename)
+    print_mid(dummy_tim2.output_devices[0].filename)
+
+    x = 1

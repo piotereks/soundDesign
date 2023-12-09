@@ -2,6 +2,7 @@ import mido
 import isobar as iso
 import logging
 import time
+import re
 import snoop
 
 
@@ -77,7 +78,59 @@ if MULTI_TRACK:
         def tick(self):
             self.time = list(map(lambda x: x + (1.0 / self.ticks_per_beat), self.time))
 
-        def write(self):
+
+        def _msg_deduplication(self):
+
+
+            # Create a new MIDI file and track
+            new_mid = mido.MidiFile()
+            # new_mid.tracks.append(new_track)
+
+            # for idx, track in enumerate(self.midifile.tracks):
+            #     dt = self.time[idx] - self.last_event_time[idx]
+            #     dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
+            #     track.append(mido.Message('note_off', note=0, channel=0, time=dt_ticks))
+
+            for i, track in enumerate(self.midifile.tracks):
+                latest_meta_messages = {}
+                new_track = mido.MidiTrack()
+                track.reverse()
+                for msg in track:
+                    if msg.time != 0:
+                        latest_meta_messages = {}
+                    # if msg.is_meta and msg.type == 'set_tempo':
+                    if msg.is_meta or (msg.type not in ('note_on', 'note_off')):
+                        # Check if there is already a meta message of this type at the same time
+                        key = None
+                        if msg.type == 'text':
+                            key = re.search(r'^.*?:', msg.text).group(0)
+                        elif hasattr(msg, 'channel'):
+                            if msg.type == 'polytouch':
+                                key = (msg.type, msg.channel, msg.note)
+                            elif msg.type == 'control_change':
+                                key = (msg.type, msg.channel, msg.control)
+                            else:
+                                key = (msg.type, msg.channel)
+                        else:
+                            key = msg.type
+
+                        if key not in latest_meta_messages:
+                            if msg.time == 0:
+                                latest_meta_messages[key] = msg
+                            new_track.append(msg)
+
+                    else:
+                        # Add non-meta messages directly to the new track
+
+                        new_track.append(msg)
+                new_track.reverse()
+                new_mid.tracks.append(new_track)
+
+            self.midifile.tracks = new_mid.tracks
+
+
+
+        def write(self, dedup = True):
             # ------------------------------------------------------------------------
             # When closing the MIDI file, append a dummy `note_off` event to ensure
             # any rests at the end of the file remain intact
@@ -87,6 +140,9 @@ if MULTI_TRACK:
                 dt = self.time[idx] - self.last_event_time[idx]
                 dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
                 track.append(mido.Message('note_off', note=0, channel=0, time=dt_ticks))
+            if dedup:
+                self._msg_deduplication()
+                pass
             self.midifile.save(self.filename)
 
         def control(self, control=0, value=0, channel=0, track_idx=0):
@@ -208,9 +264,9 @@ class FileOut(MidiFileManyTracksOutputDevice, iso.MidiOutputDevice):
     #     iso.MidiOutputDevice.tick(self)
         # super().tick()
 
-    def write(self):
+    def write(self, dedup = True):
         # iso.MidiFileOutputDevice.write(self)
-        MidiFileManyTracksOutputDevice.write(self)
+        MidiFileManyTracksOutputDevice.write(self, dedup)
 
     # def ticks_per_beat(self):
     #     iso.MidiFileOutputDevice.ticks_per_beat
