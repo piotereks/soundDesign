@@ -1,5 +1,6 @@
 # import isobar as iso
 import sys
+import re
 from tracker.app.isobar_fixes import *
 # from tracker.app.midi_dev import FileOut, MidiFileManyTracksOutputDevice
 from tracker.utils.dump_midi import print_mid
@@ -480,5 +481,92 @@ def test_track_edit(dummy_timeline):
     x = 1
 
     mid.save('edited_'+str(filename).split('\\')[-1])
+
+    x = 1
+
+def test_deduplication():
+    filename = os.path.join(this_dir, '..', 'tests', 'x1x1_many_repeatitions.mid')
+    output_filename = os.path.join(this_dir, '..', 'tests', 'x1x1_dedup.mid')
+    mid = mido.MidiFile(filename)
+
+
+
+    # Create a new MIDI file and track
+    new_mid = mido.MidiFile()
+    # new_mid.tracks.append(new_track)
+
+    for i, track in enumerate(mid.tracks):
+        latest_meta_messages = {}
+        new_track = mido.MidiTrack()
+        track.reverse()
+        for msg in track:
+            if msg.time != 0:
+                latest_meta_messages = {}
+            # if msg.is_meta and msg.type == 'set_tempo':
+            if msg.is_meta or (msg.type not in ('note_on', 'note_off')):
+                # Check if there is already a meta message of this type at the same time
+                key = None
+                if msg.type == 'text':
+                    key = re.search(r'^.*?:', msg.text).group(0)
+                elif hasattr(msg, 'channel'):
+                    if msg.type == 'polytouch':
+                        key = (msg.type, msg.channel, msg.note)
+                    elif msg.type == 'control_change':
+                        key = (msg.type, msg.channel, msg.control)
+                    else:
+                        key = (msg.type, msg.channel)
+                else:
+                    key = msg.type
+
+
+
+
+
+                if key not in latest_meta_messages:
+                    if msg.time == 0:
+                        latest_meta_messages[key] = msg
+                    new_track.append(msg)
+
+            else:
+                # Add non-meta messages directly to the new track
+
+                new_track.append(msg)
+        new_track.reverse()
+        new_mid.tracks.append(new_track)
+
+    # Add the filtered meta messages to the new track
+    # for key, msg in latest_meta_messages.items():
+    #     new_track.append(msg)
+
+    # Save the new MIDI file
+    new_mid.save(output_filename)
+
+    x = 1
+
+
+def test_deduplication_tgt(dummy_timeline2):
+    snoop.install(enabled=False)
+    filename = os.path.join(this_dir, '..', 'tests', 'x1x1_many_repeatitions.mid')
+    output_filename = os.path.join(this_dir, '..', 'tests', 'x1x1_dedup_tgt.mid')
+    # mid = mido.MidiFile(filename)
+    file_input_device = iso.MidiFileInputDevice(filename)
+    patterns = file_input_device.read()
+
+    # input_file.
+    # mid.save(output_filename)
+
+    dummy_tim2 = dummy_timeline2
+    dummy_tim2.filename = output_filename
+    flag = True
+    dummy_tim2.schedule(patterns, remove_when_done=flag)
+    # time_ref = time.time()
+    dummy_tim2.run()
+    # print(dummy_tim2.event_times)
+    # time_gap = [(t-time_ref) for t in dummy_timeline2.event_times]
+    # time_gap = [(120 / 48) * 1.0 /(t-time_ref) for t in dummy_timeline2.event_times]
+
+    dummy_tim2.output_device.write(dedup=False)
+    # print(dummy_tim2.output_devices[0].filename)
+    print_mid(dummy_tim2.output_devices[0].filename)
 
     x = 1
