@@ -3,6 +3,7 @@ import isobar as iso
 import logging
 import time
 import re
+import inspect
 import snoop
 
 
@@ -31,7 +32,9 @@ if MULTI_TRACK:
             self.last_event_time = []
             self.last_event_time.append(0)
 
+        @snoop(watch=('self.tgt_track_idxs', 'self.channel_track'))
         def extra_track(self, channel=None, src_track_idx=None):
+            snoop.pp(inspect.currentframe().f_back.f_back)
             if src_track_idx:
                 if src_track_idx not in self.tgt_track_idxs:
                     track = mido.MidiTrack()
@@ -56,13 +59,14 @@ if MULTI_TRACK:
                     self.last_event_time.append(0)
                     return self.channel_track.index(channel)
 
-
+        @snoop(watch=('self.tgt_track_idxs','self.channel_track'))
         def get_channel_track(self, channel=0, src_track_idx=None):
+            snoop.pp(inspect.currentframe().f_back.f_back)
             if src_track_idx is not None:
                 try:
                     track_idx = self.tgt_track_idxs.index(src_track_idx)
                 except ValueError:
-                    track_idx = self.extra_track(src_track_idx=src_track_idx)
+                    track_idx = self.extra_track(channel=channel, src_track_idx=src_track_idx)
                 return track_idx
             try:
                 track = self.channel_track.index(channel)
@@ -76,6 +80,7 @@ if MULTI_TRACK:
             # ------------------------------------------------------------------------
             # avoid rounding errors
             # ------------------------------------------------------------------------
+            snoop.pp(inspect.currentframe().f_back.f_code.co_name)
             track = self.get_channel_track(channel=channel, src_track_idx=track_idx)
             # track = track_idx  #  tmp change
             print(f"----------------track va: r{channel=} {track=}")
@@ -88,6 +93,7 @@ if MULTI_TRACK:
                 self.last_event_time[track] = self.time[track]
 
         def note_off(self, note=60, channel=0, track_idx=0):
+            snoop.pp(inspect.currentframe().f_back.f_code.co_name)
             track = self.get_channel_track(channel=channel, src_track_idx=track_idx)
             # track = track_idx  #  tmp change
             if track >= 0:
@@ -168,6 +174,7 @@ if MULTI_TRACK:
             self.midifile.save(self.filename)
 
         def control(self, control=0, value=0, channel=0, track_idx=0):
+            snoop.pp(inspect.currentframe().f_back.f_code.co_name)
             track = self.get_channel_track(channel=channel, src_track_idx=track_idx)
             # track = track_idx  #  tmp change
             print(f"----------------track var: {channel=} {track=}")
@@ -179,6 +186,7 @@ if MULTI_TRACK:
                 self.last_event_time[track] = self.time[track]
 
         def pitch_bend(self, pitch=0, channel=0, track_idx=0):
+            snoop.pp(inspect.currentframe().f_back.f_code.co_name)
             track = self.get_channel_track(channel=channel, src_track_idx=track_idx)
             # track = track_idx  #  tmp change
             if track >= 0:
@@ -188,7 +196,10 @@ if MULTI_TRACK:
                     mido.Message('pitchwheel', pitch=int(pitch), channel=int(channel)))
                 self.last_event_time[track] = self.time[track]
 
+
+        @snoop
         def program_change(self, program=0, channel=0, track_idx=0):
+            snoop.pp(inspect.currentframe().f_back.f_back)
             log.debug("[midi] Program change (channel %d, program_change %d)" % (channel, program))
             track = self.get_channel_track(channel=channel, src_track_idx=track_idx)
             # track = track_idx  #  tmp change
@@ -201,6 +212,7 @@ if MULTI_TRACK:
 
 
         def aftertouch(self, control=0, value=0, channel=0, track_idx=0):
+            snoop.pp(inspect.currentframe().f_back.f_code.co_name)
             track = self.get_channel_track(channel=channel, src_track_idx=track_idx)
             # track = track_idx  #  tmp change
             if track >= 0:
@@ -211,6 +223,7 @@ if MULTI_TRACK:
                 self.last_event_time[track] = self.time[track]
 
         def polytouch(self, control=0, note=0, channel=0, track_idx=0):
+            snoop.pp(inspect.currentframe().f_back.f_code.co_name)
             track = self.get_channel_track(channel=channel, src_track_idx=track_idx)
             # track = track_idx  #  tmp change
             if track >= 0:

@@ -16,6 +16,10 @@ tmp_filename2 = 'x1x1b.mid'
 this_dir = os.path.dirname(os.path.abspath(__file__))
 tmp_filenameX = os.path.join(this_dir, '..', '..', 'checks', 'example_midi', 'Var_tempo_1_trk_sax.mid')
 
+# snoop.install(enabled=True, out='output.log', overwrite=True)
+snoop.install(out='outputx.log', overwrite=True)
+snoop.install(enabled=False)
+
 @pytest.fixture()
 def dummy_timeline():
     midi_out_play_name = 'Microsoft GS Wavetable Synth 0'
@@ -545,8 +549,9 @@ def test_deduplication():
 
 
 def test_deduplication_tgt(dummy_timeline):
-    snoop.install(enabled=False)
+    # snoop.install(enabled=False)
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1_many_repeatitions.mid')
+    filename = os.path.join(this_dir, '..', 'tests', 'x1x1d.mid')
     output_filename = os.path.join(this_dir, '..', 'tests', 'x1x1_dedup_tgt.mid')
     # mid = mido.MidiFile(filename)
     file_input_device = iso.MidiFileInputDevice(filename)

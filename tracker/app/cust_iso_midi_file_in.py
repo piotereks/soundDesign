@@ -1,5 +1,6 @@
 # import mido
 import logging
+import snoop
 
 from collections.abc import Iterable
 from functools import partial
@@ -24,6 +25,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
     def set_tempo_callback(self, *args, **kwargs):
         pass
 
+    @snoop
     def print_obj(self, timeline, objects=None, track_idx=0):
 
         print(f"{type(objects)}=")
