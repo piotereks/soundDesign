@@ -216,6 +216,7 @@ class Tracker:
         if on_exit:
             if MULTI_TRACK:
                 for idx in range(len(self.midi_out.miditrack)):
+                    # pass
                     self.mid_meta_message(type='end_of_track', time=0, track_idx=idx)
             else:
                 self.mid_meta_message(type='end_of_track', time=0)
@@ -394,7 +395,7 @@ class Tracker:
             print(f"No midi in with {midi_in_name}")
 
 
-    def play_mid_file(self):
+    def xplay_mid_file(self):
         print("in play_mid_file")
 
         # file = os.path.join('example_midi', 'Variable_tempo_one_note_mod.mid')
@@ -597,7 +598,7 @@ class Tracker:
         print(f"{time.time()=}")
         print(f"{4*self.time_signature['numerator']/self.time_signature['denominator']=},{self.metro_beat=}")
         if MULTI_TRACK:
-            self.midi_out.extra_track(9)  # for percussion channel 10 (or 9 when counting from 0).
+            self.midi_out.extra_track(channel=9)  # for percussion channel 10 (or 9 when counting from 0).
         return self.timeline.schedule({
             "action": lambda track_idx: self.metro_beat(),
             # "duration": 3/2
@@ -782,7 +783,7 @@ class Tracker:
         if self.patterns_from_file:
             channels = set(flatten(list(pf[EVENT_CHANNEL]) for pf in copy.deepcopy(self.patterns_from_file) if pf.get(EVENT_CHANNEL, None)))
             for c in channels:
-                self.midi_out.extra_track(c)
+                self.midi_out.extra_track(channel=c)
 
             dur = self.patterns_from_file_duration
             print(dur)

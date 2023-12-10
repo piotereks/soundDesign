@@ -72,25 +72,26 @@ class MidiMessagePoly:
         return None
         # return mido.Message(tempo=self.tempo, time=self.time, type='set_tempo')
 
-class CustMidiOutputDevice(iso.MidiOutputDevice):
-    def aftertouch(self, control=0, value=0, channel=0, track_idx=0):
-        log.debug("[midi] Pitch bend (channel %d, pitch %d)" % (channel, pitch))
-        msg = mido.Message('aftertouch', control=int(control), value=value, channel=int(channel))
-        self.midi.send(msg)
-
-    def polytouch(self, control=0, note=0, channel=0, track_idx=0):
-        log.debug("[midi] Pitch bend (channel %d, pitch %d)" % (channel, pitch))
-        msg = mido.Message('polytouch', control=int(control), note=note, channel=int(channel))
-
-iso.MidiOutputDevice.aftertouch=CustMidiOutputDevice.aftertouch
-iso.MidiOutputDevice.polytouch=CustMidiOutputDevice.polytouch
+# class CustMidiOutputDevice(iso.MidiOutputDevice):
+#     def aftertouch(self, control=0, value=0, channel=0, track_idx=0):
+#         log.debug("[midi] Pitch bend (channel %d, pitch %d)" % (channel, pitch))
+#         msg = mido.Message('aftertouch', control=int(control), value=value, channel=int(channel))
+#         self.midi.send(msg)
+#
+#     def polytouch(self, control=0, note=0, channel=0, track_idx=0):
+#         log.debug("[midi] Pitch bend (channel %d, pitch %d)" % (channel, pitch))
+#         msg = mido.Message('polytouch', control=int(control), note=note, channel=int(channel))
+#
+# iso.MidiOutputDevice.aftertouch=CustMidiOutputDevice.aftertouch
+# iso.MidiOutputDevice.polytouch=CustMidiOutputDevice.polytouch
 
 class MidiMessageAfter:
-    def __init__(self, channel, value, location, time=0):
+    def __init__(self, channel, value, location, time=0, track_idx=0):
         self.channel = channel
         self.value = value
         self.location = location
         self.time = time
+        self.track_idx = track_idx
 
     def xto_meta_message(self):
         return None
@@ -105,7 +106,8 @@ class MidiMetaMessageTempo(MetaMessageInterface):
         self.location = location
         self.is_meta = True
         self.time = time
-        self.track_idx = track_idx
+        self.track_idx = 0
+        # self.track_idx = track_idx
 
     def to_meta_message(self):
         return mido.MetaMessage(tempo=self.tempo, time=self.time, type='set_tempo')
@@ -117,6 +119,8 @@ class MidiMetaMessageKey(MetaMessageInterface):
         self.location = location
         self.is_meta = True
         self.time = time
+        self.track_idx = 0
+        # self.track_idx = track_idx
 
     def to_meta_message(self):
         return mido.MetaMessage(key=self.key, time=self.time, type='key_signature')
@@ -133,6 +137,8 @@ class MidiMetaMessageTimeSig(MetaMessageInterface):
         self.location = location
         self.is_meta = True
         self.time = time
+        self.track_idx = 0
+        # self.track_idx = track_idx
 
     def to_meta_message(self):
         return mido.MetaMessage(numerator=self.numerator, denominator=self.denominator,
@@ -147,6 +153,7 @@ class MidiMetaMessageTrackName(MetaMessageInterface):
         self.location = location
         self.is_meta = True
         self.time = time
+        self.track_idx = track_idx
 
     def to_meta_message(self):
         return mido.MetaMessage(name=self.name, time=self.time, type='track_name')
@@ -158,6 +165,7 @@ class MidiMetaMessageMidiPort(MetaMessageInterface):
         self.location = location
         self.is_meta = True
         self.time = time
+        self.track_idx = track_idx
 
     def to_meta_message(self):
         return mido.MetaMessage(port=self.port, time=self.time, type='midi_port')
@@ -168,6 +176,7 @@ class MidiMetaMessageEndTrack(MetaMessageInterface):
         self.location = location
         self.is_meta = True
         self.time = time
+        self.track_idx = track_idx
 
     def to_meta_message(self):
         return mido.MetaMessage(time=self.time, type='end_of_track')
