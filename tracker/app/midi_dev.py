@@ -83,7 +83,7 @@ if MULTI_TRACK:
             snoop.pp(inspect.currentframe().f_back.f_code.co_name)
             track = self.get_channel_track(channel=channel, src_track_idx=track_idx)
             # track = track_idx  #  tmp change
-            print(f"----------------track va: r{channel=} {track=}")
+            print(f"----------------track va: r{channel=} {track=} {track_idx=}")
             if track >= 0:
                 # print(f"------------note on: {track=}, {note=}, {channel=}")
                 dt = self.time[track] - self.last_event_time[track]

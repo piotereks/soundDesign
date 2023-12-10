@@ -91,7 +91,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
         print(timeline, text)
 
     def read(self, quantize=None):
-        def create_lam_function(tgt_dict, messages, track_idx = 0):
+        def create_lam_function(tgt_dict, messages, track_idx=0):
             lam_function = partial(self.print_obj, objects=messages, track_idx=track_idx)
             # lam_function = partial(self.print_obj, objects=None)
             tgt_dict[EVENT_ACTION].append(lam_function)

@@ -395,7 +395,7 @@ class Tracker:
             print(f"No midi in with {midi_in_name}")
 
 
-    def play_mid_file(self):
+    def xplay_mid_file(self):
         print("in play_mid_file")
 
         # file = os.path.join('example_midi', 'Variable_tempo_one_note_mod.mid')
