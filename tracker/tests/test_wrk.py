@@ -544,7 +544,7 @@ def test_deduplication():
     x = 1
 
 
-def test_deduplication_tgt(dummy_timeline2):
+def test_deduplication_tgt(dummy_timeline):
     snoop.install(enabled=False)
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1_many_repeatitions.mid')
     output_filename = os.path.join(this_dir, '..', 'tests', 'x1x1_dedup_tgt.mid')
@@ -555,7 +555,7 @@ def test_deduplication_tgt(dummy_timeline2):
     # input_file.
     # mid.save(output_filename)
 
-    dummy_tim2 = dummy_timeline2
+    dummy_tim2 = dummy_timeline
     dummy_tim2.filename = output_filename
     flag = True
     dummy_tim2.schedule(patterns, remove_when_done=flag)
@@ -565,7 +565,7 @@ def test_deduplication_tgt(dummy_timeline2):
     # time_gap = [(t-time_ref) for t in dummy_timeline2.event_times]
     # time_gap = [(120 / 48) * 1.0 /(t-time_ref) for t in dummy_timeline2.event_times]
 
-    dummy_tim2.output_device.write(dedup=False)
+    dummy_tim2.output_device.write(dedup=True)
     # print(dummy_tim2.output_devices[0].filename)
     print_mid(dummy_tim2.output_devices[0].filename)
 

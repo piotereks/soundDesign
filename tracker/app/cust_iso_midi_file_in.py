@@ -74,9 +74,16 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                                                  channel=obj.channel, track_idx=track_idx)
 
             if midi_track0 is not None and hasattr(obj, 'to_meta_message'):
-                if len(timeline.output_device.miditrack) - 1 < track_idx:
-                    timeline.output_device.extra_track(track_idx)
-                timeline.output_device.miditrack[track_idx].append(obj.to_meta_message())
+
+                if hasattr(obj, 'channel'):
+                    channel_param = obj.channel
+                else:
+                    channel_param = None
+                new_track_idx = timeline.output_device.get_channel_track(channel=channel_param, src_track_idx=track_idx)
+                # for t in list(range(len(timeline.output_device.miditrack) - 1, track_idx)):
+                # # if len(timeline.output_device.miditrack) - 1 < track_idx:
+                #     timeline.output_device.extra_track(new_track_idx=t+1)
+                timeline.output_device.miditrack[new_track_idx].append(obj.to_meta_message())
 
 
         print(timeline, text)

@@ -71,7 +71,7 @@ def direct_midi_play():
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1_dedup.mid')
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1_dedup_tgt.mid')
     filename = os.path.join(this_dir, '..', 'tests', 'xoutput_20231209230252.mid')
-    print_mid(filename)
+    # print_mid(filename)
 
 if __name__ == '__main__':
     direct_midi_play()
