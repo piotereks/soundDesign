@@ -20,7 +20,7 @@ tmp_filenameX = os.path.join(this_dir, '..', '..', 'checks', 'example_midi', 'Va
 
 # snoop.install(enabled=True, out='output.log', overwrite=True)
 snoop.install(out='outputx.log', overwrite=True)
-# snoop.install(enabled=False)
+snoop.install(enabled=False)
 
 
 

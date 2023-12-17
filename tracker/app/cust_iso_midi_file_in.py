@@ -447,9 +447,9 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
             diff_duration = total_duration - sum(pat[iso.EVENT_DURATION].sequence)
             if diff_duration:
                 pat[iso.EVENT_DURATION].sequence.append(diff_duration)
-                pat[iso.EVENT_NOTE].sequence.append(0)
+                pat[iso.EVENT_NOTE].sequence.append(None)
                 if pat.get(iso.EVENT_AMPLITUDE, None):
-                    pat[iso.EVENT_AMPLITUDE].sequence.append(1)
+                    pat[iso.EVENT_AMPLITUDE].sequence.append(0)
                 if pat.get(iso.EVENT_GATE, None):
                     pat[iso.EVENT_GATE].sequence.append(pat[iso.EVENT_GATE].sequence[0])
                 if pat.get(iso.EVENT_CHANNEL, None):
