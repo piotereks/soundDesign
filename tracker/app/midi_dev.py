@@ -43,14 +43,15 @@ if MULTI_TRACK:
                     #     self.miditrack = []
                     # if self.midifile.tracks == [None]:
                     #     self.midifile.tracks = []
-                    early_return = self.channel_track == [None] or self.tgt_track_idxs == [None]
-                    if self.channel_track == [None]:
-                        self.channel_track = [channel]
-
-                    if self.tgt_track_idxs == [None]:
-                        self.tgt_track_idxs = [src_track_idx]
-                    if early_return:
+                    # early_return = self.channel_track == [None] or self.tgt_track_idxs == [None]
+                    if self.tgt_track_idxs == [None] and self.channel_track == [None]:
+                        if self.tgt_track_idxs == [None]:
+                            self.tgt_track_idxs = [src_track_idx]
+                        if self.channel_track == [None]:
+                            self.channel_track = [channel]
                         return 0
+
+
                     track = mido.MidiTrack()
                     self.miditrack.append(track)
                     self.midifile.tracks.append(track)
@@ -81,6 +82,9 @@ if MULTI_TRACK:
             if src_track_idx is not None:
                 try:
                     track_idx = self.tgt_track_idxs.index(src_track_idx)
+                    if self.channel_track[track_idx] is None:
+                        self.channel_track[track_idx] = channel
+
                 except ValueError:
                     track_idx = self.extra_track(channel=channel, src_track_idx=src_track_idx)
                 return track_idx
