@@ -603,10 +603,10 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
                                                      lambda track_idx: set_tempo(300), lambda track_idx: set_tempo(200)], repeats=1)
 
     }
+    dummy_tim.schedule(pgm, sel_track_idx=0)
+    dummy_tim.schedule(pgm2, sel_track_idx=1)
+    dummy_tim.schedule(events_action, sel_track_idx=0)
 
-    # dummy_tim.schedule(pgm, sel_track_idx=0)
-    # dummy_tim.schedule(pgm2, sel_track_idx=1)
-    # dummy_tim.schedule(events_action, sel_track_idx=0)
     dummy_tim.schedule(events, sel_track_idx=0)
     dummy_tim.schedule(events2, sel_track_idx=1)
 
