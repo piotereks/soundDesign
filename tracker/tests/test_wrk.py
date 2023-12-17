@@ -12,6 +12,7 @@ from tracker.app.midi_dev import *
 
 tmp_filename = 'x1x1a.mid'
 tmp_filename2 = 'x1x1b.mid'
+play_or_dummy_for_timeline2 = 'dummy'
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
 tmp_filenameX = os.path.join(this_dir, '..', '..', 'checks', 'example_midi', 'Var_tempo_1_trk_sax.mid')
@@ -19,6 +20,8 @@ tmp_filenameX = os.path.join(this_dir, '..', '..', 'checks', 'example_midi', 'Va
 # snoop.install(enabled=True, out='output.log', overwrite=True)
 snoop.install(out='outputx.log', overwrite=True)
 snoop.install(enabled=False)
+
+
 
 @pytest.fixture()
 def dummy_timeline():
@@ -33,22 +36,33 @@ def dummy_timeline():
     # timeline = iso.Timeline(output_device=iso.io.DummyOutputDevice(), clock_source=iso.DummyClock())
     timeline = iso.Timeline(output_device=midi_out_device, clock_source=iso.DummyClock())
 
+    # midi_out_device = FileOut(device_name=midi_out, filename=filename, send_clock=True, virtual=False)
+    # timeline = iso.Timeline(output_device=midi_out_device)
+
     timeline.stop_when_done = True
     return timeline
 
-@pytest.fixture()
+@pytest.fixture
 def dummy_timeline2():
     midi_out_play_name = 'Microsoft GS Wavetable Synth 0'
     midi_out = midi_out_play_name
-    filename=tmp_filename2
-    midi_out_device = FileOut(device_name=midi_out, filename=filename, send_clock=True, virtual=False)
+    filename = tmp_filename2
 
     # timeline = iso.Timeline(output_device=iso.io.DummyOutputDevice(), clock_source=iso.DummyClock())
     # timeline = iso.Timeline(tempo=123, output_device=midi_out_device, clock_source=iso.DummyClock())
-    timeline = iso.Timeline(output_device=midi_out_device)
+    # midi_out_device = FileOut(device_name=midi_out, filename=filename, send_clock=True, virtual=False)
+    # timeline = iso.Timeline(output_device=midi_out_device)
+
+    if play_or_dummy_for_timeline2 == 'play':
+        midi_out_device = FileOut(device_name=midi_out, filename=filename, send_clock=True, virtual=False)
+        timeline = iso.Timeline(output_device=midi_out_device)
+    else:
+        midi_out_device = MidiFileManyTracksOutputDevice(filename=filename)
+        timeline = iso.Timeline(output_device=midi_out_device, clock_source=iso.DummyClock())
+
+
     timeline.stop_when_done = True
     return timeline
-
 
 
 def test_timeline_schedulex(dummy_timeline):
@@ -436,7 +450,7 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
 
     # return
     print('-'*20, 'second_timeline')
-    dummy_tim2 = dummy_timeline2
+
     # file = os.path.join('..', '..', 'checks', 'example_midi', 'Var_tempo_1_trk_sax.mid')
     # file_input_device = iso.MidiFileInputDevice(file)
 
@@ -452,7 +466,7 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
     snoop.install(enabled=False)
 
     flag = True
-
+    dummy_tim2 = dummy_timeline2
     dummy_tim2.schedule(patterns, remove_when_done=flag)
     # time_ref = time.time()
     dummy_tim2.run()
@@ -488,65 +502,6 @@ def test_track_edit(dummy_timeline):
 
     x = 1
 
-def test_deduplication():
-    filename = os.path.join(this_dir, '..', 'tests', 'x1x1_many_repeatitions.mid')
-    output_filename = os.path.join(this_dir, '..', 'tests', 'x1x1_dedup.mid')
-    mid = mido.MidiFile(filename)
-
-
-
-    # Create a new MIDI file and track
-    new_mid = mido.MidiFile()
-    # new_mid.tracks.append(new_track)
-
-    for i, track in enumerate(mid.tracks):
-        latest_meta_messages = {}
-        new_track = mido.MidiTrack()
-        track.reverse()
-        for msg in track:
-            if msg.time != 0:
-                latest_meta_messages = {}
-            # if msg.is_meta and msg.type == 'set_tempo':
-            if msg.is_meta or (msg.type not in ('note_on', 'note_off')):
-                # Check if there is already a meta message of this type at the same time
-                key = None
-                if msg.type == 'text':
-                    key = re.search(r'^.*?:', msg.text).group(0)
-                elif hasattr(msg, 'channel'):
-                    if msg.type == 'polytouch':
-                        key = (msg.type, msg.channel, msg.note)
-                    elif msg.type == 'control_change':
-                        key = (msg.type, msg.channel, msg.control)
-                    else:
-                        key = (msg.type, msg.channel)
-                else:
-                    key = msg.type
-
-
-
-
-
-                if key not in latest_meta_messages:
-                    if msg.time == 0:
-                        latest_meta_messages[key] = msg
-                    new_track.append(msg)
-
-            else:
-                # Add non-meta messages directly to the new track
-
-                new_track.append(msg)
-        new_track.reverse()
-        new_mid.tracks.append(new_track)
-
-    # Add the filtered meta messages to the new track
-    # for key, msg in latest_meta_messages.items():
-    #     new_track.append(msg)
-
-    # Save the new MIDI file
-    new_mid.save(output_filename)
-
-    x = 1
-
 
 def test_deduplication_tgt(dummy_timeline):
     # snoop.install(enabled=False)
@@ -575,3 +530,114 @@ def test_deduplication_tgt(dummy_timeline):
     print_mid(dummy_tim2.output_devices[0].filename)
 
     x = 1
+
+
+# @dummy_timeline2
+# @dummy_timeline(opt='dummy')
+# def test_pattern_len(dummy_timeline, dummy_timeline2):
+def test_pattern_len(dummy_timeline, dummy_timeline2):
+    def mid_meta_message(msg: mido.MetaMessage = None, *args, **kwargs):
+        # return None
+        track_idx = min(kwargs.pop('track_idx', 0),len(dummy_tim.output_device.miditrack)-1)
+        if not msg:
+            msg = mido.MetaMessage(*args, **kwargs)
+        dummy_tim.output_device.miditrack[track_idx].append(msg)
+
+    def set_tempo(tempo):
+        # dummy_timeline.set_tempo(int(tempo))
+        # tempo = mido.tempo2bpm(msg.tempo)
+        mid_meta_message(type='set_tempo', tempo=int(mido.tempo2bpm(tempo)), time=0)
+
+    def track_name(name, track_idx=0):
+        # dummy_timeline.set_tempo(int(tempo))
+        # tempo = mido.tempo2bpm(msg.tempo)
+        mid_meta_message(type='track_name', name=name, time=0, track_idx=track_idx)
+
+    def file_beat():
+
+        _ = dummy_tim2.schedule(copy.deepcopy(patterns), remove_when_done=True)
+
+    # dummy_timeline(opt='dummy')
+
+
+    dummy_tim = dummy_timeline
+
+
+
+    events = {
+
+        iso.EVENT_NOTE: iso.PSequence(sequence=[50, 52, 55], repeats=1)
+        # iso.EVENT_NOTE: iso.PSequence(sequence=[50, 52], repeats=1)
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[0.5, 1, 1], repeats=1)
+        # , iso.EVENT_DURATION: iso.PSequence(sequence=[1.5, 1.5], repeats=1)
+        , iso.EVENT_CHANNEL: 0
+        # , iso.EVENT_PROGRAM_CHANGE: 0
+    }
+    events2 = {
+        iso.EVENT_NOTE: iso.PSequence(sequence= [75,  69,  72], repeats=1)
+        , iso.EVENT_DURATION : iso.PSequence(sequence=[1, 1, 1], repeats=1)
+        , iso.EVENT_CHANNEL : 2
+        # , iso.EVENT_PROGRAM_CHANGE : 56
+        # , iso.EVENT_ACTION : iso.PSequence(sequence = [lambda: print('asdf1'), lambda: print('asdf2'), lambda: print('asdf3')], repeats=1)
+        # ,iso.EVENT_ACTION : iso.PSequence(sequence=[None, lambda: print('x'), None], repeats=1)
+    }
+
+    pgm = {
+
+        iso.EVENT_CHANNEL : 0
+        , iso.EVENT_PROGRAM_CHANGE : iso.PSequence([99], repeats=1)
+    }
+
+    pgm2 = {
+        iso.EVENT_CHANNEL : 2
+        , iso.EVENT_PROGRAM_CHANGE : iso.PSequence([56], repeats=1)
+    }
+    events_action= {
+        iso.EVENT_DURATION : iso.PSequence(sequence = [1.22, 1.3, 1.33, 1.41], repeats=1)
+        # iso.EVENT_DURATION : iso.PSequence(sequence = [1, 1, 1, 1], repeats=1)
+        , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda track_idx: (set_tempo(31), set_tempo(35), track_name('blah'), track_name('blaxx',1)), lambda track_idx: set_tempo(30),
+                                                     lambda track_idx: set_tempo(300), lambda track_idx: set_tempo(200)], repeats=1)
+
+    }
+
+    dummy_tim.schedule(pgm, sel_track_idx=0)
+    dummy_tim.schedule(pgm2, sel_track_idx=1)
+    dummy_tim.schedule(events_action, sel_track_idx=0)
+    dummy_tim.schedule(events, sel_track_idx=0)
+    dummy_tim.schedule(events2, sel_track_idx=1)
+
+    dummy_tim.run()
+    dummy_tim.output_device.write()
+    # return
+
+    filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
+    print(dummy_tim.output_devices[0].filename)
+    print_mid(dummy_tim.output_devices[0].filename)
+
+
+    # return
+    print('-' * 20, 'second_timeline')
+    # dummy_timeline2.opt = 'xplay'
+    dummy_tim2 = dummy_timeline2
+    # dummy_timeline2_instance.opt = 'other'
+    # dummy_tim2 = dummy_timeline2(opt='other')
+    file_input_device = iso.MidiFileInputDevice(dummy_tim.output_devices[0].filename)
+    patterns = file_input_device.read()
+
+    flag = True
+
+    dur = 1
+    # _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat()], repeats=1),
+    _ = dummy_tim2.schedule({"action": iso.PSequence( sequence=[lambda track_idx : file_beat()], repeats=2),
+                            # iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=1)
+                            iso.EVENT_DURATION: iso.PSequence(sequence=[12], repeats=2)
+                            # "duration": 4 * self.time_signature['numerator'] / self.time_signature['denominator']
+                            # "quantize": 1
+
+                            },
+                           remove_when_done=True)
+
+    # dummy_tim2.schedule(patterns, remove_when_done=flag)
+    dummy_tim2.run()
+    dummy_tim2.output_device.write()
+    print_mid(dummy_tim2.output_devices[0].filename)
