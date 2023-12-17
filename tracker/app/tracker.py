@@ -58,7 +58,7 @@ class Tracker:
             if not isinstance(self.patterns_from_file, list):
                 self.patterns_from_file = [self.patterns_from_file]
             self.patterns_from_file_duration = max([sum(pat[iso.EVENT_DURATION].sequence)
-                                                   for pat in self.patterns_from_file if pat.get(iso.EVENT_DURATION)])
+                                                   for pat in self.patterns_from_file if pat.get(iso.EVENT_DURATION, None)])
 
 
         else:

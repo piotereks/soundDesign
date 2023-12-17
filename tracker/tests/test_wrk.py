@@ -579,7 +579,7 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
         # iso.EVENT_NOTE: iso.PSequence(sequence= [75,  69,  72], repeats=1)
         iso.EVENT_NOTE: iso.PSequence(sequence= [62,  63,  64], repeats=1)
         # , iso.EVENT_DURATION : iso.PSequence(sequence=[1, 1, 1], repeats=1)
-        , iso.EVENT_DURATION : iso.PSequence(sequence=[0.5, 1, 1], repeats=1)
+        , iso.EVENT_DURATION : iso.PSequence(sequence=[1, 1, 1], repeats=1)
         , iso.EVENT_CHANNEL : 2
         # , iso.EVENT_PROGRAM_CHANGE : 56
         # , iso.EVENT_ACTION : iso.PSequence(sequence = [lambda: print('asdf1'), lambda: print('asdf2'), lambda: print('asdf3')], repeats=1)
@@ -626,11 +626,34 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
     # dummy_tim2 = dummy_timeline2(opt='other')
     file_input_device = iso.MidiFileInputDevice(dummy_tim.output_devices[0].filename)
     patterns = file_input_device.read()
+    # patterns_from_file_duration = max([sum(pat[iso.EVENT_DURATION].sequence)
+    #                                         for pat in patterns if pat.get(iso.EVENT_DURATION, None)])
+    #
+    # dur = patterns_from_file_duration
+    # print(dur)
+    # dur = dur / factor
+    # print(dur)
+    # if dur > int(dur):
+    #     dur = int(dur) + 1
+    #     print(dur)
+    # dur = dur * factor
+    # print(dur)
+
+    # mock_action = {
+    #     iso.EVENT_DURATION: iso.PSequence(sequence=[patterns_from_file_duration], repeats=1)
+    #     # iso.EVENT_DURATION : iso.PSequence(sequence = [1, 1, 1, 1], repeats=1)
+    #     ,iso.EVENT_NOTE: iso.PSequence(sequence=[90], repeats=2)
+    #     # , iso.EVENT_ACTION: iso.PSequence(
+    #     #     sequence=[lambda track_idx: print(None)], repeats=1)
+    #
+    # }
+    # patterns.append(mock_action)
+
 
     flag = True
 
-    dur = 4
-    rp = 1
+    dur = 8
+    rp = 2
     # _ = dummy_tim2.schedule(patterns)
     # _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat()], repeats=1),
     _ = dummy_tim2.schedule({"action": iso.PSequence( sequence=[lambda track_idx : file_beat()], repeats=rp),
@@ -643,7 +666,8 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
                            remove_when_done=True)
     # _ = dummy_tim2.schedule({iso.EVENT_NOTE: iso.PSequence(sequence=[50], repeats=rp),
     #                         # iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=1)
-    #                         iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=rp)
+    #                         iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=rp),
+    #                         iso.EVENT_CHANNEL : iso.PSequence(sequence=[7], repeats=rp)
     #                         # "duration": 4 * self.time_signature['numerator'] / self.time_signature['denominator']
     #                         # "quantize": 1
     #

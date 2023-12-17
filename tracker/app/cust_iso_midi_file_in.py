@@ -431,5 +431,45 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                 note_dict[iso.EVENT_ACTION_ARGS] = {"track_idx": track_idx}
                 tracks_note_dict.append(note_dict)
 
+        patterns_from_file_duration = max([sum(pat[iso.EVENT_DURATION].sequence) for pat in tracks_note_dict if pat.get(iso.EVENT_DURATION, None)])
+        time_signature = next(({'numerator': x.get('numerator'), 'denominator': x.get('denominator')} for x in tracks_note_dict if
+             hasattr(x, 'numerator') and hasattr(x, 'denominator')), {'numerator':4,'denominator':4 })
+        factor = time_signature['numerator'] * 4 / time_signature['denominator']
+
+        dur = patterns_from_file_duration
+        dur = dur / factor
+        if dur > int(dur):
+            dur = int(dur) + 1
+        total_duration = dur * factor
+        for pat in tracks_note_dict:
+            if not (pat.get(iso.EVENT_DURATION, None) and pat.get(iso.EVENT_NOTE, None)):
+                continue
+            diff_duration = total_duration - sum(pat[iso.EVENT_DURATION].sequence)
+            if diff_duration:
+                pat[iso.EVENT_DURATION].sequence.append(diff_duration)
+                pat[iso.EVENT_NOTE].sequence.append(0)
+                if pat.get(iso.EVENT_AMPLITUDE, None):
+                    pat[iso.EVENT_AMPLITUDE].sequence.append(1)
+                if pat.get(iso.EVENT_GATE, None):
+                    pat[iso.EVENT_GATE].sequence.append(pat[iso.EVENT_GATE].sequence[0])
+                if pat.get(iso.EVENT_CHANNEL, None):
+                    pat[iso.EVENT_CHANNEL].sequence.append(pat[iso.EVENT_CHANNEL].sequence[0])
+
+
+
+
+
         return sorted(tracks_note_dict, key=lambda t: 0 if t.get('action', None) else 1)
         # return tracks_note_dict
+   # patterns_from_file_duration = max([sum(pat[iso.EVENT_DURATION].sequence)
+   #                                          for pat in patterns if pat.get(iso.EVENT_DURATION, None)])
+
+# dur = self.patterns_from_file_duration
+# print(dur)
+# dur = dur / factor
+# print(dur)
+# if dur > int(dur):
+#     dur = int(dur) + 1
+#     print(dur)
+# dur = dur * factor
+# print(dur)
