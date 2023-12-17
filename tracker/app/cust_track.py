@@ -181,8 +181,8 @@ class CustTrack(Track):
                 # with snoop(watch_expand=('event.action')):
                 # with snoop(level=2):
 
-                # with snoop:
-                #     snoop.pp(event.action)
+                with snoop:
+                    snoop.pp(event.action)
                 event.action(**event.args)
             except StopIteration:
                 raise StopIteration()

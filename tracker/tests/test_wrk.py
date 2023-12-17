@@ -13,13 +13,14 @@ from tracker.app.midi_dev import *
 tmp_filename = 'x1x1a.mid'
 tmp_filename2 = 'x1x1b.mid'
 play_or_dummy_for_timeline2 = 'dummy'
+# play_or_dummy_for_timeline2 = 'play'
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
 tmp_filenameX = os.path.join(this_dir, '..', '..', 'checks', 'example_midi', 'Var_tempo_1_trk_sax.mid')
 
 # snoop.install(enabled=True, out='output.log', overwrite=True)
 snoop.install(out='outputx.log', overwrite=True)
-snoop.install(enabled=False)
+# snoop.install(enabled=False)
 
 
 
@@ -566,7 +567,8 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
 
     events = {
 
-        iso.EVENT_NOTE: iso.PSequence(sequence=[50, 52, 55], repeats=1)
+        # iso.EVENT_NOTE: iso.PSequence(sequence=[50, 52, 55], repeats=1)
+        iso.EVENT_NOTE: iso.PSequence(sequence=[50, 51, 52], repeats=1)
         # iso.EVENT_NOTE: iso.PSequence(sequence=[50, 52], repeats=1)
         , iso.EVENT_DURATION: iso.PSequence(sequence=[0.5, 1, 1], repeats=1)
         # , iso.EVENT_DURATION: iso.PSequence(sequence=[1.5, 1.5], repeats=1)
@@ -574,8 +576,10 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
         # , iso.EVENT_PROGRAM_CHANGE: 0
     }
     events2 = {
-        iso.EVENT_NOTE: iso.PSequence(sequence= [75,  69,  72], repeats=1)
-        , iso.EVENT_DURATION : iso.PSequence(sequence=[1, 1, 1], repeats=1)
+        # iso.EVENT_NOTE: iso.PSequence(sequence= [75,  69,  72], repeats=1)
+        iso.EVENT_NOTE: iso.PSequence(sequence= [62,  63,  64], repeats=1)
+        # , iso.EVENT_DURATION : iso.PSequence(sequence=[1, 1, 1], repeats=1)
+        , iso.EVENT_DURATION : iso.PSequence(sequence=[0.5, 1, 1], repeats=1)
         , iso.EVENT_CHANNEL : 2
         # , iso.EVENT_PROGRAM_CHANGE : 56
         # , iso.EVENT_ACTION : iso.PSequence(sequence = [lambda: print('asdf1'), lambda: print('asdf2'), lambda: print('asdf3')], repeats=1)
@@ -600,15 +604,14 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
 
     }
 
-    dummy_tim.schedule(pgm, sel_track_idx=0)
-    dummy_tim.schedule(pgm2, sel_track_idx=1)
-    dummy_tim.schedule(events_action, sel_track_idx=0)
-    dummy_tim.schedule(events, sel_track_idx=0)
+    # dummy_tim.schedule(pgm, sel_track_idx=0)
+    # dummy_tim.schedule(pgm2, sel_track_idx=1)
+    # dummy_tim.schedule(events_action, sel_track_idx=0)
+    # dummy_tim.schedule(events, sel_track_idx=0)
     dummy_tim.schedule(events2, sel_track_idx=1)
 
     dummy_tim.run()
     dummy_tim.output_device.write()
-    # return
 
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
     print(dummy_tim.output_devices[0].filename)
@@ -626,18 +629,30 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
 
     flag = True
 
-    dur = 1
+    dur = 4
+    rp = 1
+    # _ = dummy_tim2.schedule(patterns)
     # _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat()], repeats=1),
-    _ = dummy_tim2.schedule({"action": iso.PSequence( sequence=[lambda track_idx : file_beat()], repeats=2),
+    _ = dummy_tim2.schedule({"action": iso.PSequence( sequence=[lambda track_idx : file_beat()], repeats=rp),
                             # iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=1)
-                            iso.EVENT_DURATION: iso.PSequence(sequence=[12], repeats=2)
+                            iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=rp)
                             # "duration": 4 * self.time_signature['numerator'] / self.time_signature['denominator']
                             # "quantize": 1
 
                             },
                            remove_when_done=True)
+    # _ = dummy_tim2.schedule({iso.EVENT_NOTE: iso.PSequence(sequence=[50], repeats=rp),
+    #                         # iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=1)
+    #                         iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=rp)
+    #                         # "duration": 4 * self.time_signature['numerator'] / self.time_signature['denominator']
+    #                         # "quantize": 1
+    #
+    #                         },
+    #                        remove_when_done=True)
 
     # dummy_tim2.schedule(patterns, remove_when_done=flag)
+    # return
     dummy_tim2.run()
+    # return
     dummy_tim2.output_device.write()
     print_mid(dummy_tim2.output_devices[0].filename)

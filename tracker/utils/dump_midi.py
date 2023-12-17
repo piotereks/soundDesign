@@ -15,8 +15,9 @@ def print_mid(filename):
     print(f"{ticks_per_beat=},{tempo=},{tick_time=}")
     print('-' * 40)
     print(filename)
-    for track in mid.tracks or []:
-        print(f'Track #{mid.tracks.index(track)}')
+    for index, track in enumerate(mid.tracks or []):
+        # print(f'Track #{mid.tracks.index(track)}')
+        print(f'Track #{index}')
         for msg in track:
             if msg.is_meta:
                 print(msg)
@@ -58,7 +59,7 @@ def direct_midi_play():
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1e.mid')
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
     # filename = os.path.join(this_dir, '..', 'tests', 'x1x1_many_repeatitions.mid')
-    filename = os.path.join(this_dir, '..', 'tests', 'xoutput_20231210213312.mid')
+    # filename = os.path.join(this_dir, '..', 'tests', 'xoutput_20231210213312.mid')
 
     # filename = os.path.join(this_dir, '..', 'tests', 'aedited_src_Var_tempo_2_trks_sax_piano.mid')
 
@@ -73,7 +74,8 @@ def direct_midi_play():
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1_dedup.mid')
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1_dedup_tgt.mid')
     filename = os.path.join(this_dir, '..', 'tests', 'xoutput_20231209230252.mid')
-    # print_mid(filename)
+    filename = os.path.join(this_dir, '..', 'tests', 'x1x1b.mid')
+    print_mid(filename)
 
 if __name__ == '__main__':
     direct_midi_play()

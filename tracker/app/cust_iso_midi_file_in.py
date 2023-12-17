@@ -114,8 +114,8 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
         # track = note_tracks[0]
         tracks_note_dict = []
         channel_calc = 0
-        for track in note_tracks:
-            track_idx = note_tracks.index(track)
+        for track_idx, track in enumerate(note_tracks):
+            # track_idx = note_tracks.index(track)
             notes = []
             offset = 0
             offset_int = 0
@@ -140,6 +140,9 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                     # ------------------------------------------------------------------------
                     # Found a note_off event.
                     # ------------------------------------------------------------------------
+                    # filter note_off fake marker
+                    if event.__dict__ == {'type': 'note_off', 'time': 0, 'note': 0, 'velocity': 64, 'channel': 0}:
+                        continue
                     offset_int += event.time
                     offset = offset_int / midi_reader.ticks_per_beat
                     for note in reversed(notes):
@@ -221,8 +224,8 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
             # ------------------------------------------------------------------------
             # Quantize
             # ------------------------------------------------------------------------
-            for note in notes:
-                if quantize:
+            if quantize:
+                for note in notes:
                     note.location = round(note.location / quantize) * quantize
                     if hasattr(note, 'duration'):
                         note.duration = round(note.duration / quantize) * quantize
@@ -361,7 +364,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                         note_dict[EVENT_GATE].append(
                             tuple(note.duration / time_until_next_note for note in notes if isinstance(note, MidiNote)))
                         note_dict[EVENT_CHANNEL].append(tuple(
-                            int(note.channel / time_until_next_note) for note in notes if isinstance(note, MidiNote)))
+                            int(note.channel) for note in notes if isinstance(note, MidiNote)))
                 else:
                     if time_until_next_note:
                         note = notes[0]
@@ -378,7 +381,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                             note_dict[EVENT_NOTE].append(note.pitch)
                             note_dict[EVENT_AMPLITUDE].append(note.velocity)
                             note_dict[EVENT_GATE].append(note.duration / time_until_next_note)
-                            note_dict[EVENT_CHANNEL].append(int(note.channel / time_until_next_note))
+                            note_dict[EVENT_CHANNEL].append(note.channel)
                         else:
                             # note_dict[EVENT_ACTION].append( lambda note=note: print(note.__dict__))
                             # note_dict[EVENT_ACTION].append(lambda timeline, note=note: self.print_obj(timeline, note))
