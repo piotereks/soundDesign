@@ -1,4 +1,7 @@
 {
-    "python.analysis.typeCheckingMode": "basic",
-    "materialkv.pythonFile": "main.py"
+    "python.testing.pytestArgs": [
+        "tracker"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
 }

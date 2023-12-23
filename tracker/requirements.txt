@@ -4,3 +4,4 @@ numpy
 pynput
 PyYAML
 networkx
+snoop

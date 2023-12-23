@@ -11,4 +11,7 @@ tracker/**/__pycache__/
 /checks/pyt/Reports/
 /venv/
 **/.pytest_cache/
+**/__pycache__/
 /.vscode/
+x1x1a.mid
+x1x1b.mid
