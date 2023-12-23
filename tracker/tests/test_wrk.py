@@ -680,3 +680,55 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
     # return
     dummy_tim2.output_device.write()
     print_mid(dummy_tim2.output_devices[0].filename)
+
+def test_extra_track():
+    test_midi_out_device = MidiFileManyTracksOutputDevice(filename='dupa')
+    test_midi_out_device.extra_track(channel=2, src_track_idx=None)
+    assert test_midi_out_device.channel_track == [2]
+    assert test_midi_out_device.tgt_track_idxs == [None]
+
+    test_midi_out_device = MidiFileManyTracksOutputDevice(filename='dupa')
+    test_midi_out_device.extra_track(channel=None, src_track_idx=1)
+    assert test_midi_out_device.channel_track == [None]
+    assert test_midi_out_device.tgt_track_idxs == [1]
+
+    test_midi_out_device = MidiFileManyTracksOutputDevice(filename='dupa')
+    test_midi_out_device.extra_track(channel=None, src_track_idx=None)
+    assert test_midi_out_device.channel_track == [None]
+    assert test_midi_out_device.tgt_track_idxs == [None]
+
+    # test_midi_out_device = MidiFileManyTracksOutputDevice(filename='dupa')
+    test_midi_out_device.extra_track(channel=2, src_track_idx=1)
+    assert test_midi_out_device.channel_track == [2]
+    assert test_midi_out_device.tgt_track_idxs == [1]
+
+    test_midi_out_device.extra_track(channel=None, src_track_idx=2)
+    assert test_midi_out_device.channel_track == [2, None]
+    assert test_midi_out_device.tgt_track_idxs == [1, 2]
+
+    test_midi_out_device.extra_track(channel=3, src_track_idx=2)
+    assert test_midi_out_device.channel_track == [2, 3]
+    assert test_midi_out_device.tgt_track_idxs == [1, 2]
+
+    test_midi_out_device.extra_track(channel=4, src_track_idx=2)
+    assert test_midi_out_device.channel_track == [2, 3, 4]
+    assert test_midi_out_device.tgt_track_idxs == [1, 2, 2]
+
+    test_midi_out_device.extra_track(channel=4, src_track_idx=None)
+    assert test_midi_out_device.channel_track == [2, 3, 4]
+    assert test_midi_out_device.tgt_track_idxs == [1, 2, 2]
+
+    test_midi_out_device.extra_track(channel=5, src_track_idx=None)
+    assert test_midi_out_device.channel_track == [2, 3, 4, 5]
+    assert test_midi_out_device.tgt_track_idxs == [1, 2, 2, None]
+
+    test_midi_out_device.extra_track(channel=5, src_track_idx=1)
+    assert test_midi_out_device.channel_track == [2, 3, 4, 5]
+    assert test_midi_out_device.tgt_track_idxs == [1, 2, 2, 1]
+
+    test_midi_out_device.extra_track(channel=5, src_track_idx=2)
+    assert test_midi_out_device.channel_track == [2, 3, 4, 5, 5]
+    assert test_midi_out_device.tgt_track_idxs == [1, 2, 2, 1, 2]
+
+    pass
+
