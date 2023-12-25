@@ -45,47 +45,59 @@ if MULTI_TRACK:
 
                 self.time.append(0)
                 self.last_event_time.append(0)
+                snoop.pp(self.channel_track, self.tgt_track_idxs)
+                return len(self.tgt_track_idxs)-1
 
             snoop.pp(inspect.currentframe().f_back.f_back)
             if src_track_idx is not None and channel is not None:
                 if self.tgt_track_idxs == [None] and self.channel_track == [None]:
                     self.tgt_track_idxs = [src_track_idx]
                     self.channel_track = [channel]
+                    snoop.pp(self.channel_track, self.tgt_track_idxs)
                     return 0
                 if (channel, src_track_idx) in zip(self.channel_track, self.tgt_track_idxs):
+                    snoop.pp(self.channel_track, self.tgt_track_idxs)
                     return list(zip(self.channel_track, self.tgt_track_idxs)).index((channel, src_track_idx))
                 if (channel, None) in zip(self.channel_track, self.tgt_track_idxs):
                     idx = list(zip(self.channel_track, self.tgt_track_idxs)).index((channel, None))
                     self.tgt_track_idxs[idx] = src_track_idx
+                    snoop.pp(self.channel_track, self.tgt_track_idxs)
                     return idx
                 if (None, src_track_idx) in zip(self.channel_track, self.tgt_track_idxs):
                     idx = list(zip(self.channel_track, self.tgt_track_idxs)).index((None, src_track_idx))
                     self.channel_track[idx] = channel
+                    snoop.pp(self.channel_track, self.tgt_track_idxs)
                     return idx
 
-                add_track(chn=channel,tix=src_track_idx)
+                return add_track(chn=channel,tix=src_track_idx)
 
             if src_track_idx is not None:
                 if self.tgt_track_idxs == [None] and self.channel_track == [None]:
                     self.tgt_track_idxs = [src_track_idx]
+                    snoop.pp(self.channel_track, self.tgt_track_idxs)
                     return 0
 
                 if src_track_idx in self.tgt_track_idxs:
                     idx = self.tgt_track_idxs.index(src_track_idx)
+                    snoop.pp(self.channel_track, self.tgt_track_idxs)
                     return idx
 
-                add_track(chn=None, tix=src_track_idx)
+                return add_track(chn=None, tix=src_track_idx)
 
             if channel is not None:
                 if self.tgt_track_idxs == [None] and self.channel_track == [None]:
                     self.channel_track = [channel]
+                    snoop.pp(self.channel_track, self.tgt_track_idxs)
                     return 0
 
                 if channel in self.channel_track:
                     idx = self.channel_track.index(channel)
+                    snoop.pp(self.channel_track, self.tgt_track_idxs)
                     return idx
 
-                add_track(chn=channel, tix=None)
+                return add_track(chn=channel, tix=None)
+            snoop.pp(self.channel_track, self.tgt_track_idxs)
+            return 1
 
             # assert False
 
