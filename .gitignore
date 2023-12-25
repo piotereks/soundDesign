@@ -12,4 +12,7 @@ tracker/**/__pycache__/
 /venv/
 **/.pytest_cache/
 **/__pycache__/
-
+tracker/utils/edited_src_Var_tempo_2_trks_sax_piano.mid
+tracker/utils/src_Var_tempo_2_trks_sax_piano.mid
+x1x1a.mid
+x1x1b.mid
