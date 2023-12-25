@@ -5,7 +5,7 @@ from itertools import accumulate, chain
 from queue import Queue
 
 import snoop
-import pysnooper
+# import pysnooper
 
 from .isobar_fixes import *
 from .log_call import *
