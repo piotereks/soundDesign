@@ -597,7 +597,7 @@ class Tracker:
         print(f"{time.time()=}")
         print(f"{4*self.time_signature['numerator']/self.time_signature['denominator']=},{self.metro_beat=}")
         if MULTI_TRACK:
-            self.midi_out.extra_track(channel=9)  # for percussion channel 10 (or 9 when counting from 0).
+            self.midi_out.get_channel_track(channel=9)  # for percussion channel 10 (or 9 when counting from 0).
         return self.timeline.schedule({
             "action": lambda track_idx: self.metro_beat(),
             # "duration": 3/2
@@ -782,7 +782,7 @@ class Tracker:
         if self.patterns_from_file:
             channels = set(flatten(list(pf[EVENT_CHANNEL]) for pf in copy.deepcopy(self.patterns_from_file) if pf.get(EVENT_CHANNEL, None)))
             for c in channels:
-                self.midi_out.extra_track(channel=c)
+                self.midi_out.get_channel_track(channel=c)
 
             dur = self.patterns_from_file_duration
             print(dur)

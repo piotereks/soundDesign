@@ -35,7 +35,7 @@ if MULTI_TRACK:
             self.last_event_time.append(0)
 
         @snoop(watch=('self.tgt_track_idxs', 'self.channel_track'))
-        def extra_track(self, channel=None, src_track_idx=None):
+        def get_channel_track(self, channel=None, src_track_idx=None):
             def add_track(chn, tix):
                 track = mido.MidiTrack()
                 self.miditrack.append(track)
@@ -89,7 +89,7 @@ if MULTI_TRACK:
 
             # assert False
 
-        def extra_track_old(self, channel=None, src_track_idx=None):
+        def get_channel_track_old(self, channel=None, src_track_idx=None):
             snoop.pp(inspect.currentframe().f_back.f_back)
             # if src_track_idx is not None and channel is not None:
                 # if src_track_idx not in self.tgt_track_idxs or channel not in self.channel_track:
@@ -164,11 +164,11 @@ if MULTI_TRACK:
                     else:
                         if self.channel_track[channel_pos] == channel:
                             return channel_pos
-                    assert False
+                    return 0
 
 
         @snoop(watch=('self.tgt_track_idxs','self.channel_track'))
-        def get_channel_track(self, channel=0, src_track_idx=None):
+        def get_channel_trackxxx(self, channel=0, src_track_idx=None):
             snoop.pp(inspect.currentframe().f_back.f_back)
             if src_track_idx is not None:
                 try:
@@ -177,13 +177,13 @@ if MULTI_TRACK:
                         self.channel_track[track_idx] = channel
 
                 except ValueError:
-                    track_idx = self.extra_track(channel=channel, src_track_idx=src_track_idx)
+                    track_idx = self.get_channel_track(channel=channel, src_track_idx=src_track_idx)
                 return track_idx
             try:
                 track = self.channel_track.index(channel)
             except ValueError:
                 # track = 0
-                track = self.extra_track(channel=channel)
+                track = self.get_channel_track(channel=channel)
             return track
 
         @snoop
