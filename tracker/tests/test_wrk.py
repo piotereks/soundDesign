@@ -13,7 +13,7 @@ from tracker.app.midi_dev import *
 tmp_filename = 'x1x1a.mid'
 tmp_filename2 = 'x1x1b.mid'
 play_or_dummy_for_timeline2 = 'dummy'
-# play_or_dummy_for_timeline2 = 'play'
+play_or_dummy_for_timeline2 = 'play'
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
 tmp_filenameX = os.path.join(this_dir, '..', '..', 'checks', 'example_midi', 'Var_tempo_1_trk_sax.mid')
