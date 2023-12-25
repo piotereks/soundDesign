@@ -499,7 +499,9 @@ def test_track_edit(dummy_timeline):
 
     x = 1
 
-    mid.save('edited_'+str(filename).split('\\')[-1])
+    mid.save(os.path.join(os.path.directory(filename), 'edited_' + os.path.basename(filename)))
+    
+
 
     x = 1
 
