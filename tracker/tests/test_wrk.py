@@ -682,7 +682,7 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
     print_mid(dummy_tim2.output_devices[0].filename)
 
 
-def test_extra_track():
+def test_extra_track():  #  This will be real TC
     test_midi_out_device = MidiFileManyTracksOutputDevice(filename='dupa')
     test_midi_out_device.extra_track(channel=2, src_track_idx=None)
     assert test_midi_out_device.channel_track == [2]

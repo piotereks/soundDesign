@@ -34,11 +34,15 @@
 		"9000": {
 			"label": "Hello Remote World",
 			"onAutoForward": "notify"
+		},
+		"8888": {
+			"label": "jupyter",
+			"onAutoForward": "notify"
 		}
 	},
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "pip3  install -r tracker/requirements.txt"
+	"postCreateCommand": "pip3  install -r tracker/requirements.txt && echo dupa"
 
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
