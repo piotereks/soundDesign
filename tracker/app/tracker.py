@@ -20,7 +20,7 @@ ACCENT_BIG = int(ACCENT_DEFAULT * ACCENT_BIG_FACTOR)
 ACCENT_MED = int(ACCENT_DEFAULT * ACCENT_MED_FACTOR)
 
 
-snoop.install(out='outputx.log', overwrite=True)
+snoop.install(out='output.log', overwrite=True)
 # snoop.install(enabled=True)
 # snoop.install(enabled=False)
 
@@ -780,9 +780,9 @@ class Tracker:
         factor = self.time_signature['numerator'] * 4 / self.time_signature['denominator']
         print(f"{factor=}")
         if self.patterns_from_file:
-            channels = set(flatten(list(pf[EVENT_CHANNEL]) for pf in copy.deepcopy(self.patterns_from_file) if pf.get(EVENT_CHANNEL, None)))
-            for c in channels:
-                self.midi_out.get_channel_track(channel=c)
+            # channels = set(flatten(list(pf[EVENT_CHANNEL]) for pf in copy.deepcopy(self.patterns_from_file) if pf.get(EVENT_CHANNEL, None)))
+            # for c in channels:
+            #     self.midi_out.get_channel_track(channel=c)
 
             dur = self.patterns_from_file_duration
             print(dur)
