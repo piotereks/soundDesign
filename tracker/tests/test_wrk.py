@@ -66,24 +66,7 @@ def dummy_timeline2():
     return timeline
 
 
-def test_timeline_schedulex(dummy_timeline):
-    events = {
-        iso.EVENT_NOTE: iso.PSequence([1], 1)
-    }
 
-    dummy_timeline.schedule(events)
-    print("b")
-    assert len(events.keys()) == 1
-    print("c")
-    dummy_timeline.run()
-    print("d")
-    assert len(dummy_timeline.output_device.events) == 2
-    print("e")
-    assert dummy_timeline.output_device.events[0] == [pytest.approx(0.0), "note_on", 1, 64, 0]
-    print("f")
-    assert dummy_timeline.output_device.events[1] == [pytest.approx(1.0), "note_off", 1, 0]
-    print("g")
-    # assert False
 
 
 def test_timeline_wrk(dummy_timeline, dummy_timeline2):
