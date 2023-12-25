@@ -15,7 +15,10 @@
 			"settings": {},
 			"extensions": [
 				"streetsidesoftware.code-spell-checker",
-				"demystifying-javascript.python-extensions-pack"
+				"demystifying-javascript.python-extensions-pack",
+				"littlefoxteam.vscode-python-test-adapter",
+				"pamaron.pytest-runner",
+				"VisualStudioExptTeam.vscodeintellicode"
 			]
 		}
 	},
@@ -28,10 +31,6 @@
 	"portsAttributes": {
 		"9000": {
 			"label": "Hello Remote World",
-			"onAutoForward": "notify"
-		},
-		"8888": {
-			"label": "jupyter",
 			"onAutoForward": "notify"
 		}
 	},
