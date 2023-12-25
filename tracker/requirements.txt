@@ -5,3 +5,4 @@ pynput
 PyYAML
 networkx
 snoop
+pytest
