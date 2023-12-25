@@ -13,7 +13,7 @@ from tracker.app.midi_dev import *
 tmp_filename = 'x1x1a.mid'
 tmp_filename2 = 'x1x1b.mid'
 play_or_dummy_for_timeline2 = 'dummy'
-# play_or_dummy_for_timeline2 = 'play'
+play_or_dummy_for_timeline2 = 'play'
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
 tmp_filenameX = os.path.join(this_dir, '..', '..', 'checks', 'example_midi', 'Var_tempo_1_trk_sax.mid')
@@ -66,24 +66,7 @@ def dummy_timeline2():
     return timeline
 
 
-def test_timeline_schedulex(dummy_timeline):
-    events = {
-        iso.EVENT_NOTE: iso.PSequence([1], 1)
-    }
 
-    dummy_timeline.schedule(events)
-    print("b")
-    assert len(events.keys()) == 1
-    print("c")
-    dummy_timeline.run()
-    print("d")
-    assert len(dummy_timeline.output_device.events) == 2
-    print("e")
-    assert dummy_timeline.output_device.events[0] == [pytest.approx(0.0), "note_on", 1, 64, 0]
-    print("f")
-    assert dummy_timeline.output_device.events[1] == [pytest.approx(1.0), "note_off", 1, 0]
-    print("g")
-    # assert False
 
 
 def test_timeline_wrk(dummy_timeline, dummy_timeline2):
@@ -499,7 +482,9 @@ def test_track_edit(dummy_timeline):
 
     x = 1
 
-    mid.save('edited_'+str(filename).split('\\')[-1])
+    mid.save(os.path.join(os.path.dirname(filename), 'edited_' + os.path.basename(filename)))
+    
+
 
     x = 1
 
@@ -680,3 +665,56 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
     # return
     dummy_tim2.output_device.write()
     print_mid(dummy_tim2.output_devices[0].filename)
+
+
+def test_extra_track():  #  This will be real TC
+    test_midi_out_device = MidiFileManyTracksOutputDevice(filename='dupa')
+    test_midi_out_device.extra_track(channel=2, src_track_idx=None)
+    assert test_midi_out_device.channel_track == [2]
+    assert test_midi_out_device.tgt_track_idxs == [None]
+
+    test_midi_out_device = MidiFileManyTracksOutputDevice(filename='dupa')
+    test_midi_out_device.extra_track(channel=None, src_track_idx=1)
+    assert test_midi_out_device.channel_track == [None]
+    assert test_midi_out_device.tgt_track_idxs == [1]
+
+    test_midi_out_device = MidiFileManyTracksOutputDevice(filename='dupa')
+    test_midi_out_device.extra_track(channel=None, src_track_idx=None)
+    assert test_midi_out_device.channel_track == [None]
+    assert test_midi_out_device.tgt_track_idxs == [None]
+
+    # test_midi_out_device = MidiFileManyTracksOutputDevice(filename='dupa')
+    test_midi_out_device.extra_track(channel=2, src_track_idx=1)
+    assert test_midi_out_device.channel_track == [2]
+    assert test_midi_out_device.tgt_track_idxs == [1]
+
+    test_midi_out_device.extra_track(channel=None, src_track_idx=2)
+    assert test_midi_out_device.channel_track == [2, None]
+    assert test_midi_out_device.tgt_track_idxs == [1, 2]
+
+    test_midi_out_device.extra_track(channel=3, src_track_idx=2)
+    assert test_midi_out_device.channel_track == [2, 3]
+    assert test_midi_out_device.tgt_track_idxs == [1, 2]
+
+    test_midi_out_device.extra_track(channel=4, src_track_idx=2)
+    assert test_midi_out_device.channel_track == [2, 3, 4]
+    assert test_midi_out_device.tgt_track_idxs == [1, 2, 2]
+
+    test_midi_out_device.extra_track(channel=4, src_track_idx=None)
+    assert test_midi_out_device.channel_track == [2, 3, 4]
+    assert test_midi_out_device.tgt_track_idxs == [1, 2, 2]
+
+    test_midi_out_device.extra_track(channel=5, src_track_idx=None)
+    assert test_midi_out_device.channel_track == [2, 3, 4, 5]
+    assert test_midi_out_device.tgt_track_idxs == [1, 2, 2, None]
+
+    test_midi_out_device.extra_track(channel=5, src_track_idx=1)
+    assert test_midi_out_device.channel_track == [2, 3, 4, 5]
+    assert test_midi_out_device.tgt_track_idxs == [1, 2, 2, 1]
+
+    test_midi_out_device.extra_track(channel=5, src_track_idx=2)
+    assert test_midi_out_device.channel_track == [2, 3, 4, 5, 5]
+    assert test_midi_out_device.tgt_track_idxs == [1, 2, 2, 1, 2]
+
+    pass
+

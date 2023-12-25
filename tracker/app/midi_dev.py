@@ -36,7 +36,72 @@ if MULTI_TRACK:
 
         @snoop(watch=('self.tgt_track_idxs', 'self.channel_track'))
         def extra_track(self, channel=None, src_track_idx=None):
+            def add_track(chn, tix):
+                track = mido.MidiTrack()
+                self.miditrack.append(track)
+                self.midifile.tracks.append(track)
+                self.channel_track.append(chn)
+                self.tgt_track_idxs.append(tix)
+
+                self.time.append(0)
+                self.last_event_time.append(0)
+
             snoop.pp(inspect.currentframe().f_back.f_back)
+            if src_track_idx is not None and channel is not None:
+                if self.tgt_track_idxs == [None] and self.channel_track == [None]:
+                    self.tgt_track_idxs = [src_track_idx]
+                    self.channel_track = [channel]
+                    return 0
+                if (channel, src_track_idx) in zip(self.channel_track, self.tgt_track_idxs):
+                    return list(zip(self.channel_track, self.tgt_track_idxs)).index((channel, src_track_idx))
+                if (channel, None) in zip(self.channel_track, self.tgt_track_idxs):
+                    idx = list(zip(self.channel_track, self.tgt_track_idxs)).index((channel, None))
+                    self.tgt_track_idxs[idx] = src_track_idx
+                    return idx
+                if (None, src_track_idx) in zip(self.channel_track, self.tgt_track_idxs):
+                    idx = list(zip(self.channel_track, self.tgt_track_idxs)).index((None, src_track_idx))
+                    self.channel_track[idx] = channel
+                    return idx
+
+                add_track(chn=channel,tix=src_track_idx)
+
+            if src_track_idx is not None:
+                if self.tgt_track_idxs == [None] and self.channel_track == [None]:
+                    self.tgt_track_idxs = [src_track_idx]
+                    return 0
+
+                if src_track_idx in self.tgt_track_idxs:
+                    idx = self.tgt_track_idxs.index(src_track_idx)
+                    return idx
+
+                add_track(chn=None, tix=src_track_idx)
+
+            if channel is not None:
+                if self.tgt_track_idxs == [None] and self.channel_track == [None]:
+                    self.channel_track = [channel]
+                    return 0
+
+                if channel in self.channel_track:
+                    idx = self.channel_track.index(channel)
+                    return idx
+
+                add_track(chn=channel, tix=None)
+
+            # assert False
+
+        def extra_track_old(self, channel=None, src_track_idx=None):
+            snoop.pp(inspect.currentframe().f_back.f_back)
+            # if src_track_idx is not None and channel is not None:
+                # if src_track_idx not in self.tgt_track_idxs or channel not in self.channel_track:
+                #     track = mido.MidiTrack()
+                #     self.miditrack.append(track)
+                #     self.midifile.tracks.append(track)
+                #     self.channel_track.append(channel)
+                #     self.tgt_track_idxs.append(src_track_idx)
+                #     self.time.append(0)
+                #     self.last_event_time.append(0)
+                #     return next((index for index, ch in enumerate(self.channel_track) if ch is channel), None)
+
             if src_track_idx is not None:
                 if src_track_idx not in self.tgt_track_idxs:
                     # if self.miditrack == [None]:
@@ -62,10 +127,26 @@ if MULTI_TRACK:
                     self.last_event_time.append(0)
                     return next((index for index, tr in enumerate(self.midifile.tracks) if tr is track), None)
                     # return self.midifile.tracks.index(track)
+                else:
+                    src_track_idx_pos = self.tgt_track_idxs.index(src_track_idx)
+                    if self.channel_track[src_track_idx_pos] is None:
+                        self.channel_track[src_track_idx_pos] = channel
+                        return src_track_idx_pos
+                    else:
+                        if self.channel_track[src_track_idx_pos] == channel:
+                            return src_track_idx_pos
 
             if channel is not None:
                 # if not [x for x in self.channel_track if x == channel]:
                 if channel not in self.channel_track:
+                    if self.tgt_track_idxs == [None] and self.channel_track == [None]:
+                        if self.tgt_track_idxs == [None]:
+                            self.tgt_track_idxs = [src_track_idx]
+                        if self.channel_track == [None]:
+                            self.channel_track = [channel]
+                        return 0
+
+
                     track = mido.MidiTrack()
                     self.miditrack.append(track)
                     self.midifile.tracks.append(track)
@@ -75,6 +156,16 @@ if MULTI_TRACK:
                     self.last_event_time.append(0)
                     return next((index for index, ch in enumerate(self.channel_track) if ch is channel), None)
                     # return self.channel_track.index(channel)
+                else:
+                    channel_pos = self.channel_track.index(channel)
+                    if self.tgt_track_idxs[channel_pos] is None:
+                        self.tgt_track_idxs[channel_pos] = src_track_idx
+                        return channel_pos
+                    else:
+                        if self.channel_track[channel_pos] == channel:
+                            return channel_pos
+                    assert False
+
 
         @snoop(watch=('self.tgt_track_idxs','self.channel_track'))
         def get_channel_track(self, channel=0, src_track_idx=None):
