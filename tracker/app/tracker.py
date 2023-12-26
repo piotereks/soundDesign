@@ -794,8 +794,8 @@ class Tracker:
             dur = dur * factor
             print(dur)
         else:
-            dur = 4*factor
-        #     dur = self.patterns_from_file_duration*self.time_signature['denominator']/self.time_signature['numerator']
+            # dur = 4*factor
+            dur = self.patterns_from_file_duration*self.time_signature['denominator']/self.time_signature['numerator']
 
 
 

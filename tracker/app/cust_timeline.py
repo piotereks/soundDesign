@@ -261,7 +261,8 @@ class CustTimeline():
                 log.info("Timeline: Scheduled new track (total tracks: %d)" % len(self.tracks))
 
             if not bool(event_args):
-                event_args = {"track_idx": sel_track_idx if sel_track_idx is not None else len(self.tracks)}
+                # event_args = {"track_idx": sel_track_idx if sel_track_idx is not None else len(self.tracks)}
+                event_args = {"track_idx": sel_track_idx}
             if not bool(param.get(EVENT_ACTION_ARGS, {})):
                 param[EVENT_ACTION_ARGS] = event_args
 
