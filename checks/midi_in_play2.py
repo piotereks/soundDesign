@@ -190,7 +190,6 @@ def play_mid_file():
             #     print("Paused")
             #     run_event.wait()
             print('running')
-            # TODO Add support for track. Important specially for meta message
             if msg.type in ('note_on', 'note_off'):
                 # port.send(msg)
                 if msg.type == 'note_on':

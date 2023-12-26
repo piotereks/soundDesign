@@ -35,7 +35,6 @@ class ScaleButton(ToggleButtonBehavior, BoxLayout):
 
 class TrackerGuiApp(App):
     # <editor-fold desc="Properties">
-    # to be inititalized from config.json
     parm_rows = NumericProperty()
     parm_cols = NumericProperty()
 
@@ -103,7 +102,6 @@ class TrackerGuiApp(App):
         self.app_config = default_app_config
 
         self.set_key_state(self.app_config.get("key"), self.app_config.get("scale"))
-        # print("al: ",  [al.children[0].text for al in self.root.align_buttons if al.children[0].state == 'down'][0])
         self.on_selected_align(None, [al.text for al in self.root.align_buttons if al.children[0].state == 'down'][0])
         self.on_selected_quantize(None, {q.text: q.children[0].state for q in self.root.quant_buttons})
         self.selected_scale_button = self.app_config.get("scale")
@@ -123,10 +121,9 @@ class TrackerGuiApp(App):
             ]
         # xxx = [self.__set_prop__(prop[0],prop[1]) for prop in properties]
         list(map(lambda prop: self.__set_prop__(prop[0], prop[1]), properties))
-        if hasattr(self.tracker_ref, 'patterns_from_file'):
-            if self.tracker_ref.patterns_from_file:
-                print(self.tracker_ref.patterns_from_file)
-                setattr(self, 'path_queue_content', [None] * 4)
+        if hasattr(self.tracker_ref, 'patterns_from_file') and self.tracker_ref.patterns_from_file:
+            print(self.tracker_ref.patterns_from_file)
+            setattr(self, 'path_queue_content', [None] * 4)
 
         for note in self.path_queue_content or []:
             self.tracker_ref.put_to_queue(note)
@@ -148,7 +145,8 @@ class TrackerGuiApp(App):
         self.selected_scale_button = self.tracker_ref.key.scale.name
         self.scale_values = all_scales
         self.tracker_ref.scale_name_action = lambda: self.set_scale_set_name_txt(
-            'set:' + self.tracker_ref.key.scale.name)
+            f'set:{self.tracker_ref.key.scale.name}'
+        )
         self.tracker_ref.set_rnd_scale_action = lambda: self.rand_scale()
 
         # Key
@@ -165,13 +163,9 @@ class TrackerGuiApp(App):
         self.tracker_ref.set_tempo_action = lambda: self.set_tempo_f_main(None,
                                                                           tempo_knob=self.tracker_ref.midi_mapping[
                                                                               'set_tempo_knob'])
-        # self.tracker_ref.set_tempo_ui =  self.set_tempo_f_main
-        # self.tracker_ref.set_tempo_val_ui = lambda: self.set_tempo_val_ui(None, tempo_knob=self.tracker_ref.midi_mapping['set_tempo_knob'])
         self.tempo_value = self.parm_tempo
         self.tempo_min = self.parm_tempo_min
         self.tempo_max = self.parm_tempo_max
-        # self.tracker_ref.set_tempo_callback =  self.tracker_ref.set_tempo_ui
-        # self.tracker_ref.file_input_device.set_tempo_callback = lambda tempo: print(f"this is tempo for callbackx {tempo=}")
         if hasattr(self.tracker_ref, 'file_input_device'):
             self.tracker_ref.file_input_device.set_tempo_callback = lambda tempo: self.set_tempo_f_main(instance=None,
                                                                                                         tempo=tempo)
@@ -206,10 +200,14 @@ class TrackerGuiApp(App):
         # ClearQ
         # Queue
         self.tracker_ref.check_notes_action = lambda: self.set_check_notes_lbl_text(str(self.tracker_ref.check_notes))
-        self.tracker_ref.queue_content_action = lambda: self.set_queue_content_lbl_text(
-            'queue: ' + str(self.tracker_ref.get_queue_content()))
+        self.tracker_ref.queue_content_action = (
+            lambda: self.set_queue_content_lbl_text(
+                f'queue: {str(self.tracker_ref.get_queue_content())}'
+            )
+        )
         self.set_queue_content_lbl_text(
-            'queue: ' + str(self.tracker_ref.get_queue_content()))
+            f'queue: {str(self.tracker_ref.get_queue_content())}'
+        )
         self.tracker_ref.curr_notes_pair_action = lambda: self.set_curr_notes_pair_lbl_text(
             'from to: ' + str(self.tracker_ref.notes_pair))
         self.tracker_ref.fullq_content_action = lambda: self.set_fullq_content_lbl_text(
@@ -309,8 +307,7 @@ class TrackerGuiApp(App):
     def set_play_pause_state(self, play_pause_button=None):
         if not play_pause_button:
             return
-        state = play_pause_button.get('state')
-        if state:
+        if state := play_pause_button.get('state'):
             self.root.start_stop.state = state
 
     def play_pause_action(self, instance, state=None, play_pause_button=None):
@@ -345,10 +342,11 @@ class TrackerGuiApp(App):
         self.tracker_ref.key = iso.Key(self.tracker_ref.key.tonic, random_scale)
         self.selected_scale_button = self.tracker_ref.key.scale.name
 
-    def keys_scale_action(self, key, scale):
-        log_call()
-        scale_obj = iso.Scale.byname(scale)
-        self.tracker_ref.key = iso.Key(key, scale_obj)
+    def set_loopq_state(self, loopq_button=None):
+        if not loopq_button:
+            return
+        if state := loopq_button.get('state'):
+            self.root.loopq.state = state
 
     def set_scale_nm(self, scale_name):
         log_call()
@@ -398,8 +396,7 @@ class TrackerGuiApp(App):
     def set_metronome_state(self, metronome_button=None):
         if not metronome_button:
             return
-        state = metronome_button.get('state')
-        if state:
+        if state := metronome_button.get('state'):
             self.root.metronome.state = state
 
     def inv_metro_on_off_state(self):
@@ -414,7 +411,6 @@ class TrackerGuiApp(App):
     # </editor-fold>
 
     # <editor-fold desc="Tempo">
-    # @snoop
     def set_tempo_f_main(self, instance, tempo=None, tempo_knob=None):
         log_call()
 
@@ -442,7 +438,6 @@ class TrackerGuiApp(App):
     def set_play_func(self, instance, func_name):
         log_call()
         print('func_name:', func_name)
-        # print(instance)
         if func_name not in self.tracker_ref.note_patterns.pattern_methods_short_list:
             func_name = self.tracker_ref.note_patterns.pattern_methods_short_list[0]
         self.tracker_ref.note_patterns.set_pattern_function(func_name)
@@ -519,8 +514,7 @@ class TrackerGuiApp(App):
     def set_loopq_state(self, loopq_button=None):
         if not loopq_button:
             return
-        state = loopq_button.get('state')
-        if state:
+        if state := loopq_button.get('state'):
             self.root.loopq.state = state
 
     def loopq_action(self, instance, state):
@@ -611,8 +605,7 @@ class ScalesSelectScreen(Screen):
         if direction in ('RL', 'prev'):
             self.rem_buttons()
             self.but_id_offset -= self.grid_len
-            if self.but_id_offset < 0:
-                self.but_id_offset = 0
+            self.but_id_offset = max(self.but_id_offset, 0)
         elif direction in ('LR', 'next'):
             self.rem_buttons()
             if self.but_id_offset + self.grid_len < self.nbr_of_scales:

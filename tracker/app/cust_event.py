@@ -7,20 +7,14 @@ from isobar.exceptions import InvalidEventException
 from isobar.timeline.event import EventDefaults
 
 
-# class XCustEvent(Event):
-#     def __init__(self, event_values):
-#
-#         parm = list(set([EVENT_NOTE, EVENT_ACTION, EVENT_DEGREE]) & set(event_values))
-#         if len(parm) >= 2:
-#             raise InvalidEventException(f"Cannot specify both '{parm[0]}' 'and '{parm[1]}'")
-
-class CustEvent():
+class CustEvent:
     def __init__(self, event_values, defaults=EventDefaults()):
+        # sourcery skip: low-code-quality
         for key in event_values.keys():
             if key not in ALL_EVENT_PARAMETERS:
-                raise ValueError("Invalid key for event: %s" % (key))
+                raise ValueError(f"Invalid key for event: {key}")
 
-        parm = list(set([EVENT_NOTE, EVENT_ACTION, EVENT_DEGREE]) & set(event_values))
+        parm = list({EVENT_NOTE, EVENT_ACTION, EVENT_DEGREE} & set(event_values))
         if len(parm) >= 2:
             raise InvalidEventException(f"Cannot specify both '{parm[0]}' 'and '{parm[1]}'")
 
@@ -96,7 +90,10 @@ class CustEvent():
             self.action = event_values[EVENT_ACTION]
             self.args = {}
             if EVENT_ACTION_ARGS in event_values:
-                self.args = dict((key, Pattern.value(value)) for key, value in event_values[EVENT_ACTION_ARGS].items())
+                self.args = {
+                    key: Pattern.value(value)
+                    for key, value in event_values[EVENT_ACTION_ARGS].items()
+                }
 
         elif EVENT_PATCH in event_values:
             # ----------------------------------------------------------------------
@@ -110,11 +107,10 @@ class CustEvent():
 
             if EVENT_TYPE in event_values:
                 self.type = event_values[EVENT_TYPE]
+            elif type(self.patch).__name__ == "PatchSpec" or isinstance(self.patch, type):
+                self.type = EVENT_TYPE_PATCH_CREATE
             else:
-                if type(self.patch).__name__ == "PatchSpec" or isinstance(self.patch, type):
-                    self.type = EVENT_TYPE_PATCH_CREATE
-                else:
-                    self.type = EVENT_TYPE_PATCH_SET
+                self.type = EVENT_TYPE_PATCH_SET
 
             if EVENT_PATCH_OUTPUT in event_values:
                 self.output = event_values[EVENT_PATCH_OUTPUT]
@@ -126,7 +122,6 @@ class CustEvent():
             if EVENT_NOTE in event_values:
                 self.note = event_values[EVENT_NOTE]
 
-            # TODO: Different kinds of event should really be different classes
             self.trigger_name = None
             self.trigger_value = None
             if EVENT_TRIGGER_NAME in event_values:
@@ -173,7 +168,9 @@ class CustEvent():
         else:
             possible_event_types = [EVENT_NOTE, EVENT_DEGREE, EVENT_ACTION, EVENT_PATCH, EVENT_CONTROL,
                                     EVENT_PROGRAM_CHANGE, EVENT_OSC_ADDRESS]
-            raise InvalidEventException("No event type specified (must provide one of %s)" % possible_event_types)
+            raise InvalidEventException(
+                f"No event type specified (must provide one of {possible_event_types})"
+            )
 
         self.duration = event_values[EVENT_DURATION]
         self.active = event_values[EVENT_ACTIVE]

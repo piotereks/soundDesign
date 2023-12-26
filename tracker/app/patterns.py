@@ -16,7 +16,6 @@ class DurationPatterns:
         self.__read_config_file__()
 
     def __read_config_file__(self):
-        # print('reading config')
         this_dir = os.path.dirname(os.path.abspath(__file__))
         config_file = os.path.join(this_dir, '../config/duration_patterns.json')
 
@@ -86,18 +85,15 @@ def mod_duration(func):  # added self, eventual issue
                     continue
                 if split_size == 1:
                     if norm_dot == 'norm':
-                        # durations.extend(np.array([1]))
                         durations.extend([1])
                     else:
                         durations.extend([1.5])
-                        # durations.extend(np.array([1.5]))
                     continue
-                if parameters['quantize']['2'] == parameters['quantize']['3'] and parameters['quantize']['3'] == \
-                        parameters['quantize'][
-                            '5']:
-                    condition = True
-                else:
-                    condition = False
+                condition = (
+                        parameters['quantize']['2'] == parameters['quantize']['3']
+                        and parameters['quantize']['3']
+                        == parameters['quantize']['5']
+                )
                 any_flag2 = parameters['quantize']['2'] == 'down'
                 any_flag3 = parameters['quantize']['3'] == 'down'
                 any_flag5 = parameters['quantize']['5'] == 'down'
@@ -182,19 +178,14 @@ class NotePatterns:
 
     @staticmethod
     def multiply_pattern(pattern: list, mult):
-        # pattern = np.array(pattern)
-        # add_pattern = []
-        # res_pattern = []
-
         mult = abs(mult)
         if mult == 1:
             return pattern
 
-        else:
-            res_pattern = pattern
-            add_pattern = pattern[1:]
-            shift = pattern[-1]
-        for a in range(mult - 1):
+        res_pattern = pattern
+        add_pattern = pattern[1:]
+        shift = pattern[-1]
+        for _ in range(mult - 1):
             add_pattern = list(map(lambda x: x + shift, add_pattern))
             res_pattern.extend(add_pattern)
         return res_pattern  # [:-1]
@@ -207,7 +198,6 @@ class NotePatterns:
             suitable_patterns = [pattern for pattern in
                                  self.patterns['play_over'] if pattern[-1] in self.pattern_size_for_interval[interval]]
         else:
-            # cntr = 0
             suitable_patterns = [list(map(lambda x: x * sign * int(np.sign(pattern[-1])),
                                           self.multiply_pattern(pattern[:], int(interval / pattern[-1]))))
                                  for pattern in self.patterns['play_over']
@@ -224,17 +214,12 @@ class NotePatterns:
                                  self.patterns['diminution'] if
                                  pattern[-1] in self.pattern_size_for_interval[interval]]
         else:
-            # cntr = 0
             suitable_patterns = [list(map(lambda x: x * sign * int(np.sign(pattern[-1])),
                                           pattern[:]))
                                  for pattern in self.patterns['diminution']
-                                 if abs(pattern[-1]) == interval]
-            if not suitable_patterns:
-                suitable_patterns = [range(0, sign * interval + sign, sign)]
+                                 if abs(pattern[-1]) == interval] or [range(0, sign * interval + sign, sign)]
 
         return suitable_patterns
-
-    # <editor-fold desc="get pattern functions">
 
     @mod_duration
     def get_simple_pattern(self, **kwargs):  # interval should be not needed
@@ -245,9 +230,7 @@ class NotePatterns:
 
     @mod_duration
     def get_random_path_pattern(self, **kwargs):
-        interval = 0
-        if kwargs.get('interval'):
-            interval = kwargs.get('interval')
+        interval = kwargs.get('interval') or 0
         org_interval = interval
         interval_sign = 1 if interval >= 0 else -1
         octave = abs(interval) // 12
@@ -255,7 +238,7 @@ class NotePatterns:
         interval = abs(interval) % 12
         interval *= interval_sign
         print(f"{org_interval=}, {octave=}, {interval=}")
-        notes_pattern = random.choice([pattern for pattern in self.all_suitable_patterns(org_interval)])
+        notes_pattern = random.choice(list(self.all_suitable_patterns(org_interval)))
         # notes_pattern = random.choice(deb)
         return {
             iso.EVENT_NOTE: notes_pattern,
@@ -263,9 +246,7 @@ class NotePatterns:
 
     @mod_duration
     def get_random_dim_pattern(self, **kwargs):
-        interval = 0
-        if kwargs.get('interval'):
-            interval = kwargs.get('interval')
+        interval = kwargs.get('interval') if kwargs.get('interval') else 0
         org_interval = interval
         interval_sign = 1 if interval >= 0 else -1
         octave = abs(interval) // 12
@@ -273,8 +254,9 @@ class NotePatterns:
         interval = abs(interval) % 12
         interval *= interval_sign
         print(f"{org_interval=}, {octave=}, {interval=}")
-        notes_pattern = random.choice([pattern for pattern in self.all_suitable_diminutions(org_interval)])
-        # notes_pattern = random.choice(deb)
+        notes_pattern = random.choice(
+            list(self.all_suitable_diminutions(org_interval))
+        )
         return {
             iso.EVENT_NOTE: notes_pattern,
         }
@@ -297,9 +279,6 @@ class NotePatterns:
                       "key": iso.Key()}
 
         def invert_chord(chord_to_inv: list) -> list:
-            # chord_to_inv[0] += major.octave_size
-            # chord_to_inv.sort()
-            # return [x - chord_to_inv[0] + from_note for x in chord_to_inv]
             chord_to_inv[-1] -= major.octave_size
             chord_to_inv.sort()
             return chord_to_inv
@@ -308,7 +287,7 @@ class NotePatterns:
             parameters.update(kwargs)
 
         from_note = parameters.get('from_note', 60)
-        key = parameters.get('key', None)
+        key = parameters.get('key')
         from_note = key.nearest_note(from_note)  # This is taken from used scale/key not major
 
         major = iso.Scale.major
@@ -318,9 +297,6 @@ class NotePatterns:
         chord_n = 3
         semitone_step = 2
         chords_list = []
-
-        # chord_3n = 3
-        # chord_4n = 4
 
         for i in range(len(maj_semitones) // 2):
             for chord_st in (3, 4):
@@ -336,12 +312,6 @@ class NotePatterns:
         thirds_fifths = [{0, 4}, {0, 3}, {0, 5}, {0, 6}, {0, 7}, {0, 8}, {0, 9}]
         chords_list.extend([{list(x)[0] + from_note, list(x)[1] + from_note} for x in thirds_fifths])
 
-        # chords_list_down = chords_list.copy()
-        # for s in chords_list_down:  # Iterate through each set
-        #     for i, elem in enumerate(s):  # Iterate through each element in the set
-        #         s.remove(elem)  # Remove the element from the set
-        #         s.add(elem - major.octave_size)  # Add the incremented element back to the set
-
         chords_list_down, chords_list_up = [], []
 
         for s in chords_list:
@@ -356,32 +326,39 @@ class NotePatterns:
         chords_list.extend(chords_list_up)
 
         chords_list = [s for s in chords_list if from_note in s]
-        # scale = key.scale
 
         from_note_idx = key.scale.indexOf(from_note - key.tonic)
-        three_octaves = set(
-            [key.get(note_idx) for note_idx in
-             range(from_note_idx - 1 - len(key.scale.semitones), from_note_idx + len(key.scale.semitones) * 2 + 1)])
+        three_octaves = {
+            key.get(note_idx)
+            for note_idx in range(
+                from_note_idx - 1 - len(key.scale.semitones),
+                from_note_idx + len(key.scale.semitones) * 2 + 1,
+            )
+        }
         chord_found = [ch & three_octaves for ch in chords_list if ch & three_octaves == ch]
 
         if chord_found:
             # check how many notes are shared with prev_chord
-            max_match = max([len(x & self.prev_chord) for x in chord_found])
+            max_match = max(len(x & self.prev_chord) for x in chord_found)
             chord_found = [x for x in chord_found if len(x & self.prev_chord) == max_match]
 
             """ 
             Check proximity of notes by calculating sum of difference between each pair of notes (product of elements).
             """
-            max_len = max([len(x) for x in chord_found])
+            max_len = max(len(x) for x in chord_found)
             chord_found = [x for x in chord_found if len(x) == max_len]
 
             min_delta = min(
-                [sum(abs(p[0] - p[1]) for p in itertools.product(x, self.prev_chord)) / len(x) for x in chord_found])
+                sum(
+                    abs(p[0] - p[1]) for p in itertools.product(x, self.prev_chord)
+                )
+                / len(x)
+                for x in chord_found
+            )
             chord_found = [x for x in chord_found if
                            sum(abs(p[0] - p[1]) for p in itertools.product(x, self.prev_chord)) / len(x) == min_delta]
 
-            chord = list(random.choice(chord_found))
-            chord.sort()
+            chord = sorted(random.choice(chord_found))
             chord = tuple(chord)
             self.prev_chord = set(chord)
             chord_idx = tuple(key.scale.indexOf(key.nearest_note(x) - key.tonic) - from_note_idx for x in chord)
@@ -395,41 +372,30 @@ class NotePatterns:
 
     @mod_duration
     def get_one_note_pattern(self, **kwargs):
-        interval = 0
-        if kwargs.get('interval'):
-            interval = kwargs.get('interval')
+        interval = kwargs.get('interval') or 0
         return {
             iso.EVENT_NOTE: [0, interval]
         }
 
     @mod_duration
     def get_rest_path_pattern(self, **kwargs):
-        interval = 0
-        if kwargs.get('interval'):
-            interval = kwargs.get('interval')
-        # if interval == 0:
-        if not interval:
-            notes = [0, 0]
-        else:
+        if interval := kwargs.get('interval') or 0:
             real_notes = range(0, interval, int(np.sign(interval)))
             rests = [None] * abs(interval)
-            notes_with_rests = zip(real_notes, rests)
-            notes = [nt for tp in notes_with_rests for nt in tp] + [None]
+            notes = [nt for tp in zip(real_notes, rests) for nt in tp] + [None]
 
+        else:
+            notes = [0, 0]
         return {
             iso.EVENT_NOTE: notes
         }
 
     @mod_duration
     def get_path_pattern(self, **kwargs):
-        interval = 0
-        if kwargs.get('interval'):
-            interval = kwargs.get('interval')
-
-        if not interval:
-            notes = [0, 0]
-        else:
+        if interval := kwargs.get('interval') or 0:
             notes = range(0, interval + int(np.sign(interval)), int(np.sign(interval)))
+        else:
+            notes = [0, 0]
         return {
             iso.EVENT_NOTE: notes
         }
@@ -445,33 +411,29 @@ class NotePatterns:
                       "key": iso.Key()}
 
         if kwargs is not None:
-            parameters.update(kwargs)
+            parameters |= kwargs
 
         interval = parameters.get('interval', 0)
         scale_interval = parameters.get('scale_interval', 0)
-        key = parameters.get('key', None)
-        # root_note = parameters.get('root_note', None)
-        # org_interval = interval
-        # interval_sign = 1 if interval >= 0 else -1
+        key = parameters.get('key')
         r = 32
         if interval == 0:
             notes = [(-5 * len(key.scale.semitones)
                       + key.scale.indexOf(5 * key.scale.octave_size + key.nearest_note(
                         7 * math.sin(4 * math.pi / 2 * x / r) + key.tonic) - key.tonic))
                      for x in range(r + 1)]
-        else:
-            if key is not None:
-                notes = [(-5 * len(key.scale.semitones)
-                          + key.scale.indexOf(5 * key.scale.octave_size + key.nearest_note(
-                            scale_interval * x / r
-                            + (abs(scale_interval * 0.66) + scale_interval * 0.33) * math.sin(
-                                4 * math.pi / 2 * x / r) + key.tonic) - key.tonic))
-                         for x in range(r + 1)]
+        elif key is None:
+            notes = [
+                round(scale_interval * math.sin(5 * math.pi / 2 * x / r))
+                for x in range(r + 1)]
 
-            else:
-                notes = [
-                    round(scale_interval * math.sin(5 * math.pi / 2 * x / r))
-                    for x in range(r + 1)]
+        else:
+            notes = [(-5 * len(key.scale.semitones)
+                      + key.scale.indexOf(5 * key.scale.octave_size + key.nearest_note(
+                        scale_interval * x / r
+                        + (abs(scale_interval * 0.66) + scale_interval * 0.33) * math.sin(
+                            4 * math.pi / 2 * x / r) + key.tonic) - key.tonic))
+                     for x in range(r + 1)]
 
         return {
             iso.EVENT_NOTE: notes,
@@ -489,28 +451,24 @@ class NotePatterns:
                       "key": iso.Key()}
 
         if kwargs is not None:
-            parameters.update(kwargs)
+            parameters |= kwargs
 
         interval = parameters.get('interval', 0)
         scale_interval = parameters.get('scale_interval', 0)
-        key = parameters.get('key', None)
-        # org_interval = interval
-        # interval_sign = 1 if interval >= 0 else -1
+        key = parameters.get('key')
         r = 32
         if interval == 0:
             notes = [int(5 * math.sin(2 * math.pi * x / r)) for x in range(r + 1)]
-        else:
-            # notes = [round(interval*math.sin(5*math.pi/2*x/r)) for x in range(r+1)]
-            if key is not None:
-                notes = [-5 * len(key.scale.semitones)
-                         + key.scale.indexOf((5 * key.scale.octave_size + round(
-                    scale_interval * math.sin(5 * math.pi / 2 * x / r))) - key.tonic % 12)
-                         for x in range(r + 1)]
-            else:
-                notes = [
-                    round(scale_interval * math.sin(5 * math.pi / 2 * x / r))
-                    for x in range(r + 1)]
+        elif key is None:
+            notes = [
+                round(scale_interval * math.sin(5 * math.pi / 2 * x / r))
+                for x in range(r + 1)]
 
+        else:
+            notes = [-5 * len(key.scale.semitones)
+                     + key.scale.indexOf((5 * key.scale.octave_size + round(
+                scale_interval * math.sin(5 * math.pi / 2 * x / r))) - key.tonic % 12)
+                     for x in range(r + 1)]
         result_dict = {
             iso.EVENT_NOTE: notes,
             iso.EVENT_DURATION: [1] * len(notes)
@@ -518,7 +476,6 @@ class NotePatterns:
 
         notes_wrk = []
         dur_wrk = []
-        # result_dict = {}
         for idx in range(len(notes)):
             if idx == 0 or notes[idx] != notes[idx - 1]:
                 notes_wrk.append(result_dict[iso.EVENT_NOTE][idx])
@@ -530,8 +487,6 @@ class NotePatterns:
         result_dict[iso.EVENT_DURATION] = dur_wrk
 
         return result_dict
-
-    # </editor-fold>
 
     def set_pattern_function(self, function_name):
         self.get_pattern = getattr(self, 'get_' + function_name + '_pattern')

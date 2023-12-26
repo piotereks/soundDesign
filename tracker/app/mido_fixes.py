@@ -14,8 +14,6 @@ def _to_abstime(messages):
         yield msg.copy(time=now)
 
 
-# mido.MetaMessage
-
 def _to_reltime(messages):
     """Convert messages to relative time."""
     now = 0
@@ -52,7 +50,6 @@ mido.midifiles.tracks._to_reltime = _to_reltime
 
 
 class CustMidiFile(mido.MidiFile):
-    # counter = 0
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.run_event = threading.Event()
@@ -99,43 +96,27 @@ class CustMidiFile(mido.MidiFile):
         start_time = time.time()
         input_time = 0.0
         time_variable = time.time()
-        # time_real = time_variable
         for msg, msg_track in self:
-            # midi_out_device.tick()
-            # print(f"Inside counter {self.counter}")
-            # self.counter += 1
             time_delta = time.time() - time_variable
             time_variable += time_delta
-            # time_real += time_delta
             if not self.run_event.is_set():
-                # print("PausedXX")
                 self.run_event.wait()
-                # print("After IF...")
                 time_delta = time.time() - time_variable
                 time_variable += time_delta
                 start_time += time_delta
             print(f"{input_time=}, {msg.time=}")
             input_time += msg.time
 
-            # playback_time = time_real - start_time
             playback_time = time.time() - start_time
             duration_to_next_event = input_time - playback_time
-            # print('still running...')
-            # print(f"{time_real=},{start_time=}, {time.time()=}, {time_variable=}, {time_delta=}")
-            # print(f"{start_time=}, {time.time()=}, {time_variable=}, {time_delta=}")
-            # print(f"{duration_to_next_event=},{input_time=}, {playback_time=}")
             if duration_to_next_event > 0.0:
                 time.sleep(duration_to_next_event)
 
             if isinstance(msg, mido.MetaMessage) and not meta_messages:
                 continue
-            else:
-                msg_cpy = msg.copy()
-                msg_cpy.time = round(msg_cpy.time)
-                yield msg_cpy, msg_track
+            msg_cpy = msg.copy()
+            msg_cpy.time = round(msg_cpy.time)
+            yield msg_cpy, msg_track
 
-
-# mido.MidiFile.__iter__ = CustMidiFile.__iter__
-# mido.MidiFile.play = CustMidiFile.play
 
 mido.MidiFile = CustMidiFile

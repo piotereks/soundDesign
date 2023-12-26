@@ -39,7 +39,6 @@ class UpDownPDegree(PDegree):
             return None
 
         if isinstance(degree, typing.Iterable):
-            # return tuple(scale[degree] for degree in degree)
             return tuple(scale.get(degree, scale_down=self.scale_down) for degree in degree)
         else:
             return scale.get(degree, scale_down=self.scale_down)

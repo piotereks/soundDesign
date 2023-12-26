@@ -20,12 +20,12 @@ def midi_note_to_note_name(note):
 
     degree = int(note) % len(iso.note_names)
     octave = int(note / len(iso.note_names))
-    str = "%s%d" % (iso.note_names[degree][0], octave)
+    str_note = "%s%d" % (iso.note_names[degree][0], octave)
     frac = math.modf(note)[0]
     if frac > 0:
-        str = (str + " + %2f" % frac)
+        str_note = (str_note + " + %2f" % frac)
 
-    return str
+    return str_note
 
 
 def read_config_file_scales():

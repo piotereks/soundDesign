@@ -8,9 +8,9 @@ class UpDownKey(Key):
 
     def __init__(self, tonic=0, scale=Scale.major):
 
-        if type(tonic) == str:
+        if isinstance(tonic, str):
             tonic = note_name_to_midi_note(tonic)
-        if type(scale) == str:
+        if isinstance(scale, str):
             scale = Scale.byname(scale)
         if tonic < 0:
             raise InvalidKeyException("Tonic must be >= 0")
@@ -28,7 +28,7 @@ class UpDownKey(Key):
         for idx, arg in enumerate(args):
             parms[list(parms.keys())[idx]] = arg
         if kwargs is not None:
-            parms.update(kwargs)
+            parms |= kwargs
         degree = parms['degree']
         scale_down = parms['scale_down']
         if degree is None:
@@ -46,7 +46,7 @@ class UpDownKey(Key):
         for idx, arg in enumerate(args):
             parms[list(parms.keys())[idx]] = arg
         if kwargs is not None:
-            parms.update(kwargs)
+            parms |= kwargs
 
         note = parms.get('note')
 
@@ -55,30 +55,33 @@ class UpDownKey(Key):
             semitones = self.scale.semitones_down
         else:
             semitones = self.scale.semitones
-        # if note in self:
         if self.__contains__(semitone=note, scale_down=scale_down):
             return note
         else:
-            note_denominated = note - self.tonic
-            octave, pitch = divmod(note_denominated, self.scale.octave_size)
-            nearest_semi = None
-            nearest_dist = None
-            calc_octave = octave
-            for semi in semitones:
-                """ 
+            return self._extracted_from_nearest_note(note, semitones)
+
+    def _extracted_from_nearest_note(self, note, semitones):
+        note_denominated = note - self.tonic
+        octave, pitch = divmod(note_denominated, self.scale.octave_size)
+        nearest_semi = None
+        nearest_dist = None
+        calc_octave = octave
+        for semi in semitones:
+            """ 
                 0.1 is amendment allowing priority of selecting nearest note from 
                 below when 2 nearest notes are possible (from below and from above)
                 """
-                dist = min(abs(semi - pitch + 0.1), abs(abs(semi - pitch + 0.1) - self.scale.octave_size))
-                if nearest_dist is None or dist < nearest_dist:
-                    nearest_semi = semi
-                    nearest_dist = round(dist)
-                    if dist == abs(abs(semi - pitch) - self.scale.octave_size):
-                        calc_octave = octave + 1
-                    else:
-                        calc_octave = octave
-            octave = calc_octave
-            return (octave * self.scale.octave_size) + nearest_semi + self.tonic
+            dist = min(abs(semi - pitch + 0.1), abs(abs(semi - pitch + 0.1) - self.scale.octave_size))
+            if nearest_dist is None or dist < nearest_dist:
+                nearest_semi = semi
+                nearest_dist = round(dist)
+                calc_octave = (
+                    octave + 1
+                    if dist == abs(abs(semi - pitch) - self.scale.octave_size)
+                    else octave
+                )
+        octave = calc_octave
+        return (octave * self.scale.octave_size) + nearest_semi + self.tonic
 
     def __contains__(self, *args, **kwargs):
         """ Return the index of the given note within this scale. """
@@ -89,7 +92,7 @@ class UpDownKey(Key):
         for idx, arg in enumerate(args):
             parms[list(parms.keys())[idx]] = arg
         if kwargs is not None:
-            parms.update(kwargs)
+            parms |= kwargs
 
         semitone = parms.get('semitone')
         # semitone -= self.tonic

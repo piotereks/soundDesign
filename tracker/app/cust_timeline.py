@@ -31,10 +31,6 @@ class EventDefaults:
             setattr(self, key, value)
 
 
-# @dataclass
-# class Action:
-#     time: float
-#     function: Callable
 class CustTimeline():
     def __init__(self,
                  tempo=DEFAULT_TEMPO,
@@ -69,8 +65,6 @@ class CustTimeline():
         # --------------------------------------------------------------------------------
         self.on_event_callback = None
 
-    # @pysnooper.snoop(output='output.log', watch=('self.tracks'))
-    # @snoop( watch=('self.tracks'))
     def schedule(self,
                  params=None,
                  quantize=None,
@@ -87,7 +81,7 @@ class CustTimeline():
         Schedule a new track within this Timeline.
 
         Args:
-            param (dict):           Event dictionary. Keys are generally EVENT_* values, defined in constants.py.
+            params (dict):           Event dictionary. Keys are generally EVENT_* values, defined in constants.py.
                                      If param is None, a new empty Track will be scheduled and returned.
                                      This can be updated with Track.update().
                                      param can alternatively be a Pattern that generates a dict output.
@@ -110,7 +104,7 @@ class CustTimeline():
             track_index (int):       When specified, inserts the Track at the given index.
                                      This can be used to set the priority of an event and ensure that it happens
                                      before another Track is evaluated, used in (e.g.) Track.update().
-
+            sel_track_idx (int):     Track index to use for event arguments (default: None). This says about midinote track schedule us assigned to
         Returns:
             The new `Track` object.
 
@@ -121,12 +115,10 @@ class CustTimeline():
         # --------------------------------------------------------------------------------
         # Take a copy of param to avoid modifying the original
         # --------------------------------------------------------------------------------
-        if not isinstance(params, list):
-            params_list = [params]
-        else:
-            params_list = params
+        params_list = params if isinstance(params, list) else [params]
         tracks_list = []
         params_list2 = []
+        event_args = {}
         for param in params_list:
             # with snoop:
             #     x = self.tracks
@@ -145,33 +137,25 @@ class CustTimeline():
                               k in constructor_attributes}
                 attributes2 = {k: v for k, v in attributes1.copy().items() if
                                k in constructor_attributes}
-                # action_fun2 = [f for f in copy.copy(action_fun)][0:1]
-                # action_fun2 = [f for f in copy.copy(action_fun)]
-                action_fun2 = [partial(f, self) if isinstance(f, partial) else f for f in copy.copy(action_fun)][0:1]
+                action_fun2 = [
+                                  partial(f, self) if isinstance(f, partial) else f
+                                  for f in copy.copy(action_fun)
+                              ][:1]
                 attributes2['sequence'] = action_fun2
                 action_fun2 = PSequence(**attributes2)
                 params2 = copy.copy(param)
                 params2[EVENT_ACTION] = action_fun2
-                #         action_fun = [partial(f, self) if isinstance(f, partial) else f for f in action_fun]
-                #         attributes['sequence'] = action_fun
-                #         # action_fun = PSequence(action_fun, repeats=1)
-                #         action_fun = PSequence(**attributes)
                 if event_args:
                     params2[EVENT_ACTION_ARGS] = event_args
                 dur2 = list(params2.pop(EVENT_DURATION, None))
 
                 # print(f"before dur2 {dur2=} {bool(dur2)=}")
                 if dur2:
-                    params2[EVENT_DURATION] = PSequence(dur2[0:1], repeats=1)
-                    # params2[EVENT_DURATION] = PSequence(dur2, repeats=1)
+                    params2[EVENT_DURATION] = PSequence(dur2[:1], repeats=1)
                 params_list2.append(params2)
 
                 action_fun = [partial(f, self) if isinstance(f, partial) else f for f in copy.copy(action_fun)][1:]
-                # action_fun = [lambda *args, **kwargs: None] + [f for f in action_fun][1:]
-                # action_fun = [f for f in action_fun]
                 attributes['sequence'] = action_fun
-                # attributes[EVENT_DURATION] = action_fun
-                # action_fun = PSequence(action_fun, repeats=1)
                 action_fun = PSequence(**attributes)
                 param[EVENT_ACTION] = action_fun
                 if event_args:
@@ -183,43 +167,11 @@ class CustTimeline():
                     param["delay"] = dur[0]
                     param[EVENT_DURATION] = PSequence(dur[1:], repeats=1)
 
-                    # param[EVENT_DURATION] = PSequence(list(dur), repeats=1)
-
             elif action_fun:
                 param[EVENT_ACTION] = action_fun
-                # if event_args:
                 param[EVENT_ACTION_ARGS] = event_args
 
             params_list2.append(param)
-        # params_list = copy.copy(params_list2)
-        # for param in params_list:
-        # # for param in params_list2:
-        #     if isinstance(param, PDict):
-        #         param = dict(param)
-        #     # param = copy.copy(param)
-        #     action_fun = param.pop(EVENT_ACTION, None)
-        #     event_args = param.get(EVENT_ACTION_ARGS, {})
-        #     if bool(event_args):
-        #         track_idx = event_args.get('track_idx')
-        #
-        #     if action_fun and isinstance(action_fun, Iterable):
-        #         attributes = vars(action_fun)
-        #         # Get the attributes used by the class constructor
-        #         constructor_attributes = list(PSequence.__init__.__code__.co_varnames[1:])
-        #
-        #         # Filter the modified attributes to include only those used by the constructor
-        #         attributes = {k: v for k, v in attributes1.copy().items() if
-        #                       k in constructor_attributes}
-        #         action_fun = [partial(f, self) if isinstance(f, partial) else f for f in action_fun]
-        #         attributes['sequence'] = action_fun
-        #         # action_fun = PSequence(action_fun, repeats=1)
-        #         action_fun = PSequence(**attributes)
-        #         param[EVENT_ACTION] = action_fun
-        #         param[EVENT_ACTION_ARGS] = event_args
-        #     elif action_fun:
-        #         param[EVENT_ACTION] = action_fun
-        #         param[EVENT_ACTION_ARGS] = event_args
-        # param = PDict(param)
 
         print(params_list2)
         if not output_device:
@@ -248,18 +200,17 @@ class CustTimeline():
                 raise TrackLimitReachedException(
                     "Timeline: Refusing to schedule track (hit limit of %d)" % self.max_tracks)
 
-            def start_track(track):
+            def start_track(track_int):
                 # --------------------------------------------------------------------------------
                 # Add a new track.
                 # --------------------------------------------------------------------------------
                 if track_index is not None:
-                    self.tracks.insert(track_index, track)
+                    self.tracks.insert(track_index, track_int)
                 else:
-                    self.tracks.append(track)
+                    self.tracks.append(track_int)
                 log.info("Timeline: Scheduled new track (total tracks: %d)" % len(self.tracks))
 
             if not bool(event_args):
-                # event_args = {"track_idx": sel_track_idx if sel_track_idx is not None else len(self.tracks)}
                 event_args = {"track_idx": sel_track_idx}
             if not bool(param.get(EVENT_ACTION_ARGS, {})):
                 param[EVENT_ACTION_ARGS] = event_args
@@ -312,9 +263,6 @@ class CustTimeline():
 
         return track
 
-    # @snoop(watch=('self.current_time','self.current_time/self.tick_duration',
-    #               'self.current_event','self.tracks.index(track)'),
-    #        watch_explode = ('self.tracks','self.output_device.miditrack','self.output_device.miditrack[0]'))
     def tick(self):
         """
         Called once every tick to trigger new events.
@@ -353,16 +301,13 @@ class CustTimeline():
         # --------------------------------------------------------------------------------
         # Copy self.tracks because removing from it whilst using it = bad idea
         # --------------------------------------------------------------------------------
-        # print(f"before:{self.tracks}")
-        # if isinstance(self.tracks, list):
-        #     self.tracks = [item for sublist in self.tracks for item in (sublist if isinstance(sublist, list) else [sublist])]
-        # print(f"after:{self.tracks}")
+
         for track in self.tracks[:]:
             try:
                 track.tick()
             except Exception as e:
                 if self.ignore_exceptions:
-                    print("*** Exception in track: %s" % e)
+                    print(f"*** Exception in track: {e}")
                 else:
                     raise
             if track.is_finished and track.remove_when_done:
@@ -385,14 +330,13 @@ class CustTimeline():
             clock_multiplier = self.clock_multipliers[device]
             ticks = next(clock_multiplier)
 
-            for tick in range(ticks):
+            for _ in range(ticks):
                 device.tick()
 
         # --------------------------------------------------------------------------------
         # Increment beat count according to our current tick_length.
         # --------------------------------------------------------------------------------
         self.current_time += self.tick_duration
-        pass
 
     # @snoop(depth=2)
     def run(self, stop_when_done=None):
@@ -424,6 +368,6 @@ class CustTimeline():
             self.running = False
 
         except Exception as e:
-            print((" *** Exception in Timeline thread: %s" % e))
+            print(f" *** Exception in Timeline thread: {e}")
             if not self.ignore_exceptions:
                 raise e
