@@ -1,8 +1,6 @@
-import mido
-from tracker.app.mido_fixes import *
-
-import time
 import os
+
+from tracker.app.mido_fixes import *
 
 
 def print_mid(filename):
@@ -11,7 +9,7 @@ def print_mid(filename):
     # tempo=[msg.tempo for msg in track if msg.is_meta and msg.type=='set_tempo'][0] or 500000
     tempo = 120  # temporary prevent exception
     tick_time = tempo / (
-                1000000 * ticks_per_beat)  # this is not needed in mido midi file since time is already calculated with this principle
+            1000000 * ticks_per_beat)  # this is not needed in mido midi file since time is already calculated with this principle
     print(f"{ticks_per_beat=},{tempo=},{tick_time=}")
     print('-' * 40)
     print(filename)
@@ -78,6 +76,7 @@ def direct_midi_play():
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1b.mid')
     # filename = os.path.join(this_dir, '..', 'saved_midi_files', 'xoutput.mid')
     print_mid(filename)
+
 
 if __name__ == '__main__':
     direct_midi_play()

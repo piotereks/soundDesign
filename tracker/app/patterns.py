@@ -1,14 +1,14 @@
-import os
-import numpy as np
-import math
 import itertools
-import random
 import json
-import isobar as iso
+import math
+import os
+import random
 import re
+from fractions import *
 from functools import wraps
 
-from fractions import *
+import isobar as iso
+import numpy as np
 
 
 class DurationPatterns:
@@ -328,7 +328,7 @@ class NotePatterns:
                 chord_set = set(chord)
                 if chord_set not in chords_list:
                     chords_list.append(chord_set)
-                    for _ in range(chord_st-1):
+                    for _ in range(chord_st - 1):
                         chord_set = set(invert_chord(chord))
                         if chord_set not in chords_list:
                             chords_list.append(chord_set)
@@ -360,7 +360,8 @@ class NotePatterns:
 
         from_note_idx = key.scale.indexOf(from_note - key.tonic)
         three_octaves = set(
-            [key.get(note_idx) for note_idx in range(from_note_idx -1 -len(key.scale.semitones), from_note_idx + len(key.scale.semitones) * 2 + 1)])
+            [key.get(note_idx) for note_idx in
+             range(from_note_idx - 1 - len(key.scale.semitones), from_note_idx + len(key.scale.semitones) * 2 + 1)])
         chord_found = [ch & three_octaves for ch in chords_list if ch & three_octaves == ch]
 
         if chord_found:
@@ -374,9 +375,10 @@ class NotePatterns:
             max_len = max([len(x) for x in chord_found])
             chord_found = [x for x in chord_found if len(x) == max_len]
 
-            min_delta = min([sum(abs(p[0] - p[1]) for p in itertools.product(x, self.prev_chord))/len(x) for x in chord_found])
+            min_delta = min(
+                [sum(abs(p[0] - p[1]) for p in itertools.product(x, self.prev_chord)) / len(x) for x in chord_found])
             chord_found = [x for x in chord_found if
-                           sum(abs(p[0] - p[1]) for p in itertools.product(x, self.prev_chord))/len(x) == min_delta]
+                           sum(abs(p[0] - p[1]) for p in itertools.product(x, self.prev_chord)) / len(x) == min_delta]
 
             chord = list(random.choice(chord_found))
             chord.sort()

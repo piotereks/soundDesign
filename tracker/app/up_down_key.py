@@ -1,5 +1,5 @@
 from isobar import Key
-from isobar import Scale, InvalidKeyException,  note_name_to_midi_note
+from isobar import Scale, InvalidKeyException, note_name_to_midi_note
 
 
 class UpDownKey(Key):
@@ -20,7 +20,7 @@ class UpDownKey(Key):
         self.tonic = tonic
         self.scale = scale
 
-    def get(self,  *args, **kwargs):
+    def get(self, *args, **kwargs):
         """ Returns the <degree>th semitone within this key. """
         # print("UpDownKey get")
         parms = {"degree": None,
@@ -37,10 +37,10 @@ class UpDownKey(Key):
         semitone = self.scale.get(degree, scale_down=scale_down)
         return semitone + self.tonic
 
-    def nearest_note(self, *args, ** kwargs):
+    def nearest_note(self, *args, **kwargs):
         """ Return the index of the given note within this scale. """
         parms = {"note": None,
-        "scale_down": False}
+                 "scale_down": False}
         if hasattr(self, 'scale_down'):
             parms['scale_down'] = self.scale_down
         for idx, arg in enumerate(args):
@@ -69,21 +69,21 @@ class UpDownKey(Key):
                 0.1 is amendment allowing priority of selecting nearest note from 
                 below when 2 nearest notes are possible (from below and from above)
                 """
-                dist = min(abs(semi - pitch + 0.1), abs(abs(semi-pitch + 0.1)-self.scale.octave_size))
+                dist = min(abs(semi - pitch + 0.1), abs(abs(semi - pitch + 0.1) - self.scale.octave_size))
                 if nearest_dist is None or dist < nearest_dist:
                     nearest_semi = semi
                     nearest_dist = round(dist)
-                    if dist == abs(abs(semi-pitch)-self.scale.octave_size):
+                    if dist == abs(abs(semi - pitch) - self.scale.octave_size):
                         calc_octave = octave + 1
                     else:
                         calc_octave = octave
             octave = calc_octave
             return (octave * self.scale.octave_size) + nearest_semi + self.tonic
 
-    def __contains__(self, *args, ** kwargs):
+    def __contains__(self, *args, **kwargs):
         """ Return the index of the given note within this scale. """
         parms = {"note": None,
-        "scale_down": False}
+                 "scale_down": False}
         if hasattr(self, 'scale_down'):
             parms['scale_down'] = self.scale_down
         for idx, arg in enumerate(args):

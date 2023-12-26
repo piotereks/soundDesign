@@ -1,11 +1,8 @@
 # import mido
-import logging
-import snoop
-
 from collections.abc import Iterable
 from functools import partial
-from typing import Union
 
+import snoop
 from isobar import *
 
 from .iso_midi_message import *
@@ -34,7 +31,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
         text = [(type(o), o.__dict__) for o in objects]
         if MULTI_TRACK:
             # if len(timeline.output_device.miditrack)-1 < track_idx:
-                # timeline.output_device.get_channel_track(track_idx)
+            # timeline.output_device.get_channel_track(track_idx)
             # midi_track0 = timeline.output_device.miditrack[track_idx]
             midi_track0 = timeline.output_device.miditrack[0]
 
@@ -87,7 +84,6 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                 #     timeline.output_device.get_channel_track(new_track_idx=t+1)
                 timeline.output_device.miditrack[new_track_idx].append(obj.to_meta_message())
 
-
         print(timeline, text)
 
     def read(self, quantize=None):
@@ -131,7 +127,6 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                     if event.velocity > 127:
                         event.velocity = 127
 
-
                     offset_int += event.time
                     offset = offset_int / midi_reader.ticks_per_beat
                     note = MidiNote(event.channel, event.note, event.velocity, offset)
@@ -146,7 +141,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                     offset_int += event.time
                     offset = offset_int / midi_reader.ticks_per_beat
                     for note in reversed(notes):
-                        if not isinstance(note,  MidiNote):
+                        if not isinstance(note, MidiNote):
                             continue
                         if note.pitch == event.note and note.duration is None:
                             note.duration = offset - note.location
@@ -238,9 +233,9 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
             action_by_time = {}
             non_meta_by_time = {}
             for note in notes:
-                if isinstance(note,  MidiNote):
+                if isinstance(note, MidiNote):
                     if not note.duration:
-                        note.duration = 1  #  default lenght for hanging notes
+                        note.duration = 1  # default lenght for hanging notes
                     log.debug(" - MIDI event (t = %.2f): Note %d, velocity %d, duration %.3f" %
                               (note.location, note.pitch, note.velocity, note.duration))
                 location = note.location
@@ -415,7 +410,6 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                 else:
                     non_meta_dict.pop(key, None)
 
-
                 # channel_calc += 1
 
             if bool(non_meta_dict):
@@ -431,9 +425,11 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                 note_dict[iso.EVENT_ACTION_ARGS] = {"track_idx": track_idx}
                 tracks_note_dict.append(note_dict)
 
-        patterns_from_file_duration = max([sum(pat[iso.EVENT_DURATION].sequence) for pat in tracks_note_dict if pat.get(iso.EVENT_DURATION, None)])
-        time_signature = next(({'numerator': x.get('numerator'), 'denominator': x.get('denominator')} for x in tracks_note_dict if
-             hasattr(x, 'numerator') and hasattr(x, 'denominator')), {'numerator':4,'denominator':4 })
+        patterns_from_file_duration = max(
+            [sum(pat[iso.EVENT_DURATION].sequence) for pat in tracks_note_dict if pat.get(iso.EVENT_DURATION, None)])
+        time_signature = next(
+            ({'numerator': x.get('numerator'), 'denominator': x.get('denominator')} for x in tracks_note_dict if
+             hasattr(x, 'numerator') and hasattr(x, 'denominator')), {'numerator': 4, 'denominator': 4})
         factor = time_signature['numerator'] * 4 / time_signature['denominator']
 
         dur = patterns_from_file_duration
@@ -455,14 +451,10 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                 if pat.get(iso.EVENT_CHANNEL, None):
                     pat[iso.EVENT_CHANNEL].sequence.append(pat[iso.EVENT_CHANNEL].sequence[0])
 
-
-
-
-
         return sorted(tracks_note_dict, key=lambda t: 0 if t.get('action', None) else 1)
         # return tracks_note_dict
-   # patterns_from_file_duration = max([sum(pat[iso.EVENT_DURATION].sequence)
-   #                                          for pat in patterns if pat.get(iso.EVENT_DURATION, None)])
+# patterns_from_file_duration = max([sum(pat[iso.EVENT_DURATION].sequence)
+#                                          for pat in patterns if pat.get(iso.EVENT_DURATION, None)])
 
 # dur = self.patterns_from_file_duration
 # print(dur)

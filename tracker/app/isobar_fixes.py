@@ -1,17 +1,14 @@
-import isobar as iso
-import os
-from .up_down_scale import *
-from .up_down_pdegree import *
-from .up_down_key import *
-from .cust_iso_midi_file_in import *
-from .cust_event import *
-from .cust_track import *
-from .cust_timeline import *
-import math
-import sys
 import json
 
+from .cust_iso_midi_file_in import *
+from .cust_timeline import *
+from .cust_track import *
+from .up_down_key import *
+from .up_down_pdegree import *
+
 print("======================isobar fixes=============")
+
+
 def midi_note_to_note_name(note):
     """
     corrected tool function
@@ -49,22 +46,19 @@ iso.Scale.__getitem__ = UpDownScale.__getitem__
 iso.Scale.get = UpDownScale.get
 iso.Scale.indexOf = UpDownScale.indexOf
 
-
 iso.Key.__init__ = UpDownKey.__init__
 iso.Key.get = UpDownKey.get
 iso.Key.nearest_note = UpDownKey.nearest_note
 iso.Key.__contains__ = UpDownKey.__contains__
 iso.Key.semitones_down = UpDownKey.semitones_down
 
-
-
 iso.PDegree.__init__ = UpDownPDegree.__init__
 iso.PDegree.__next__ = UpDownPDegree.__next__
 
 iso.MidiFileInputDevice.__init__ = CustMidiFileInputDevice.__init__
 iso.MidiFileInputDevice.read = CustMidiFileInputDevice.read
-iso.MidiFileInputDevice.print_obj = CustMidiFileInputDevice.print_obj  #  this creates function, not patches
-iso.MidiFileInputDevice.set_tempo_callback = CustMidiFileInputDevice.set_tempo_callback  #  this creates function, not patches
+iso.MidiFileInputDevice.print_obj = CustMidiFileInputDevice.print_obj  # this creates function, not patches
+iso.MidiFileInputDevice.set_tempo_callback = CustMidiFileInputDevice.set_tempo_callback  # this creates function, not patches
 
 iso.timeline.event.Event.__init__ = CustEvent.__init__
 
@@ -72,7 +66,6 @@ iso.timeline.Timeline.__init__ = CustTimeline.__init__
 iso.timeline.Timeline.schedule = CustTimeline.schedule
 iso.timeline.Timeline.tick = CustTimeline.tick
 iso.timeline.Timeline.run = CustTimeline.run
-
 
 # wrong semitones
 del iso.Scale.minor
@@ -91,4 +84,3 @@ iso.Scale.minor = iso.Scale([0, 2, 3, 5, 7, 8, 10], "minor")
 
 iso.Scale.minor = iso.Scale([0, 2, 3, 5, 7, 8, 10], "minor natural")
 iso.Scale.minor_harm = iso.Scale([0, 2, 3, 5, 7, 8, 11], "minor harmonic")
-

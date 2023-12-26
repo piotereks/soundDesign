@@ -1,11 +1,9 @@
-import pytest
-import os
-import sys
-import json
 import contextlib
-import random
+
+import pytest
 
 from tracker.app.isobar_fixes import *
+
 read_config_file_scales()
 
 from tracker.app.tracker import Tracker
@@ -88,6 +86,7 @@ def test_metro_play(init_tracker, numerator, out_patterns):
     assert list(tracker.metro_play_patterns['amplitude']) == out_patterns['amplitude']
     assert list(tracker.metro_play_patterns['duration']) == out_patterns['duration']
 
+
 def test_play_from_to_result(step=3, subset_div=5):
     """
     step=3 to improve time of test in full test suite should be step=1
@@ -98,8 +97,7 @@ def test_play_from_to_result(step=3, subset_div=5):
     scale = iso.Scale.major
     scales = iso.Scale.all()
     if subset_div > 1:
-        scales = random.choices(scales, k=len(scales)//subset_div)
-
+        scales = random.choices(scales, k=len(scales) // subset_div)
 
     for scale in scales:
         octave5_start = 5 * scale.octave_size
@@ -113,8 +111,8 @@ def test_play_from_to_result(step=3, subset_div=5):
 
             tracker.key = key
             tracker.note_patterns.set_pattern_function('path')
-            from_note = octave5_start+key.tonic
-            to_note = from_note+key.scale.octave_size
+            from_note = octave5_start + key.tonic
+            to_note = from_note + key.scale.octave_size
             tracker.quants_state = {'5': 'normal', '3': 'normal', '2': 'normal'}
             with contextlib.redirect_stdout(None):
                 tracker.put_to_queue(from_note)
@@ -125,9 +123,8 @@ def test_play_from_to_result(step=3, subset_div=5):
                 print(list(patt[iso.EVENT_NOTE]))
                 print()
 
-
-            assert list(patt[iso.EVENT_NOTE]) == test_semitones, f"Play_from_to pattern mismatch {(t,from_note,to_note)=}"
-
+            assert list(
+                patt[iso.EVENT_NOTE]) == test_semitones, f"Play_from_to pattern mismatch {(t,from_note,to_note)=}"
 
 
 def test_play_from_to_sin(step=3, subset_div=5):
@@ -140,7 +137,7 @@ def test_play_from_to_sin(step=3, subset_div=5):
     scales = iso.Scale.all()
 
     if subset_div > 1:
-        scales = random.choices(scales, k=len(scales)//subset_div)
+        scales = random.choices(scales, k=len(scales) // subset_div)
 
     for scale in scales:
         print(f"{scale.name=}")
@@ -151,8 +148,8 @@ def test_play_from_to_sin(step=3, subset_div=5):
 
             tracker.key = key
             tracker.note_patterns.set_pattern_function('sine')
-            from_note = octave5_start+key.tonic
-            to_note = from_note+key.scale.octave_size
+            from_note = octave5_start + key.tonic
+            to_note = from_note + key.scale.octave_size
             tracker.quants_state = {'5': 'normal', '3': 'normal', '2': 'normal'}
             with contextlib.redirect_stdout(None):
                 pass
@@ -162,14 +159,15 @@ def test_play_from_to_sin(step=3, subset_div=5):
                 patt = tracker.play_from_to(from_note, to_note, in_pattern=False)
 
             print(list(patt[iso.EVENT_NOTE]))
-            assert list(patt[iso.EVENT_NOTE])[0] == t+octave5_start, f"problem with {scale.name=}, tonic={t}"
+            assert list(patt[iso.EVENT_NOTE])[0] == t + octave5_start, f"problem with {scale.name=}, tonic={t}"
             # break
         # break
+
 
 def test_play_from_to_result_rev():
     scale = iso.Scale.major
     scale = iso.Scale(semitones=[0, 2, 4, 6, 8, 10], name="test_scale", octave_size=12,
-                                semitones_down =[0, 1, 3, 5, 7, 9, 11])
+                      semitones_down=[0, 1, 3, 5, 7, 9, 11])
 
     for scale in iso.Scale.all():
         if not hasattr(scale, 'semitones_down') or not scale.semitones_down:
@@ -177,11 +175,11 @@ def test_play_from_to_result_rev():
         print(f"{scale.name=}")
         octave5_start = 5 * scale.octave_size
         for t in range(scale.octave_size):
-            key = iso.Key(t%scale.octave_size, scale)
+            key = iso.Key(t % scale.octave_size, scale)
             test_semitones = key.scale.semitones_down if hasattr(key.scale, 'semitones_down') else key.scale.semitones
-            test_semitones = [x+octave5_start+key.tonic for x in test_semitones]
+            test_semitones = [x + octave5_start + key.tonic for x in test_semitones]
             test_semitones.reverse()
-            rev_semitones = [test_semitones[-1]+key.scale.octave_size]+test_semitones[:-1]
+            rev_semitones = [test_semitones[-1] + key.scale.octave_size] + test_semitones[:-1]
             test_semitones = rev_semitones
             tracker.key = key
             tracker.note_patterns.set_pattern_function('path')
@@ -198,7 +196,8 @@ def test_play_from_to_result_rev():
                 print(list(patt[iso.EVENT_NOTE]))
                 print()
 
-            assert list(patt[iso.EVENT_NOTE]) == test_semitones, f"Play_from_to pattern mismatch {(t,from_note,to_note)=}"
+            assert list(
+                patt[iso.EVENT_NOTE]) == test_semitones, f"Play_from_to pattern mismatch {(t,from_note,to_note)=}"
 
 
 def test_ch(step=3, subset_div=5):
@@ -217,19 +216,20 @@ def test_ch(step=3, subset_div=5):
     tracker.put_to_queue(from_note)
     # tracker.put_to_queue(to_note)  # This value should not have meaning
 
-    patt0a = tracker.play_from_to(from_note+0, 0, in_pattern=False)
-    patt4a = tracker.play_from_to(from_note+4, 0, in_pattern=False)
-    patt7a = tracker.play_from_to(from_note+7, 0, in_pattern=False)
-    patt16a = tracker.play_from_to(from_note+16, 0, in_pattern=False)
-    patt12a = tracker.play_from_to(from_note+12, 0, in_pattern=False)
-    patt0b = tracker.play_from_to(from_note+0, 0, in_pattern=False)
-    patt4b = tracker.play_from_to(from_note+4, 0, in_pattern=False)
-    patt7b = tracker.play_from_to(from_note+7, 0, in_pattern=False)
-    patt16b = tracker.play_from_to(from_note+16, 0, in_pattern=False)
-    patt12b = tracker.play_from_to(from_note+12, 0, in_pattern=False)
+    patt0a = tracker.play_from_to(from_note + 0, 0, in_pattern=False)
+    patt4a = tracker.play_from_to(from_note + 4, 0, in_pattern=False)
+    patt7a = tracker.play_from_to(from_note + 7, 0, in_pattern=False)
+    patt16a = tracker.play_from_to(from_note + 16, 0, in_pattern=False)
+    patt12a = tracker.play_from_to(from_note + 12, 0, in_pattern=False)
+    patt0b = tracker.play_from_to(from_note + 0, 0, in_pattern=False)
+    patt4b = tracker.play_from_to(from_note + 4, 0, in_pattern=False)
+    patt7b = tracker.play_from_to(from_note + 7, 0, in_pattern=False)
+    patt16b = tracker.play_from_to(from_note + 16, 0, in_pattern=False)
+    patt12b = tracker.play_from_to(from_note + 12, 0, in_pattern=False)
     assert True
 
-@pytest.mark.skip  #  Skipped because new chords checks are more dynamic and sometimes random used when both chords suit
+
+@pytest.mark.skip  # Skipped because new chords checks are more dynamic and sometimes random used when both chords suit
 def test_play_from_to_chord_improved(step=3, subset_div=5):
     """
     step=3 to improve time of test in full test suite should be step=1
@@ -240,7 +240,7 @@ def test_play_from_to_chord_improved(step=3, subset_div=5):
     scales = iso.Scale.all()
 
     if subset_div > 1:
-        scales = random.choices(scales, k=len(scales)//subset_div)
+        scales = random.choices(scales, k=len(scales) // subset_div)
     tst = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23, 24]
     for scalex in scales:
         print(f"{scale.name=}")
@@ -251,7 +251,7 @@ def test_play_from_to_chord_improved(step=3, subset_div=5):
 
             tracker.key = key
             tracker.note_patterns.set_pattern_function('chord_improved')
-            from_note = octave5_start+key.tonic
+            from_note = octave5_start + key.tonic
             # from_note = octave5_start
             from_note = key.nearest_note(from_note)
             # to_note = from_note+key.scale.octave_size
@@ -262,26 +262,25 @@ def test_play_from_to_chord_improved(step=3, subset_div=5):
             # tracker.put_to_queue(to_note)  # This value should not have meaning
 
             patt1 = tracker.play_from_to(from_note, 0, in_pattern=False)
-            assert list(patt1[iso.EVENT_NOTE]) == [(60+t, 64+t, 67+t)], f"problem with {scale.name=}, tonic={t}"
+            assert list(patt1[iso.EVENT_NOTE]) == [(60 + t, 64 + t, 67 + t)], f"problem with {scale.name=}, tonic={t}"
 
-            patt2 = tracker.play_from_to(from_note+2, 0, in_pattern=False)
-            assert list(patt2[iso.EVENT_NOTE]) == [(62+t, 65+t, 69+t)], f"problem with {scale.name=}, tonic={t}"
+            patt2 = tracker.play_from_to(from_note + 2, 0, in_pattern=False)
+            assert list(patt2[iso.EVENT_NOTE]) == [(62 + t, 65 + t, 69 + t)], f"problem with {scale.name=}, tonic={t}"
 
-            patt3 = tracker.play_from_to(from_note+4, 0, in_pattern=False)
-            assert list(patt3[iso.EVENT_NOTE]) == [(64+t, 67+t, 71+t)], f"problem with {scale.name=}, tonic={t}"
+            patt3 = tracker.play_from_to(from_note + 4, 0, in_pattern=False)
+            assert list(patt3[iso.EVENT_NOTE]) == [(64 + t, 67 + t, 71 + t)], f"problem with {scale.name=}, tonic={t}"
 
-            patt4 = tracker.play_from_to(from_note+5, 0, in_pattern=False)
-            assert list(patt4[iso.EVENT_NOTE]) == [(65+t, 69+t, 72+t)], f"problem with {scale.name=}, tonic={t}"
+            patt4 = tracker.play_from_to(from_note + 5, 0, in_pattern=False)
+            assert list(patt4[iso.EVENT_NOTE]) == [(65 + t, 69 + t, 72 + t)], f"problem with {scale.name=}, tonic={t}"
 
-            patt5 = tracker.play_from_to(from_note+7, 0, in_pattern=False)
-            assert list(patt5[iso.EVENT_NOTE]) == [(67+t, 71+t, 74+t)], f"problem with {scale.name=}, tonic={t}"
+            patt5 = tracker.play_from_to(from_note + 7, 0, in_pattern=False)
+            assert list(patt5[iso.EVENT_NOTE]) == [(67 + t, 71 + t, 74 + t)], f"problem with {scale.name=}, tonic={t}"
 
-            patt6 = tracker.play_from_to(from_note+9, 0, in_pattern=False)
-            assert list(patt6[iso.EVENT_NOTE]) == [(69+t, 72+t, 76+t)], f"problem with {scale.name=}, tonic={t}"
+            patt6 = tracker.play_from_to(from_note + 9, 0, in_pattern=False)
+            assert list(patt6[iso.EVENT_NOTE]) == [(69 + t, 72 + t, 76 + t)], f"problem with {scale.name=}, tonic={t}"
 
-            patt7 = tracker.play_from_to(from_note+11, 0, in_pattern=False)
-            assert list(patt7[iso.EVENT_NOTE]) == [(71+t, 74+t, 77+t)], f"problem with {scale.name=}, tonic={t}"
-
+            patt7 = tracker.play_from_to(from_note + 11, 0, in_pattern=False)
+            assert list(patt7[iso.EVENT_NOTE]) == [(71 + t, 74 + t, 77 + t)], f"problem with {scale.name=}, tonic={t}"
 
             # 0, 4, 7
             # 2, 5, 9

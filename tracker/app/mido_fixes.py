@@ -1,11 +1,9 @@
-import mido
+import threading
 import time
 
-import threading
-
+import mido
 from mido.midifiles.tracks import MidiTrack, merge_tracks, fix_end_of_track
 from mido.midifiles.units import tick2second
-from tracker.app.midi_dev import FileOut
 
 
 def _to_abstime(messages):
@@ -14,6 +12,8 @@ def _to_abstime(messages):
     for msg in messages:
         now += msg.time
         yield msg.copy(time=now)
+
+
 # mido.MetaMessage
 
 def _to_reltime(messages):
@@ -39,7 +39,7 @@ def merge_tracks(tracks):
         messages.extend(abs_trk)
 
     msg_zip_list = list(zip(messages, track_idx))
-    msg_zip_list.sort(key = lambda m : m[0].time)
+    msg_zip_list.sort(key=lambda m: m[0].time)
     messages, track_idx = zip(*msg_zip_list)
     # messages.sort(key=lambda msg: msg.time)
 
@@ -49,6 +49,7 @@ def merge_tracks(tracks):
 mido.midifiles.tracks.merge_tracks = merge_tracks
 mido.midifiles.tracks._to_abstime = _to_abstime
 mido.midifiles.tracks._to_reltime = _to_reltime
+
 
 class CustMidiFile(mido.MidiFile):
     # counter = 0
@@ -103,7 +104,7 @@ class CustMidiFile(mido.MidiFile):
             # midi_out_device.tick()
             # print(f"Inside counter {self.counter}")
             # self.counter += 1
-            time_delta = time.time()-time_variable
+            time_delta = time.time() - time_variable
             time_variable += time_delta
             # time_real += time_delta
             if not self.run_event.is_set():
@@ -132,7 +133,6 @@ class CustMidiFile(mido.MidiFile):
                 msg_cpy = msg.copy()
                 msg_cpy.time = round(msg_cpy.time)
                 yield msg_cpy, msg_track
-
 
 
 # mido.MidiFile.__iter__ = CustMidiFile.__iter__

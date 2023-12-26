@@ -1,14 +1,12 @@
 # import isobar as iso
-import sys
-import re
+import pytest
+
 from tracker.app.isobar_fixes import *
+from tracker.app.midi_dev import *
 # from tracker.app.midi_dev import FileOut, MidiFileManyTracksOutputDevice
 from tracker.utils.dump_midi import print_mid
 
-import pytest
 # import mido
-
-from tracker.app.midi_dev import *
 
 tmp_filename = 'x1x1a.mid'
 tmp_filename2 = 'x1x1b.mid'
@@ -23,7 +21,6 @@ snoop.install(out='outputx.log', overwrite=True)
 snoop.install(enabled=False)
 
 
-
 @pytest.fixture()
 def dummy_timeline():
     midi_out_play_name = 'Microsoft GS Wavetable Synth 0'
@@ -31,8 +28,6 @@ def dummy_timeline():
     # midi_out_device = FileOut(device_name=midi_out, filename=tmp_filename, send_clock=True, virtual=False)
     filename = tmp_filename
     midi_out_device = MidiFileManyTracksOutputDevice(filename=filename)
-
-
 
     # timeline = iso.Timeline(output_device=iso.io.DummyOutputDevice(), clock_source=iso.DummyClock())
     timeline = iso.Timeline(output_device=midi_out_device, clock_source=iso.DummyClock())
@@ -42,6 +37,7 @@ def dummy_timeline():
 
     timeline.stop_when_done = True
     return timeline
+
 
 @pytest.fixture
 def dummy_timeline2():
@@ -60,7 +56,6 @@ def dummy_timeline2():
     else:
         midi_out_device = MidiFileManyTracksOutputDevice(filename=filename)
         timeline = iso.Timeline(output_device=midi_out_device, clock_source=iso.DummyClock())
-
 
     timeline.stop_when_done = True
     return timeline
@@ -87,7 +82,6 @@ def test_timeline_schedulex(dummy_timeline):
 
 
 def test_timeline_wrk(dummy_timeline, dummy_timeline2):
-
     def mid_meta_message(msg: mido.MetaMessage = None, *args, **kwargs):
         # return None
         if not msg:
@@ -111,6 +105,7 @@ def test_timeline_wrk(dummy_timeline, dummy_timeline2):
         mid_meta_message2(type='set_tempo', tempo=int(mido.tempo2bpm(tempo)), time=0)
 
         print(f'{tempo=}')
+
     events = {
         # iso.EVENT_NOTE: iso.PSequence(sequence= [71, 62, 64, 65, 67, 69], repeats=1)
         # , iso.EVENT_DURATION : iso.PSequence(sequence=[1, 1, 1], repeats=2)
@@ -122,20 +117,22 @@ def test_timeline_wrk(dummy_timeline, dummy_timeline2):
     }
 
     events2 = {
-        iso.EVENT_NOTE: iso.PSequence(sequence= [75,  69,  72], repeats=1)
-        , iso.EVENT_DURATION : iso.PSequence(sequence=[2, 2, 2], repeats=1)
-        , iso.EVENT_CHANNEL : 4
+        iso.EVENT_NOTE: iso.PSequence(sequence=[75, 69, 72], repeats=1)
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[2, 2, 2], repeats=1)
+        , iso.EVENT_CHANNEL: 4
         # , iso.EVENT_ACTION : iso.PSequence(sequence = [lambda: print('asdf1'), lambda: print('asdf2'), lambda: print('asdf3')], repeats=1)
         # ,iso.EVENT_ACTION : iso.PSequence(sequence=[None, lambda: print('x'), None], repeats=1)
     }
 
-    events_action= {
+    events_action = {
         # iso.EVENT_NOTE: iso.PSequence(sequence= [60, 72], repeats=1),
         # , iso.EVENT_GATE : iso.PSequence(sequence=[1, 1, 0.5], repeats=1)
-        iso.EVENT_DURATION : iso.PSequence(sequence = [0.1, 1, 0.1, 1], repeats=1)
+        iso.EVENT_DURATION: iso.PSequence(sequence=[0.1, 1, 0.1, 1], repeats=1)
         # iso.EVENT_TIME : iso.PSequence(sequence=[1, 10], repeats=1)
         # , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda: set_tempo(30), lambda: set_tempo(180)], repeats=1)
-        , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda: set_tempo(30), lambda: set_tempo(30),lambda: set_tempo(300), lambda: set_tempo(200)], repeats=1)
+        , iso.EVENT_ACTION: iso.PSequence(
+            sequence=[lambda: set_tempo(30), lambda: set_tempo(30), lambda: set_tempo(300), lambda: set_tempo(200)],
+            repeats=1)
         # , iso.EVENT_ACTION : iso.PSequence(sequence = [lambda: print('asdf1'), lambda: print('asdf2')], repeats=1)
         # ,iso.EVENT_ACTION : iso.PSequence(sequence=[None, lambda: print('x'), None], repeats=1)
     }
@@ -156,7 +153,7 @@ def test_timeline_wrk(dummy_timeline, dummy_timeline2):
                     note.from_dict(note_tmp_dict)
     x = 1
     dummy_timeline.output_device.write()
-    print('-'*20, 'second_timeline')
+    print('-' * 20, 'second_timeline')
 
     file = os.path.join('..', '..', 'checks', 'example_midi', 'Var_tempo_1_trk_sax.mid')
     file_input_device = iso.MidiFileInputDevice(file)
@@ -164,8 +161,10 @@ def test_timeline_wrk(dummy_timeline, dummy_timeline2):
     file_input_device = iso.MidiFileInputDevice(tmp_filename)
     # file_input_device = iso.MidiFileInputDevice(tmp_filenameX)
     patterns = file_input_device.read()
+
     def app_time():
         dummy_timeline2.event_times.append(time.time())
+
     dummy_timeline2.event_times = []
     for pattern in patterns:
         action_fun = pattern.pop(iso.EVENT_ACTION, None)
@@ -206,16 +205,18 @@ def test_timeline_wrk(dummy_timeline, dummy_timeline2):
     # timeline.run()
     x = 1
 
+
 def test_action(dummy_timeline2):
     def app_time():
         dummy_timeline2.event_times.append(time.time())
+
     events_action = {
-        iso.EVENT_NOTE: iso.PSequence(sequence= [1,2], repeats=1),
+        iso.EVENT_NOTE: iso.PSequence(sequence=[1, 2], repeats=1),
         # , iso.EVENT_GATE : iso.PSequence(sequence=[1, 1, 0.5], repeats=1)
-        iso.EVENT_DURATION : iso.PSequence(sequence = [2, 1], repeats=1)
+        iso.EVENT_DURATION: iso.PSequence(sequence=[2, 1], repeats=1)
         # iso.EVENT_TIME: iso.PSequence(sequence=[1111, 10], repeats=1)
         # , iso.EVENT_ACTION: iso.PSequence(sequence=[lambda: app_time(), lambda: app_time()], repeats=1)
-        }
+    }
     # timeline.schedule({
     #     iso.EVENT_ACTION: lambda: timeline.event_times.append(time.time()),
     #     iso.EVENT_DURATION: iso.PSequence([ 0.001 ], 50)
@@ -224,20 +225,26 @@ def test_action(dummy_timeline2):
     dummy_timeline2.schedule(events_action)
     time_ref = time.time()
     dummy_timeline2.run()
-    time_gap = [(t-time_ref) for t in dummy_timeline2.event_times]
+    time_gap = [(t - time_ref) for t in dummy_timeline2.event_times]
     print(time_gap)
     x = 1
 
+
 class Blah:
     def __init__(self, aaaa):
-        self.aaaa=1
+        self.aaaa = 1
+
 
 from abc import ABC, abstractmethod
+
+
 class MetaMessageInterface(ABC):
 
     @abstractmethod
     def to_meta_message(self):
         return None
+
+
 class MidiMetaMessageTempox(MetaMessageInterface):
     def __init__(self, tempo: int, location):
         #   0..16777215
@@ -250,33 +257,30 @@ class MidiMetaMessageTempox(MetaMessageInterface):
 
 
 def test_track_play(dummy_timeline2):
-    from isobar import MidiFileInputDevice
     events_trk1 = {
-        iso.EVENT_NOTE: iso.PSequence(sequence= [1,2], repeats=1),
-        iso.EVENT_DURATION : iso.PSequence(sequence = [2, 1], repeats=1),
-        iso.EVENT_CHANNEL : 0
-        }
+        iso.EVENT_NOTE: iso.PSequence(sequence=[1, 2], repeats=1),
+        iso.EVENT_DURATION: iso.PSequence(sequence=[2, 1], repeats=1),
+        iso.EVENT_CHANNEL: 0
+    }
 
     events_trk2 = {
-        iso.EVENT_NOTE: iso.PSequence(sequence= [3,4], repeats=1),
-        iso.EVENT_DURATION : iso.PSequence(sequence = [2, 1], repeats=1),
-        iso.EVENT_CHANNEL : 5
-        }
+        iso.EVENT_NOTE: iso.PSequence(sequence=[3, 4], repeats=1),
+        iso.EVENT_DURATION: iso.PSequence(sequence=[2, 1], repeats=1),
+        iso.EVENT_CHANNEL: 5
+    }
     # timeline.schedule({
     #     iso.EVENT_ACTION: lambda: timeline.event_times.append(time.time()),
     #     iso.EVENT_DURATION: iso.PSequence([ 0.001 ], 50)
     # })
     # MidiFileInputDevice.print_obj(dummy_timeline2, MidiMessageProgram(channel=2, program=3, location=0))
 
-
     events_action = {
         # iso.EVENT_ACTION: iso.PSequence(sequence= [MidiMessageProgram(channel=2, program=3, location=0)], repeats=1),
-        iso.EVENT_ACTION:  lambda: dummy_timeline2.output_device.program_change(program=2, channel=5),
+        iso.EVENT_ACTION: lambda: dummy_timeline2.output_device.program_change(program=2, channel=5),
         # iso.EVENT_ACTION: iso.PSequence(sequence= [lambda: print('lambda')], repeats=1),
         # iso.EVENT_ACTION: lambda: print('lambda'),
-        iso.EVENT_DURATION : iso.PSequence(sequence = [3], repeats=1)
-        }
-
+        iso.EVENT_DURATION: iso.PSequence(sequence=[3], repeats=1)
+    }
 
     # print_obj(self, timeline, objects)
     dummy_timeline2.schedule(events_trk1)
@@ -292,7 +296,7 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
 
     def mid_meta_message(msg: mido.MetaMessage = None, *args, **kwargs):
         # return None
-        track_idx = min(kwargs.pop('track_idx', 0),len(dummy_tim.output_device.miditrack)-1)
+        track_idx = min(kwargs.pop('track_idx', 0), len(dummy_tim.output_device.miditrack) - 1)
         if not msg:
             msg = mido.MetaMessage(*args, **kwargs)
         dummy_tim.output_device.miditrack[track_idx].append(msg)
@@ -311,7 +315,6 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
     def xtest_pr(name='xxx'):
         print(f"{name=}")
 
-
     # def test_pr(*args):
     #     name = args[0]
     #     track_idx = args[1] if len(args) > 1 else 0
@@ -327,7 +330,7 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
 
     events0 = {
 
-        iso.EVENT_NOTE: iso.PSequence(sequence=[(50,51,66), 52, (43, 55, 57, 77)], repeats=1)
+        iso.EVENT_NOTE: iso.PSequence(sequence=[(50, 51, 66), 52, (43, 55, 57, 77)], repeats=1)
         # iso.EVENT_NOTE: iso.PSequence(sequence=[50, 52], repeats=1)
         , iso.EVENT_DURATION: iso.PSequence(sequence=[0.5, 1, 1], repeats=1)
         # , iso.EVENT_DURATION: iso.PSequence(sequence=[1.5, 1.5], repeats=1)
@@ -345,42 +348,44 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
         # , iso.EVENT_PROGRAM_CHANGE: 0
     }
     events2 = {
-        iso.EVENT_NOTE: iso.PSequence(sequence= [75,  69,  72], repeats=1)
-        , iso.EVENT_DURATION : iso.PSequence(sequence=[1, 1, 1], repeats=1)
-        , iso.EVENT_CHANNEL : 2
+        iso.EVENT_NOTE: iso.PSequence(sequence=[75, 69, 72], repeats=1)
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[1, 1, 1], repeats=1)
+        , iso.EVENT_CHANNEL: 2
         # , iso.EVENT_PROGRAM_CHANGE : 56
         # , iso.EVENT_ACTION : iso.PSequence(sequence = [lambda: print('asdf1'), lambda: print('asdf2'), lambda: print('asdf3')], repeats=1)
         # ,iso.EVENT_ACTION : iso.PSequence(sequence=[None, lambda: print('x'), None], repeats=1)
     }
     events_none = {
-        iso.EVENT_NOTE: iso.PSequence(sequence= [0], repeats=1)
-        , iso.EVENT_DURATION : iso.PSequence(sequence=[1], repeats=1)
-        , iso.EVENT_CHANNEL : 2
+        iso.EVENT_NOTE: iso.PSequence(sequence=[0], repeats=1)
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[1], repeats=1)
+        , iso.EVENT_CHANNEL: 2
         # , iso.EVENT_PROGRAM_CHANGE : 56
         # , iso.EVENT_ACTION : iso.PSequence(sequence = [lambda: print('asdf1'), lambda: print('asdf2'), lambda: print('asdf3')], repeats=1)
         # ,iso.EVENT_ACTION : iso.PSequence(sequence=[None, lambda: print('x'), None], repeats=1)
     }
     pgm = {
 
-        iso.EVENT_CHANNEL : 0
-        , iso.EVENT_PROGRAM_CHANGE : iso.PSequence([99], repeats=1)
+        iso.EVENT_CHANNEL: 0
+        , iso.EVENT_PROGRAM_CHANGE: iso.PSequence([99], repeats=1)
     }
 
     pgm2 = {
-        iso.EVENT_CHANNEL : 2
-        , iso.EVENT_PROGRAM_CHANGE : iso.PSequence([56], repeats=1)
+        iso.EVENT_CHANNEL: 2
+        , iso.EVENT_PROGRAM_CHANGE: iso.PSequence([56], repeats=1)
     }
-    events_action= {
-        iso.EVENT_DURATION : iso.PSequence(sequence = [1.22, 1.3, 1.33, 1.41], repeats=1)
+    events_action = {
+        iso.EVENT_DURATION: iso.PSequence(sequence=[1.22, 1.3, 1.33, 1.41], repeats=1)
         # iso.EVENT_DURATION : iso.PSequence(sequence = [1, 1, 1, 1], repeats=1)
-        , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda track_idx: (set_tempo(31), set_tempo(35), track_name('blah'), track_name('blaxx',1)), lambda track_idx: set_tempo(30),
-                                                     lambda track_idx: set_tempo(300), lambda track_idx: set_tempo(200)], repeats=1)
+        , iso.EVENT_ACTION: iso.PSequence(
+            sequence=[lambda track_idx: (set_tempo(31), set_tempo(35), track_name('blah'), track_name('blaxx', 1)),
+                      lambda track_idx: set_tempo(30),
+                      lambda track_idx: set_tempo(300), lambda track_idx: set_tempo(200)], repeats=1)
 
     }
 
-    events_actiony= {
+    events_actiony = {
         iso.EVENT_NOTE: iso.PSequence(sequence=[1, 1, 1, 1], repeats=1)
-        ,iso.EVENT_DURATION : iso.PSequence(sequence = [1.22, 1.3, 1.33, 1.41], repeats=1)
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[1.22, 1.3, 1.33, 1.41], repeats=1)
         # , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda track_idx: (set_tempo(31), set_tempo(35), track_name('blah'), track_name('blaxx',1)), lambda track_idx: set_tempo(30),
         #                                              lambda track_idx: set_tempo(300), lambda track_idx: set_tempo(200)], repeats=1)
 
@@ -450,7 +455,7 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
     print_mid(dummy_tim.output_devices[0].filename)
 
     # return
-    print('-'*20, 'second_timeline')
+    print('-' * 20, 'second_timeline')
 
     # file = os.path.join('..', '..', 'checks', 'example_midi', 'Var_tempo_1_trk_sax.mid')
     # file_input_device = iso.MidiFileInputDevice(file)
@@ -486,6 +491,7 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
     # timeline.run()
     x = 1
 
+
 def test_track_edit(dummy_timeline):
     dummy_tim = dummy_timeline
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
@@ -500,8 +506,6 @@ def test_track_edit(dummy_timeline):
     x = 1
 
     mid.save(os.path.join(os.path.dirname(filename), 'edited_' + os.path.basename(filename)))
-
-
 
     x = 1
 
@@ -541,7 +545,7 @@ def test_deduplication_tgt(dummy_timeline):
 def test_pattern_len(dummy_timeline, dummy_timeline2):
     def mid_meta_message(msg: mido.MetaMessage = None, *args, **kwargs):
         # return None
-        track_idx = min(kwargs.pop('track_idx', 0),len(dummy_tim.output_device.miditrack)-1)
+        track_idx = min(kwargs.pop('track_idx', 0), len(dummy_tim.output_device.miditrack) - 1)
         if not msg:
             msg = mido.MetaMessage(*args, **kwargs)
         dummy_tim.output_device.miditrack[track_idx].append(msg)
@@ -557,15 +561,11 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
         mid_meta_message(type='track_name', name=name, time=0, track_idx=track_idx)
 
     def file_beat():
-
         _ = dummy_tim2.schedule(copy.deepcopy(patterns), remove_when_done=True)
 
     # dummy_timeline(opt='dummy')
 
-
     dummy_tim = dummy_timeline
-
-
 
     events = {
 
@@ -579,10 +579,10 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
     }
     events2 = {
         # iso.EVENT_NOTE: iso.PSequence(sequence= [75,  69,  72], repeats=1)
-        iso.EVENT_NOTE: iso.PSequence(sequence= [62,  63,  64], repeats=1)
+        iso.EVENT_NOTE: iso.PSequence(sequence=[62, 63, 64], repeats=1)
         # , iso.EVENT_DURATION : iso.PSequence(sequence=[1, 1, 1], repeats=1)
-        , iso.EVENT_DURATION : iso.PSequence(sequence=[1, 1, 1], repeats=1)
-        , iso.EVENT_CHANNEL : 2
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[1, 1, 1], repeats=1)
+        , iso.EVENT_CHANNEL: 2
         # , iso.EVENT_PROGRAM_CHANGE : 56
         # , iso.EVENT_ACTION : iso.PSequence(sequence = [lambda: print('asdf1'), lambda: print('asdf2'), lambda: print('asdf3')], repeats=1)
         # ,iso.EVENT_ACTION : iso.PSequence(sequence=[None, lambda: print('x'), None], repeats=1)
@@ -590,19 +590,21 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
 
     pgm = {
 
-        iso.EVENT_CHANNEL : 0
-        , iso.EVENT_PROGRAM_CHANGE : iso.PSequence([99], repeats=1)
+        iso.EVENT_CHANNEL: 0
+        , iso.EVENT_PROGRAM_CHANGE: iso.PSequence([99], repeats=1)
     }
 
     pgm2 = {
-        iso.EVENT_CHANNEL : 2
-        , iso.EVENT_PROGRAM_CHANGE : iso.PSequence([56], repeats=1)
+        iso.EVENT_CHANNEL: 2
+        , iso.EVENT_PROGRAM_CHANGE: iso.PSequence([56], repeats=1)
     }
-    events_action= {
-        iso.EVENT_DURATION : iso.PSequence(sequence = [1.22, 1.3, 1.33, 1.41], repeats=1)
+    events_action = {
+        iso.EVENT_DURATION: iso.PSequence(sequence=[1.22, 1.3, 1.33, 1.41], repeats=1)
         # iso.EVENT_DURATION : iso.PSequence(sequence = [1, 1, 1, 1], repeats=1)
-        , iso.EVENT_ACTION : iso.PSequence(sequence=[lambda track_idx: (set_tempo(31), set_tempo(35), track_name('blah'), track_name('blaxx',1)), lambda track_idx: set_tempo(30),
-                                                     lambda track_idx: set_tempo(300), lambda track_idx: set_tempo(200)], repeats=1)
+        , iso.EVENT_ACTION: iso.PSequence(
+            sequence=[lambda track_idx: (set_tempo(31), set_tempo(35), track_name('blah'), track_name('blaxx', 1)),
+                      lambda track_idx: set_tempo(30),
+                      lambda track_idx: set_tempo(300), lambda track_idx: set_tempo(200)], repeats=1)
 
     }
     dummy_tim.schedule(pgm, sel_track_idx=0)
@@ -618,7 +620,6 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
     print(dummy_tim.output_devices[0].filename)
     print_mid(dummy_tim.output_devices[0].filename)
-
 
     # return
     print('-' * 20, 'second_timeline')
@@ -651,21 +652,20 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
     # }
     # patterns.append(mock_action)
 
-
     flag = True
 
     dur = 8
     rp = 2
     # _ = dummy_tim2.schedule(patterns)
     # _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat()], repeats=1),
-    _ = dummy_tim2.schedule({"action": iso.PSequence( sequence=[lambda track_idx : file_beat()], repeats=rp),
-                            # iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=1)
-                            iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=rp)
-                            # "duration": 4 * self.time_signature['numerator'] / self.time_signature['denominator']
-                            # "quantize": 1
+    _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat()], repeats=rp),
+                             # iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=1)
+                             iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=rp)
+                             # "duration": 4 * self.time_signature['numerator'] / self.time_signature['denominator']
+                             # "quantize": 1
 
-                            },
-                           remove_when_done=True)
+                             },
+                            remove_when_done=True)
     # _ = dummy_tim2.schedule({iso.EVENT_NOTE: iso.PSequence(sequence=[50], repeats=rp),
     #                         # iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=1)
     #                         iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=rp),
@@ -682,6 +682,7 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
     # return
     dummy_tim2.output_device.write()
     print_mid(dummy_tim2.output_devices[0].filename)
+
 
 def test_get_channel_track():
     test_midi_out_device = MidiFileManyTracksOutputDevice(filename='dupa')
@@ -733,4 +734,3 @@ def test_get_channel_track():
     assert test_midi_out_device.tgt_track_idxs == [1, 2, 2, 1, 2]
 
     pass
-

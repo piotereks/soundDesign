@@ -1,14 +1,11 @@
-import mido
-import isobar as iso
-import logging
-import time
-import re
 import inspect
+import logging
+import re
+import time
+
+import isobar as iso
+import mido
 import snoop
-
-
-import os
-import queue
 
 global MULTI_TRACK
 MULTI_TRACK = True
@@ -46,7 +43,7 @@ if MULTI_TRACK:
                 self.time.append(0)
                 self.last_event_time.append(0)
                 snoop.pp(self.channel_track, self.tgt_track_idxs)
-                return len(self.tgt_track_idxs)-1
+                return len(self.tgt_track_idxs) - 1
 
             snoop.pp(inspect.currentframe().f_back.f_back)
             if src_track_idx is not None and channel is not None:
@@ -69,7 +66,7 @@ if MULTI_TRACK:
                     snoop.pp(self.channel_track, self.tgt_track_idxs)
                     return idx
 
-                return add_track(chn=channel,tix=src_track_idx)
+                return add_track(chn=channel, tix=src_track_idx)
 
             if src_track_idx is not None:
                 if self.tgt_track_idxs == [None] and self.channel_track == [None]:
@@ -104,15 +101,15 @@ if MULTI_TRACK:
         def get_channel_track_old(self, channel=None, src_track_idx=None):
             snoop.pp(inspect.currentframe().f_back.f_back)
             # if src_track_idx is not None and channel is not None:
-                # if src_track_idx not in self.tgt_track_idxs or channel not in self.channel_track:
-                #     track = mido.MidiTrack()
-                #     self.miditrack.append(track)
-                #     self.midifile.tracks.append(track)
-                #     self.channel_track.append(channel)
-                #     self.tgt_track_idxs.append(src_track_idx)
-                #     self.time.append(0)
-                #     self.last_event_time.append(0)
-                #     return next((index for index, ch in enumerate(self.channel_track) if ch is channel), None)
+            # if src_track_idx not in self.tgt_track_idxs or channel not in self.channel_track:
+            #     track = mido.MidiTrack()
+            #     self.miditrack.append(track)
+            #     self.midifile.tracks.append(track)
+            #     self.channel_track.append(channel)
+            #     self.tgt_track_idxs.append(src_track_idx)
+            #     self.time.append(0)
+            #     self.last_event_time.append(0)
+            #     return next((index for index, ch in enumerate(self.channel_track) if ch is channel), None)
 
             if src_track_idx is not None:
                 if src_track_idx not in self.tgt_track_idxs:
@@ -127,7 +124,6 @@ if MULTI_TRACK:
                         if self.channel_track == [None]:
                             self.channel_track = [channel]
                         return 0
-
 
                     track = mido.MidiTrack()
                     self.miditrack.append(track)
@@ -158,7 +154,6 @@ if MULTI_TRACK:
                             self.channel_track = [channel]
                         return 0
 
-
                     track = mido.MidiTrack()
                     self.miditrack.append(track)
                     self.midifile.tracks.append(track)
@@ -178,8 +173,7 @@ if MULTI_TRACK:
                             return channel_pos
                     return 0
 
-
-        @snoop(watch=('self.tgt_track_idxs','self.channel_track'))
+        @snoop(watch=('self.tgt_track_idxs', 'self.channel_track'))
         def get_channel_trackxxx(self, channel=0, src_track_idx=None):
             snoop.pp(inspect.currentframe().f_back.f_back)
             if src_track_idx is not None:
@@ -229,9 +223,7 @@ if MULTI_TRACK:
         def tick(self):
             self.time = list(map(lambda x: x + (1.0 / self.ticks_per_beat), self.time))
 
-
         def _msg_deduplication(self):
-
 
             # Create a new MIDI file and track
             new_mid = mido.MidiFile()
@@ -279,9 +271,7 @@ if MULTI_TRACK:
 
             self.midifile.tracks = new_mid.tracks
 
-
-
-        def write(self, dedup = True):
+        def write(self, dedup=True):
             # ------------------------------------------------------------------------
             # When closing the MIDI file, append a dummy `note_off` event to ensure
             # any rests at the end of the file remain intact
@@ -319,7 +309,6 @@ if MULTI_TRACK:
                     mido.Message('pitchwheel', pitch=int(pitch), channel=int(channel)))
                 self.last_event_time[track] = self.time[track]
 
-
         @snoop
         def program_change(self, program=0, channel=0, track_idx=0):
             snoop.pp(inspect.currentframe().f_back.f_back)
@@ -333,7 +322,6 @@ if MULTI_TRACK:
                     mido.Message('program_change', program=int(program), channel=int(channel)))
                 self.last_event_time[track] = self.time[track]
 
-
         def aftertouch(self, control=0, value=0, channel=0, track_idx=0):
             snoop.pp(inspect.currentframe().f_back.f_code.co_name)
             track = self.get_channel_track(channel=channel, src_track_idx=track_idx)
@@ -342,7 +330,7 @@ if MULTI_TRACK:
                 dt = self.time[track] - self.last_event_time[track]
                 dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
                 self.miditrack[track].append(
-                    msg = mido.Message('aftertouch', control=int(control), value=value, channel=int(channel)))
+                    msg=mido.Message('aftertouch', control=int(control), value=value, channel=int(channel)))
                 self.last_event_time[track] = self.time[track]
 
         def polytouch(self, control=0, note=0, channel=0, track_idx=0):
@@ -353,10 +341,8 @@ if MULTI_TRACK:
                 dt = self.time[track] - self.last_event_time[track]
                 dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
                 self.miditrack[track].append(
-                    msg = mido.Message('polytouch', control=int(control), note=note, channel=int(channel)))
+                    msg=mido.Message('polytouch', control=int(control), note=note, channel=int(channel)))
                 self.last_event_time[track] = self.time[track]
-
-
 
 if not MULTI_TRACK:
     class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
@@ -396,11 +382,11 @@ class FileOut(MidiFileManyTracksOutputDevice, iso.MidiOutputDevice):
         iso.MidiOutputDevice.pitch_bend(self, pitch=pitch, channel=channel)
 
     def aftertouch(self, control=0, value=0, channel=0, track_idx=0):
-        MidiFileManyTracksOutputDevice.aftertouch(self, control=control, value=value, channel=channel, track_idx=track_idx)
+        MidiFileManyTracksOutputDevice.aftertouch(self, control=control, value=value, channel=channel,
+                                                  track_idx=track_idx)
 
     def polytouch(self, control=0, note=0, channel=0, track_idx=0):
         MidiFileManyTracksOutputDevice.polytouch(self, control=control, note=note, channel=channel, track_idx=track_idx)
-
 
     #
     #
@@ -420,9 +406,9 @@ class FileOut(MidiFileManyTracksOutputDevice, iso.MidiOutputDevice):
     #     # iso.MidiFileOutputDevice.tick(self)
     #     MidiFileManyTracksOutputDevice.tick(self)
     #     iso.MidiOutputDevice.tick(self)
-        # super().tick()
+    # super().tick()
 
-    def write(self, dedup = True):
+    def write(self, dedup=True):
         # iso.MidiFileOutputDevice.write(self)
         MidiFileManyTracksOutputDevice.write(self, dedup)
 
@@ -430,6 +416,7 @@ class FileOut(MidiFileManyTracksOutputDevice, iso.MidiOutputDevice):
     #     iso.MidiFileOutputDevice.ticks_per_beat
     #         ticks_per_beat(self, *args, **kwargs)
     #     iso.MidiOutputDevice.ticks_per_beat(self, *args, **kwargs)
+
 
 class ExtendedMidiInputDevice(iso.MidiInputDevice):
     def _callback(self, message):
@@ -470,7 +457,7 @@ class ExtendedMidiInputDevice(iso.MidiInputDevice):
             else:
                 log.warning("MIDI song position message received, but MIDI input cannot seek to arbitrary position")
 
-        elif message.type in ['note_on', 'note_off', 'control_change', 'pitchwheel','program_change']:
+        elif message.type in ['note_on', 'note_off', 'control_change', 'pitchwheel', 'program_change']:
             if self.callback:
                 self.callback(message)
             else:

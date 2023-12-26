@@ -1,8 +1,9 @@
-from isobar import PDegree,  Pattern, PSeries
+import typing
+
+from isobar import PDegree, Pattern, PSeries
 
 # import isobar as iso
 from .up_down_scale import *
-import typing
 
 
 class UpDownPDegree(PDegree):

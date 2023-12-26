@@ -1,9 +1,11 @@
+import logging
+from abc import ABC, abstractmethod
+
 import isobar as iso
 import mido
-from abc import ABC, abstractmethod
-import logging
 
 log = logging.getLogger(__name__)
+
 
 class CustMidiNote(iso.MidiNote):
     def __init__(self, channel, pitch, velocity, location, duration=None):
@@ -17,6 +19,7 @@ class CustMidiNote(iso.MidiNote):
         # duration in time, beats
         self.duration = duration
 
+
 # iso.io.MidiNote = CustMidiNote
 iso.io.MidiNote.__init__ = CustMidiNote.__init__
 
@@ -27,11 +30,13 @@ class MetaMessageInterface(ABC):
     def to_meta_message(self):
         return None
 
+
 class MessageInterface(ABC):
 
     @abstractmethod
     def to_meta_message(self):
         return None
+
 
 class MidiMessageControl:
     def __init__(self, channel, cc, value, location, time=0, track_idx=0):
@@ -42,14 +47,17 @@ class MidiMessageControl:
         self.location = location
         self.time = time
         self.track_idx = track_idx
+
+
 class MidiMessageProgram:
-    def __init__(self, channel, program,  location, time=0, track_idx=0):
+    def __init__(self, channel, program, location, time=0, track_idx=0):
         self.channel = channel
         self.program = program
         self.location = location
         # duration in time, beats
         self.time = time
         self.track_idx = track_idx
+
 
 class MidiMessagePitch:
     def __init__(self, channel, pitch, location, time=0, track_idx=0):
@@ -58,6 +66,7 @@ class MidiMessagePitch:
         self.location = location
         self.time = time
         self.track_idx = track_idx
+
 
 class MidiMessagePoly:
     def __init__(self, channel, pitch, value, location, time=0, track_idx=0):
@@ -71,6 +80,7 @@ class MidiMessagePoly:
     def xto_meta_message(self):
         return None
         # return mido.Message(tempo=self.tempo, time=self.time, type='set_tempo')
+
 
 # class CustMidiOutputDevice(iso.MidiOutputDevice):
 #     def aftertouch(self, control=0, value=0, channel=0, track_idx=0):
@@ -96,7 +106,6 @@ class MidiMessageAfter:
     def xto_meta_message(self):
         return None
         # return mido.Message(tempo=self.tempo, time=self.time, type='set_tempo')
-
 
 
 class MidiMetaMessageTempo(MetaMessageInterface):
@@ -127,7 +136,7 @@ class MidiMetaMessageKey(MetaMessageInterface):
 
 
 class MidiMetaMessageTimeSig(MetaMessageInterface):
-    def __init__(self, numerator: int, denominator: int ,
+    def __init__(self, numerator: int, denominator: int,
                  clocks_per_click: int, notated_32nd_notes_per_beat: int,
                  location, time=0, track_idx=0):
         self.numerator = numerator
@@ -143,12 +152,12 @@ class MidiMetaMessageTimeSig(MetaMessageInterface):
     def to_meta_message(self):
         return mido.MetaMessage(numerator=self.numerator, denominator=self.denominator,
                                 clocks_per_click=self.clocks_per_click,
-                                notated_32nd_notes_per_beat= self.notated_32nd_notes_per_beat,
+                                notated_32nd_notes_per_beat=self.notated_32nd_notes_per_beat,
                                 time=self.time, type='time_signature')
 
 
 class MidiMetaMessageTrackName(MetaMessageInterface):
-    def __init__(self,  name: str, location, time=0, track_idx=0):
+    def __init__(self, name: str, location, time=0, track_idx=0):
         self.name = name
         self.location = location
         self.is_meta = True
@@ -180,4 +189,3 @@ class MidiMetaMessageEndTrack(MetaMessageInterface):
 
     def to_meta_message(self):
         return mido.MetaMessage(time=self.time, type='end_of_track')
-

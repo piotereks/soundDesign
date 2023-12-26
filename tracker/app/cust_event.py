@@ -1,9 +1,11 @@
-from isobar.timeline.event import Event, EventDefaults
-from isobar.exceptions import InvalidEventException
-# from isobar.constants import EVENT_NOTE, EVENT_ACTION, EVENT_DEGREE
-from isobar import Scale, Key, Pattern
-from isobar.constants import *
 from typing import Iterable
+
+# from isobar.constants import EVENT_NOTE, EVENT_ACTION, EVENT_DEGREE
+from isobar import Key, Pattern
+from isobar.constants import *
+from isobar.exceptions import InvalidEventException
+from isobar.timeline.event import EventDefaults
+
 
 # class XCustEvent(Event):
 #     def __init__(self, event_values):
@@ -34,9 +36,9 @@ class CustEvent():
         if EVENT_NOTE in event_values and EVENT_DEGREE in event_values:
             raise InvalidEventException("Cannot specify both note and degree")
 
-        #------------------------------------------------------------------------
+        # ------------------------------------------------------------------------
         # Note/degree/etc: Send a MIDI note
-        #------------------------------------------------------------------------
+        # ------------------------------------------------------------------------
         if EVENT_DEGREE in event_values:
             degree = event_values[EVENT_DEGREE]
             if degree is None:
@@ -46,39 +48,39 @@ class CustEvent():
                 if isinstance(key, str):
                     key = Key(key)
 
-                #----------------------------------------------------------------------
+                # ----------------------------------------------------------------------
                 # handle lists of notes (eg chords).
                 # TODO: create a class which allows for scalars and arrays to handle
                 # addition transparently
-                #----------------------------------------------------------------------
+                # ----------------------------------------------------------------------
                 try:
                     event_values[EVENT_NOTE] = [key[n] for n in degree]
                 except TypeError:
                     event_values[EVENT_NOTE] = key[degree]
 
-        #----------------------------------------------------------------------
+        # ----------------------------------------------------------------------
         # For cases in which we want to introduce a rest, set amplitude
         # to zero. This means that we can still send rest events to
         # devices which receive all generic events (useful to display rests
         # when rendering a score).
-        #----------------------------------------------------------------------
+        # ----------------------------------------------------------------------
         if EVENT_NOTE in event_values:
             if event_values[EVENT_NOTE] is None:
-                #----------------------------------------------------------------------
+                # ----------------------------------------------------------------------
                 # Rest.
-                #----------------------------------------------------------------------
+                # ----------------------------------------------------------------------
                 event_values[EVENT_NOTE] = 0
                 event_values[EVENT_AMPLITUDE] = 0
                 # event_values[EVENT_GATE] = 0
             else:
-                #----------------------------------------------------------------------
+                # ----------------------------------------------------------------------
                 # Handle lists of notes (eg chords).
                 # TODO: create a class which allows for scalars and arrays to handle
                 #       addition transparently.
                 #
                 # The below does not allow for event_values[EVENT_TRANSPOSE] to be an array,
                 # for example.
-                #----------------------------------------------------------------------
+                # ----------------------------------------------------------------------
                 try:
                     event_values[EVENT_NOTE] = [note +
                                                 event_values[EVENT_OCTAVE] * 12 +
@@ -86,9 +88,9 @@ class CustEvent():
                 except TypeError:
                     event_values[EVENT_NOTE] += event_values[EVENT_OCTAVE] * 12 + event_values[EVENT_TRANSPOSE]
 
-        #----------------------------------------------------------------------
+        # ----------------------------------------------------------------------
         # Classify the event type.
-        #----------------------------------------------------------------------
+        # ----------------------------------------------------------------------
         if EVENT_ACTION in event_values:
             self.type = EVENT_TYPE_ACTION
             self.action = event_values[EVENT_ACTION]
@@ -97,12 +99,12 @@ class CustEvent():
                 self.args = dict((key, Pattern.value(value)) for key, value in event_values[EVENT_ACTION_ARGS].items())
 
         elif EVENT_PATCH in event_values:
-            #----------------------------------------------------------------------
+            # ----------------------------------------------------------------------
             # Patches support different event types:
             #  - create from PatchSpec (EVENT_TYPE_PATCH_CREATE)
             #  - trigger Patch (EVENT_TYPE_PATCH_TRIGGER)
             #  - set Patch params (EVENT_TYPE_PATCH_SET)
-            #----------------------------------------------------------------------
+            # ----------------------------------------------------------------------
             self.patch = event_values[EVENT_PATCH]
             self.output = None
 
@@ -176,5 +178,3 @@ class CustEvent():
         self.duration = event_values[EVENT_DURATION]
         self.active = event_values[EVENT_ACTIVE]
         self.fields = event_values
-
-

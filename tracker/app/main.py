@@ -1,9 +1,5 @@
 from .tracker import Tracker
 from .trackergui import *
-from .log_call import *
-
-import os
-import json
 
 
 # <editor-fold desc="Interactive simplification functions">
@@ -66,11 +62,7 @@ import json
 # <editor-fold desc="wrk functions">
 
 
-
-
-
-
-#TODO To move to utils
+# TODO To move to utils
 
 # def cmp():
 #     # print('expected:\n', my_tracker.expected_array)
@@ -78,7 +70,7 @@ import json
 #     print('played:\n', [x.note for x in my_tracker.midi_out.miditrack if x.type == 'note_on'])
 
 
-#TODO To move to utils
+# TODO To move to utils
 
 # def find_scale_dups():
 #     import itertools
@@ -90,7 +82,7 @@ import json
 #         print(cscale)
 
 
-#TODO To move to utils
+# TODO To move to utils
 
 # def dump_scales():
 #     all_scales = [(scale.semitones, scale.name) for scale in iso.Scale.all()]
@@ -108,8 +100,6 @@ def main():
     this_dir = os.path.dirname(os.path.abspath(__file__))
     config_file = os.path.join(this_dir, '../config/main_config.json')
 
-
-
     # wanted_file = os.path.join(this_dir, fname)
 
     with open(config_file, 'r') as file:
@@ -117,8 +107,6 @@ def main():
         app_config = loaded_config['app']
         tracker_config = loaded_config['tracker']
         midi_mapping = loaded_config.get('midi_mapping')
-
-
 
     # midi_out_flag = Tracker.MIDI_OUT_DEVICE
     midi_out_flag = Tracker.MIDI_OUT_MIX_FILE_DEVICE
@@ -133,4 +121,3 @@ def main():
 if __name__ == '__main__':
     main()
     print('Processing Done.')
-

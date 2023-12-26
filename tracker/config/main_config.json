@@ -1,89 +1,155 @@
 {
-  "app":
-    {
-      "key":"C",
-      "scale":"major",
-      "yscale":"minor melodic up/down",
-      "zscale":"chromatic",
-      "tempo":125,
-      "tempo_min":20,
-      "tempo_max":333,
-      "xdur_variety":3.5,
-      "dur_variety":0.0,
-      "dur_variety_min":0,
-      "dur_variety_max":7,
-      "play_func":"one_note",
-      "queue_content":[60, 64, 67, 71, 76, 72, 69, 65, 62],
-      "cqueue_content":[57, 67, 77, 68],
-      "aqueue_content":[null, null, null, null],
-      "rows":7,
-      "cols":3
-    },
+  "app": {
+    "key": "C",
+    "scale": "major",
+    "yscale": "minor melodic up/down",
+    "zscale": "chromatic",
+    "tempo": 125,
+    "tempo_min": 20,
+    "tempo_max": 333,
+    "xdur_variety": 3.5,
+    "dur_variety": 0.0,
+    "dur_variety_min": 0,
+    "dur_variety_max": 7,
+    "play_func": "one_note",
+    "queue_content": [
+      60,
+      64,
+      67,
+      71,
+      76,
+      72,
+      69,
+      65,
+      62
+    ],
+    "cqueue_content": [
+      57,
+      67,
+      77,
+      68
+    ],
+    "aqueue_content": [
+      null,
+      null,
+      null,
+      null
+    ],
+    "rows": 7,
+    "cols": 3
+  },
   "tracker": {
-    "midi_in_name": ["Arturia MiniLab mkII", "KB loopMIDI Port"],
-    "midi_out_name": ["Microsoft GS Wavetable Synth","blah","KB loopMIDI Port"],
-    "afilename_in" : ["..","..","checks","example_midi", "Variable_tempo_one_note_mod_double_instr.mid"],
-    "afilename_in" : ["..","..","checks","example_midi", "Var_tempo_2_trks_sax_piano.mid"],
-    "filename_in" : ["..", "tests", "x1x1a.mid"],
-    "afilename_in" : ["..", "tests", "aedited_src_Var_tempo_2_trks_sax_piano.mid"],
-    "yfilename_in" : ["..","..","checks","example_midi", "Variable_tempo_one_note.mid"],
-    "afilename_in" : ["..","..","checks","example_midi", "Var_tempo_1_trk.mid"],
-    "bfilename_in" : ["..","..","checks","example_midi", "4_notes.mid"],
-    "filename_in_volume" : 55,
-    "generated_notes_volume" : 200,
-    "default_channel" : 0,
+    "midi_in_name": [
+      "Arturia MiniLab mkII",
+      "KB loopMIDI Port"
+    ],
+    "midi_out_name": [
+      "Microsoft GS Wavetable Synth",
+      "blah",
+      "KB loopMIDI Port"
+    ],
+    "afilename_in": [
+      "..",
+      "..",
+      "checks",
+      "example_midi",
+      "Variable_tempo_one_note_mod_double_instr.mid"
+    ],
+    "afilename_in": [
+      "..",
+      "..",
+      "checks",
+      "example_midi",
+      "Var_tempo_2_trks_sax_piano.mid"
+    ],
+    "filename_in": [
+      "..",
+      "tests",
+      "x1x1a.mid"
+    ],
+    "afilename_in": [
+      "..",
+      "tests",
+      "aedited_src_Var_tempo_2_trks_sax_piano.mid"
+    ],
+    "yfilename_in": [
+      "..",
+      "..",
+      "checks",
+      "example_midi",
+      "Variable_tempo_one_note.mid"
+    ],
+    "afilename_in": [
+      "..",
+      "..",
+      "checks",
+      "example_midi",
+      "Var_tempo_1_trk.mid"
+    ],
+    "bfilename_in": [
+      "..",
+      "..",
+      "checks",
+      "example_midi",
+      "4_notes.mid"
+    ],
+    "filename_in_volume": 55,
+    "generated_notes_volume": 200,
+    "default_channel": 0,
     "legato": 1.0,
     "program_change": 0,
-    "time_signature": {"numerator": 4, "denominator": 4},
+    "time_signature": {
+      "numerator": 4,
+      "denominator": 4
+    },
     "dummy_file_config": "qqqq"
   },
   "midi_mapping": {
-    "set_tempo_knob" : {
+    "set_tempo_knob": {
       "cc": 75,
-      "knob_type" : "rel#2",
+      "knob_type": "rel#2",
       "ratio": 0.5
     },
-    "set_tempo_knob" : {
+    "set_tempo_knob": {
       "cc": 11,
-      "knob_type" : "abs"
+      "knob_type": "abs"
     },
-    "xset_dur_variety_knob" : {
+    "xset_dur_variety_knob": {
       "cc": 72,
-      "knob_type" : "rel#3",
+      "knob_type": "rel#3",
       "ratio": 0.025
     },
-    "set_dur_variety_knob" : {
+    "set_dur_variety_knob": {
       "cc": 65,
-      "knob_type" : "abs"
+      "knob_type": "abs"
     },
-
-    "example3" : {
+    "example3": {
       "cc": 73,
-      "knob_type" : "rel#1"
+      "knob_type": "rel#1"
     },
-    "example4" : {
+    "example4": {
       "cc": 79,
-      "knob_type" : "abs"
+      "knob_type": "abs"
     },
     "play": {
       "channel": 9,
       "note": 36,
-      "toggle" : true
+      "toggle": true
     },
     "metronome": {
       "channel": 9,
       "note": 37,
-      "toggle" : true
+      "toggle": true
     },
     "loop": {
       "channel": 9,
       "note": 38,
-      "toggle" : true
+      "toggle": true
     },
     "clearq": {
       "channel": 9,
       "note": 39,
-       "gate": true
+      "gate": true
     },
     "rnd_scale": {
       "channel": 9,
@@ -100,6 +166,5 @@
       "note": 42,
       "gate": true
     }
-
   }
 }

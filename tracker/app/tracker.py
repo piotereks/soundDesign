@@ -1,16 +1,15 @@
 # import os
 import shutil
 from datetime import datetime
-from itertools import accumulate, chain
+from itertools import accumulate
 from queue import Queue
-
-import snoop
-# import pysnooper
 
 from .isobar_fixes import *
 from .log_call import *
 from .midi_dev import *
 from .patterns import *
+
+# import pysnooper
 
 NO_MIDI_OUT = mido.get_output_names() == []
 ACCENT_BIG_FACTOR = 1.5
@@ -19,8 +18,9 @@ ACCENT_DEFAULT = 45
 ACCENT_BIG = int(ACCENT_DEFAULT * ACCENT_BIG_FACTOR)
 ACCENT_MED = int(ACCENT_DEFAULT * ACCENT_MED_FACTOR)
 
-
 snoop.install(out='output.log', overwrite=True)
+
+
 # snoop.install(enabled=True)
 # snoop.install(enabled=False)
 
@@ -57,7 +57,8 @@ class Tracker:
             if not isinstance(self.patterns_from_file, list):
                 self.patterns_from_file = [self.patterns_from_file]
             self.patterns_from_file_duration = max([sum(pat[iso.EVENT_DURATION].sequence)
-                                                   for pat in self.patterns_from_file if pat.get(iso.EVENT_DURATION, None)])
+                                                    for pat in self.patterns_from_file if
+                                                    pat.get(iso.EVENT_DURATION, None)])
 
 
         else:
@@ -66,7 +67,7 @@ class Tracker:
         if self.midi_file_in:
             # mid = self.midi_file_in
             self.available_channels = set(range(16)) - set(m.channel for t in self.midi_file_in.tracks
-                                                      for m in t if hasattr(m, 'channel')) - {9}
+                                                           for m in t if hasattr(m, 'channel')) - {9}
             self.min_channel = min(self.available_channels)
             self.available_channels.remove(self.min_channel)
 
@@ -77,11 +78,10 @@ class Tracker:
         elif self.filename_in_volume >= 127:
             self.filename_in_volume = 127
         self.generated_notes_volume = tracker_config.get("generated_notes_volume")
-        if self.generated_notes_volume <0:
+        if self.generated_notes_volume < 0:
             self.generated_notes_volume = 0
-        elif self.generated_notes_volume >=127:
+        elif self.generated_notes_volume >= 127:
             self.generated_notes_volume = 127
-
 
         self.generated_notes_volume = tracker_config.get("generated_notes_volume")
         self.key = iso.Key("C", "major")
@@ -128,7 +128,7 @@ class Tracker:
         self.time_signature = self.default_tracker_config.get("time_signature")
         # self.beat_count = -1 % self.time_signature['numerator']
         # self.beat_count = -0 % self.time_signature['numerator']
-        self.beat_count = -1%4
+        self.beat_count = -1 % 4
         # self.numerator_count = -1 % self.time_signature['numerator']
 
         self.amp_for_beat_factor = {
@@ -188,7 +188,7 @@ class Tracker:
         # self.xxx = self.file_in_timeline() # file_in_timeline
         # self.metro = self.metro_timeline()
 
-        self.file_in_timeline() # file_in_timeline
+        self.file_in_timeline()  # file_in_timeline
         self.tracker_timeline()
         self.metro_timeline()
         self.set_program_change_trk(program=self.program_change)
@@ -219,7 +219,6 @@ class Tracker:
                     self.mid_meta_message(type='end_of_track', time=0, track_idx=idx)
             else:
                 self.mid_meta_message(type='end_of_track', time=0)
-
 
         self.midi_out.write()
         target_dir = os.path.dirname(self.filename)
@@ -393,7 +392,6 @@ class Tracker:
         else:
             print(f"No midi in with {midi_in_name}")
 
-
     def xplay_mid_file(self):
         print("in play_mid_file")
 
@@ -409,7 +407,7 @@ class Tracker:
         elapsed_time = start_time
         while not self.midi_file_in.break_flag.is_set():
             for msg, msg_track in self.midi_file_in.play(meta_messages=True):
-            # for msg in mid:
+                # for msg in mid:
                 elapsed_time = time.time() - elapsed_time
                 wait_time = msg.time - elapsed_time
                 print(f"{wait_time=}")
@@ -431,7 +429,8 @@ class Tracker:
                 print('running')
                 if msg.type in ('note_on', 'note_off'):
                     if msg.type == 'note_on':
-                        self.midi_out.note_on(channel=msg.channel, note=msg.note, velocity=int(msg.velocity*self.filename_in_volume/100))
+                        self.midi_out.note_on(channel=msg.channel, note=msg.note,
+                                              velocity=int(msg.velocity * self.filename_in_volume / 100))
                     else:
                         self.midi_out.note_off(channel=msg.channel, note=msg.note)
                 elif msg.type == 'program_change':
@@ -473,7 +472,6 @@ class Tracker:
         if self.midi_file_in:
             self.midi_file_in.run_event.set()
             self.midi_file_in.break_flag.clear()
-
 
     def mid_file_pause(self):
         if self.midi_file_in:
@@ -553,16 +551,18 @@ class Tracker:
                 for key in self.accents_dict.keys():
                     try:
                         idx = acc_durations.index(key)
-                        amplitudes[idx] = int(self.accents_dict[key]*amplitudes[idx])
+                        amplitudes[idx] = int(self.accents_dict[key] * amplitudes[idx])
                     except ValueError:
                         print("key not found")
-                amplitudes = list(map(lambda midi_amp: int(midi_amp * self.generated_notes_volume/100) ,amplitudes))
-                amplitudes = list(map(lambda midi_amp: 0 if not midi_amp else 0 if midi_amp < 0 else 127 if midi_amp > 127 else midi_amp ,amplitudes))
+                amplitudes = list(map(lambda midi_amp: int(midi_amp * self.generated_notes_volume / 100), amplitudes))
+                amplitudes = list(map(lambda
+                                          midi_amp: 0 if not midi_amp else 0 if midi_amp < 0 else 127 if midi_amp > 127 else midi_amp,
+                                      amplitudes))
                 notes[iso.EVENT_AMPLITUDE] = iso.PSequence(amplitudes, repeats=1)
 
                 # Extra fix put just as sanity mod, right before trigerring play. Might be removed if well tested when without
-                notes[iso.EVENT_DURATION] = iso.PSequence(list(map(lambda x: x - 0.000000000000002, notes[iso.EVENT_DURATION])), repeats=1)
-
+                notes[iso.EVENT_DURATION] = iso.PSequence(
+                    list(map(lambda x: x - 0.000000000000002, notes[iso.EVENT_DURATION])), repeats=1)
 
             self.check_notes = list(notes[iso.EVENT_NOTE].copy())
 
@@ -597,7 +597,7 @@ class Tracker:
         print(f"{time.time()=}")
         print(f"{4*self.time_signature['numerator']/self.time_signature['denominator']=},{self.metro_beat=}")
         # if MULTI_TRACK:
-            # self.midi_out.get_channel_track(channel=9)  # for percussion channel 10 (or 9 when counting from 0).
+        # self.midi_out.get_channel_track(channel=9)  # for percussion channel 10 (or 9 when counting from 0).
         return self.timeline.schedule({
             "action": lambda track_idx: self.metro_beat(),
             # "duration": 3/2
@@ -611,7 +611,6 @@ class Tracker:
     def metro_none(self):
         log_call()
 
-
         print(f"{time.time()=},{self.metro_beat=}")
         # _ = self.timeline.schedule({
         #     iso.EVENT_NOTE: iso.PSequence([None], repeats=1),
@@ -620,13 +619,10 @@ class Tracker:
         # },
         #     remove_when_done=True)
         self.timeline.schedule({iso.EVENT_ACTION: lambda track_idx: None,
-                       iso.EVENT_DURATION: 1
-                       # iso.EVENT_CHANNEL: 9
-                       },
-            remove_when_done=True)
-
-
-
+                                iso.EVENT_DURATION: 1
+                                # iso.EVENT_CHANNEL: 9
+                                },
+                               remove_when_done=True)
 
     def metro_play(self):
         log_call()
@@ -660,7 +656,6 @@ class Tracker:
 
     # <editor-fold desc="Gui actions">
 
-
     def check_notes_action(self):
         log_call()
 
@@ -681,6 +676,7 @@ class Tracker:
 
     def time_sig_beat_val_action(self):
         log_call()
+
     def set_tempo_action(self):
         log_call()
 
@@ -784,6 +780,7 @@ class Tracker:
                     yield from flatten(item)
                 else:
                     yield item
+
         log_call()
 
         # xxx = list(self.patterns_from_file)
@@ -805,10 +802,8 @@ class Tracker:
             print(dur)
         else:
             # dur = 4*factor
-            dur = self.patterns_from_file_duration*self.time_signature['denominator']/self.time_signature['numerator']
-
-
-
+            dur = self.patterns_from_file_duration * self.time_signature['denominator'] / self.time_signature[
+                'numerator']
 
         # print(self.patterns_from_file_duration)
         # print(self.patterns_from_file_duration*self.time_signature['denominator']/self.time_signature['numerator'])
@@ -816,11 +811,11 @@ class Tracker:
         # print(round(self.patterns_from_file_duration*self.time_signature['denominator']/self.time_signature['numerator'])
         #                 * self.time_signature['numerator'] / self.time_signature['denominator'])
         return self.timeline.schedule({"action": lambda track_idx: self.file_beat(),
-            iso.EVENT_DURATION: dur
-            # "duration": 4 * self.time_signature['numerator'] / self.time_signature['denominator']
-            # "quantize": 1
-        },
-            remove_when_done=False)
+                                       iso.EVENT_DURATION: dur
+                                       # "duration": 4 * self.time_signature['numerator'] / self.time_signature['denominator']
+                                       # "quantize": 1
+                                       },
+                                      remove_when_done=False)
 
     def tracker_timeline(self):
         log_call()
@@ -832,7 +827,6 @@ class Tracker:
             # "quantize": 1
         },
             remove_when_done=False)
-
 
     def mid_meta_message(self, msg: mido.MetaMessage = None, *args, **kwargs):
         # return None
@@ -1036,8 +1030,8 @@ class Tracker:
         self.fullq_content_action()
         self.last_from_note = from_note if to_note_exists else None
         if (to_note is None) or (from_note is None):
-
-            from_note = None if not from_note else self.key.scale.indexOf(self.key.nearest_note(from_note)-self.key.tonic%12)
+            from_note = None if not from_note else self.key.scale.indexOf(
+                self.key.nearest_note(from_note) - self.key.tonic % 12)
 
             return iso.PDict({
                 iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.key),
@@ -1049,8 +1043,10 @@ class Tracker:
         print('after_check')
 
         scale_down = True if from_note > to_note else False
-        root_note = self.key.scale.indexOf(self.key.nearest_note(from_note, scale_down=scale_down)-self.key.tonic, scale_down=scale_down)
-        note = self.key.scale.indexOf(self.key.nearest_note(to_note, scale_down=scale_down)-self.key.tonic, scale_down=scale_down)
+        root_note = self.key.scale.indexOf(self.key.nearest_note(from_note, scale_down=scale_down) - self.key.tonic,
+                                           scale_down=scale_down)
+        note = self.key.scale.indexOf(self.key.nearest_note(to_note, scale_down=scale_down) - self.key.tonic,
+                                      scale_down=scale_down)
 
         interval = note - root_note
         scale_interval = to_note - from_note
@@ -1088,9 +1084,9 @@ class Tracker:
         else:
             raise Exception("No notes returned!!!")
         print(f"----debug----{pattern_notes}, {root_note=}, {type(pattern_notes)=}")
-        pattern_notes = [x + root_note  if isinstance(x, np.int32) or isinstance(x, np.int64) or isinstance(x, int)
+        pattern_notes = [x + root_note if isinstance(x, np.int32) or isinstance(x, np.int64) or isinstance(x, int)
                          else None if not x
-        else tuple(map(lambda u: u + root_note , x)) for x in pattern_notes]
+        else tuple(map(lambda u: u + root_note, x)) for x in pattern_notes]
         print(f"----debugz2----{pattern_notes}")
         pattern_notes = pattern_notes[:-1]
         len_pattern = len(pattern_notes)
@@ -1121,7 +1117,7 @@ class Tracker:
         # pattern_notes = iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key.scale)
         pattern_notes = [x if isinstance(x, np.int32) or isinstance(x, np.int64) or isinstance(x, int)
                          else None if not x
-        else tuple(map(lambda u: u , x)) for x in pattern_notes]
+        else tuple(map(lambda u: u, x)) for x in pattern_notes]
 
         # print('Pseq + Degree - scale:', list(iso.PDegree(iso.PSequence(pattern_notes, repeats=1), self.key.scale)))
         print('Pseq + Degree - scale:', list(pattern_notes))

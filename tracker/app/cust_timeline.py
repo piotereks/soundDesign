@@ -4,7 +4,6 @@ import math
 from collections.abc import Iterable
 from functools import partial
 
-import snoop
 from isobar import Track, PSequence, Clock, Key, Scale
 # from isobar.constants import (EVENT_ACTION, EVENT_ACTION_ARGS, INTERPOLATION_NONE,
 #                               EVENT_DURATION, DEFAULT_TEMPO,DEFAULT_TICKS_PER_BEAT)
@@ -13,6 +12,8 @@ from isobar.exceptions import TrackLimitReachedException
 from isobar.io import MidiOutputDevice
 
 log = logging.getLogger(__name__)
+
+
 class EventDefaults:
     def __init__(self):
         default_values = {
@@ -28,6 +29,8 @@ class EventDefaults:
         }
         for key, value in default_values.items():
             setattr(self, key, value)
+
+
 # @dataclass
 # class Action:
 #     time: float
@@ -141,7 +144,7 @@ class CustTimeline():
                 attributes = {k: v for k, v in attributes1.copy().items() if
                               k in constructor_attributes}
                 attributes2 = {k: v for k, v in attributes1.copy().items() if
-                              k in constructor_attributes}
+                               k in constructor_attributes}
                 # action_fun2 = [f for f in copy.copy(action_fun)][0:1]
                 # action_fun2 = [f for f in copy.copy(action_fun)]
                 action_fun2 = [partial(f, self) if isinstance(f, partial) else f for f in copy.copy(action_fun)][0:1]
@@ -163,8 +166,6 @@ class CustTimeline():
                     # params2[EVENT_DURATION] = PSequence(dur2, repeats=1)
                 params_list2.append(params2)
 
-
-
                 action_fun = [partial(f, self) if isinstance(f, partial) else f for f in copy.copy(action_fun)][1:]
                 # action_fun = [lambda *args, **kwargs: None] + [f for f in action_fun][1:]
                 # action_fun = [f for f in action_fun]
@@ -176,9 +177,7 @@ class CustTimeline():
                 if event_args:
                     param[EVENT_ACTION_ARGS] = event_args
 
-
                 dur = list(param.pop(EVENT_DURATION, None))
-
 
                 if dur:
                     param["delay"] = dur[0]
@@ -220,8 +219,7 @@ class CustTimeline():
         #     elif action_fun:
         #         param[EVENT_ACTION] = action_fun
         #         param[EVENT_ACTION_ARGS] = event_args
-            # param = PDict(param)
-
+        # param = PDict(param)
 
         print(params_list2)
         if not output_device:
@@ -231,7 +229,6 @@ class CustTimeline():
             if not self.output_devices:
                 self.add_output_device(MidiOutputDevice())
             output_device = self.output_devices[0]
-
 
             # --------------------------------------------------------------------------------
             # If replace=True is specified, updated the param of any existing track
@@ -248,7 +245,8 @@ class CustTimeline():
                         return
 
             if self.max_tracks and len(self.tracks) >= self.max_tracks:
-                raise TrackLimitReachedException("Timeline: Refusing to schedule track (hit limit of %d)" % self.max_tracks)
+                raise TrackLimitReachedException(
+                    "Timeline: Refusing to schedule track (hit limit of %d)" % self.max_tracks)
 
             def start_track(track):
                 # --------------------------------------------------------------------------------
@@ -285,7 +283,7 @@ class CustTimeline():
             if quantize is None:
                 quantize = self.defaults.quantize
             if quantize or delay or extra_delay:
-            # if quantize or delay:
+                # if quantize or delay:
                 # --------------------------------------------------------------------------------
                 # We don't want to begin events right away -- either wait till
                 # the next beat boundary (quantize), or delay a number of beats.
@@ -297,7 +295,7 @@ class CustTimeline():
                 # scheduled_time += delay
                 self.events.append({
                     EVENT_TIME: scheduled_time,
-                    EVENT_ACTION: lambda t = track: start_track(t)
+                    EVENT_ACTION: lambda t=track: start_track(t)
                 })
             else:
                 # --------------------------------------------------------------------------------
@@ -314,8 +312,6 @@ class CustTimeline():
 
         return track
 
-
-
     # @snoop(watch=('self.current_time','self.current_time/self.tick_duration',
     #               'self.current_event','self.tracks.index(track)'),
     #        watch_explode = ('self.tracks','self.output_device.miditrack','self.output_device.miditrack[0]'))
@@ -326,37 +322,37 @@ class CustTimeline():
         Raises:
             StopIteration: If `stop_when_done` is true and no more events are scheduled.
         """
-        #--------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------
         # Each time we arrive at precisely a new beat, generate a debug msg.
         # Round to several decimal places to avoid 7.999999999 syndrome.
         # http://docs.python.org/tutorial/floatingpoint.html
-        #--------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------
 
         if round(self.current_time, 8) % 1 == 0:
             log.debug("--------------------------------------------------------------------------------")
             log.debug("Tick (%d active tracks, %d pending events)" % (len(self.tracks), len(self.events)))
 
-        #--------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------
         # Copy self.events because removing from it whilst using it = bad idea.
         # Perform events before tracks are executed because an event might
         # include scheduling a quantized track, which should then be
         # immediately evaluated.
-        #--------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------
         for event in self.events[:]:
-            #--------------------------------------------------------------------------------
+            # --------------------------------------------------------------------------------
             # The only event we currently get in a Timeline are add_track events
             #  -- which have a function object associated with them.
             #
             # Round to work around rounding errors.
             # http://docs.python.org/tutorial/floatingpoint.html
-            #--------------------------------------------------------------------------------
+            # --------------------------------------------------------------------------------
             if round(event[EVENT_TIME], 8) <= round(self.current_time, 8):
                 event[EVENT_ACTION]()
                 self.events.remove(event)
 
-        #--------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------
         # Copy self.tracks because removing from it whilst using it = bad idea
-        #--------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------
         # print(f"before:{self.tracks}")
         # if isinstance(self.tracks, list):
         #     self.tracks = [item for sublist in self.tracks for item in (sublist if isinstance(sublist, list) else [sublist])]
@@ -373,18 +369,18 @@ class CustTimeline():
                 self.tracks.remove(track)
                 log.info("Timeline: Track finished, removing from scheduler (total tracks: %d)" % len(self.tracks))
 
-        #--------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------
         # If we've run out of notes, raise a StopIteration.
-        #--------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------
         if len(self.tracks) == 0 and len(self.events) == 0 and self.stop_when_done:
             # TODO: Don't do this if we've never played any events, e.g.
             #       right after calling timeline.background(). Should at least
             #       wait for some events to happen first.
             raise StopIteration
 
-        #--------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------
         # Tell our output devices to move forward a step.
-        #--------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------
         for device in self.output_devices:
             clock_multiplier = self.clock_multipliers[device]
             ticks = next(clock_multiplier)
@@ -392,9 +388,9 @@ class CustTimeline():
             for tick in range(ticks):
                 device.tick()
 
-        #--------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------
         # Increment beat count according to our current tick_length.
-        #--------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------
         self.current_time += self.tick_duration
         pass
 
@@ -411,19 +407,19 @@ class CustTimeline():
             self.stop_when_done = stop_when_done
 
         try:
-            #--------------------------------------------------------------------------------
+            # --------------------------------------------------------------------------------
             # Start the clock. This might internal (eg a Clock object, running on
             # an independent thread), or external (eg a MIDI clock).
-            #--------------------------------------------------------------------------------
+            # --------------------------------------------------------------------------------
             for device in self.output_devices:
                 device.start()
             self.running = True
             self.clock_source.run()
 
         except StopIteration:
-            #--------------------------------------------------------------------------------
+            # --------------------------------------------------------------------------------
             # This will be hit if every Pattern in a timeline is exhausted.
-            #--------------------------------------------------------------------------------
+            # --------------------------------------------------------------------------------
             log.info("Timeline: Finished")
             self.running = False
 

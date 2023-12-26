@@ -48,7 +48,7 @@ class UpDownScale(Scale):
     def indexOf(self, *args, **kwargs):
         """ Return the index of the given note within this scale. """
         parameters = {"note": None,
-                 "scale_down": False}
+                      "scale_down": False}
         if hasattr(self, 'scale_down'):
             parameters['scale_down'] = self.scale_down
         for idx, arg in enumerate(args):
