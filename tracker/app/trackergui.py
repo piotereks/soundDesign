@@ -24,8 +24,6 @@ class RadioButton(ToggleButtonBehavior, BoxLayout):
         print(**kwargs)
         print(f"{self.child_state=}")
 
-    pass
-
 
 class ScaleButton(ToggleButtonBehavior, BoxLayout):
     text = StringProperty('')
@@ -97,7 +95,7 @@ class TrackerGuiApp(App):
                 "cols": 4
             }
 
-        default_app_config.update(self.app_config)
+        default_app_config |= self.app_config
 
         self.app_config = default_app_config
 
@@ -122,7 +120,6 @@ class TrackerGuiApp(App):
         # xxx = [self.__set_prop__(prop[0],prop[1]) for prop in properties]
         list(map(lambda prop: self.__set_prop__(prop[0], prop[1]), properties))
         if hasattr(self.tracker_ref, 'patterns_from_file') and self.tracker_ref.patterns_from_file:
-            print(self.tracker_ref.patterns_from_file)
             setattr(self, 'path_queue_content', [None] * 4)
 
         for note in self.path_queue_content or []:
@@ -176,8 +173,7 @@ class TrackerGuiApp(App):
 
         # Play functions
         self.func_values = self.tracker_ref.note_patterns.pattern_methods_short_list
-        self.func_init_text = self.func_init_text if self.func_init_text else \
-            self.tracker_ref.note_patterns.pattern_methods_short_list[0]
+        self.func_init_text = self.func_init_text or self.tracker_ref.note_patterns.pattern_methods_short_list[0]
         self.tracker_ref.set_rnd_func_action = lambda: self.rand_play_func()
 
         # Duration variety
@@ -208,8 +204,11 @@ class TrackerGuiApp(App):
         self.set_queue_content_lbl_text(
             f'queue: {str(self.tracker_ref.get_queue_content())}'
         )
-        self.tracker_ref.curr_notes_pair_action = lambda: self.set_curr_notes_pair_lbl_text(
-            'from to: ' + str(self.tracker_ref.notes_pair))
+        self.tracker_ref.curr_notes_pair_action = (
+            lambda: self.set_curr_notes_pair_lbl_text(
+                f'from to: {str(self.tracker_ref.notes_pair)}'
+            )
+        )
         self.tracker_ref.fullq_content_action = lambda: self.set_fullq_content_lbl_text(
             'full queue: ' + str(self.tracker_ref.get_queue_content_full()))
         self.set_fullq_content_lbl_text(
@@ -217,27 +216,27 @@ class TrackerGuiApp(App):
 
     def close_application(self):
         # cleanup attempt
-        self.tracker_ref.set_play_action = lambda: print(None)
-        self.tracker_ref.scale_name_action = lambda: print(None)
-        self.tracker_ref.set_rnd_scale_action = lambda: print(None)
-        self.tracker_ref.set_rnd_key_action = lambda: print(None)
+        self.tracker_ref.set_play_action = lambda: None
+        self.tracker_ref.scale_name_action = lambda: None
+        self.tracker_ref.set_rnd_scale_action = lambda: None
+        self.tracker_ref.set_rnd_key_action = lambda: None
 
-        self.tracker_ref.set_metronome_action = lambda: print(None)
-        self.tracker_ref.time_sig_beat_val_action = lambda: print(None)
-        self.tracker_ref.set_tempo_action = lambda: print(None)
-        self.tracker_ref.set_rnd_func_action = lambda: print(None)
+        self.tracker_ref.set_metronome_action = lambda: None
+        self.tracker_ref.time_sig_beat_val_action = lambda: None
+        self.tracker_ref.set_tempo_action = lambda: None
+        self.tracker_ref.set_rnd_func_action = lambda: None
         if hasattr(self.tracker_ref, 'file_input_device'):
-            self.tracker_ref.file_input_device.set_tempo_callback = lambda: print(None)
+            self.tracker_ref.file_input_device.set_tempo_callback = lambda: None
 
-        self.tracker_ref.set_dur_variety_action = lambda: print(None)
+        self.tracker_ref.set_dur_variety_action = lambda: None
 
-        self.tracker_ref.set_loopq_action = lambda: print(None)
-        self.tracker_ref.set_clearq_action = lambda: print(None)
+        self.tracker_ref.set_loopq_action = lambda: None
+        self.tracker_ref.set_clearq_action = lambda: None
 
-        self.tracker_ref.check_notes_action = lambda: print(None)
-        self.tracker_ref.queue_content_action = lambda: print(None)
-        self.tracker_ref.curr_notes_pair_action = lambda: print(None)
-        self.tracker_ref.fullq_content_action = lambda: print(None)
+        self.tracker_ref.check_notes_action = lambda: None
+        self.tracker_ref.queue_content_action = lambda: None
+        self.tracker_ref.curr_notes_pair_action = lambda: None
+        self.tracker_ref.fullq_content_action = lambda: None
 
         self.tracker_ref.tstop()
         self.tracker_ref.save_midi(on_exit=True)
@@ -287,9 +286,7 @@ class TrackerGuiApp(App):
                 # self.root.transition.direction = 'down'
                 self.root.current = 'main_screen'
                 self.root.ids.scales_opt.rem_buttons()
-                print('return to main screen')
             else:
-                print('close application')
                 self.close_application()
         elif keycode[1] in play_keys:
             self.tracker_ref.put_to_queue(play_keys.index(keycode[1]) + 60)
@@ -314,7 +311,6 @@ class TrackerGuiApp(App):
         log_call()
         if play_pause_button:
             state = play_pause_button['state']
-        print(f"{instance=}, {state=}")
         self.tracker_ref.tstart() if state == 'down' else self.tracker_ref.tstop()
 
     # </editor-fold>
@@ -331,8 +327,6 @@ class TrackerGuiApp(App):
 
     # <editor-fold desc="Scales functionality">
     def on_selected_scale_button(self, instance, value):
-        print(instance, value)
-        print(self.selected_scale_button)
         self.set_scale_nm(value)
 
     def rand_scale(self):
@@ -361,24 +355,19 @@ class TrackerGuiApp(App):
     # <editor-fold desc="Key functionality">
     def on_selected_root_note(self, instance, root_note):
         log_call()
-        print(f'this is selected root note {root_note}, {instance=}')
         self.keys_scale_action(root_note, self.tracker_ref.key.scale.name)
 
     def set_key_state(self, new_key, new_scale=None):
         if not new_scale:
             new_scale = self.tracker_ref.key.scale.name
         for key in self.root.scales_buttons:
-            print(f"{key.text=} != {new_key}  {key.text != new_key=}")
             if key.text != new_key:
                 key.children[0].state = 'normal'
                 key.state = 'normal'
-                print("key set normal")
                 continue
 
             key.children[0].state = 'down'
             key.state = 'down'
-            print("key set down")
-            print(self.tracker_ref.key)
 
         self.selected_root_note = new_key
 
@@ -386,8 +375,6 @@ class TrackerGuiApp(App):
         keys = list({key.text for key in self.root.scales_buttons} \
                     - {self.selected_root_note})
         randomized_key = random.choice(keys)
-        print(f'this is {randomized_key=}')
-        print(self.tracker_ref.key)
         self.set_key_state(randomized_key)
 
     # </editor-fold>
@@ -423,13 +410,11 @@ class TrackerGuiApp(App):
                     else tempo_knob['inc_value']
                 tempo = self.tempo_value + tempo_increment
 
-            print(f"bef: {self.tempo_value}")
             if tempo > self.tempo_max:
                 tempo = self.tempo_max
             elif tempo < self.tempo_min:
                 tempo = self.tempo_min
         self.tempo_value = tempo
-        print(f"aft: {self.tempo_value=}")
         self.tracker_ref.set_tempo_trk(round(tempo))
 
     # </editor-fold>
@@ -437,7 +422,6 @@ class TrackerGuiApp(App):
     # <editor-fold desc="Play functions">
     def set_play_func(self, instance, func_name):
         log_call()
-        print('func_name:', func_name)
         if func_name not in self.tracker_ref.note_patterns.pattern_methods_short_list:
             func_name = self.tracker_ref.note_patterns.pattern_methods_short_list[0]
         self.tracker_ref.note_patterns.set_pattern_function(func_name)
@@ -457,7 +441,6 @@ class TrackerGuiApp(App):
     # <editor-fold desc="Duration Variety">
     def set_dur_variety_f_main(self, instance, dur_variety=None, dur_variety_knob=None):
         log_call()
-        print(f"{dur_variety=},{dur_variety_knob=}")
         if dur_variety is None:
             if dur_variety_knob['knob_type'] == 'abs':
                 dur_variety = dur_variety_knob['value']
@@ -468,13 +451,11 @@ class TrackerGuiApp(App):
                     else dur_variety_knob['inc_value']
                 dur_variety = self.dur_variety_value + dur_variety_increment
 
-            print(f"bef: {self.dur_variety_value}")
             if dur_variety > self.dur_variety_max:
                 dur_variety = self.dur_variety_max
             elif dur_variety < self.dur_variety_min:
                 dur_variety = self.dur_variety_min
         self.dur_variety_value = dur_variety
-        print(f"aft: {self.dur_variety_value=}")
         self.tracker_ref.dur_variety = dur_variety
 
     # </editor-fold>
@@ -490,9 +471,6 @@ class TrackerGuiApp(App):
 
     def selected_quantize_and_state(self, instance, quantize):
         log_call()
-        print(f'this is selected quantize {quantize}, {instance=}')
-        print("-----------------==========-x-: ", {x.text: x.children[0].state for x in self.root.quant_buttons})
-
         self.tracker_ref.quants_state = {x.text: x.children[0].state for x in self.root.quant_buttons}
 
     # </editor-fold>
@@ -500,7 +478,6 @@ class TrackerGuiApp(App):
     # <editor-fold desc="Align">
     def on_selected_align(self, instance, align):
         log_call()
-        print(f'align {align}, {instance=}')
         self.tracker_ref.align_state = align
 
     # </editor-fold>
@@ -571,8 +548,6 @@ class ScalesSelectScreen(Screen):
 
     def __init__(self, **kwargs):
         super(ScalesSelectScreen, self).__init__(**kwargs)
-        print(f"{self.grid_cols=}, {self.grid_rows=},{self.grid_cols=}")
-
         self.__read_config_file__()
         self.button_names = [button_id['name'] for button_id in self.patterns_config['scales'] if button_id['name']]
         self.nbr_of_scales = len(self.button_names)
@@ -594,8 +569,6 @@ class ScalesSelectScreen(Screen):
 
             self.button_matrix.append(btn)
             self.ids.button_grid.add_widget(btn)
-
-        print('----------------')
 
     def rem_buttons(self):
         for button in self.button_matrix:
@@ -620,7 +593,6 @@ class ScalesSelectScreen(Screen):
 
     def on_touch_down(self, touch):
         self.last_grid_up_down = 'down'
-        print(f"down , {touch.px=}, {touch.py=}, {touch.pos=}")
         self.grid_pos = touch.pos
 
     def on_touch_up(self, touch):
@@ -630,18 +602,13 @@ class ScalesSelectScreen(Screen):
         if not self.grid_pos or self.grid_pos == []:
             self.grid_pos = touch.pos
             return True
-        print(f"up,  {touch.px=}, {touch.py=}, {touch.pos=}")
 
-        print(f"{self.grid_pos[0]=},{touch.x=}, {self.grid_pos[0]-touch.x=}")
         if prev_last_grid_up_down == 'down':  # to filter out accidental up-up
             if self.grid_pos[0] - touch.x > 50:
-                print('>>>>>>>next')
                 self.scale_page(direction='next')
             if self.grid_pos[0] - touch.x < -50:
-                print('prev<<<<<<<')
                 self.scale_page(direction='prev')
             if pow(self.grid_pos[0] - touch.x, 2) + pow(self.grid_pos[1] - touch.y, 2) <= 100:
-                print('>>>>>>>equal<<<<<<<')
                 self.grid_pos = touch.pos
                 return super(ScalesSelectScreen, self).on_touch_down(touch)
             self.grid_pos = touch.pos

@@ -120,9 +120,6 @@ class CustTimeline():
         params_list2 = []
         event_args = {}
         for param in params_list:
-            # with snoop:
-            #     x = self.tracks
-            print(param)
             if not isinstance(param, dict):
                 param = dict(param)
             action_fun = param.get(EVENT_ACTION, None)
@@ -149,7 +146,6 @@ class CustTimeline():
                     params2[EVENT_ACTION_ARGS] = event_args
                 dur2 = list(params2.pop(EVENT_DURATION, None))
 
-                # print(f"before dur2 {dur2=} {bool(dur2)=}")
                 if dur2:
                     params2[EVENT_DURATION] = PSequence(dur2[:1], repeats=1)
                 params_list2.append(params2)
@@ -173,7 +169,6 @@ class CustTimeline():
 
             params_list2.append(param)
 
-        print(params_list2)
         if not output_device:
             # --------------------------------------------------------------------------------
             # If no output device exists, send to the system default MIDI output.

@@ -104,7 +104,6 @@ class CustMidiFile(mido.MidiFile):
                 time_delta = time.time() - time_variable
                 time_variable += time_delta
                 start_time += time_delta
-            print(f"{input_time=}, {msg.time=}")
             input_time += msg.time
 
             playback_time = time.time() - start_time

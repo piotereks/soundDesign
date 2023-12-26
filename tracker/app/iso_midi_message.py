@@ -77,9 +77,6 @@ class MidiMessagePoly:
         self.time = time
         self.track_idx = track_idx
 
-    def xto_meta_message(self):
-        return None
-
 
 class MidiMessageAfter:
     def __init__(self, channel, value, location, time=0, track_idx=0):

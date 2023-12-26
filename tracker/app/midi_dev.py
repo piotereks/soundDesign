@@ -100,7 +100,6 @@ if MULTI_TRACK:
             # ------------------------------------------------------------------------
             snoop.pp(inspect.currentframe().f_back.f_code.co_name)
             track = self.get_channel_track(channel=channel, src_track_idx=track_idx)
-            print(f"----------------track va: r{channel=} {track=} {track_idx=}")
             if track >= 0:
                 dt = self.time[track] - self.last_event_time[track]
                 dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
@@ -112,7 +111,6 @@ if MULTI_TRACK:
             snoop.pp(inspect.currentframe().f_back.f_code.co_name)
             track = self.get_channel_track(channel=channel, src_track_idx=track_idx)
             if track >= 0:
-                print(f"------------note on: {track=}, {note=}, {channel=}")
                 dt = self.time[track] - self.last_event_time[track]
                 dt_ticks = int(round(dt * self.midifile.ticks_per_beat))
                 self.miditrack[track].append(mido.Message('note_off', note=note, channel=channel, time=dt_ticks))
@@ -174,7 +172,6 @@ if MULTI_TRACK:
         def control(self, control=0, value=0, channel=0, track_idx=0):
             snoop.pp(inspect.currentframe().f_back.f_code.co_name)
             track = self.get_channel_track(channel=channel, src_track_idx=track_idx)
-            print(f"----------------track var: {channel=} {track=}")
             if track >= 0:
                 dt = self.time[track] - self.last_event_time[track]
                 dt_ticks = int(round(dt * self.midifile.ticks_per_beat))

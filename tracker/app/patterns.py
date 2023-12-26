@@ -22,8 +22,6 @@ class DurationPatterns:
         with open(config_file, 'r') as file:
             self.patterns = json.load(file)
 
-        print('after list')
-
 
 def mod_duration(func):  # added self, eventual issue
     @wraps(func)
@@ -69,16 +67,11 @@ def mod_duration(func):  # added self, eventual issue
 
         result = func(self, **parameters)
 
-        print(f"{args=},{kwargs=}")
-        print(f"-----////////////{parameters['dur_variety']=}")
-
-        print(f"xx {len(result[iso.EVENT_NOTE])=}, {result[iso.EVENT_NOTE]=}")
         dur_list = result.get(iso.EVENT_DURATION)
         if dur_list is None or dur_list == []:
             pattern_len = len(result[iso.EVENT_NOTE]) - 1
 
             split_array = split_no(pattern_len, dot_beat=parameters['dot_beat'], numerator=parameters['numerator'])
-            print(f"{pattern_len=},{split_array=}")
             durations = []
             for norm_dot, split_size in split_array:
                 if split_size == 0:
@@ -109,25 +102,17 @@ def mod_duration(func):  # added self, eventual issue
                                   )
                                  or condition)
                             ]
-                print(f"1. {dur_part=}, {split_size=}")
                 if not dur_part:  # f dur_part == []:
                     sdp = self.dur_patterns.patterns
                     dur_part = [dp for dp in sdp if dp["len"] == split_size]
                     min_sdp = min(map(lambda x: x['pstdev'], dur_part))
                     dur_part = [dp['pattern'] for dp in dur_part if dp["pstdev"] == min_sdp]
 
-                    print(f"2. {dur_part=}")
-
                 if norm_dot == "norm":
                     dur_part = random.choice(dur_part)
                 else:
                     dur_part = list(map(lambda x: Fraction(x / 1.5).limit_denominator(1000), random.choice(dur_part)))
-
-                print(f"3. {dur_part=}")
-
                 durations.extend(dur_part)
-
-            print(f"=========>{durations=}")
             result[iso.EVENT_DURATION] = [Fraction(1 / x).limit_denominator(1000) for x in durations]
 
         return result
@@ -237,9 +222,7 @@ class NotePatterns:
         octave *= interval_sign
         interval = abs(interval) % 12
         interval *= interval_sign
-        print(f"{org_interval=}, {octave=}, {interval=}")
         notes_pattern = random.choice(list(self.all_suitable_patterns(org_interval)))
-        # notes_pattern = random.choice(deb)
         return {
             iso.EVENT_NOTE: notes_pattern,
         }
@@ -253,7 +236,6 @@ class NotePatterns:
         octave *= interval_sign
         interval = abs(interval) % 12
         interval *= interval_sign
-        print(f"{org_interval=}, {octave=}, {interval=}")
         notes_pattern = random.choice(
             list(self.all_suitable_diminutions(org_interval))
         )

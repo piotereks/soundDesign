@@ -22,10 +22,6 @@ class UpDownPDegree(PDegree):
             scale_down = dg_list[0] > dg_list[-1]
         else:
             scale_down = False
-        if scale_down:
-            print("scale down: True --------------------")
-        else:
-            print("scale down: False -------------------")
 
         self.scale_down = scale_down
         self.degree = degree

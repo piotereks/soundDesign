@@ -25,7 +25,6 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
     @snoop
     def print_obj(self, timeline_inner, objects=None, track_idx=0):
 
-        print(f"{type(objects)}=")
         if not isinstance(objects, Iterable):
             objects = [objects]
         text = [(type(o), o.__dict__) for o in objects]
@@ -36,7 +35,6 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
 
         for obj in objects:
             if isinstance(obj, MidiMetaMessageTempo):
-                print('inside of MidiMetaMessageTempo')
                 timeline_inner.set_tempo(int(mido.tempo2bpm(obj.tempo)))
                 self.set_tempo_callback(int(mido.tempo2bpm(obj.tempo)))
                 msg = mido.MetaMessage('text', text=f"tempo:{int(mido.tempo2bpm(obj.tempo))}")
@@ -62,8 +60,6 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                 new_track_idx = timeline_inner.output_device.get_channel_track(channel=channel_param,
                                                                                src_track_idx=track_idx)
                 timeline_inner.output_device.miditrack[new_track_idx].append(obj.to_meta_message())
-
-        print(timeline_inner, text)
 
     def read(self, quantize=None):
         def create_lam_function(tgt_dict, messages_inner, track_idx_inner=0):
