@@ -188,9 +188,9 @@ class Tracker:
         # self.xxx = self.file_in_timeline() # file_in_timeline
         # self.metro = self.metro_timeline()
 
-        _ = self.file_in_timeline() # file_in_timeline
-        _ = self.tracker_timeline()
-        _ = self.metro_timeline()
+        self.file_in_timeline() # file_in_timeline
+        self.tracker_timeline()
+        self.metro_timeline()
         self.set_program_change_trk(program=self.program_change)
 
     def set_default_duration(self):
@@ -573,7 +573,7 @@ class Tracker:
 
             # notes[iso.EVENT_CHANNEL] = self.min_channel
 
-            _ = self.timeline.schedule(
+            self.timeline.schedule(
                 notes
             )
 
@@ -619,11 +619,14 @@ class Tracker:
         #     "channel": 9,
         # },
         #     remove_when_done=True)
-        _ = self.timeline.schedule({iso.EVENT_ACTION: lambda track_idx : print(None),
+        self.timeline.schedule({iso.EVENT_ACTION: lambda track_idx: None,
                        iso.EVENT_DURATION: 1
                        # iso.EVENT_CHANNEL: 9
                        },
-            remove_when_done=1)
+            remove_when_done=True)
+
+
+
 
     def metro_play(self):
         log_call()
@@ -642,7 +645,7 @@ class Tracker:
             "channel": 9,
             "amplitude": iso.PSequence(metro_amp, repeats=1)}
 
-        _ = self.timeline.schedule(self.metro_play_patterns, remove_when_done=True)
+        self.timeline.schedule(self.metro_play_patterns, remove_when_done=True)
 
     def metro_start_stop(self, state):
         if state == 'down':
@@ -770,7 +773,7 @@ class Tracker:
             return None
         print("out")
         print(self.patterns_from_file)
-        _ = self.timeline.schedule(copy.deepcopy(self.patterns_from_file), remove_when_done=True)
+        self.timeline.schedule(copy.deepcopy(self.patterns_from_file), remove_when_done=True)
         # return self.timeline.schedule(self.patterns_from_file.copy(), remove_when_done=True)
         # sum(y['duration'].sequence)
 
@@ -1017,7 +1020,7 @@ class Tracker:
             print("if in_pattern")
             print(f"in_pattern (next pattern for later):  from_note:{from_note} new_note:{to_note}")
             self.beat = lambda: self.play_from_to(from_note, to_note, in_pattern=True)
-            _ = self.get_from_queue()
+            self.get_from_queue()
         else:
             print("else in_pattern")
             if to_note is not None:

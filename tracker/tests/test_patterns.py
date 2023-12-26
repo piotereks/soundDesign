@@ -118,7 +118,7 @@ def test_generic_get_indexOf():
 
 
 def test_all_suitable_patterns():
-    _ = npat.all_suitable_patterns(0)
+    npat.all_suitable_patterns(0)
     for n in range(1, 16):
         assert all([pattern[-1] > 0 for pattern in npat.all_suitable_patterns(n)])
     for n in range(-16, -1):
@@ -126,7 +126,7 @@ def test_all_suitable_patterns():
 
 
 def test_all_suitable_diminution():
-    _ = npat.all_suitable_diminutions(0)
+    npat.all_suitable_diminutions(0)
     for n in range(1, 16):
         assert all([pattern[-1] > 0 for pattern in npat.all_suitable_diminutions(n)])
     for n in range(-16, -1):

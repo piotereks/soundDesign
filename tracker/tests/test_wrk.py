@@ -556,7 +556,7 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
 
     def file_beat():
 
-        _ = dummy_tim2.schedule(copy.deepcopy(patterns), remove_when_done=True)
+        dummy_tim2.schedule(copy.deepcopy(patterns), remove_when_done=True)
 
     # dummy_timeline(opt='dummy')
 
@@ -654,9 +654,9 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
 
     dur = 8
     rp = 2
-    # _ = dummy_tim2.schedule(patterns)
-    # _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat()], repeats=1),
-    _ = dummy_tim2.schedule({"action": iso.PSequence( sequence=[lambda track_idx : file_beat()], repeats=rp),
+    #dummy_tim2.schedule(patterns)
+    #dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat()], repeats=1),
+    dummy_tim2.schedule({"action": iso.PSequence( sequence=[lambda track_idx : file_beat()], repeats=rp),
                             # iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=1)
                             iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=rp)
                             # "duration": 4 * self.time_signature['numerator'] / self.time_signature['denominator']
