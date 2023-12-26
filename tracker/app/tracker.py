@@ -20,7 +20,7 @@ ACCENT_BIG = int(ACCENT_DEFAULT * ACCENT_BIG_FACTOR)
 ACCENT_MED = int(ACCENT_DEFAULT * ACCENT_MED_FACTOR)
 
 
-snoop.install(out='outputx.log', overwrite=True)
+snoop.install(out='output.log', overwrite=True)
 # snoop.install(enabled=True)
 # snoop.install(enabled=False)
 
@@ -188,9 +188,9 @@ class Tracker:
         # self.xxx = self.file_in_timeline() # file_in_timeline
         # self.metro = self.metro_timeline()
 
-        _ = self.file_in_timeline() # file_in_timeline
-        _ = self.tracker_timeline()
-        _ = self.metro_timeline()
+        self.file_in_timeline() # file_in_timeline
+        self.tracker_timeline()
+        self.metro_timeline()
         self.set_program_change_trk(program=self.program_change)
 
     def set_default_duration(self):
@@ -573,7 +573,7 @@ class Tracker:
 
             # notes[iso.EVENT_CHANNEL] = self.min_channel
 
-            _ = self.timeline.schedule(
+            self.timeline.schedule(
                 notes
             )
 
@@ -596,8 +596,8 @@ class Tracker:
         log_call()
         print(f"{time.time()=}")
         print(f"{4*self.time_signature['numerator']/self.time_signature['denominator']=},{self.metro_beat=}")
-        if MULTI_TRACK:
-            self.midi_out.extra_track(channel=9)  # for percussion channel 10 (or 9 when counting from 0).
+        # if MULTI_TRACK:
+            # self.midi_out.get_channel_track(channel=9)  # for percussion channel 10 (or 9 when counting from 0).
         return self.timeline.schedule({
             "action": lambda track_idx: self.metro_beat(),
             # "duration": 3/2
@@ -610,13 +610,23 @@ class Tracker:
 
     def metro_none(self):
         log_call()
+
+
         print(f"{time.time()=},{self.metro_beat=}")
-        _ = self.timeline.schedule({
-            iso.EVENT_NOTE: iso.PSequence([None], repeats=1),
-            "duration": 1,
-            "channel": 9,
-        },
+        # _ = self.timeline.schedule({
+        #     iso.EVENT_NOTE: iso.PSequence([None], repeats=1),
+        #     "duration": 1,
+        #     "channel": 9,
+        # },
+        #     remove_when_done=True)
+        self.timeline.schedule({iso.EVENT_ACTION: lambda track_idx: None,
+                       iso.EVENT_DURATION: 1
+                       # iso.EVENT_CHANNEL: 9
+                       },
             remove_when_done=True)
+
+
+
 
     def metro_play(self):
         log_call()
@@ -635,7 +645,7 @@ class Tracker:
             "channel": 9,
             "amplitude": iso.PSequence(metro_amp, repeats=1)}
 
-        _ = self.timeline.schedule(self.metro_play_patterns, remove_when_done=True)
+        self.timeline.schedule(self.metro_play_patterns, remove_when_done=True)
 
     def metro_start_stop(self, state):
         if state == 'down':
@@ -763,7 +773,7 @@ class Tracker:
             return None
         print("out")
         print(self.patterns_from_file)
-        _ = self.timeline.schedule(copy.deepcopy(self.patterns_from_file), remove_when_done=True)
+        self.timeline.schedule(copy.deepcopy(self.patterns_from_file), remove_when_done=True)
         # return self.timeline.schedule(self.patterns_from_file.copy(), remove_when_done=True)
         # sum(y['duration'].sequence)
 
@@ -780,9 +790,9 @@ class Tracker:
         factor = self.time_signature['numerator'] * 4 / self.time_signature['denominator']
         print(f"{factor=}")
         if self.patterns_from_file:
-            channels = set(flatten(list(pf[EVENT_CHANNEL]) for pf in copy.deepcopy(self.patterns_from_file) if pf.get(EVENT_CHANNEL, None)))
-            for c in channels:
-                self.midi_out.extra_track(channel=c)
+            # channels = set(flatten(list(pf[EVENT_CHANNEL]) for pf in copy.deepcopy(self.patterns_from_file) if pf.get(EVENT_CHANNEL, None)))
+            # for c in channels:
+            #     self.midi_out.get_channel_track(channel=c)
 
             dur = self.patterns_from_file_duration
             print(dur)
@@ -794,8 +804,8 @@ class Tracker:
             dur = dur * factor
             print(dur)
         else:
-            dur = 4*factor
-        #     dur = self.patterns_from_file_duration*self.time_signature['denominator']/self.time_signature['numerator']
+            # dur = 4*factor
+            dur = self.patterns_from_file_duration*self.time_signature['denominator']/self.time_signature['numerator']
 
 
 
@@ -1010,7 +1020,7 @@ class Tracker:
             print("if in_pattern")
             print(f"in_pattern (next pattern for later):  from_note:{from_note} new_note:{to_note}")
             self.beat = lambda: self.play_from_to(from_note, to_note, in_pattern=True)
-            _ = self.get_from_queue()
+            self.get_from_queue()
         else:
             print("else in_pattern")
             if to_note is not None:

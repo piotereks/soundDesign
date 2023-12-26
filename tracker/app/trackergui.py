@@ -121,7 +121,7 @@ class TrackerGuiApp(App):
                 ('parm_cols', "cols")
             ]
         # xxx = [self.__set_prop__(prop[0],prop[1]) for prop in properties]
-        _ = list(map(lambda prop: self.__set_prop__(prop[0],prop[1]), properties))
+        list(map(lambda prop: self.__set_prop__(prop[0],prop[1]), properties))
         if hasattr(self.tracker_ref, 'patterns_from_file'):
             if self.tracker_ref.patterns_from_file:
                 print(self.tracker_ref.patterns_from_file)
