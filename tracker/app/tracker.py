@@ -596,8 +596,8 @@ class Tracker:
         log_call()
         print(f"{time.time()=}")
         print(f"{4*self.time_signature['numerator']/self.time_signature['denominator']=},{self.metro_beat=}")
-        if MULTI_TRACK:
-            self.midi_out.get_channel_track(channel=9)  # for percussion channel 10 (or 9 when counting from 0).
+        # if MULTI_TRACK:
+            # self.midi_out.get_channel_track(channel=9)  # for percussion channel 10 (or 9 when counting from 0).
         return self.timeline.schedule({
             "action": lambda track_idx: self.metro_beat(),
             # "duration": 3/2
@@ -610,13 +610,20 @@ class Tracker:
 
     def metro_none(self):
         log_call()
+
+
         print(f"{time.time()=},{self.metro_beat=}")
-        _ = self.timeline.schedule({
-            iso.EVENT_NOTE: iso.PSequence([None], repeats=1),
-            "duration": 1,
-            "channel": 9,
-        },
-            remove_when_done=True)
+        # _ = self.timeline.schedule({
+        #     iso.EVENT_NOTE: iso.PSequence([None], repeats=1),
+        #     "duration": 1,
+        #     "channel": 9,
+        # },
+        #     remove_when_done=True)
+        _ = self.timeline.schedule({iso.EVENT_ACTION: lambda track_idx : print(None),
+                       iso.EVENT_DURATION: 1
+                       # iso.EVENT_CHANNEL: 9
+                       },
+            remove_when_done=1)
 
     def metro_play(self):
         log_call()
