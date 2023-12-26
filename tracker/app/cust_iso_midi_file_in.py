@@ -273,7 +273,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                 else:
                     next_time = t + max([nt.duration for nt in notes if hasattr(nt, 'duration')] or [1.0])
 
-                # time_until_next_note = next_time - t
+                time_until_next_note = next_time - t
                 if len(notes) > 1:
                     messages = tuple(nt for nt in notes)
                     create_lam_function(action_dict, messages, track_idx)
@@ -281,7 +281,6 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                     create_lam_function(action_dict, notes[0], track_idx)
 
             times = sorted(notes_by_time.keys())
-            time_until_next_note = 0
             for i, t in enumerate(times):
                 t = times[i]
                 notes = notes_by_time[t]

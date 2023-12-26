@@ -336,6 +336,10 @@ class TrackerGuiApp(App):
         self.tracker_ref.key = iso.Key(self.tracker_ref.key.tonic, random_scale)
         self.selected_scale_button = self.tracker_ref.key.scale.name
 
+    def keys_scale_action(self, key, scale):
+        log_call()
+        scale_obj = iso.Scale.byname(scale)
+        self.tracker_ref.key = iso.Key(key, scale_obj)
     def set_loopq_state(self, loopq_button=None):
         if not loopq_button:
             return

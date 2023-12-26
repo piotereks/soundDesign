@@ -1,4 +1,5 @@
 from typing import Iterable
+import os
 
 # from isobar.constants import EVENT_NOTE, EVENT_ACTION, EVENT_DEGREE
 from isobar import Key, Pattern
