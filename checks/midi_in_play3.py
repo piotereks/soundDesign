@@ -1,6 +1,4 @@
 DEFAULT_TEMPO = 500000
-global MULTI_TRACK
-MULTI_TRACK = True
 
 import mido
 import tracker.app.mido_fixes
@@ -23,10 +21,7 @@ from tracker.app.log_call import *
 #     if not msg:
 #         msg = mido.MetaMessage(*args, **kwargs)
 #
-#     if MULTI_TRACK:
-#         midi_out_device.miditrack[0].append(msg)
-#     else:
-#         midi_out_device.miditrack.append(msg)
+#     midi_out_device.miditrack[0].append(msg)
 
 # def play_mid_file():
 #     print("in play_mid_file")

@@ -6,7 +6,6 @@ import snoop
 from isobar import *
 
 from .iso_midi_message import *
-from .midi_dev import MULTI_TRACK
 
 log = logging.getLogger(__name__)
 
@@ -28,10 +27,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
         if not isinstance(objects, Iterable):
             objects = [objects]
         text = [(type(o), o.__dict__) for o in objects]
-        if MULTI_TRACK:
-            midi_track0 = timeline_inner.output_device.miditrack[0]
-        else:
-            midi_track0 = timeline_inner.output_device.miditrack
+        midi_track0 = timeline_inner.output_device.miditrack[0]
 
         for obj in objects:
             if isinstance(obj, MidiMetaMessageTempo):

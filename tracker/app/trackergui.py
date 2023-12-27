@@ -340,6 +340,7 @@ class TrackerGuiApp(App):
         log_call()
         scale_obj = iso.Scale.byname(scale)
         self.tracker_ref.key = iso.Key(key, scale_obj)
+
     def set_loopq_state(self, loopq_button=None):
         if not loopq_button:
             return
