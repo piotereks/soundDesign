@@ -199,12 +199,8 @@ class Tracker:
         if self.midi_out_mode == self.MIDI_OUT_DEVICE:
             return None
         if on_exit:
-            if MULTI_TRACK:
-                for idx in range(len(self.midi_out.miditrack)):
-                    # pass
-                    self.mid_meta_message(type='end_of_track', time=0, track_idx=idx)
-            else:
-                self.mid_meta_message(type='end_of_track', time=0)
+            for idx in range(len(self.midi_out.miditrack)):
+                self.mid_meta_message(type='end_of_track', time=0, track_idx=idx)
 
         self.midi_out.write()
         target_dir = os.path.dirname(self.filename)
@@ -377,11 +373,8 @@ class Tracker:
                     self.midi_out.program_change(program=msg.program, channel=msg.channel)
                     self.mid_meta_message(msg=msg)
 
-                    if MULTI_TRACK:
-                        for idx in range(len(self.midi_out.miditrack)):
-                            self.mid_meta_message(type='end_of_track', time=0, track_idx=idx)
-                    else:
-                        self.mid_meta_message(type='end_of_track', time=0)
+                    for idx in range(len(self.midi_out.miditrack)):
+                        self.mid_meta_message(type='end_of_track', time=0, track_idx=idx)
 
                 else:
                     if msg.type == 'set_tempo':
@@ -689,10 +682,7 @@ class Tracker:
 
         if not msg:
             msg = mido.MetaMessage(*args, **kwargs)
-        if MULTI_TRACK:
-            self.midi_out.miditrack[track_idx].append(msg)
-        else:
-            self.midi_out.miditrack.append(msg)
+        self.midi_out.miditrack[track_idx].append(msg)
 
     def set_tempo_trk(self, new_tempo):
         log_call()
@@ -736,11 +726,8 @@ class Tracker:
         if self.current_program == program:
             return
         self.midi_out.program_change(program=int(program), channel=int(channel))
-        if MULTI_TRACK:
-            self.midi_out.miditrack[0].append(
-                mido.Message('program_change', program=int(program), channel=int(channel)))
-        else:
-            self.midi_out.miditrack.append(mido.Message('program_change', program=int(program), channel=int(channel)))
+        self.midi_out.miditrack[0].append(
+            mido.Message('program_change', program=int(program), channel=int(channel)))
         self.current_program = program
 
     def write_mid_text_meta(self, message, track_idx=0):
