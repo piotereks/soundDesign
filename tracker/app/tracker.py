@@ -52,6 +52,11 @@ class Tracker:
             self.patterns_from_file = self.file_input_device.read()
             if not isinstance(self.patterns_from_file, list):
                 self.patterns_from_file = [self.patterns_from_file]
+                # self.file_input_device.midi_reader.tracks
+            if msg := next(m for t in self.file_input_device.midi_reader.tracks
+                           for m in t if m.type == 'time_signature'):
+                tracker_config['time_signature'] = {'denominator': msg.denominator, 'numerator': msg.numerator}
+
             self.patterns_from_file_duration = max([sum(pat[iso.EVENT_DURATION].sequence)
                                                     for pat in self.patterns_from_file if
                                                     pat.get(iso.EVENT_DURATION, None)])
@@ -659,8 +664,7 @@ class Tracker:
                 dur = int(dur) + 1
             dur = dur * factor
         else:
-            dur = self.patterns_from_file_duration * self.time_signature['denominator'] / self.time_signature[
-                'numerator']
+            dur = factor
 
         return self.timeline.schedule({"action": lambda track_idx: self.file_beat(),
                                        iso.EVENT_DURATION: dur

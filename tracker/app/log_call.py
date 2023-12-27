@@ -1,5 +1,5 @@
 import inspect
-
+import snoop
 
 def log_call():
-    print(inspect.stack()[1][3])
+    snoop.pp(inspect.stack()[1][3])

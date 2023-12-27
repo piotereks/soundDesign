@@ -56,6 +56,7 @@ def direct_midi_play():
     filename = os.path.join(this_dir, 'src_Var_tempo_2_trks_sax_piano.mid')
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1e.mid')
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
+    filename = os.path.join(this_dir, '..', 'tests', 'x1x1ax2.mid')
     # filename = os.path.join(this_dir, '..', 'tests', 'x1x1_many_repeatitions.mid')
     # filename = os.path.join(this_dir, '..', 'tests', 'xoutput_20231210213312.mid')
 
