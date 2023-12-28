@@ -16,6 +16,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
 
     def __init__(self, filename):
         self.filename = filename
+        self.midi_reader = mido.MidiFile(self.filename)
 
     # def set_tempo_callback(self, tempo):
     def set_tempo_callback(self, *args, **kwargs):
@@ -67,7 +68,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                 msg_loc = messages_inner.location
             tgt_dict[EVENT_TIME].append(msg_loc)
 
-        self.midi_reader = mido.MidiFile(self.filename)
+
         # log.info("Loading MIDI data from %s, ticks per beat = %d" % (self.filename, self.midi_reader.ticks_per_beat))
         note_tracks = list(filter(lambda tr: any(message.type == 'note_on' for message in tr),
                                   self.midi_reader.tracks))

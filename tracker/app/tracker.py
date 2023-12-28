@@ -53,9 +53,13 @@ class Tracker:
             if not isinstance(self.patterns_from_file, list):
                 self.patterns_from_file = [self.patterns_from_file]
                 # self.file_input_device.midi_reader.tracks
-            if msg := next(m for t in self.file_input_device.midi_reader.tracks
-                           for m in t if m.type == 'time_signature'):
-                tracker_config['time_signature'] = {'denominator': msg.denominator, 'numerator': msg.numerator}
+            try:
+                if msg := next(m for t in self.file_input_device.midi_reader.tracks
+                               for m in t if m.type == 'time_signature'):
+                    tracker_config['time_signature'] = {'numerator': msg.numerator, 'denominator': msg.denominator}
+            except StopIteration:
+                # if time_singature not writtent to file then 4/4 is default
+                tracker_config['time_signature'] = {'numerator': 4, 'denominator': 4}
 
             self.patterns_from_file_duration = max([sum(pat[iso.EVENT_DURATION].sequence)
                                                     for pat in self.patterns_from_file if
