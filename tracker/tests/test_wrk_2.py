@@ -54,59 +54,41 @@ def test_note_at_beat():
     durs = list(track[EVENT_DURATION])
     notes = list(track[EVENT_NOTE])
     # durs = [0.5, 1.0, 6.5, 0.5, 1.0, 1.0, 9.5]
-    notes = [50, 51, 52, 53, 54, 55, None]
+    # notes = [50, 51, 52, 53, 54, 55, None]
     result = list(accumulate(durs, lambda x, y: x + y))
-    res = [0] + result
-    # res = [0, 0.5, 1.5, 8.0, 8.5, 9.5, 10.5, 20.0]
-    all_ranges = [(res[i],res[i+1]) for i in range(len(res)-1)]
-    # all_ranges = [(0, 0.5), (0.5, 1.5), (1.5, 8.0), (8.0, 8.5), (8.5, 9.5), (9.5, 10.5), (10.5, 20.0)]
-    # all_ranges = [(res[i],res[i+1],int(res[i]),int(res[i+1]+1)) 
-    #       for i in range(len(res)-1)]
 
-    # all_ranges = [(0, 0.5, 0, 1), (0.5, 1.5, 0, 2), (1.5, 8.0, 1, 9), (8.0, 8.5, 8, 9), (8.5, 9.5, 8, 10),
-                #   (9.5, 10.5, 9, 11), (10.5, 20.0, 10, 21)]
-    selected_ranges = [
-    (res[i], res[i + 1])
-    for i in range(len(res) - 1)
-    if any(int(x) % 4 == 0 for x in range(int(res[i]), int(res[i + 1]) + 1))
-]
-    #  TODO: It must be evident when 2 or more notes are selected for specific beat number (int(x)%4 == 0). 
-    #  Then one need to be selected based on criteria either first in, and/or which has bigger coverage for beat (but not spike, but small range like 1/16 or 1/32)
-    #  Calculations need to be performed for variable time_signatures (consider both nominator and denominator)
-    selected_ranges = [
-    (res[i], res[i + 1],
-     all_ranges.index((res[i], res[i + 1])),
-     notes[all_ranges.index((res[i], res[i + 1]))]
-     
-     )    
-    
-    for i in range(len(res) - 1)
-    if any(int(x) % 4 == 0 and  res[i]<=x<res[i+1] for x in range(int(res[i]), int(res[i + 1]) + 1))
-    ]
-    #  I may need quantize here and replace comprehension lists
-    result = list(accumulate(durs, lambda x, y: x + y))
-    import random
-    rand_result = [r+random.uniform(-0.3, 0.3)  for r in result]
     # rand_result = [0.7380925910636513, 1.5426592173357494, 8.1621390946605, 8.254313008771904, 9.228673171609053, 10.66374474678596, 19.770060113625792]
-    quantize = 1 / 8
-    time_signature = {'numerator': 5, 'denominator': 8}
+    get_notes_at_beat(notes=notes, durations=durs, quantize=1/8, time_signature={'numerator': 5, 'denominator': 8})
+
+    x = 1
+
+
+def get_notes_at_beat(notes, durations, quantize=None, time_signature=None):
+    from itertools import accumulate
+    import numpy as np
+    if time_signature is None:
+        time_signature = {'numerator': 4, 'denominator': 4}
+    if quantize is None:  #  default value for quantize - half of selected denominator
+        quantize = 0.5/time_signature['denominator']
+
+    # quantize = 1 / 8
+    # time_signature = {'numerator': 5, 'denominator': 8}
     mod_factor = time_signature['numerator'] * 4 / time_signature['denominator']
 
-    quant_result = [0]+[quantize * math.floor(float(r) / quantize) for r in rand_result]
+    quant_result = [0] + [quantize * math.floor(float(r) / quantize) for r in accumulate(durations, lambda x, y: x + y)]
+    snoop.pp(quant_result)
     all_ranges = [(quant_result[i], quant_result[i + 1]) for i in range(len(quant_result) - 1)]
     selected_ranges = []
     selected_notes = []
     for idx, (r_from, r_to) in enumerate(all_ranges):
         snoop.pp(r_from, r_to)
-        for x in np.arange((r_from//mod_factor)*mod_factor, ((r_to//mod_factor)+1)*(mod_factor), mod_factor):
+        for x in np.arange((r_from // mod_factor) * mod_factor, ((r_to // mod_factor) + 1) * mod_factor, mod_factor):
             # if x % mod_factor == 0 and r_from <= x < r_to:
             if r_from <= x < r_to:
                 selected_ranges.append((r_from, r_to, idx))
                 selected_notes.append(notes[idx])
                 snoop.pp(x)
                 break
-    snoop.pp(result, notes)
+    snoop.pp(quant_result, notes)
     snoop.pp(selected_notes, selected_ranges)
-
-
-    x = 1
+    return selected_notes
