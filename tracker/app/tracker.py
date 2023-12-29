@@ -39,6 +39,7 @@ class Tracker:
                  ):
         if midi_mapping is None:
             midi_mapping = {}
+        self.notes_at_beat = None
         log_call()
 
         read_config_file_scales()
@@ -61,10 +62,16 @@ class Tracker:
                 # if time_singature not writtent to file then 4/4 is default
                 tracker_config['time_signature'] = {'numerator': 4, 'denominator': 4}
 
-            self.patterns_from_file_duration = max([sum(pat[iso.EVENT_DURATION].sequence)
-                                                    for pat in self.patterns_from_file if
-                                                    pat.get(iso.EVENT_DURATION, None)])
-
+            self.patterns_from_file_duration = max(
+                sum(pat[iso.EVENT_DURATION].sequence)
+                for pat in self.patterns_from_file
+                if pat.get(iso.EVENT_DURATION, None)
+            )
+            try:
+                track = next(f for f in self.patterns_from_file if f.get(EVENT_NOTE))
+                self._init_notes_at_beat(track=track, time_signature=tracker_config['time_signature'])
+            except StopIteration:
+                pass
 
         else:
             self.patterns_from_file = None
@@ -110,7 +117,7 @@ class Tracker:
 
         self.pattern_idx = 0
         self.default_tracker_config = \
-            {
+                {
                 "midi_in_name": ["blah_blah_0", "sdfdsf123"],
                 "midi_out_name": ["in_blah_blah_0", "ppp_sdfdsf123"],
                 "default_channel": 1,
@@ -187,6 +194,13 @@ class Tracker:
         self.tracker_timeline()
         self.metro_timeline()
         self.set_program_change_trk(program=self.program_change)
+
+    def _init_notes_at_beat(self, track, time_signature):
+        durs = list(track[EVENT_DURATION])
+        notes = list(track[EVENT_NOTE])
+        self.notes_at_beat = get_notes_at_beat(notes=notes, durations=durs,
+                                               quantize=0.5 / time_signature['denominator'],
+                                               time_signature=time_signature)
 
     def set_default_duration(self):
         self.factor = self.factors.get(self.time_signature['numerator'], 0)
@@ -924,3 +938,32 @@ class Tracker:
         })
 
     # </editor-fold>
+
+
+def get_notes_at_beat(notes, durations, quantize=None, time_signature=None):
+    if time_signature is None:
+        time_signature = {'numerator': 4, 'denominator': 4}
+    if quantize is None:  # default value for quantize - half of selected denominator
+        quantize = 0.5 / time_signature['denominator']
+
+    # quantize = 1 / 8
+    # time_signature = {'numerator': 5, 'denominator': 8}
+    mod_factor = time_signature['numerator'] * 4 / time_signature['denominator']
+
+    quant_result = [0] + [quantize * math.floor(float(r) / quantize) for r in accumulate(durations, lambda x, y: x + y)]
+    snoop.pp(quant_result)
+    all_ranges = [(quant_result[i], quant_result[i + 1]) for i in range(len(quant_result) - 1)]
+    selected_ranges = []
+    selected_notes = []
+    for idx, (r_from, r_to) in enumerate(all_ranges):
+        snoop.pp(r_from, r_to)
+        for x in np.arange((r_from // mod_factor) * mod_factor, ((r_to // mod_factor) + 1) * mod_factor, mod_factor):
+            # if x % mod_factor == 0 and r_from <= x < r_to:
+            if r_from <= x < r_to:
+                selected_ranges.append((r_from, r_to, idx))
+                selected_notes.append(notes[idx])
+                snoop.pp(x)
+                break
+    snoop.pp(quant_result, notes)
+    snoop.pp(selected_notes, selected_ranges)
+    return selected_notes
