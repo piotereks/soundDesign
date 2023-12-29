@@ -149,7 +149,8 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                     offset = offset_int / self.midi_reader.ticks_per_beat
                     end_of_track = MidiMetaMessageEndTrack(location=offset,
                                                            time=event.time, track_idx=track_idx)
-                    notes.append(end_of_track)
+                    #  disable this temporarily - this is rather not needed, but breaks len calc
+                    # notes.append(end_of_track)
                 elif event.type == 'midi_port':
                     offset_int += event.time
                     offset = offset_int / self.midi_reader.ticks_per_beat

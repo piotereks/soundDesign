@@ -601,6 +601,7 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
     events_action = {
         iso.EVENT_DURATION: iso.PSequence(sequence=[1.22, 1.3, 1.33, 1.41], repeats=1)
         # iso.EVENT_DURATION : iso.PSequence(sequence = [1, 1, 1, 1], repeats=1)
+        # iso.EVENT_DURATION : iso.PSequence(sequence = [0.9, 0.9, 0.9, 0.9], repeats=1)
         , iso.EVENT_ACTION: iso.PSequence(
             sequence=[lambda track_idx: (set_tempo(31), set_tempo(35), track_name('blah'), track_name('blaxx', 1)),
                       lambda track_idx: set_tempo(30),
