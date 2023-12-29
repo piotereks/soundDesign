@@ -272,7 +272,7 @@ def test_track_play(dummy_timeline2):
     #     iso.EVENT_ACTION: lambda: timeline.event_times.append(time.time()),
     #     iso.EVENT_DURATION: iso.PSequence([ 0.001 ], 50)
     # })
-    # MidiFileInputDevice.print_obj(dummy_timeline2, MidiMessageProgram(channel=2, program=3, location=0))
+    # MidiFileInputDevice.midi_message_obj(dummy_timeline2, MidiMessageProgram(channel=2, program=3, location=0))
 
     events_action = {
         # iso.EVENT_ACTION: iso.PSequence(sequence= [MidiMessageProgram(channel=2, program=3, location=0)], repeats=1),
@@ -282,7 +282,7 @@ def test_track_play(dummy_timeline2):
         iso.EVENT_DURATION: iso.PSequence(sequence=[3], repeats=1)
     }
 
-    # print_obj(self, timeline, objects)
+    # midi_message_obj(self, timeline, objects)
     dummy_timeline2.schedule(events_trk1)
     dummy_timeline2.schedule(events_trk2)
     dummy_timeline2.schedule(events_action)

@@ -23,7 +23,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
         pass
 
     @snoop
-    def print_obj(self, timeline_inner, objects=None, track_idx=0):
+    def midi_message_obj(self, timeline_inner, objects=None, track_idx=0):
 
         if not isinstance(objects, Iterable):
             objects = [objects]
@@ -60,7 +60,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
 
     def read(self, quantize=None):
         def create_lam_function(tgt_dict, messages_inner, track_idx_inner=0):
-            lam_function = partial(self.print_obj, objects=messages_inner, track_idx=track_idx_inner)
+            lam_function = partial(self.midi_message_obj, objects=messages_inner, track_idx=track_idx_inner)
             tgt_dict[EVENT_ACTION].append(lam_function)
             if isinstance(messages_inner, Iterable):
                 msg_loc = messages_inner[0].location
