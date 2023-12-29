@@ -14,7 +14,7 @@ class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
 
     def __init__(self, filename):
         self.filename = filename
-        self.midifile = None
+        # self.midifile = None
         self.midifile = mido.MidiFile()
         # self.miditrack = []
         self.miditrack = [mido.MidiTrack()]

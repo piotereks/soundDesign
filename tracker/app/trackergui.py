@@ -120,7 +120,12 @@ class TrackerGuiApp(App):
         # xxx = [self.__set_prop__(prop[0],prop[1]) for prop in properties]
         list(map(lambda prop: self.__set_prop__(prop[0], prop[1]), properties))
         if hasattr(self.tracker_ref, 'patterns_from_file') and self.tracker_ref.patterns_from_file:
-            setattr(self, 'path_queue_content', [None] * 4)
+            # setattr(self, 'path_queue_content', [None] * 4)
+            if self.tracker_ref.notes_at_beat is None:
+                setattr(self, 'path_queue_content', [None] * 4)
+            else:
+                # setattr(self, 'path_queue_content', [None] * 4)
+                setattr(self, 'path_queue_content', self.tracker_ref.notes_at_beat)
 
         for note in self.path_queue_content or []:
             self.tracker_ref.put_to_queue(note)
