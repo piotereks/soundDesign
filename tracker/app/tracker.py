@@ -1,4 +1,5 @@
 # import os
+import contextlib
 import shutil
 from datetime import datetime
 from itertools import accumulate
@@ -67,18 +68,24 @@ class Tracker:
                 for pat in self.patterns_from_file
                 if pat.get(iso.EVENT_DURATION, None)
             )
-            try:
+            with contextlib.suppress(StopIteration):
                 track = next(f for f in self.patterns_from_file if f.get(EVENT_NOTE))
                 self._init_notes_at_beat(track=track, time_signature=tracker_config['time_signature'])
-            except StopIteration:
-                pass
-
+                if self.notes_at_beat is not None:
+                    pass
+                # app_config['queue_content'] = self.notes_at_beat
         else:
             self.patterns_from_file = None
 
         if self.midi_file_in:
-            self.available_channels = set(range(16)) - set(m.channel for t in self.midi_file_in.tracks
-                                                           for m in t if hasattr(m, 'channel')) - {9}
+            self.available_channels = (
+                set(range(16))
+                - { m.channel
+                    for t in self.midi_file_in.tracks
+                    for m in t
+                    if hasattr(m, 'channel')
+                }
+            ) - {9}
             self.min_channel = min(self.available_channels)
             self.available_channels.remove(self.min_channel)
 
@@ -196,8 +203,8 @@ class Tracker:
         self.set_program_change_trk(program=self.program_change)
 
     def _init_notes_at_beat(self, track, time_signature):
-        durs = list(track[EVENT_DURATION])
-        notes = list(track[EVENT_NOTE])
+        durs = list(track[EVENT_DURATION].copy())
+        notes = list(track[EVENT_NOTE].copy())
         self.notes_at_beat = get_notes_at_beat(notes=notes, durations=durs,
                                                quantize=0.5 / time_signature['denominator'],
                                                time_signature=time_signature)
