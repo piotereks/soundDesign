@@ -382,57 +382,57 @@ class Tracker:
         else:
             print(f"No midi in with {midi_in_name}")
 
-    def xplay_mid_file(self):
-        time_division = self.midi_file_in.ticks_per_beat
-        start_time = time.time()
-        elapsed_time = start_time
-        while not self.midi_file_in.break_flag.is_set():
-            for msg, msg_track in self.midi_file_in.play(meta_messages=True):
-                elapsed_time = time.time() - elapsed_time
-                wait_time = msg.time - elapsed_time
+    # def xplay_mid_file(self):
+    #     time_division = self.midi_file_in.ticks_per_beat
+    #     start_time = time.time()
+    #     elapsed_time = start_time
+    #     while not self.midi_file_in.break_flag.is_set():
+    #         for msg, msg_track in self.midi_file_in.play(meta_messages=True):
+    #             elapsed_time = time.time() - elapsed_time
+    #             wait_time = msg.time - elapsed_time
+    #
+    #             if self.midi_file_in.break_flag.is_set():
+    #                 break
+    #             if msg.type in ('note_on', 'note_off'):
+    #                 if msg.type == 'note_on':
+    #                     self.midi_out.note_on(channel=msg.channel, note=msg.note,
+    #                                           velocity=int(msg.velocity * self.filename_in_volume / 100))
+    #                 else:
+    #                     self.midi_out.note_off(channel=msg.channel, note=msg.note)
+    #             elif msg.type == 'program_change':
+    #                 self.midi_out.program_change(program=msg.program, channel=msg.channel)
+    #                 self.mid_meta_message(msg=msg)
+    #
+    #                 for idx in range(len(self.midi_out.miditrack)):
+    #                     self.mid_meta_message(type='end_of_track', time=0, track_idx=idx)
+    #
+    #             else:
+    #                 if msg.type == 'set_tempo':
+    #                     self.set_tempo_ui(instance=None, tempo=mido.tempo2bpm(msg.tempo))
+    #
+    #                 self.mid_meta_message(msg=msg)
+    #
+    #         else:
+    #             self.midi_out.write()
+    #             break
+    #         break
 
-                if self.midi_file_in.break_flag.is_set():
-                    break
-                if msg.type in ('note_on', 'note_off'):
-                    if msg.type == 'note_on':
-                        self.midi_out.note_on(channel=msg.channel, note=msg.note,
-                                              velocity=int(msg.velocity * self.filename_in_volume / 100))
-                    else:
-                        self.midi_out.note_off(channel=msg.channel, note=msg.note)
-                elif msg.type == 'program_change':
-                    self.midi_out.program_change(program=msg.program, channel=msg.channel)
-                    self.mid_meta_message(msg=msg)
+    # def mid_file_start(self):
+    #     print("start of mid file")
+    #     if not self.player_thread.is_alive():
+    #         self.player_thread.start()
+    #     if self.midi_file_in:
+    #         self.midi_file_in.run_event.set()
+    #         self.midi_file_in.break_flag.clear()
 
-                    for idx in range(len(self.midi_out.miditrack)):
-                        self.mid_meta_message(type='end_of_track', time=0, track_idx=idx)
+    # def mid_file_pause(self):
+    #     if self.midi_file_in:
+    #         self.midi_file_in.run_event.clear()
 
-                else:
-                    if msg.type == 'set_tempo':
-                        self.set_tempo_ui(instance=None, tempo=mido.tempo2bpm(msg.tempo))
-
-                    self.mid_meta_message(msg=msg)
-
-            else:
-                self.midi_out.write()
-                break
-            break
-
-    def mid_file_start(self):
-        print("start of mid file")
-        if not self.player_thread.is_alive():
-            self.player_thread.start()
-        if self.midi_file_in:
-            self.midi_file_in.run_event.set()
-            self.midi_file_in.break_flag.clear()
-
-    def mid_file_pause(self):
-        if self.midi_file_in:
-            self.midi_file_in.run_event.clear()
-
-    def mid_file_stop_end(self):
-        if self.midi_file_in:
-            self.midi_file_in.run_event.clear()
-            self.midi_file_in.break_flag.set()
+    # def mid_file_stop_end(self):
+    #     if self.midi_file_in:
+    #         self.midi_file_in.run_event.clear()
+    #         self.midi_file_in.break_flag.set()
 
     def init_timeline(self, midi_in_name, midi_out_name, midi_out_mode='dummy', ):
         log_call()
