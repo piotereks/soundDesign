@@ -50,6 +50,8 @@ iso.Scale.indexOf = UpDownScale.indexOf
 iso.Key.__init__ = UpDownKey.__init__
 iso.Key.get = UpDownKey.get
 iso.Key.nearest_note = UpDownKey.nearest_note
+iso.Key._extracted_from_nearest_note = UpDownKey._extracted_from_nearest_note
+
 iso.Key.__contains__ = UpDownKey.__contains__
 iso.Key.semitones_down = UpDownKey.semitones_down
 

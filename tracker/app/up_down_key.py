@@ -1,6 +1,6 @@
 from isobar import Key
 from isobar import Scale, InvalidKeyException, note_name_to_midi_note
-
+import snoop
 
 class UpDownKey(Key):
     """ Represents a harmonic structure, containing a tonic and scale.
@@ -37,6 +37,7 @@ class UpDownKey(Key):
         semitone = self.scale.get(degree, scale_down=scale_down)
         return semitone + self.tonic
 
+    @snoop
     def nearest_note(self, *args, **kwargs):
         """ Return the index of the given note within this scale. """
         parms = {"note": None,
@@ -55,11 +56,13 @@ class UpDownKey(Key):
             semitones = self.scale.semitones_down
         else:
             semitones = self.scale.semitones
+            snoop.pp(self, note, scale_down)
         if self.__contains__(semitone=note, scale_down=scale_down):
             return note
         else:
             return self._extracted_from_nearest_note(note, semitones)
 
+    @snoop
     def _extracted_from_nearest_note(self, note, semitones):
         note_denominated = note - self.tonic
         octave, pitch = divmod(note_denominated, self.scale.octave_size)
