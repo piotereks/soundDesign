@@ -148,7 +148,7 @@ class Tracker:
         self.midi_in_name = self.default_tracker_config.get("midi_in_name")
         self.midi_out_name = self.default_tracker_config.get("midi_out_name")
         self.legato = self.default_tracker_config.get("legato")
-        self.program_change = self.default_tracker_config.get("program_change")
+        self.pgm_change_config = self.default_tracker_config.get("program_change")
         self.time_signature = self.default_tracker_config.get("time_signature")
         self.beat_count = -1 % 4
 
@@ -209,7 +209,7 @@ class Tracker:
         self.file_in_timeline()  # file_in_timeline
         self.tracker_timeline()
         self.metro_timeline()
-        self.set_program_change_trk(program=self.program_change)
+        self.set_program_change_trk(program=self.pgm_change_config)
 
     def _init_notes_at_beat(self, track, time_signature):
         durs = list(track[EVENT_DURATION].copy())
@@ -344,6 +344,7 @@ class Tracker:
 
             if message.type in ['note_on', 'note_off']:
                 if message.channel == self.default_tracker_config['default_channel']:
+                # if message.channel == self.min_avail_channel:
                     if message.type == 'note_on':
                         self.put_to_queue(message.note)
                 else:
@@ -376,7 +377,7 @@ class Tracker:
                     if func:
                         func()
             elif message.type == 'program_change':
-                self.program_change = message.program
+                self.pgm_change_config = message.program
 
         midi_in_name = [m[0] for m in itertools.product(mido.get_input_names(), midi_in_name) if
                         m[1] in m[0]]
@@ -516,11 +517,17 @@ class Tracker:
             self.check_notes = list(notes[iso.EVENT_NOTE].copy())
 
             self.check_notes_action()
+
+
+
             notes[EVENT_CHANNEL] = self.min_avail_channel
+
+
             #  I use negative index to differentiate from standard sel_track_idx calculations
             self.timeline.schedule(
                 notes, sel_track_idx=-1
             )
+
             return notes
 
         return inner
@@ -769,6 +776,12 @@ class Tracker:
         log_call()
         if self.current_program == program:
             return
+        self.timeline.schedule(
+            {
+                EVENT_PROGRAM_CHANGE: iso.PSequence(sequence = [program], repeats=1),
+                EVENT_CHANNEL: self.min_avail_channel
+            }, sel_track_idx=-1
+        )
         self.midi_out.program_change(program=int(program), channel=int(channel))
         self.midi_out.miditrack[0].append(
             mido.Message('program_change', program=int(program), channel=int(channel)))
@@ -847,7 +860,7 @@ class Tracker:
         self.set_func_trk(self.func_name)
         self.set_align_trk(self.align_state)
         self.set_quantize_trk(self.quants_state)
-        self.set_program_change_trk(self.program_change)
+        self.set_program_change_trk(self.pgm_change_config)
 
         self.prev_key = self.key
         self.prev_get_pattern_name = self.note_patterns.get_pattern.__name__
