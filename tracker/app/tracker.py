@@ -515,9 +515,9 @@ class Tracker:
             self.check_notes = list(notes[iso.EVENT_NOTE].copy())
 
             self.check_notes_action()
-
+            # notes[EVENT_CHANNEL] = 12
             self.timeline.schedule(
-                notes
+                notes, sel_track_idx=99
             )
             return notes
 
