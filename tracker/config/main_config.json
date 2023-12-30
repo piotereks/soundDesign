@@ -32,10 +32,10 @@
     "bfilename_in" : ["..","..","checks","example_midi", "4_notes.mid"],
     "note_at_beat_track_nr" : 1,
     "filename_in_volume" : 55,
-    "generated_notes_volume" : 200,
+    "generated_notes_volume" : 80,
     "default_channel" : 0,
     "legato": 1.0,
-    "program_change": 0,
+    "program_change": 22,
     "time_signature": {"numerator": 4, "denominator": 4},
     "dummy_file_config": "qqqq"
   },

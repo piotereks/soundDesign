@@ -62,7 +62,7 @@ class Tracker:
             except StopIteration:
                 # if time_singature not writtent to file then 4/4 is default
                 tracker_config['time_signature'] = {'numerator': 4, 'denominator': 4}
-
+            self.midi_file_in = self.file_input_device.midi_reader
             self.patterns_from_file_duration = max(
                 sum(pat[iso.EVENT_DURATION].sequence)
                 for pat in self.patterns_from_file
@@ -95,8 +95,8 @@ class Tracker:
                     if hasattr(m, 'channel')
                 }
             ) - {9}
-            self.min_channel = min(self.available_channels)
-            self.available_channels.remove(self.min_channel)
+            self.min_avail_channel = min(self.available_channels)
+            self.available_channels.remove(self.min_avail_channel)
 
         self.filename_in_volume = tracker_config.get("filename_in_volume")
         if self.filename_in_volume < 0:
@@ -502,7 +502,8 @@ class Tracker:
                         idx = acc_durations.index(k)
                         amplitudes[idx] = int(self.accents_dict[k] * amplitudes[idx])
                     except ValueError:
-                        print("key not found")
+                        snoop.pp("key not found")
+                        # print("key not found")
                 amplitudes = list(map(lambda midi_amp: int(midi_amp * self.generated_notes_volume / 100), amplitudes))
                 amplitudes = list(map(lambda
                                           midi_amp: 0 if not midi_amp else 0 if midi_amp < 0 else 127 if midi_amp > 127 else midi_amp,
@@ -515,6 +516,7 @@ class Tracker:
             self.check_notes = list(notes[iso.EVENT_NOTE].copy())
 
             self.check_notes_action()
+            notes[EVENT_CHANNEL] = self.min_avail_channel
             #  I use negative index to differentiate from standard sel_track_idx calculations
             self.timeline.schedule(
                 notes, sel_track_idx=-1
@@ -678,7 +680,11 @@ class Tracker:
         log_call()
         if not self.patterns_from_file:
             return None
-        self.timeline.schedule(copy.deepcopy(self.patterns_from_file), remove_when_done=True)
+        copy_patterns_from_file = copy.deepcopy(self.patterns_from_file)
+        for tr in copy_patterns_from_file:
+            if tr.get(EVENT_AMPLITUDE):
+                tr[EVENT_AMPLITUDE].sequence = [int(a * self.filename_in_volume / 100) for a in tr[EVENT_AMPLITUDE].sequence]
+        self.timeline.schedule(copy_patterns_from_file, remove_when_done=True)
 
     def file_in_timeline(self):
         def flatten(lst):

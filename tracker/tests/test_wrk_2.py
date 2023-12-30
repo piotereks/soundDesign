@@ -40,9 +40,9 @@ def test_note_at_beat():
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1b.mid')
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1ax2.mid')
-    filename = os.path.join(this_dir, '..', '..', 'x1x1b.mid')
+    # filename = os.path.join(this_dir, '..', '..', 'x1x1b.mid')
     file_input_device = iso.MidiFileInputDevice(filename)
-    file_content = file_input_device.read()
+    # file_content = file_input_device.read()
 
     # mid_file = mido.MidiFile(filename)
     # file_input_device.midi_reader.tracks
@@ -53,6 +53,10 @@ def test_note_at_beat():
     #  currently assumed there is on note per position.
     # interested are chords, but also situation where notes in chord have different lenghts
     file_content = file_input_device.read()
+    for tr in file_content:
+        if tr.get(EVENT_AMPLITUDE):
+            tr[EVENT_AMPLITUDE].sequence = [int(a*0.2) for a in tr[EVENT_AMPLITUDE].sequence]
+
     track = next(f for f in file_content if f.get(EVENT_NOTE))
     durs = list(track[EVENT_DURATION])
     notes = list(track[EVENT_NOTE])
