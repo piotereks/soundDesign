@@ -29,7 +29,7 @@ class UpDownScale(Scale):
         for idx, arg in enumerate(args):
             parameters[list(parameters.keys())[idx]] = arg
         if kwargs is not None:
-            parameters.update(kwargs)
+            parameters |= kwargs
         n = parameters['n']
         scale_down = parameters['scale_down']
         if n is None:
@@ -42,19 +42,18 @@ class UpDownScale(Scale):
         octave = n // len(semitones)
         degree = n % len(semitones)
         semitone = semitones[degree]
-        note = (self.octave_size * octave) + semitone
-        return note
+        return (self.octave_size * octave) + semitone
 
     def indexOf(self, *args, **kwargs):
         """ Return the index of the given note within this scale. """
         parameters = {"note": None,
-                 "scale_down": False}
+                      "scale_down": False}
         if hasattr(self, 'scale_down'):
             parameters['scale_down'] = self.scale_down
         for idx, arg in enumerate(args):
             parameters[list(parameters.keys())[idx]] = arg
         if kwargs is not None:
-            parameters.update(kwargs)
+            parameters |= kwargs
         scale_down = parameters.get('scale_down')
         if scale_down and hasattr(self, 'semitones_down') and self.semitones_down:
             semitones = self.semitones_down

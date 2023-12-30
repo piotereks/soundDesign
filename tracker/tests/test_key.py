@@ -1,9 +1,3 @@
-import pytest
-import os
-import sys
-import json
-
-import isobar as iso
 from tracker.app.isobar_fixes import *
 
 read_config_file_scales()
@@ -34,7 +28,8 @@ def test_key_nearest_note():
                                              if x not in key.scale.semitones]
             # print(test_pattern_midi_nr,negative_test_pattern_midi_nr )
             negative_result_flags = [key.nearest_note(x) != x for x in negative_test_pattern_midi_nr]
-            assert all(negative_result_flags), f"{[(key.nearest_note(x), x, key.nearest_note(x) != x) for x in negative_test_pattern_midi_nr]}"
+            assert all(
+                negative_result_flags), f"{[(key.nearest_note(x), x, key.nearest_note(x) != x) for x in negative_test_pattern_midi_nr]}"
 
             if hasattr(scale, 'semitones_down') and scale.semitones_down:
                 print("semitones down")
@@ -46,5 +41,7 @@ def test_key_nearest_note():
                 negative_test_pattern_midi_nr = [x + octave5_start + key.tonic for x in range(key.scale.octave_size)
                                                  if x not in key.scale.semitones_down]
                 # print(test_pattern_midi_nr,negative_test_pattern_midi_nr )
-                negative_result_flags = [key.nearest_note(x, scale_down=True) != x for x in negative_test_pattern_midi_nr]
-                assert all(negative_result_flags), f"{[(key.nearest_note(x, scale_down=True), x, key.nearest_note(x, scale_down=True) != x) for x in negative_test_pattern_midi_nr]}"
+                negative_result_flags = [key.nearest_note(x, scale_down=True) != x for x in
+                                         negative_test_pattern_midi_nr]
+                assert all(
+                    negative_result_flags), f"{[(key.nearest_note(x, scale_down=True), x, key.nearest_note(x, scale_down=True) != x) for x in negative_test_pattern_midi_nr]}"

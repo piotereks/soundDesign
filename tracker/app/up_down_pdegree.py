@@ -1,8 +1,9 @@
-from isobar import PDegree,  Pattern, PSeries
+import typing
+
+from isobar import PDegree, Pattern, PSeries
 
 # import isobar as iso
 from .up_down_scale import *
-import typing
 
 
 class UpDownPDegree(PDegree):
@@ -21,10 +22,6 @@ class UpDownPDegree(PDegree):
             scale_down = dg_list[0] > dg_list[-1]
         else:
             scale_down = False
-        if scale_down:
-            print("scale down: True --------------------")
-        else:
-            print("scale down: False -------------------")
 
         self.scale_down = scale_down
         self.degree = degree
@@ -38,7 +35,6 @@ class UpDownPDegree(PDegree):
             return None
 
         if isinstance(degree, typing.Iterable):
-            # return tuple(scale[degree] for degree in degree)
             return tuple(scale.get(degree, scale_down=self.scale_down) for degree in degree)
         else:
             return scale.get(degree, scale_down=self.scale_down)
