@@ -68,11 +68,20 @@ class Tracker:
                 for pat in self.patterns_from_file
                 if pat.get(iso.EVENT_DURATION, None)
             )
-            with contextlib.suppress(StopIteration):
-                track = next(f for f in self.patterns_from_file if f.get(EVENT_NOTE))
-                self._init_notes_at_beat(track=track, time_signature=tracker_config['time_signature'])
-                if self.notes_at_beat is not None:
-                    pass
+            track_nr = tracker_config.get('note_at_beat_track_nr', 0)
+            if track_nr is not None:
+                note_tracks = (f for f in self.patterns_from_file if f.get(EVENT_NOTE))
+                for _ in range(track_nr+1):
+                    try:
+                        track = next(note_tracks)
+                    except StopIteration:
+                        break
+
+
+
+            self._init_notes_at_beat(track=track, time_signature=tracker_config.get('time_signature'))
+            if self.notes_at_beat is not None:
+                pass
                 # app_config['queue_content'] = self.notes_at_beat
         else:
             self.patterns_from_file = None
