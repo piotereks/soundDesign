@@ -47,6 +47,7 @@ class Tracker:
             filename_in = os.path.join(os.path.dirname(os.path.abspath(__file__)), *filename_in)
         self.midi_dev_in = None
         self.midi_file_in = None
+        self.file_input_device = None
         if filename_in:
             self.file_input_device = iso.MidiFileInputDevice(filename_in) if filename_in else None
             self.patterns_from_file = self.file_input_device.read()
@@ -83,7 +84,7 @@ class Tracker:
                 # app_config['queue_content'] = self.notes_at_beat
         else:
             self.patterns_from_file = None
-
+        self.min_avail_channel = 0
         if self.midi_file_in:
             self.available_channels = (
                 set(range(16))
