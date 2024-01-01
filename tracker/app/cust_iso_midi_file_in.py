@@ -70,8 +70,9 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
 
 
         # log.info("Loading MIDI data from %s, ticks per beat = %d" % (self.filename, self.midi_reader.ticks_per_beat))
-        note_tracks = list(filter(lambda tr: any(message.type == 'note_on' for message in tr),
-                                  self.midi_reader.tracks))
+        # note_tracks = list(filter(lambda tr: any(message.type == 'note_on' for message in tr),
+        #                           self.midi_reader.tracks))
+        note_tracks = self.midi_reader.tracks
         if not note_tracks:
             raise ValueError("Could not find any tracks with note data")
 
