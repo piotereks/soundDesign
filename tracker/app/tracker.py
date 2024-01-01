@@ -478,9 +478,9 @@ class Tracker:
                               denominator=self.time_signature['denominator'], time=0)
 
 
-        clock_source = Clock(tempo=120, ticks_per_beat=self.input_ticks_per_beat)
-        # self.timeline = iso.Timeline(120, output_device=self.midi_out, ticks_per_beat=ticks_per_beat)
-        self.timeline = iso.Timeline(output_device=self.midi_out, clock_source=clock_source)
+        # clock_source = Clock(tempo=120, ticks_per_beat=self.input_ticks_per_beat)
+        self.timeline = iso.Timeline(120, output_device=self.midi_out, ticks_per_beat=self.input_ticks_per_beat)
+        # self.timeline = iso.Timeline(output_device=self.midi_out, clock_source=clock_source)
         x = 1
 
 

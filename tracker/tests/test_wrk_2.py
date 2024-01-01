@@ -40,6 +40,7 @@ def test_note_at_beat():
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1b.mid')
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1ax2.mid')
+    filename = os.path.join(this_dir, '..', 'tests', 'Pirates of the Caribbean.mid')
     # filename = os.path.join(this_dir, '..', '..', 'x1x1b.mid')
     file_input_device = iso.MidiFileInputDevice(filename)
     # file_content = file_input_device.read()
