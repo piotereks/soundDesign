@@ -35,7 +35,7 @@
     "generated_notes_volume" : 80,
     "default_channel" : 7,
     "legato": 1.0,
-    "program_change": 23,
+    "program_change": 24,
     "time_signature": {"numerator": 4, "denominator": 4},
     "dummy_file_config": "qqqq"
   },
