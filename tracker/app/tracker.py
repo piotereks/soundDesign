@@ -50,6 +50,7 @@ class Tracker:
         self.file_input_device = None
         if filename_in:
             self.file_input_device = iso.MidiFileInputDevice(filename_in) if filename_in else None
+
             self.patterns_from_file = self.file_input_device.read()
             if not isinstance(self.patterns_from_file, list):
                 self.patterns_from_file = [self.patterns_from_file]
@@ -62,6 +63,7 @@ class Tracker:
                 # if time_singature not writtent to file then 4/4 is default
                 tracker_config['time_signature'] = {'numerator': 4, 'denominator': 4}
             self.midi_file_in = self.file_input_device.midi_reader
+            self.input_ticks_per_beat = self.file_input_device.midi_reader.ticks_per_beat
             self.patterns_from_file_duration = max(
                 sum(pat[iso.EVENT_DURATION].sequence)
                 for pat in self.patterns_from_file
@@ -466,7 +468,7 @@ class Tracker:
             print("device mode")
         elif midi_out_mode == self.MIDI_OUT_MIX_FILE_DEVICE:
             self.midi_out = FileOut(filename=filename, device_name=self.midi_out_name, send_clock=True,
-                                    virtual=NO_MIDI_OUT)
+                                    virtual=NO_MIDI_OUT, ticks_per_beat=self.input_ticks_per_beat)
             print("device mode")
         else:
             self.midi_out = iso.DummyOutputDevice()
@@ -474,7 +476,14 @@ class Tracker:
         self.setup_midi_in(midi_in_name)
         self.mid_meta_message(type='time_signature', numerator=self.time_signature['numerator'],
                               denominator=self.time_signature['denominator'], time=0)
-        self.timeline = iso.Timeline(120, output_device=self.midi_out)
+
+
+        clock_source = Clock(tempo=120, ticks_per_beat=self.input_ticks_per_beat)
+        # self.timeline = iso.Timeline(120, output_device=self.midi_out, ticks_per_beat=ticks_per_beat)
+        self.timeline = iso.Timeline(output_device=self.midi_out, clock_source=clock_source)
+        x = 1
+
+
 
     # </editor-fold>
 
