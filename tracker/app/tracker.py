@@ -48,6 +48,7 @@ class Tracker:
         self.midi_dev_in = None
         self.midi_file_in = None
         self.file_input_device = None
+        self.input_ticks_per_beat = 480
         if filename_in:
             self.file_input_device = iso.MidiFileInputDevice(filename_in) if filename_in else None
 
