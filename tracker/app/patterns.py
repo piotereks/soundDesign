@@ -270,7 +270,10 @@ class NotePatterns:
 
         from_note = parameters.get('from_note', 60)
         key = parameters.get('key')
-        from_note = key.nearest_note(from_note)  # This is taken from used scale/key not major
+        if isinstance(from_note, tuple):
+            from_note = key.nearest_note(min(from_note))
+        else:
+            from_note = key.nearest_note(from_note)  # This is taken from used scale/key not major
 
         major = iso.Scale.major
         key_major = iso.Key(tonic=key.tonic, scale=major)
