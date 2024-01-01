@@ -20,10 +20,8 @@ ACCENT_BIG = int(ACCENT_DEFAULT * ACCENT_BIG_FACTOR)
 ACCENT_MED = int(ACCENT_DEFAULT * ACCENT_MED_FACTOR)
 
 snoop.install(out='output.log', overwrite=True)
-
-
 # snoop.install(enabled=True)
-# snoop.install(enabled=False)
+snoop.install(enabled=False)
 
 class Tracker:
     # <editor-fold desc="Class init functions">
@@ -49,6 +47,7 @@ class Tracker:
             filename_in = os.path.join(os.path.dirname(os.path.abspath(__file__)), *filename_in)
         self.midi_dev_in = None
         self.midi_file_in = None
+        self.file_input_device = None
         if filename_in:
             self.file_input_device = iso.MidiFileInputDevice(filename_in) if filename_in else None
             self.patterns_from_file = self.file_input_device.read()
@@ -85,7 +84,7 @@ class Tracker:
                 # app_config['queue_content'] = self.notes_at_beat
         else:
             self.patterns_from_file = None
-
+        self.min_avail_channel = 0
         if self.midi_file_in:
             self.available_channels = (
                 set(range(16))
@@ -127,7 +126,9 @@ class Tracker:
         self.last_from_note = None
         self.notes_pair = [None, None]
         self.queue_content_wrk = None
-        self.note_queue = Queue(maxsize=16)
+
+        self.maxsize = 0 if self.file_input_device else 16
+        self.note_queue = Queue(maxsize=self.maxsize)
 
         self.midi_mapping = midi_mapping
 
@@ -690,7 +691,15 @@ class Tracker:
         copy_patterns_from_file = copy.deepcopy(self.patterns_from_file)
         for tr in copy_patterns_from_file:
             if tr.get(EVENT_AMPLITUDE):
-                tr[EVENT_AMPLITUDE].sequence = [int(a * self.filename_in_volume / 100) for a in tr[EVENT_AMPLITUDE].sequence]
+                # tr[EVENT_AMPLITUDE].sequence = [int(a * self.filename_in_volume / 100) for a in tr[EVENT_AMPLITUDE].sequence]
+                seq = []
+                for elem in tr[EVENT_AMPLITUDE].sequence:
+                    if isinstance(elem, tuple):
+                        seq.append(tuple(n for n in elem))
+                    else:
+                        seq.append(elem)
+                tr[EVENT_AMPLITUDE].sequence = seq
+
         self.timeline.schedule(copy_patterns_from_file, remove_when_done=True)
 
     def file_in_timeline(self):
