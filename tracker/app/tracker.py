@@ -695,9 +695,9 @@ class Tracker:
                 seq = []
                 for elem in tr[EVENT_AMPLITUDE].sequence:
                     if isinstance(elem, tuple):
-                        seq.append(tuple(n for n in elem))
+                        seq.append(tuple(int(n * self.filename_in_volume / 100) for n in elem))
                     else:
-                        seq.append(elem)
+                        seq.append(int(elem * self.filename_in_volume / 100) )
                 tr[EVENT_AMPLITUDE].sequence = seq
 
         self.timeline.schedule(copy_patterns_from_file, remove_when_done=True)
@@ -857,10 +857,13 @@ class Tracker:
         # @log_and_schedule
 
     # </editor-fold>
-
     @staticmethod
-    def min_from_tuple(self, note_tpl):
-        return min(note_tpl) if isinstance(note_tpl, tuple) else note_tpl
+    def clear_tuple(tpl):
+        if isinstance(tpl, tuple):
+            # return min(tpl, key=lambda v: abs(v - (max(tpl) + min(tpl)) / 2))
+            return min(tpl)
+        return tpl
+
     @log_and_schedule
     def play_from_to(self, from_note, to_note, in_pattern=False):
         self.time_sig_beat_val_action()
@@ -887,9 +890,9 @@ class Tracker:
             org_from_note = from_note
             org_to_note = to_note
             if isinstance(from_note, tuple):
-                from_note = min(from_note)
+                from_note = self.clear_tuple(from_note)
             if isinstance(to_note, tuple):
-                to_note = min(to_note)
+                to_note = self.clear_tuple(to_note)
 
             to_note_exists = to_note is not None
             if loopq and not to_note:
