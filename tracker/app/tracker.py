@@ -695,9 +695,9 @@ class Tracker:
                 seq = []
                 for elem in tr[EVENT_AMPLITUDE].sequence:
                     if isinstance(elem, tuple):
-                        seq.append(tuple(n for n in elem))
+                        seq.append(tuple(int(n * self.filename_in_volume / 100) for n in elem))
                     else:
-                        seq.append(elem)
+                        seq.append(int(elem * self.filename_in_volume / 100) )
                 tr[EVENT_AMPLITUDE].sequence = seq
 
         self.timeline.schedule(copy_patterns_from_file, remove_when_done=True)
@@ -857,6 +857,12 @@ class Tracker:
         # @log_and_schedule
 
     # </editor-fold>
+    @staticmethod
+    def clear_tuple(tpl):
+        if isinstance(tpl, tuple):
+            # return min(tpl, key=lambda v: abs(v - (max(tpl) + min(tpl)) / 2))
+            return min(tpl)
+        return tpl
 
     @log_and_schedule
     def play_from_to(self, from_note, to_note, in_pattern=False):
@@ -881,10 +887,17 @@ class Tracker:
                 self.put_to_queue(self.last_from_note, q_action=False)
 
             from_note, to_note = self.get_queue_pair()
+            org_from_note = from_note
+            org_to_note = to_note
+            if isinstance(from_note, tuple):
+                from_note = self.clear_tuple(from_note)
+            if isinstance(to_note, tuple):
+                to_note = self.clear_tuple(to_note)
+
             to_note_exists = to_note is not None
             if loopq and not to_note:
                 to_note = from_note
-                self.put_to_queue(from_note)
+                self.put_to_queue(org_from_note)
             self.beat = lambda: self.play_from_to(from_note, to_note, in_pattern=True)
             self.get_from_queue()
         else:
@@ -892,26 +905,33 @@ class Tracker:
                 self.beat = lambda: self.play_from_to(to_note, None)
             else:
                 self.beat = self.beat_none
-        self.notes_pair = [from_note, to_note]
-        self.queue_content_wrk = [from_note, to_note] + [' '] + [
+        self.notes_pair = [org_from_note, org_to_note]
+        # if isinstance(from_note, tuple):
+        #     from_note = min(from_note)
+        # if isinstance(to_note, tuple):
+        #     to_note = min(to_note)
+
+        self.queue_content_wrk = [org_from_note, org_to_note] + [' '] + [
             list(self.get_queue_content())]
         self.curr_notes_pair_action()
         self.fullq_content_action()
-        self.last_from_note = from_note if to_note_exists else None
+        self.last_from_note = org_from_note if to_note_exists else None
         if (to_note is None) or (from_note is None):
             from_note = self.key.scale.indexOf(
                 self.key.nearest_note(from_note) - self.key.tonic % 12) if from_note else None
 
             return iso.PDict({
-                iso.EVENT_NOTE: iso.PDegree(iso.PSequence([from_note], repeats=1), self.key),
+                iso.EVENT_NOTE: iso.PDegree(iso.PSequence([org_from_note], repeats=1), self.key),
                 iso.EVENT_DURATION: iso.PSequence(
                     [Fraction(4 * self.time_signature['numerator'], self.time_signature['denominator'])], repeats=1),
-                iso.EVENT_AMPLITUDE: iso.PSequence([64], repeats=1),
+                iso.EVENT_AMPLITUDE: iso.PSequence([int(64*self.generated_notes_volume/100)], repeats=1),
                 iso.EVENT_GATE: iso.PSequence([self.legato], repeats=1)
             })
         scale_down = from_note > to_note
         root_note = self.key.scale.indexOf(self.key.nearest_note(from_note, scale_down=scale_down) - self.key.tonic,
                                            scale_down=scale_down)
+        # if isinstance(root_note, tuple):
+        #     root_note = min(root_note)
         note_int = self.key.scale.indexOf(self.key.nearest_note(to_note, scale_down=scale_down) - self.key.tonic,
                                           scale_down=scale_down)
 
@@ -958,7 +978,7 @@ class Tracker:
                                 / len_pattern] * len_pattern
 
         if pattern_amplitude is None or pattern_amplitude == []:
-            pattern_amplitude = [64]
+            pattern_amplitude = [int(64*self.generated_notes_volume/100)]
 
         if pattern_gate is None or pattern_gate == []:
             pattern_gate = [self.legato]
