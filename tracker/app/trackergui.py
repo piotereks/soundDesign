@@ -198,26 +198,30 @@ class TrackerGuiApp(App):
         self.tracker_ref.set_loopq_action = lambda: self.set_loopq_state(
             loopq_button=self.tracker_ref.midi_mapping['loop'])
 
+        def cut_to_size(inp_str: str, maxsize=50):
+            return f'queue: {inp_str[:maxsize-10]}{"..." if len(inp_str) > maxsize else ""}{inp_str[-10:]}'
+
         # ClearQ
         # Queue
         self.tracker_ref.check_notes_action = lambda: self.set_check_notes_lbl_text(str(self.tracker_ref.check_notes))
         self.tracker_ref.queue_content_action = (
             lambda: self.set_queue_content_lbl_text(
-                f'queue: {str(self.tracker_ref.get_queue_content())}'
+                f'queue: {cut_to_size(inp_str=str(self.tracker_ref.get_queue_content()))}'
             )
         )
         self.set_queue_content_lbl_text(
-            f'queue: {str(self.tracker_ref.get_queue_content())}'
+            f'queue: {cut_to_size(inp_str=str(self.tracker_ref.get_queue_content()))}'
         )
+
         self.tracker_ref.curr_notes_pair_action = (
             lambda: self.set_curr_notes_pair_lbl_text(
                 f'from to: {str(self.tracker_ref.notes_pair)}'
             )
         )
         self.tracker_ref.fullq_content_action = lambda: self.set_fullq_content_lbl_text(
-            'full queue: ' + str(self.tracker_ref.get_queue_content_full()))
+            'full queue: ' + cut_to_size(inp_str=str(self.tracker_ref.get_queue_content_full())))
         self.set_fullq_content_lbl_text(
-            'full queue: ' + str(self.tracker_ref.get_queue_content_full()))
+            'full queue: ' + cut_to_size(inp_str=str(self.tracker_ref.get_queue_content_full())))
 
     def close_application(self):
         # cleanup attempt
