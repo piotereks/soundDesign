@@ -76,6 +76,8 @@ def direct_midi_play():
     filename = os.path.join(this_dir, '..', 'tests', 'xoutput_20231209230252.mid')
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1b.mid')
     filename = os.path.join(this_dir, '..', 'tests', 'Pirates of the Caribbean.mid')
+    filename = os.path.join(this_dir, '..', 'tests', 'xoutput_1t_legato1.5.mid')
+    # filename = os.path.join(this_dir, '..', 'saved_midi_files', 'xoutput_20240101233750.mid')
     # filename = os.path.join(this_dir, '..', 'saved_midi_files', 'xoutput.mid')
     print_mid(filename)
 

@@ -12,7 +12,7 @@ from tracker.app.tracker import get_notes_at_beat
 snoop.install(out='outputx.log', overwrite=True)
 snoop.install(enabled=True)
 # snoop.install(enabled=False)
-
+this_dir = os.path.dirname(os.path.abspath(__file__))
 
 @pytest.fixture
 def dummy_timeline(request):
@@ -31,17 +31,26 @@ def dummy_timeline(request):
     return timeline
 
 
+@pytest.mark.parametrize("dummy_timeline", [{"play_or_dummy": "dummy", "filename": 'legato_check.mid'}], indirect=True)
+def test_dur_calc(dummy_timeline):
+    # dummy_timeline.schedule()
+    filename = os.path.join(this_dir, '..', 'tests', 'xoutput_1t_legato1.5.mid')
+    file_input_device = iso.MidiFileInputDevice(filename)
+    file_content = file_input_device.read()
+    dummy_timeline.schedule(file_content, remove_when_done=True)
+    pass
 
 # @pytest.mark.parametrize("dummy_timeline", [{"play_or_dummy": "dummy", "filename": "file1"}], indirect=True)
 
 def test_note_at_beat():
     from itertools import accumulate
-    this_dir = os.path.dirname(os.path.abspath(__file__))
+    # this_dir = os.path.dirname(os.path.abspath(__file__))
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
     filename = os.path.join(this_dir, '..', 'tests', 'x1x1b.mid')
     # filename = os.path.join(this_dir, '..', 'tests', 'x1x1ax2.mid')
     # filename = os.path.join(this_dir, '..', 'tests', 'Pirates of the Caribbean.mid')
     filename = os.path.join(this_dir, '..', 'tests', 'xoutput_with_text.mid')
+    filename = os.path.join(this_dir, '..', 'tests', 'xoutput_1t_legato1.5.mid')
     file_input_device = iso.MidiFileInputDevice(filename)
     # file_content = file_input_device.read()
 
