@@ -35,6 +35,7 @@ def dummy_timeline(request):
 def test_dur_calc(dummy_timeline):
     # dummy_timeline.schedule()
     filename = os.path.join(this_dir, '..', 'tests', 'xoutput_1t_legato1.5.mid')
+    filename = os.path.join(this_dir, '..', 'tests', 'x1x1a_ne_chord.mid')
     file_input_device = iso.MidiFileInputDevice(filename)
     file_content = file_input_device.read()
     dummy_timeline.schedule(file_content, remove_when_done=True)
@@ -51,6 +52,7 @@ def test_note_at_beat():
     # filename = os.path.join(this_dir, '..', 'tests', 'Pirates of the Caribbean.mid')
     filename = os.path.join(this_dir, '..', 'tests', 'xoutput_with_text.mid')
     filename = os.path.join(this_dir, '..', 'tests', 'xoutput_1t_legato1.5.mid')
+    filename = os.path.join(this_dir, '..', 'tests', 'x1x1a_ne_chord.mid')
     file_input_device = iso.MidiFileInputDevice(filename)
     # file_content = file_input_device.read()
 
