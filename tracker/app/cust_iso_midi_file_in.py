@@ -105,8 +105,11 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                     # Found a note_off event.
                     # ------------------------------------------------------------------------
                     # filter note_off fake marker
-                    if event.__dict__ == {'type': 'note_off', 'time': 0, 'note': 0, 'velocity': 64, 'channel': 0}:
+                    fake_note_off = {'type': 'note_off', 'note': 0, 'velocity': 64, 'channel': 0}
+                    if {k: v for (k, v) in event.__dict__.items() if k in fake_note_off} == fake_note_off:
                         continue
+                    # if event.__dict__ == {'type': 'note_off', 'time': 0, 'note': 0, 'velocity': 64, 'channel': 0}:
+                    #     continue
                     offset_int += event.time
                     offset = offset_int / self.midi_reader.ticks_per_beat
                     for note_int in reversed(notes):
