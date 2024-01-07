@@ -1,7 +1,8 @@
 import pytest
 from tracker.app.iso_midi_message import (
     CustMidiNote, MidiMetaMessageTempo, MidiMetaMessageKey, MidiMetaMessageTimeSig,
-    MidiMetaMessageTrackName, MidiMetaMessageMidiPort, MidiMetaMessageEndTrack, MidiMessageControl
+    MidiMetaMessageTrackName, MidiMetaMessageMidiPort, MidiMetaMessageEndTrack, MidiMessageControl,
+    MidiMessageProgram, MidiMessagePitch, MidiMessagePoly, MidiMessageAfter
 )
 
 
@@ -169,3 +170,257 @@ def test_midi_message_control(test_id, channel, cc, value, location, time, track
         assert midi_message_control.location == location
         assert midi_message_control.time == time
         assert midi_message_control.track_idx == track_idx
+
+
+@pytest.mark.parametrize("test_id, channel, program, location, time, track_idx", [
+    ("happy_path_1", 1, 64, 2.0, 0, 0),
+    ("happy_path_2", 15, 127, 4.5, 10, 1),
+    ("edge_case_channel_0", 0, 100, 1.5, 5, 2),
+    ("edge_case_max_channel_value", 15, 75, 2.0, 0, 0),
+    ("edge_case_max_program_value", 8, 255, 0.1, 2, 3),
+    ("edge_case_min_channel", 1, 75, 2.0, 0, 0),
+    ("edge_case_min_program", 4, 0, 2.0, 0, 0),
+    ("error_case_negative_location", 8, 50, -1.0, 0, 4),
+    ("error_case_invalid_channel", 16, 50, 3.0, 0, 0),
+    ("error_case_invalid_program", 1, 256, 2.0, 0, 0),
+    ("error_case_negative_time", 4, 75, 2.0, -1.0, 0),
+    ("error_case_negative_track_idx", 4, 75, 2.0, 0, -1),
+    ("error_case_negative_program", 4, -75, 2.0, 0, 0),
+
+])
+def test_midi_message_program(test_id, channel, program, location, time, track_idx):
+    # Arrange
+    if "error_case" in test_id:
+        with pytest.raises(ValueError):
+            # Act
+            MidiMessageProgram(channel, program, location, time, track_idx)
+    else:
+        # Act
+        midi_program_message = MidiMessageProgram(channel, program, location, time, track_idx)
+
+        # Assert
+        assert midi_program_message.channel == channel
+        assert midi_program_message.program == program
+        assert midi_program_message.location == location
+        assert midi_program_message.time == time
+        assert midi_program_message.track_idx == track_idx
+
+
+@pytest.mark.parametrize("test_id, channel, pitch, location, time, track_idx", [
+    ("happy_path_1", 1, 0, 2.0, 0, 0),
+    ("happy_path_2", 15, 8192, 4.5, 10, 1),
+    ("edge_case_channel_0", 0, 500, 1.5, 5, 2),
+    ("edge_case_max_channel_value", 15, -3000, 2.0, 0, 0),
+    ("edge_case_max_pitch_value", 8, 8192, 0.0, 2, 3),
+    ("edge_case_min_channel", 1, 75, 2.0, 0, 0),
+    ("edge_case_min_pitch", 4, -8192, 2.0, 0, 0),
+    ("edge_case_min_location", 4, 75, 0.0, 0, 0),
+    ("edge_case_min_time", 4, 75, 2.0, 0, 0),
+    ("error_case_negative_location", 8, 50, -1.0, 0, 4),
+    ("error_case_invalid_channel", 16, 50, 3.0, 0, 0),
+    ("error_case_invalid_pitch", 4, 9000, 2.0, 0, 0),
+    ("error_case_negative_time", 4, 75, -1.0, 0, 0),
+    ("error_case_negative_track_idx", 4, 75, 2.0, 0, -1),
+
+])
+def test_midi_message_pitch(test_id, channel, pitch, location, time, track_idx):
+    # Arrange
+    if "error_case" in test_id:
+        with pytest.raises(ValueError):
+            # Act
+            MidiMessagePitch(channel, pitch, location, time, track_idx)
+    else:
+        # Act
+        midi_pitch_message = MidiMessagePitch(channel, pitch, location, time, track_idx)
+
+        # Assert
+        assert midi_pitch_message.channel == channel
+        assert midi_pitch_message.pitch == pitch
+        assert midi_pitch_message.location == location
+        assert midi_pitch_message.time == time
+        assert midi_pitch_message.track_idx == track_idx
+
+
+@pytest.mark.parametrize("test_id, channel, note, value, location, time, track_idx", [
+    ("happy_path_1", 1, 60, 100, 2.0, 0, 0),
+    ("happy_path_2", 15, 72, 80, 4.5, 10, 1),
+    ("edge_case_channel_0", 0, 64, 127, 1.5, 5, 2),
+    ("edge_case_max_channel_value", 15, 64, 0, 2.0, 0, 0),
+    ("edge_case_max_note_value", 8, 127, 50, 0.0, 2, 3),
+    ("edge_case_max_value", 8, 60, 127, 0.0, 2, 3),
+    ("error_case_negative_location", 8, 50, 75, -1.0, 0, 4),
+    ("error_case_invalid_channel", 16, 50, 75, 3.0, 0, 0),
+    ("error_case_invalid_note", 4, 150, 75, 2.0, 0, 0),
+    ("error_case_invalid_value", 4, 50, 150, 2.0, 0, 0),
+    ("error_case_negative_time", 4, 75, 2, -1.0, 0, 0),
+    ("error_case_negative_track_idx", 4, 75, 2, 0, 0, -1),
+    ("edge_case_min_channel", 1, 75, 2, 0, 0, 0),
+    ("edge_case_min_note", 4, 0, 2, 0, 0, 0),
+    ("edge_case_min_value", 4, 75, 0, 2.0, 0, 0),
+    ("edge_case_min_location", 4, 75, 0, 0, 0, 0),
+    ("edge_case_min_time", 4, 75, 2, 0, 0, 0),
+    ("edge_case_min_track_idx", 4, 75, 2, 0, 0, 0),
+
+])
+def test_midi_message_poly(test_id, channel, note, value, location, time, track_idx):
+    # Arrange
+    if "error_case" in test_id:
+        with pytest.raises(ValueError):
+            # Act
+            MidiMessagePoly(channel, note, value, location, time, track_idx)
+    else:
+        # Act
+        midi_poly_message = MidiMessagePoly(channel, note, value, location, time, track_idx)
+
+        # Assert
+        assert midi_poly_message.channel == channel
+        assert midi_poly_message.note == note
+        assert midi_poly_message.value == value
+        assert midi_poly_message.location == location
+        assert midi_poly_message.time == time
+        assert midi_poly_message.track_idx == track_idx
+
+
+
+@pytest.mark.parametrize("test_id, channel, value, location, time, track_idx", [
+    ("happy_path_1", 1, 100, 2.0, 0, 0),
+    ("happy_path_2", 15, 80, 4.5, 10, 1),
+    ("edge_case_channel_0", 0, 127, 1.5, 5, 2),
+    ("edge_case_max_channel_value", 15, 0, 2.0, 0, 0),
+    ("edge_case_max_value", 8, 127, 0.0, 2, 3),
+    ("error_case_negative_location", 8, 75, -1.0, 0, 4),
+    ("error_case_invalid_channel", 16, 75, 3.0, 0, 0),
+    ("error_case_invalid_value", 4, 150, 2.0, 0, 0),
+    ("error_case_negative_time", 4, 75, 2.0, -1.0, 0),
+    ("error_case_negative_track_idx", 4, 75, 2.0, 0, -1),
+    ("edge_case_min_channel", 1, 75, 0.0, 0, 0),
+    ("edge_case_min_value", 4, 0, 2.0, 0, 0),
+    ("edge_case_min_location", 4, 75, 0.0, 0, 0),
+    ("edge_case_min_time", 4, 75, 0.0, 0, 0),
+    ("edge_case_min_track_idx", 4, 75, 0.0, 0, 0),
+
+])
+def test_midi_message_after(test_id, channel, value, location, time, track_idx):
+    # Arrange
+    if "error_case" in test_id:
+        with pytest.raises(ValueError):
+            # Act
+            MidiMessageAfter(channel, value, location, time, track_idx)
+    else:
+        # Act
+        midi_after_message = MidiMessageAfter(channel, value, location, time, track_idx)
+
+        # Assert
+        assert midi_after_message.channel == channel
+        assert midi_after_message.value == value
+        assert midi_after_message.location == location
+        assert midi_after_message.time == time
+        assert midi_after_message.track_idx == track_idx
+
+
+
+
+@pytest.mark.parametrize("test_id, name, location, time, track_idx", [
+    ("happy_path_1", "Track 1", 2.0, 0, 0),
+    ("happy_path_2", "Background Music", 4.5, 10, 1),
+    ("edge_case_empty_name", "", 1.5, 5, 2),
+    ("edge_case_max_name_length", "X" * 255, 2.0, 0, 0),
+    ("error_case_negative_location", "Track 3", -1.0, 0, 4),
+    ("error_case_negative_time", "Track 4", 2.0, -1.0, 0),
+    ("error_case_negative_track_idx", "Track 5", 2.0, 0, -1),
+    ("edge_case_min_location", "Track 6", 0.0, 0, 0),
+    ("edge_case_min_time", "Track 7", 2.0, 0, 0),
+    ("edge_case_min_track_idx", "Track 8", 2.0, 0, 0),
+
+    # Additional test case for to_meta_message
+    ("happy_path_to_meta_message", "Custom Track", 3.5, 15, 3),
+])
+def test_midi_meta_message_track_name(test_id, name, location, time, track_idx):
+    # Arrange
+    if "error_case" in test_id:
+        with pytest.raises(ValueError):
+            # Act
+            MidiMetaMessageTrackName(name, location, time, track_idx)
+    else:
+        # Act
+        midi_track_name_message = MidiMetaMessageTrackName(name, location, time, track_idx)
+
+        # Assert
+        assert midi_track_name_message.name == name
+        assert midi_track_name_message.location == location
+        assert midi_track_name_message.time == time
+        assert midi_track_name_message.track_idx == track_idx
+        # Additional Assert for to_meta_message
+        meta_message = midi_track_name_message.to_meta_message()
+        assert meta_message.name == name
+        assert meta_message.time == time
+        assert meta_message.type == 'track_name'
+
+
+@pytest.mark.parametrize(
+    "test_id, port, location, time, track_idx",
+    [
+        ("happy_path_1", 0, 0, 0, 0),
+        ("happy_path_2", 127, 5, 10, 1),
+        ("edge_case_min_port", 0, 0, 0, 0),
+        ("edge_case_max_port", 255, 0, 0, 0),
+        ("error_case_negative_port", -1, 0, 0, 0),
+        ("error_case_over_max_port", 256, 0, 0, 0),
+        ("error_case_negative_location", 0, -1, 0, 0),
+        ("error_case_negative_time", 0, 0, -1, 0),
+        ("error_case_negative_track_idx", 0, 0, 0, -1),
+    ]
+)
+def test_midi_meta_message_midi_port(test_id, port, location, time, track_idx):
+    # Arrange
+    if "error_case" in test_id:
+        with pytest.raises(ValueError):
+            # Act
+            MidiMetaMessageMidiPort(port, location, time, track_idx)
+    else:
+        # Act
+        midi_port_message = MidiMetaMessageMidiPort(port, location, time, track_idx)
+
+        # Assert
+        assert midi_port_message.port == port
+        assert midi_port_message.location == location
+        assert midi_port_message.time == time
+        assert midi_port_message.track_idx == track_idx
+
+        meta_message = midi_port_message.to_meta_message()
+        assert meta_message.port == port
+        assert meta_message.time == time
+        assert meta_message.type == 'midi_port'
+
+@pytest.mark.parametrize(
+    "test_id, location, time, track_idx",
+    [
+        ("happy_path_1", 0, 0, 0),
+        ("happy_path_2", 5, 10, 1),
+        ("edge_case_zero_location", 0, 0, 0),
+        ("edge_case_zero_time", 0, 0, 0),
+        ("edge_case_zero_track_idx", 0, 0, 0),
+        ("error_case_negative_location", -1, 0, 0),
+        ("error_case_negative_time", 0, -1, 0),
+        ("error_case_negative_track_idx", 0, 0, -1),
+
+    ]
+)
+def test_midi_meta_message_end_track(test_id, location, time, track_idx):
+    # Arrange
+    if "error_case" in test_id:
+        with pytest.raises(ValueError):
+            # Act
+            MidiMetaMessageEndTrack(location, time, track_idx)
+    else:
+        # Act
+        end_track_message = MidiMetaMessageEndTrack(location, time, track_idx)
+
+        # Assert
+        assert end_track_message.location == location
+        assert end_track_message.time == time
+        assert end_track_message.track_idx == track_idx
+
+        meta_message = end_track_message.to_meta_message()
+        assert meta_message.time == time
+        assert meta_message.type == 'end_of_track'

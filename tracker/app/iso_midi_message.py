@@ -138,7 +138,7 @@ class MidiMessageControl:
 
     @time.setter
     def time(self, value):
-        if not isinstance(value, int) or value < 0:
+        if value < 0:
             raise ValueError("Invalid track_idx value. Must be a non-negative integer.")
         self._time = value
 
@@ -177,6 +177,26 @@ class MidiMessageProgram:
         self._program = value
 
     @property
+    def time(self):
+        return self._time
+
+    @time.setter
+    def time(self, value):
+        if value < 0:
+            raise ValueError("Invalid time value. Must be a non-negative.")
+        self._time = value
+
+    @property
+    def location(self):
+        return self._location
+
+    @location.setter
+    def location(self, value):
+        if value < 0:
+            raise ValueError("Invalid location value. Must be a non-negative.")
+        self._location = value
+
+    @property
     def track_idx(self):
         return self._track_idx
 
@@ -194,6 +214,55 @@ class MidiMessagePitch:
         self.time = time
         self.track_idx = track_idx
 
+    @property
+    def channel(self):
+        return self._channel
+
+    @channel.setter
+    def channel(self, value):
+        if not isinstance(value, int) or not (0 <= value <= 15):
+            raise ValueError("Invalid channel value. Must be an integer between 0 and 15.")
+        self._channel = value
+
+    @property
+    def pitch(self):
+        return self._pitch
+
+    @pitch.setter
+    def pitch(self, value):
+        if not isinstance(value, int) or not (-8192 <= value <= 8192):
+            raise ValueError("Invalid pitch value. Must be an integer between -8192 and 8192.")
+        self._pitch = value
+
+    @property
+    def time(self):
+        return self._time
+
+    @time.setter
+    def time(self, value):
+        if value < 0:
+            raise ValueError("Invalid time value. Must be a non-negative.")
+        self._time = value
+
+    @property
+    def location(self):
+        return self._location
+
+    @location.setter
+    def location(self, value):
+        if value < 0:
+            raise ValueError("Invalid location value. Must be a non-negative.")
+        self._location = value
+
+    @property
+    def track_idx(self):
+        return self._track_idx
+
+    @track_idx.setter
+    def track_idx(self, value):
+        if not isinstance(value, int) or value < 0:
+            raise ValueError("Invalid track_idx value. Must be a non-negative integer.")
+        self._track_idx = value
 
 class MidiMessagePoly:
     def __init__(self, channel, note, value, location, time=0, track_idx=0):
@@ -204,6 +273,65 @@ class MidiMessagePoly:
         self.time = time
         self.track_idx = track_idx
 
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        if not isinstance(value, int) or not (0 <= value <= 127):
+            raise ValueError("Invalid value. Value must be an integer between 0 and 127.")
+        self._value = value
+
+    @property
+    def channel(self):
+        return self._channel
+
+    @channel.setter
+    def channel(self, value):
+        if not 0 <= value <= 15:
+            raise ValueError("Invalid channel value. Channel must be between 0 and 15.")
+        self._channel = value
+
+    @property
+    def note(self):
+        return self._note
+
+    @note.setter
+    def note(self, value):
+        if not 0 <= value <= 127:
+            raise ValueError("Invalid note value. Pitch must be between 0 and 127.")
+        self._note = value
+
+    @property
+    def time(self):
+        return self._time
+
+    @time.setter
+    def time(self, value):
+        if value < 0:
+            raise ValueError("Invalid time value. Must be a non-negative.")
+        self._time = value
+
+    @property
+    def location(self):
+        return self._location
+
+    @location.setter
+    def location(self, value):
+        if value < 0:
+            raise ValueError("Invalid location value. Must be a non-negative.")
+        self._location = value
+
+    @property
+    def track_idx(self):
+        return self._track_idx
+
+    @track_idx.setter
+    def track_idx(self, value):
+        if not isinstance(value, int) or value < 0:
+            raise ValueError("Invalid track_idx value. Must be a non-negative integer.")
+        self._track_idx = value
 
 class MidiMessageAfter:
     def __init__(self, channel, value, location, time=0, track_idx=0):
@@ -213,6 +341,55 @@ class MidiMessageAfter:
         self.time = time
         self.track_idx = track_idx
 
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        if not isinstance(value, int) or not (0 <= value <= 127):
+            raise ValueError("Invalid value. Value must be an integer between 0 and 127.")
+        self._value = value
+
+    @property
+    def channel(self):
+        return self._channel
+
+    @channel.setter
+    def channel(self, value):
+        if not 0 <= value <= 15:
+            raise ValueError("Invalid channel value. Channel must be between 0 and 15.")
+        self._channel = value
+
+    @property
+    def time(self):
+        return self._time
+
+    @time.setter
+    def time(self, value):
+        if value < 0:
+            raise ValueError("Invalid time value. Must be a non-negative.")
+        self._time = value
+
+    @property
+    def location(self):
+        return self._location
+
+    @location.setter
+    def location(self, value):
+        if value < 0:
+            raise ValueError("Invalid location value. Must be a non-negative.")
+        self._location = value
+
+    @property
+    def track_idx(self):
+        return self._track_idx
+
+    @track_idx.setter
+    def track_idx(self, value):
+        if not isinstance(value, int) or value < 0:
+            raise ValueError("Invalid track_idx value. Must be a non-negative integer.")
+        self._track_idx = value
 
 class MidiMetaMessageTempo(MetaMessageInterface):
     def __init__(self, tempo: int, location, type='set_tempo', time=0, track_idx=0):
@@ -339,17 +516,89 @@ class MidiMetaMessageTrackName(MetaMessageInterface):
         self.time = time
         self.track_idx = track_idx
 
+    @property
+    def time(self):
+        return self._time
+
+    @time.setter
+    def time(self, value):
+        if value < 0:
+            raise ValueError("Invalid time value. Must be a non-negative.")
+        self._time = value
+
+    @property
+    def location(self):
+        return self._location
+
+    @location.setter
+    def location(self, value):
+        if value < 0:
+            raise ValueError("Invalid location value. Must be a non-negative.")
+        self._location = value
+
+    @property
+    def track_idx(self):
+        return self._track_idx
+
+    @track_idx.setter
+    def track_idx(self, value):
+        if not isinstance(value, int) or value < 0:
+            raise ValueError("Invalid track_idx value. Must be a non-negative integer.")
+        self._track_idx = value
+
     def to_meta_message(self):
         return mido.MetaMessage(name=self.name, time=self.time, type='track_name')
 
 
 class MidiMetaMessageMidiPort(MetaMessageInterface):
     def __init__(self, port: int, location, time=0, track_idx=0):
+        # port 00.255
         self.port = port
         self.location = location
         self.is_meta = True
         self.time = time
         self.track_idx = track_idx
+
+
+    @property
+    def port(self):
+        return self._port
+
+    @port.setter
+    def port(self, value):
+        if not isinstance(value, int) or not (0 <= value <= 255):
+            raise ValueError("Invalid port value. Must be an integer between 0 and 255.")
+        self._port = value
+
+    @property
+    def time(self):
+        return self._time
+
+    @time.setter
+    def time(self, value):
+        if value < 0:
+            raise ValueError("Invalid time value. Must be a non-negative.")
+        self._time = value
+
+    @property
+    def location(self):
+        return self._location
+
+    @location.setter
+    def location(self, value):
+        if value < 0:
+            raise ValueError("Invalid location value. Must be a non-negative.")
+        self._location = value
+
+    @property
+    def track_idx(self):
+        return self._track_idx
+
+    @track_idx.setter
+    def track_idx(self, value):
+        if not isinstance(value, int) or value < 0:
+            raise ValueError("Invalid track_idx value. Must be a non-negative integer.")
+        self._track_idx = value
 
     def to_meta_message(self):
         return mido.MetaMessage(port=self.port, time=self.time, type='midi_port')
@@ -361,6 +610,36 @@ class MidiMetaMessageEndTrack(MetaMessageInterface):
         self.is_meta = True
         self.time = time
         self.track_idx = track_idx
+
+    @property
+    def time(self):
+        return self._time
+
+    @time.setter
+    def time(self, value):
+        if value < 0:
+            raise ValueError("Invalid time value. Must be a non-negative.")
+        self._time = value
+
+    @property
+    def location(self):
+        return self._location
+
+    @location.setter
+    def location(self, value):
+        if value < 0:
+            raise ValueError("Invalid location value. Must be a non-negative.")
+        self._location = value
+
+    @property
+    def track_idx(self):
+        return self._track_idx
+
+    @track_idx.setter
+    def track_idx(self, value):
+        if not isinstance(value, int) or value < 0:
+            raise ValueError("Invalid track_idx value. Must be a non-negative integer.")
+        self._track_idx = value
 
     def to_meta_message(self):
         return mido.MetaMessage(time=self.time, type='end_of_track')
