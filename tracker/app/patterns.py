@@ -37,18 +37,18 @@ def mod_duration(func):  # added self, eventual issue
             tmp_split_array = [('norm', interval)]
 
         split_array = []
-        for split in tmp_split_array:
-            if split[1] <= 16:
-                split_array.append(split)
+        for itype, ival  in tmp_split_array:
+            if ival <= 16:
+                split_array.append((itype, ival))
             else:
-                pattern_len = split[1]
+                pattern_len = ival
                 interval -= 1
                 parts_no16 = pattern_len // max_len
                 parts_no16 += 1
                 rnd_parts = random.choice([parts_no16, parts_no16 * 2, parts_no16 * 4])
                 while pattern_len > 0:
                     part = -(-pattern_len // rnd_parts)
-                    split_array.append((split[0], part))
+                    split_array.append((itype, part))
                     pattern_len -= part
                     rnd_parts -= 1
         return split_array
@@ -63,7 +63,7 @@ def mod_duration(func):  # added self, eventual issue
         for idx, arg in enumerate(args):
             parameters[list(parameters.keys())[idx]] = arg
         if kwargs is not None:
-            parameters.update(kwargs)
+            parameters |= kwargs
 
         result = func(self, **parameters)
 
