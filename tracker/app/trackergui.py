@@ -1,5 +1,6 @@
 import json
-import os
+# import os
+from pathlib import Path
 import random
 from itertools import chain
 
@@ -583,8 +584,8 @@ class ScalesSelectScreen(Screen):
         self.nbr_of_scales = len(self.button_names)
 
     def __read_config_file__(self):
-        this_dir = os.path.dirname(os.path.abspath(__file__))
-        config_file = os.path.join(this_dir, '../config/note_patterns.json')
+        this_dir = Path(__file__).resolve().parent.parent
+        config_file = this_dir / '../config/note_patterns.json'
 
         with open(config_file, 'r') as file:
             self.patterns_config = json.load(file)
