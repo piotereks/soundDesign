@@ -33,8 +33,7 @@ class Tracker:
     def __init__(self, tracker_config=None,
                  midi_out_mode='dummy',
                  midi_mapping=None,
-                 filename=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "saved_midi_files",
-                                       "xoutput.mid")
+                 filename=(Path(__file__).resolve().parent / ".." / "saved_midi_files" / "xoutput.mid").resolve()
                  ):
         if midi_mapping is None:
             midi_mapping = {}
@@ -44,7 +43,8 @@ class Tracker:
         read_config_file_scales()
         filename_in = tracker_config.get("filename_in")
         if filename_in:
-            filename_in = os.path.join(os.path.dirname(os.path.abspath(__file__)), *filename_in)
+            # filename_in = os.path.join(os.path.dirname(os.path.abspath(__file__)), *filename_in)
+            filename_in = Path(__file__).resolve().parent.joinpath(*filename_in)
         self.midi_dev_in = None
         self.midi_file_in = None
         self.file_input_device = None
@@ -246,9 +246,9 @@ class Tracker:
                 self.mid_meta_message(type='end_of_track', time=0, track_idx=idx)
 
         self.midi_out.write()
-        target_dir = os.path.dirname(self.filename)
-        target_filename = os.path.splitext(os.path.basename(self.filename))
-        target_path_file = os.path.join(target_dir, target_filename[0] + '_' + date + target_filename[1])
+        target_dir = Path(self.filename).parent
+        target_filename = Path(self.filename).stem + '_' + date + Path(self.filename).suffix
+        target_path_file = target_dir / target_filename
         shutil.copy(self.filename, target_path_file)
 
     def setup_midi_in(self, midi_in_name):

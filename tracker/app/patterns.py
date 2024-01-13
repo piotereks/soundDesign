@@ -1,7 +1,8 @@
 import itertools
 import json
 import math
-import os
+# import os
+from pathlib import Path
 import random
 import re
 from fractions import *
@@ -13,11 +14,13 @@ import numpy as np
 
 class DurationPatterns:
     def __init__(self):
-        self.__read_config_file__()
+        self._read_config_file()
 
-    def __read_config_file__(self):
-        this_dir = os.path.dirname(os.path.abspath(__file__))
-        config_file = os.path.join(this_dir, '../config/duration_patterns.json')
+    def _read_config_file(self):
+        # current_directory = os.path.dirname(os.path.abspath(__file__))
+        # config_file = os.path.join(current_directory, '../config/duration_patterns.json')
+        current_directory = Path(__file__).resolve().parent
+        config_file = current_directory / '../config/duration_patterns.json'
 
         with open(config_file, 'r') as file:
             self.patterns = json.load(file)
@@ -150,8 +153,11 @@ class NotePatterns:
         return pattern_size_for_interval
 
     def __read_config_file__(self):
-        this_dir = os.path.dirname(os.path.abspath(__file__))
-        config_file = os.path.join(this_dir, '../config/note_patterns.json')
+        # current_directory = os.path.dirname(os.path.abspath(__file__))
+        # config_file = os.path.join(current_directory, '../config/note_patterns.json')
+        current_directory = Path(__file__).resolve().parent
+        config_file = current_directory / '../config/note_patterns.json'
+
 
         with open(config_file, 'r') as file:
             self.patterns_config = json.load(file)
@@ -474,7 +480,7 @@ class NotePatterns:
         return result_dict
 
     def set_pattern_function(self, function_name):
-        self.get_pattern = getattr(self, 'get_' + function_name + '_pattern')
+        self.get_pattern = getattr(self, f'get_{function_name}_pattern')
 
 
 def main():

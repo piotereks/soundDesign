@@ -4,8 +4,8 @@ from .trackergui import *
 
 def main():
     log_call()
-    this_dir = os.path.dirname(os.path.abspath(__file__))
-    config_file = os.path.join(this_dir, '../config/main_config.json')
+    this_dir = Path(__file__).resolve().parent
+    config_file = this_dir / '../config/main_config.json'
 
     with open(config_file, 'r') as file:
         loaded_config = json.load(file)

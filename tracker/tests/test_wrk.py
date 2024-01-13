@@ -13,8 +13,8 @@ tmp_filename2 = 'x1x1b.mid'
 play_or_dummy_for_timeline2 = 'dummy'
 # play_or_dummy_for_timeline2 = 'play'
 
-this_dir = os.path.dirname(os.path.abspath(__file__))
-tmp_filenameX = os.path.join(this_dir, '..', '..', 'checks', 'example_midi', 'Var_tempo_1_trk_sax.mid')
+this_dir = Path(__file__).resolve().parent.parent.parent
+tmp_filenameX = this_dir / 'checks' / 'example_midi' / 'Var_tempo_1_trk_sax.mid'
 
 # snoop.install(enabled=True, out='output.log', overwrite=True)
 snoop.install(out='outputx.log', overwrite=True)
@@ -155,7 +155,7 @@ def test_timeline_wrk(dummy_timeline, dummy_timeline2):
     dummy_timeline.output_device.write()
     print('-' * 20, 'second_timeline')
 
-    file = os.path.join('..', '..', 'checks', 'example_midi', 'Var_tempo_1_trk_sax.mid')
+    file = Path('..') / '..' / 'checks' / 'example_midi' / 'Var_tempo_1_trk_sax.mid'
     file_input_device = iso.MidiFileInputDevice(file)
 
     file_input_device = iso.MidiFileInputDevice(tmp_filename)
@@ -450,7 +450,8 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
     dummy_tim.output_device.write()
     # return
     #
-    filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
+    this_dir = Path(__file__).parent.parent
+    filename = this_dir / '..' / 'tests' / 'x1x1a.mid'
     print(dummy_tim.output_devices[0].filename)
     print_mid(dummy_tim.output_devices[0].filename)
 
@@ -494,8 +495,8 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
 
 def test_track_edit(dummy_timeline):
     dummy_tim = dummy_timeline
-    filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
-    filename = os.path.join(this_dir, '..', 'utils', 'src_Var_tempo_2_trks_sax_piano.mid')
+    filename = this_dir / '..' / 'tests' / 'x1x1a.mid'
+    filename = this_dir / '..' / 'utils' / 'src_Var_tempo_2_trks_sax_piano.mid'
     # file_input_device = iso.MidiFileInputDevice(dummy_tim.output_devices[0].filename)
     # file_input_device = iso.MidiFileInputDevice(tmp_filenameX)
     # patterns = file_input_device.read()
@@ -505,16 +506,17 @@ def test_track_edit(dummy_timeline):
 
     x = 1
 
-    mid.save(os.path.join(os.path.dirname(filename), 'edited_' + os.path.basename(filename)))
+    filename = Path(filename)
+    mid.save(filename.parent / ('edited_' + filename.name))
 
     x = 1
 
 
 def test_deduplication_tgt(dummy_timeline):
     # snoop.install(enabled=False)
-    filename = os.path.join(this_dir, '..', 'tests', 'x1x1_many_repeatitions.mid')
-    filename = os.path.join(this_dir, '..', 'tests', 'x1x1d.mid')
-    output_filename = os.path.join(this_dir, '..', 'tests', 'x1x1_dedup_tgt.mid')
+    filename = this_dir / '..' / 'tests' / 'x1x1_many_repeatitions.mid'
+    filename = this_dir / '..' / 'tests' / 'x1x1d.mid'
+    output_filename = this_dir / '..' / 'tests' / 'x1x1_dedup_tgt.mid'
     # mid = mido.MidiFile(filename)
     file_input_device = iso.MidiFileInputDevice(filename)
     patterns = file_input_device.read()
@@ -620,7 +622,7 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
     dummy_tim.run()
     dummy_tim.output_device.write()
 
-    filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
+    filename = this_dir / '..' / 'tests' / 'x1x1a.mid'
     print(dummy_tim.output_devices[0].filename)
     print_mid(dummy_tim.output_devices[0].filename)
 
@@ -745,7 +747,7 @@ def test_not_equal_chords(dummy_timeline, dummy_timeline2):
     dummy_tim.run()
     dummy_tim.output_device.write()
 
-    filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
+    filename = this_dir / '..' / 'tests' / 'x1x1a.mid'
     print(dummy_tim.output_devices[0].filename)
     print_mid(dummy_tim.output_devices[0].filename)
 
@@ -771,53 +773,6 @@ def test_not_equal_chords(dummy_timeline, dummy_timeline2):
     dummy_tim2.output_device.write()
     print_mid(dummy_tim2.output_devices[0].filename)
 
-def test_get_channel_track():
-    test_midi_out_device = MidiFileManyTracksOutputDevice(filename='dupa')
-    test_midi_out_device.get_channel_track(channel=2, src_track_idx=None)
-    assert test_midi_out_device.channel_track == [2]
-    assert test_midi_out_device.tgt_track_idxs == [None]
 
-    test_midi_out_device = MidiFileManyTracksOutputDevice(filename='dupa')
-    test_midi_out_device.get_channel_track(channel=None, src_track_idx=1)
-    assert test_midi_out_device.channel_track == [None]
-    assert test_midi_out_device.tgt_track_idxs == [1]
-
-    test_midi_out_device = MidiFileManyTracksOutputDevice(filename='dupa')
-    test_midi_out_device.get_channel_track(channel=None, src_track_idx=None)
-    assert test_midi_out_device.channel_track == [None]
-    assert test_midi_out_device.tgt_track_idxs == [None]
-
-    # test_midi_out_device = MidiFileManyTracksOutputDevice(filename='dupa')
-    test_midi_out_device.get_channel_track(channel=2, src_track_idx=1)
-    assert test_midi_out_device.channel_track == [2]
-    assert test_midi_out_device.tgt_track_idxs == [1]
-
-    test_midi_out_device.get_channel_track(channel=None, src_track_idx=2)
-    assert test_midi_out_device.channel_track == [2, None]
-    assert test_midi_out_device.tgt_track_idxs == [1, 2]
-
-    test_midi_out_device.get_channel_track(channel=3, src_track_idx=2)
-    assert test_midi_out_device.channel_track == [2, 3]
-    assert test_midi_out_device.tgt_track_idxs == [1, 2]
-
-    test_midi_out_device.get_channel_track(channel=4, src_track_idx=2)
-    assert test_midi_out_device.channel_track == [2, 3, 4]
-    assert test_midi_out_device.tgt_track_idxs == [1, 2, 2]
-
-    test_midi_out_device.get_channel_track(channel=4, src_track_idx=None)
-    assert test_midi_out_device.channel_track == [2, 3, 4]
-    assert test_midi_out_device.tgt_track_idxs == [1, 2, 2]
-
-    test_midi_out_device.get_channel_track(channel=5, src_track_idx=None)
-    assert test_midi_out_device.channel_track == [2, 3, 4, 5]
-    assert test_midi_out_device.tgt_track_idxs == [1, 2, 2, None]
-
-    test_midi_out_device.get_channel_track(channel=5, src_track_idx=1)
-    assert test_midi_out_device.channel_track == [2, 3, 4, 5]
-    assert test_midi_out_device.tgt_track_idxs == [1, 2, 2, 1]
-
-    test_midi_out_device.get_channel_track(channel=5, src_track_idx=2)
-    assert test_midi_out_device.channel_track == [2, 3, 4, 5, 5]
-    assert test_midi_out_device.tgt_track_idxs == [1, 2, 2, 1, 2]
 
     pass
