@@ -1,12 +1,13 @@
 import json
-import os
+# import os
+from pathlib import Path
 import random
 from itertools import chain
 
 import isobar as iso
 from kivy.app import App
 from kivy.core.window import Window
-from kivy.properties import (StringProperty, ListProperty, ObjectProperty, NumericProperty)
+from kivy.properties import (StringProperty, ListProperty, ObjectProperty, NumericProperty, BooleanProperty)
 from kivy.uix.behaviors import ToggleButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import (Screen)
@@ -72,6 +73,9 @@ class TrackerGuiApp(App):
 
     app_config = ObjectProperty()
     tracker_ref = ObjectProperty()
+
+    loopq_button_disabled = BooleanProperty(False)
+    clearq_button_disabled = BooleanProperty(False)
 
     prev_key = None
 
@@ -168,7 +172,8 @@ class TrackerGuiApp(App):
         self.tempo_value = self.parm_tempo
         self.tempo_min = self.parm_tempo_min
         self.tempo_max = self.parm_tempo_max
-        if hasattr(self.tracker_ref, 'file_input_device'):
+        # if hasattr(self.tracker_ref, 'file_input_device'):
+        if self.tracker_ref.file_input_device:
             self.tracker_ref.file_input_device.set_tempo_callback = lambda tempo: self.set_tempo_f_main(instance=None,
                                                                                                         tempo=tempo)
         #
@@ -195,29 +200,36 @@ class TrackerGuiApp(App):
         # Align
         # LoopQ
         self.loopq_action(instance=None, state=self.root.loopq.state)
+        if self.tracker_ref.file_input_device:
+            self.loopq_button_disabled = True
+            self.clearq_button_disabled = True
         self.tracker_ref.set_loopq_action = lambda: self.set_loopq_state(
             loopq_button=self.tracker_ref.midi_mapping['loop'])
+
+        def cut_to_size(inp_str: str, maxsize=50):
+            return f'queue: {inp_str[:maxsize-10]}{f"...{inp_str[-10:]}" if len(inp_str) > maxsize else ""}'
 
         # ClearQ
         # Queue
         self.tracker_ref.check_notes_action = lambda: self.set_check_notes_lbl_text(str(self.tracker_ref.check_notes))
         self.tracker_ref.queue_content_action = (
             lambda: self.set_queue_content_lbl_text(
-                f'queue: {str(self.tracker_ref.get_queue_content())}'
+                f'queue: {cut_to_size(inp_str=str(self.tracker_ref.get_queue_content()))}'
             )
         )
         self.set_queue_content_lbl_text(
-            f'queue: {str(self.tracker_ref.get_queue_content())}'
+            f'queue: {cut_to_size(inp_str=str(self.tracker_ref.get_queue_content()))}'
         )
+
         self.tracker_ref.curr_notes_pair_action = (
             lambda: self.set_curr_notes_pair_lbl_text(
                 f'from to: {str(self.tracker_ref.notes_pair)}'
             )
         )
         self.tracker_ref.fullq_content_action = lambda: self.set_fullq_content_lbl_text(
-            'full queue: ' + str(self.tracker_ref.get_queue_content_full()))
+            'full queue: ' + cut_to_size(inp_str=str(self.tracker_ref.get_queue_content_full())))
         self.set_fullq_content_lbl_text(
-            'full queue: ' + str(self.tracker_ref.get_queue_content_full()))
+            'full queue: ' + cut_to_size(inp_str=str(self.tracker_ref.get_queue_content_full())))
 
     def close_application(self):
         # cleanup attempt
@@ -230,7 +242,8 @@ class TrackerGuiApp(App):
         self.tracker_ref.time_sig_beat_val_action = lambda: None
         self.tracker_ref.set_tempo_action = lambda: None
         self.tracker_ref.set_rnd_func_action = lambda: None
-        if hasattr(self.tracker_ref, 'file_input_device'):
+        # if hasattr(self.tracker_ref, 'file_input_device'):
+        if self.tracker_ref.file_input_device:
             self.tracker_ref.file_input_device.set_tempo_callback = lambda: None
 
         self.tracker_ref.set_dur_variety_action = lambda: None
@@ -293,7 +306,7 @@ class TrackerGuiApp(App):
                 self.root.ids.scales_opt.rem_buttons()
             else:
                 self.close_application()
-        elif keycode[1] in play_keys:
+        elif keycode[1] in play_keys and not self.tracker_ref.file_input_device:
             self.tracker_ref.put_to_queue(play_keys.index(keycode[1]) + 60)
 
         return True
@@ -346,11 +359,20 @@ class TrackerGuiApp(App):
         scale_obj = iso.Scale.byname(scale)
         self.tracker_ref.key = iso.Key(key, scale_obj)
 
+    # def set_loopq_state(self, loopq_button=None):
+    #     if not loopq_button:
+    #         return
+    #     if state := loopq_button.get('state'):
+    #         self.root.loopq.state = state
+
     def set_loopq_state(self, loopq_button=None):
+        # if not loopq_button or self.tracker_ref.file_input_device:
         if not loopq_button:
+            # self.loopq_button_disabled = True
             return
         if state := loopq_button.get('state'):
             self.root.loopq.state = state
+
 
     def set_scale_nm(self, scale_name):
         log_call()
@@ -494,15 +516,14 @@ class TrackerGuiApp(App):
 
     # <editor-fold desc="Loop Queue">
     def inv_loopq_play_state(self):
+        # if self.tracker_ref.file_input_device:
+        #     self.loopq_button_disabled = True
+        #     return
         state = self.root.loopq.state
         to_state = 'normal' if state == 'down' else 'down'
         self.root.loopq.state = to_state
 
-    def set_loopq_state(self, loopq_button=None):
-        if not loopq_button:
-            return
-        if state := loopq_button.get('state'):
-            self.root.loopq.state = state
+
 
     def loopq_action(self, instance, state):
         self.tracker_ref.loopq = True if state == 'down' else False
@@ -563,8 +584,8 @@ class ScalesSelectScreen(Screen):
         self.nbr_of_scales = len(self.button_names)
 
     def __read_config_file__(self):
-        this_dir = os.path.dirname(os.path.abspath(__file__))
-        config_file = os.path.join(this_dir, '../config/note_patterns.json')
+        this_dir = Path(__file__).resolve().parent.parent
+        config_file = this_dir / '../config/note_patterns.json'
 
         with open(config_file, 'r') as file:
             self.patterns_config = json.load(file)

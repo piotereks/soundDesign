@@ -12,10 +12,10 @@ log = logging.getLogger(__name__)
 
 class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
 
-    def __init__(self, filename):
+    def __init__(self, filename, ticks_per_beat=iso.DEFAULT_TICKS_PER_BEAT):
         self.filename = filename
         # self.midifile = None
-        self.midifile = mido.MidiFile()
+        self.midifile = mido.MidiFile(ticks_per_beat=ticks_per_beat)
         # self.miditrack = []
         self.miditrack = [mido.MidiTrack()]
         self.midifile.tracks.append(self.miditrack[0])
@@ -222,8 +222,8 @@ class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
 
 class FileOut(MidiFileManyTracksOutputDevice, iso.MidiOutputDevice):
 
-    def __init__(self, filename, device_name, send_clock, virtual=False):
-        MidiFileManyTracksOutputDevice.__init__(self, filename=filename)
+    def __init__(self, filename, device_name, send_clock, virtual=False, ticks_per_beat=iso.DEFAULT_TICKS_PER_BEAT):
+        MidiFileManyTracksOutputDevice.__init__(self, filename=filename, ticks_per_beat=ticks_per_beat)
         iso.MidiOutputDevice.__init__(self, device_name=device_name, send_clock=send_clock, virtual=virtual)
 
     def note_off(self, note, channel, track_idx=0):

@@ -58,7 +58,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                                                                                src_track_idx=track_idx)
                 timeline_inner.output_device.miditrack[new_track_idx].append(obj.to_meta_message())
 
-    def read(self, quantize=None):
+    def read(self, quantize=None, filter=None):
         def create_lam_function(tgt_dict, messages_inner, track_idx_inner=0):
             lam_function = partial(self.midi_message_obj, objects=messages_inner, track_idx=track_idx_inner)
             tgt_dict[EVENT_ACTION].append(lam_function)
@@ -68,10 +68,12 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                 msg_loc = messages_inner.location
             tgt_dict[EVENT_TIME].append(msg_loc)
 
-
+        if filter is None:
+            filter = ['end_of_track']
         # log.info("Loading MIDI data from %s, ticks per beat = %d" % (self.filename, self.midi_reader.ticks_per_beat))
-        note_tracks = list(filter(lambda tr: any(message.type == 'note_on' for message in tr),
-                                  self.midi_reader.tracks))
+        # note_tracks = list(filter(lambda tr: any(message.type == 'note_on' for message in tr),
+        #                           self.midi_reader.tracks))
+        note_tracks = self.midi_reader.tracks
         if not note_tracks:
             raise ValueError("Could not find any tracks with note data")
 
@@ -103,8 +105,11 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                     # Found a note_off event.
                     # ------------------------------------------------------------------------
                     # filter note_off fake marker
-                    if event.__dict__ == {'type': 'note_off', 'time': 0, 'note': 0, 'velocity': 64, 'channel': 0}:
+                    fake_note_off = {'type': 'note_off', 'note': 0, 'velocity': 64, 'channel': 0}
+                    if {k: v for (k, v) in event.__dict__.items() if k in fake_note_off} == fake_note_off:
                         continue
+                    # if event.__dict__ == {'type': 'note_off', 'time': 0, 'note': 0, 'velocity': 64, 'channel': 0}:
+                    #     continue
                     offset_int += event.time
                     offset = offset_int / self.midi_reader.ticks_per_beat
                     for note_int in reversed(notes):
@@ -150,7 +155,8 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                     end_of_track = MidiMetaMessageEndTrack(location=offset,
                                                            time=event.time, track_idx=track_idx)
                     #  disable this temporarily - this is rather not needed, but breaks len calc
-                    # notes.append(end_of_track)
+                    if 'end_of_track' not in filter:
+                        notes.append(end_of_track)
                 elif event.type == 'midi_port':
                     offset_int += event.time
                     offset = offset_int / self.midi_reader.ticks_per_beat

@@ -11,10 +11,10 @@ from tracker.utils.dump_midi import print_mid
 tmp_filename = 'x1x1a.mid'
 tmp_filename2 = 'x1x1b.mid'
 play_or_dummy_for_timeline2 = 'dummy'
-play_or_dummy_for_timeline2 = 'play'
+# play_or_dummy_for_timeline2 = 'play'
 
-this_dir = os.path.dirname(os.path.abspath(__file__))
-tmp_filenameX = os.path.join(this_dir, '..', '..', 'checks', 'example_midi', 'Var_tempo_1_trk_sax.mid')
+this_dir = Path(__file__).resolve().parent.parent.parent
+tmp_filenameX = this_dir / 'checks' / 'example_midi' / 'Var_tempo_1_trk_sax.mid'
 
 # snoop.install(enabled=True, out='output.log', overwrite=True)
 snoop.install(out='outputx.log', overwrite=True)
@@ -155,7 +155,7 @@ def test_timeline_wrk(dummy_timeline, dummy_timeline2):
     dummy_timeline.output_device.write()
     print('-' * 20, 'second_timeline')
 
-    file = os.path.join('..', '..', 'checks', 'example_midi', 'Var_tempo_1_trk_sax.mid')
+    file = Path('..') / '..' / 'checks' / 'example_midi' / 'Var_tempo_1_trk_sax.mid'
     file_input_device = iso.MidiFileInputDevice(file)
 
     file_input_device = iso.MidiFileInputDevice(tmp_filename)
@@ -450,7 +450,8 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
     dummy_tim.output_device.write()
     # return
     #
-    filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
+    this_dir = Path(__file__).parent.parent
+    filename = this_dir / '..' / 'tests' / 'x1x1a.mid'
     print(dummy_tim.output_devices[0].filename)
     print_mid(dummy_tim.output_devices[0].filename)
 
@@ -494,8 +495,8 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
 
 def test_track_edit(dummy_timeline):
     dummy_tim = dummy_timeline
-    filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
-    filename = os.path.join(this_dir, '..', 'utils', 'src_Var_tempo_2_trks_sax_piano.mid')
+    filename = this_dir / '..' / 'tests' / 'x1x1a.mid'
+    filename = this_dir / '..' / 'utils' / 'src_Var_tempo_2_trks_sax_piano.mid'
     # file_input_device = iso.MidiFileInputDevice(dummy_tim.output_devices[0].filename)
     # file_input_device = iso.MidiFileInputDevice(tmp_filenameX)
     # patterns = file_input_device.read()
@@ -505,16 +506,17 @@ def test_track_edit(dummy_timeline):
 
     x = 1
 
-    mid.save(os.path.join(os.path.dirname(filename), 'edited_' + os.path.basename(filename)))
+    filename = Path(filename)
+    mid.save(filename.parent / ('edited_' + filename.name))
 
     x = 1
 
 
 def test_deduplication_tgt(dummy_timeline):
     # snoop.install(enabled=False)
-    filename = os.path.join(this_dir, '..', 'tests', 'x1x1_many_repeatitions.mid')
-    filename = os.path.join(this_dir, '..', 'tests', 'x1x1d.mid')
-    output_filename = os.path.join(this_dir, '..', 'tests', 'x1x1_dedup_tgt.mid')
+    filename = this_dir / '..' / 'tests' / 'x1x1_many_repeatitions.mid'
+    filename = this_dir / '..' / 'tests' / 'x1x1d.mid'
+    output_filename = this_dir / '..' / 'tests' / 'x1x1_dedup_tgt.mid'
     # mid = mido.MidiFile(filename)
     file_input_device = iso.MidiFileInputDevice(filename)
     patterns = file_input_device.read()
@@ -620,7 +622,7 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
     dummy_tim.run()
     dummy_tim.output_device.write()
 
-    filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
+    filename = this_dir / '..' / 'tests' / 'x1x1a.mid'
     print(dummy_tim.output_devices[0].filename)
     print_mid(dummy_tim.output_devices[0].filename)
 
@@ -687,53 +689,90 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
     print_mid(dummy_tim2.output_devices[0].filename)
 
 
-def test_get_channel_track():
-    test_midi_out_device = MidiFileManyTracksOutputDevice(filename='dupa')
-    test_midi_out_device.get_channel_track(channel=2, src_track_idx=None)
-    assert test_midi_out_device.channel_track == [2]
-    assert test_midi_out_device.tgt_track_idxs == [None]
+def test_not_equal_chords(dummy_timeline, dummy_timeline2):
+    def mid_meta_message(msg: mido.MetaMessage = None, *args, **kwargs):
+        # return None
+        track_idx = min(kwargs.pop('track_idx', 0), len(dummy_tim.output_device.miditrack) - 1)
+        if not msg:
+            msg = mido.MetaMessage(*args, **kwargs)
+        dummy_tim.output_device.miditrack[track_idx].append(msg)
 
-    test_midi_out_device = MidiFileManyTracksOutputDevice(filename='dupa')
-    test_midi_out_device.get_channel_track(channel=None, src_track_idx=1)
-    assert test_midi_out_device.channel_track == [None]
-    assert test_midi_out_device.tgt_track_idxs == [1]
+    def set_tempo(tempo):
+        # dummy_timeline.set_tempo(int(tempo))
+        # tempo = mido.tempo2bpm(msg.tempo)
+        mid_meta_message(type='set_tempo', tempo=int(mido.tempo2bpm(tempo)), time=0)
 
-    test_midi_out_device = MidiFileManyTracksOutputDevice(filename='dupa')
-    test_midi_out_device.get_channel_track(channel=None, src_track_idx=None)
-    assert test_midi_out_device.channel_track == [None]
-    assert test_midi_out_device.tgt_track_idxs == [None]
+    def track_name(name, track_idx=0):
+        # dummy_timeline.set_tempo(int(tempo))
+        # tempo = mido.tempo2bpm(msg.tempo)
+        mid_meta_message(type='track_name', name=name, time=0, track_idx=track_idx)
 
-    # test_midi_out_device = MidiFileManyTracksOutputDevice(filename='dupa')
-    test_midi_out_device.get_channel_track(channel=2, src_track_idx=1)
-    assert test_midi_out_device.channel_track == [2]
-    assert test_midi_out_device.tgt_track_idxs == [1]
+    def file_beat():
+        _ = dummy_tim2.schedule(patterns, remove_when_done=True)
 
-    test_midi_out_device.get_channel_track(channel=None, src_track_idx=2)
-    assert test_midi_out_device.channel_track == [2, None]
-    assert test_midi_out_device.tgt_track_idxs == [1, 2]
 
-    test_midi_out_device.get_channel_track(channel=3, src_track_idx=2)
-    assert test_midi_out_device.channel_track == [2, 3]
-    assert test_midi_out_device.tgt_track_idxs == [1, 2]
+    dummy_tim = dummy_timeline
 
-    test_midi_out_device.get_channel_track(channel=4, src_track_idx=2)
-    assert test_midi_out_device.channel_track == [2, 3, 4]
-    assert test_midi_out_device.tgt_track_idxs == [1, 2, 2]
+    events1 = {
 
-    test_midi_out_device.get_channel_track(channel=4, src_track_idx=None)
-    assert test_midi_out_device.channel_track == [2, 3, 4]
-    assert test_midi_out_device.tgt_track_idxs == [1, 2, 2]
+        iso.EVENT_NOTE: iso.PSequence(sequence=[50], repeats=1)
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[4], repeats=1)
+        , iso.EVENT_CHANNEL: 0
+    }
+    events2 = {
 
-    test_midi_out_device.get_channel_track(channel=5, src_track_idx=None)
-    assert test_midi_out_device.channel_track == [2, 3, 4, 5]
-    assert test_midi_out_device.tgt_track_idxs == [1, 2, 2, None]
+        iso.EVENT_NOTE: iso.PSequence(sequence=[54, 51], repeats=1)
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[2, 2], repeats=1)
+        , iso.EVENT_CHANNEL: 0
+    }
+    events3 = {
 
-    test_midi_out_device.get_channel_track(channel=5, src_track_idx=1)
-    assert test_midi_out_device.channel_track == [2, 3, 4, 5]
-    assert test_midi_out_device.tgt_track_idxs == [1, 2, 2, 1]
+        iso.EVENT_NOTE: iso.PSequence(sequence=[57, 54, 52], repeats=1)
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[4/3], repeats=3)
+        , iso.EVENT_CHANNEL: 0
+    }
+    events4 = {
 
-    test_midi_out_device.get_channel_track(channel=5, src_track_idx=2)
-    assert test_midi_out_device.channel_track == [2, 3, 4, 5, 5]
-    assert test_midi_out_device.tgt_track_idxs == [1, 2, 2, 1, 2]
+        iso.EVENT_NOTE: iso.PSequence(sequence=[61, 58, 55, 56], repeats=1)
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[1, 1, 1, 1], repeats=1)
+        , iso.EVENT_CHANNEL: 0
+    }
+
+
+    dummy_tim.schedule(events1, sel_track_idx=0)
+    dummy_tim.schedule(events2, sel_track_idx=0)
+    dummy_tim.schedule(events3, sel_track_idx=0)
+    dummy_tim.schedule(events4, sel_track_idx=0)
+
+    dummy_tim.run()
+    dummy_tim.output_device.write()
+
+    filename = this_dir / '..' / 'tests' / 'x1x1a.mid'
+    print(dummy_tim.output_devices[0].filename)
+    print_mid(dummy_tim.output_devices[0].filename)
+
+    # return
+    print('-' * 20, 'second_timeline')
+    # dummy_timeline2.opt = 'xplay'
+    dummy_tim2 = dummy_timeline2
+    file_input_device = iso.MidiFileInputDevice(dummy_tim.output_devices[0].filename)
+    patterns = file_input_device.read()
+
+    flag = True
+
+    dur = 4
+    rp = 1
+    # _ = dummy_tim2.schedule(patterns)
+    # _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat()], repeats=1),
+    _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat()], repeats=rp),
+                             iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=rp)
+                             },
+                            remove_when_done=True)
+
+    dummy_tim2.run()
+    dummy_tim2.output_device.write()
+    print_mid(dummy_tim2.output_devices[0].filename)
+
+
 
     pass

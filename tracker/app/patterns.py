@@ -1,7 +1,8 @@
 import itertools
 import json
 import math
-import os
+# import os
+from pathlib import Path
 import random
 import re
 from fractions import *
@@ -13,11 +14,13 @@ import numpy as np
 
 class DurationPatterns:
     def __init__(self):
-        self.__read_config_file__()
+        self._read_config_file()
 
-    def __read_config_file__(self):
-        this_dir = os.path.dirname(os.path.abspath(__file__))
-        config_file = os.path.join(this_dir, '../config/duration_patterns.json')
+    def _read_config_file(self):
+        # current_directory = os.path.dirname(os.path.abspath(__file__))
+        # config_file = os.path.join(current_directory, '../config/duration_patterns.json')
+        current_directory = Path(__file__).resolve().parent
+        config_file = current_directory / '../config/duration_patterns.json'
 
         with open(config_file, 'r') as file:
             self.patterns = json.load(file)
@@ -37,18 +40,18 @@ def mod_duration(func):  # added self, eventual issue
             tmp_split_array = [('norm', interval)]
 
         split_array = []
-        for split in tmp_split_array:
-            if split[1] <= 16:
-                split_array.append(split)
+        for itype, ival  in tmp_split_array:
+            if ival <= 16:
+                split_array.append((itype, ival))
             else:
-                pattern_len = split[1]
+                pattern_len = ival
                 interval -= 1
                 parts_no16 = pattern_len // max_len
                 parts_no16 += 1
                 rnd_parts = random.choice([parts_no16, parts_no16 * 2, parts_no16 * 4])
                 while pattern_len > 0:
                     part = -(-pattern_len // rnd_parts)
-                    split_array.append((split[0], part))
+                    split_array.append((itype, part))
                     pattern_len -= part
                     rnd_parts -= 1
         return split_array
@@ -63,7 +66,7 @@ def mod_duration(func):  # added self, eventual issue
         for idx, arg in enumerate(args):
             parameters[list(parameters.keys())[idx]] = arg
         if kwargs is not None:
-            parameters.update(kwargs)
+            parameters |= kwargs
 
         result = func(self, **parameters)
 
@@ -150,8 +153,11 @@ class NotePatterns:
         return pattern_size_for_interval
 
     def __read_config_file__(self):
-        this_dir = os.path.dirname(os.path.abspath(__file__))
-        config_file = os.path.join(this_dir, '../config/note_patterns.json')
+        # current_directory = os.path.dirname(os.path.abspath(__file__))
+        # config_file = os.path.join(current_directory, '../config/note_patterns.json')
+        current_directory = Path(__file__).resolve().parent
+        config_file = current_directory / '../config/note_patterns.json'
+
 
         with open(config_file, 'r') as file:
             self.patterns_config = json.load(file)
@@ -270,7 +276,10 @@ class NotePatterns:
 
         from_note = parameters.get('from_note', 60)
         key = parameters.get('key')
-        from_note = key.nearest_note(from_note)  # This is taken from used scale/key not major
+        if isinstance(from_note, tuple):
+            from_note = key.nearest_note(min(from_note))
+        else:
+            from_note = key.nearest_note(from_note)  # This is taken from used scale/key not major
 
         major = iso.Scale.major
         key_major = iso.Key(tonic=key.tonic, scale=major)
@@ -471,7 +480,7 @@ class NotePatterns:
         return result_dict
 
     def set_pattern_function(self, function_name):
-        self.get_pattern = getattr(self, 'get_' + function_name + '_pattern')
+        self.get_pattern = getattr(self, f'get_{function_name}_pattern')
 
 
 def main():

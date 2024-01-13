@@ -1,4 +1,5 @@
-import os
+# import os
+from pathlib import Path
 
 from tracker.app.mido_fixes import *
 
@@ -39,45 +40,41 @@ def direct_midi_play():
 
     # mid=mido.MidiFile('Def 5 4.mid',clip=True)
     # mid=mido.MidiFile('..\\jupyter\\rythm_midi_files\\Def (5.mid',clip=True)
-    this_dir = os.path.dirname(os.path.abspath(__file__))
+    this_dir = Path(__file__).parent.resolve()
     # config_file = os.path.join(this_dir, 'note_patterns.json')
-    filename = os.path.join(this_dir, "..", "saved_midi_files", "xoutput.mid")
-    filename = os.path.join(this_dir, '..', 'tests', 'x1x1b.mid')
+    filename = this_dir / ".." / "saved_midi_files" / "xoutput.mid"
+    filename = this_dir / ".." / "tests" / "x1x1b.mid"
     # filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
     # filename = os.path.join(this_dir, 'example_midi', 'Var_tempo_1_trk_sax_c.mid')
 
     # filename = os.path.join('example_midi', 'x1x1')
     # filename = os.path.join('example_midi', 'Var_tempo_1_trk_sax.mid')
 
-    filename = os.path.join(this_dir, '..', '..', 'checks', 'example_midi', 'Var_tempo_1_trk_sax.mid')
-    filename = os.path.join(this_dir, '..', '..', 'checks', 'example_midi', 'Var_tempo_1_trk_sax_sh2.mid')
-    filename = os.path.join(this_dir, '..', '..', 'checks', 'example_midi', '4_notes4.mid')
-    filename = os.path.join(this_dir, '..', '..', 'checks', 'example_midi', 'Var_tempo_2_trks_sax_piano.mid')
-    filename = os.path.join(this_dir, 'src_Var_tempo_2_trks_sax_piano.mid')
-    filename = os.path.join(this_dir, '..', 'tests', 'x1x1e.mid')
-    filename = os.path.join(this_dir, '..', 'tests', 'x1x1a.mid')
-    filename = os.path.join(this_dir, '..', 'tests', 'x1x1ax2.mid')
-    # filename = os.path.join(this_dir, '..', 'tests', 'x1x1_many_repeatitions.mid')
-    # filename = os.path.join(this_dir, '..', 'tests', 'xoutput_20231210213312.mid')
+    filename = this_dir / ".." / ".." / "checks" / "example_midi" / "Var_tempo_1_trk_sax.mid"
+    filename = this_dir / ".." / ".." / "checks" / "example_midi" / "Var_tempo_1_trk_sax_sh2.mid"
+    filename = this_dir / ".." / ".." / "checks" / "example_midi" / "4_notes4.mid"
+    filename = this_dir / ".." / ".." / "checks" / "example_midi" / "Var_tempo_2_trks_sax_piano.mid"
 
-    # filename = os.path.join(this_dir, '..', 'tests', 'aedited_src_Var_tempo_2_trks_sax_piano.mid')
+    filename = this_dir / "src_Var_tempo_2_trks_sax_piano.mid"
 
+    filename = this_dir / ".." / "tests" / "x1x1e.mid"
+    filename = this_dir / ".." / "tests" / "x1x1a.mid"
+    filename = this_dir / ".." / "tests" / "x1x1ax2.mid"
+    filename = this_dir / '..' / 'saved_midi_files' / 'xoutput.mid'
     print_mid(filename)
 
-    # filename = os.path.join(this_dir, '..','..','checks', 'test2.mid')
-    # filename = os.path.join(this_dir, '..', 'tests', 'x1x1b.mid')
+    filename = this_dir / ".." / ".." / "checks" / "example_midi" / "Var_tempo_2_trks_sax_piano.mid"
+    filename = this_dir / ".." / ".." / "checks" / "example_midi" / "4_notes3.mid"
+    filename = this_dir / ".." / "saved_midi_files" / "xoutput.mid"
 
-    filename = os.path.join(this_dir, '..', '..', 'checks', 'example_midi', 'Var_tempo_2_trks_sax_piano.mid')
-    filename = os.path.join(this_dir, '..', '..', 'checks', 'example_midi', '4_notes3.mid')
-    filename = os.path.join(this_dir, '..', 'saved_midi_files', 'xoutput.mid')
-    # filename = os.path.join(this_dir, '..','..','checks', 'test2.mid')
-    filename = os.path.join(this_dir, '..', 'tests', 'x1x1_dedup.mid')
-    filename = os.path.join(this_dir, '..', 'tests', 'x1x1_dedup_tgt.mid')
-    filename = os.path.join(this_dir, '..', 'tests', 'xoutput_20231209230252.mid')
-    filename = os.path.join(this_dir, '..', 'tests', 'x1x1b.mid')
-    filename = os.path.join(this_dir, '..', 'saved_midi_files', 'xoutput.mid')
+    filename = this_dir / ".." / "tests" / "x1x1_dedup.mid"
+    filename = this_dir / ".." / "tests" / "x1x1_dedup_tgt.mid"
+    filename = this_dir / ".." / "tests" / "xoutput_20231209230252.mid"
+    filename = this_dir / ".." / "tests" / "x1x1b.mid"
+    filename = this_dir / ".." / "tests" / "Pirates of the Caribbean.mid"
+    filename = this_dir / ".." / "tests" / "xoutput_1t_legato1.5.mid"
     print_mid(filename)
 
-
+#
 if __name__ == '__main__':
     direct_midi_play()

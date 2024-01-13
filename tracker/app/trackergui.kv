@@ -60,6 +60,7 @@ ScreenManager:
         size: [-(-self.texture_size[0]//20)*20+10,self.texture_size[1]*2]
         group:self.parent.parent.group_variable if self.parent.parent.group_variable else None
         state: self.parent.child_state if self.parent.child_state else 'normal'
+        disabled: self.parent.disabled
         on_press:
             print(f"********* bef: {self.parent.text=}, {self.state=}, {self.parent.state=}, {self.parent.parent.deselect=}")
             print(self.parent.state=='down' and self.parent.parent.deselect==False)
@@ -354,6 +355,7 @@ ScreenManager:
                 size_hint: [None, None]
                 size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
                 on_state: app.loopq_action(*args)
+                disabled: app.loopq_button_disabled
 
             Button:
                 id: clearq_button
@@ -361,6 +363,7 @@ ScreenManager:
                 size_hint: [None, None]
                 size: [-(-self.texture_size[0]//10)*10+20,self.texture_size[1]*2]
                 on_press: app.clearq_action()
+                disabled: app.clearq_button_disabled
 
             Label:
                 id: curr_notes_pair_lbl

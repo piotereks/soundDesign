@@ -1,5 +1,6 @@
 import json
-import os
+# import os
+from pathlib import Path
 
 from .cust_iso_midi_file_in import *
 from .cust_timeline import *
@@ -30,8 +31,8 @@ def midi_note_to_note_name(note):
 
 
 def read_config_file_scales():
-    this_dir = os.path.dirname(os.path.abspath(__file__))
-    config_file = os.path.join(this_dir, '../config/note_patterns.json')
+    this_dir = Path(__file__).resolve().parent
+    config_file = this_dir / '../config/note_patterns.json'
 
     with open(config_file, 'r') as file:
         loaded_json = json.load(file)

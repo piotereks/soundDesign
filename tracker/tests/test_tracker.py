@@ -3,13 +3,12 @@ import contextlib
 import pytest
 
 from tracker.app.isobar_fixes import *
+from tracker.app.tracker import Tracker
 
 read_config_file_scales()
 
-from tracker.app.tracker import Tracker
-
-this_dir = os.path.dirname(os.path.abspath(__file__))
-config_file = os.path.join(this_dir, '../config/main_config.json')
+this_dir = Path(__file__).resolve().parent
+config_file = this_dir / '../config/main_config.json'
 
 with open(config_file, 'r') as file:
     loaded_config = json.load(file)
