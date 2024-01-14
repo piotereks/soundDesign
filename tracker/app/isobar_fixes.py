@@ -21,7 +21,7 @@ def midi_note_to_note_name(note):
         raise iso.InvalidMIDIPitch()
 
     degree = int(note) % len(iso.note_names)
-    octave = int(note / len(iso.note_names))
+    octave = int(note / len(iso.note_names)) - 1
     str_note = "%s%d" % (iso.note_names[degree][0], octave)
     frac = math.modf(note)[0]
     if frac > 0:
