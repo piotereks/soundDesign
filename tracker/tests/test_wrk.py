@@ -761,7 +761,7 @@ def test_not_equal_chords(dummy_timeline, dummy_timeline2):
     flag = True
 
     dur = 4
-    rp = 1
+    rp = 2
     # _ = dummy_tim2.schedule(patterns)
     # _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat()], repeats=1),
     _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat()], repeats=rp),
