@@ -800,41 +800,16 @@ def test_hanging_rest_test(dummy_timeline, dummy_timeline2):
 
     dummy_tim = dummy_timeline
 
-    events1 = {
 
-        iso.EVENT_NOTE: iso.PSequence(sequence=[50], repeats=1)
-        , iso.EVENT_DURATION: iso.PSequence(sequence=[4], repeats=1)
-        , iso.EVENT_CHANNEL: 0
-    }
-    events2 = {
+    events = {
 
-        iso.EVENT_NOTE: iso.PSequence(sequence=[54, 51], repeats=1)
-        , iso.EVENT_DURATION: iso.PSequence(sequence=[2, 2], repeats=1)
-        , iso.EVENT_CHANNEL: 0
-    }
-    events3 = {
-
-        iso.EVENT_NOTE: iso.PSequence(sequence=[57, 54, 52], repeats=1)
-        , iso.EVENT_DURATION: iso.PSequence(sequence=[4/3], repeats=3)
-        , iso.EVENT_CHANNEL: 0
-    }
-    events4 = {
-
-        iso.EVENT_NOTE: iso.PSequence(sequence=[61, 58, 55, 56], repeats=1)
+        iso.EVENT_NOTE: iso.PSequence(sequence=[50, 51, 52, 53], repeats=1)
         , iso.EVENT_DURATION: iso.PSequence(sequence=[1, 1, 1, 1], repeats=1)
         , iso.EVENT_CHANNEL: 0
     }
-    # events1 = {
-    #
-    #     iso.EVENT_NOTE: iso.PSequence(sequence=[61, 58, 55, 56], repeats=1)
-    #     , iso.EVENT_DURATION: iso.PSequence(sequence=[1, 1, 1, 1], repeats=1)
-    #     , iso.EVENT_CHANNEL: 0
-    # }
 
-    dummy_tim.schedule(events1, sel_track_idx=0)
-    # dummy_tim.schedule(events2, sel_track_idx=0)
-    # dummy_tim.schedule(events3, sel_track_idx=0)
-    dummy_tim.schedule(events4, sel_track_idx=0)
+
+    dummy_tim.schedule(events, sel_track_idx=0)
 
     dummy_tim.run()
     dummy_tim.output_device.write()
@@ -853,11 +828,11 @@ def test_hanging_rest_test(dummy_timeline, dummy_timeline2):
     flag = True
     # return
     dur = 4
-    rp = 1
+    rp = 2
     # _ = dummy_tim2.schedule(patterns)
     # _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat()], repeats=1),
-    _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat()], repeats=rp),
-                             iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=rp)
+    _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat(), lambda track_idx: file_beat()], repeats=rp),
+                             iso.EVENT_DURATION: iso.PSequence(sequence=[dur, dur], repeats=rp)
                              },
                             remove_when_done=True)
 
