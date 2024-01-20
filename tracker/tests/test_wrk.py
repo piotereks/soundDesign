@@ -776,3 +776,91 @@ def test_not_equal_chords(dummy_timeline, dummy_timeline2):
 
 
     pass
+def test_hanging_rest_test(dummy_timeline, dummy_timeline2):
+    def mid_meta_message(msg: mido.MetaMessage = None, *args, **kwargs):
+        # return None
+        track_idx = min(kwargs.pop('track_idx', 0), len(dummy_tim.output_device.miditrack) - 1)
+        if not msg:
+            msg = mido.MetaMessage(*args, **kwargs)
+        dummy_tim.output_device.miditrack[track_idx].append(msg)
+
+    def set_tempo(tempo):
+        # dummy_timeline.set_tempo(int(tempo))
+        # tempo = mido.tempo2bpm(msg.tempo)
+        mid_meta_message(type='set_tempo', tempo=int(mido.tempo2bpm(tempo)), time=0)
+
+    def track_name(name, track_idx=0):
+        # dummy_timeline.set_tempo(int(tempo))
+        # tempo = mido.tempo2bpm(msg.tempo)
+        mid_meta_message(type='track_name', name=name, time=0, track_idx=track_idx)
+
+    def file_beat():
+        _ = dummy_tim2.schedule(patterns, remove_when_done=True)
+
+
+    dummy_tim = dummy_timeline
+
+    events1 = {
+
+        iso.EVENT_NOTE: iso.PSequence(sequence=[50], repeats=1)
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[4], repeats=1)
+        , iso.EVENT_CHANNEL: 0
+    }
+    events2 = {
+
+        iso.EVENT_NOTE: iso.PSequence(sequence=[54, 51], repeats=1)
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[2, 2], repeats=1)
+        , iso.EVENT_CHANNEL: 0
+    }
+    events3 = {
+
+        iso.EVENT_NOTE: iso.PSequence(sequence=[57, 54, 52], repeats=1)
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[4/3], repeats=3)
+        , iso.EVENT_CHANNEL: 0
+    }
+    events4 = {
+
+        iso.EVENT_NOTE: iso.PSequence(sequence=[61, 58, 55, 56], repeats=1)
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[1, 1, 1, 1], repeats=1)
+        , iso.EVENT_CHANNEL: 0
+    }
+    # events1 = {
+    #
+    #     iso.EVENT_NOTE: iso.PSequence(sequence=[61, 58, 55, 56], repeats=1)
+    #     , iso.EVENT_DURATION: iso.PSequence(sequence=[1, 1, 1, 1], repeats=1)
+    #     , iso.EVENT_CHANNEL: 0
+    # }
+
+    dummy_tim.schedule(events1, sel_track_idx=0)
+    # dummy_tim.schedule(events2, sel_track_idx=0)
+    # dummy_tim.schedule(events3, sel_track_idx=0)
+    dummy_tim.schedule(events4, sel_track_idx=0)
+
+    dummy_tim.run()
+    dummy_tim.output_device.write()
+
+    filename = this_dir / '..' / 'tests' / 'x1x1a.mid'
+    print(dummy_tim.output_devices[0].filename)
+    print_mid(dummy_tim.output_devices[0].filename)
+
+    # return
+    print('-' * 20, 'second_timeline')
+    # dummy_timeline2.opt = 'xplay'
+    dummy_tim2 = dummy_timeline2
+    file_input_device = iso.MidiFileInputDevice(dummy_tim.output_devices[0].filename)
+    patterns = file_input_device.read()
+
+    flag = True
+    # return
+    dur = 4
+    rp = 1
+    # _ = dummy_tim2.schedule(patterns)
+    # _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat()], repeats=1),
+    _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat()], repeats=rp),
+                             iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=rp)
+                             },
+                            remove_when_done=True)
+
+    dummy_tim2.run()
+    dummy_tim2.output_device.write()
+    print_mid(dummy_tim2.output_devices[0].filename)

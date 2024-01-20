@@ -83,3 +83,13 @@ def test_note_at_beat():
     x = 1
 
 
+def test_hanging_rest_test(dummy_timeline):
+
+    def file_beat():
+        _ = dummy_timeline.schedule(patterns, remove_when_done=True)
+    events1 = {
+
+        iso.EVENT_NOTE: iso.PSequence(sequence=[50, 51, 52, 53], repeats=1)
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[1, 1, 1, 1], repeats=1)
+        , iso.EVENT_CHANNEL: 0
+    }
