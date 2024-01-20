@@ -60,6 +60,11 @@ def dummy_timeline2():
     timeline.stop_when_done = True
     return timeline
 
+def file_beat(timeline, patterns):
+    copy_patterns_from_file = copy.deepcopy(patterns)
+    timeline.schedule(copy_patterns_from_file, remove_when_done=True)
+
+
 
 def test_timeline_schedulex(dummy_timeline):
     events = {
@@ -562,10 +567,7 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
         # tempo = mido.tempo2bpm(msg.tempo)
         mid_meta_message(type='track_name', name=name, time=0, track_idx=track_idx)
 
-    def file_beat():
-        # _ = dummy_tim2.schedule(copy.deepcopy(patterns), remove_when_done=True)
-        # _ = dummy_tim2.schedule(copy.copy(patterns), remove_when_done=True)
-        _ = dummy_tim2.schedule(patterns, remove_when_done=True)
+
 
     # dummy_timeline(opt='dummy')
 
@@ -663,7 +665,7 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
     rp = 2
     # _ = dummy_tim2.schedule(patterns)
     # _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat()], repeats=1),
-    _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat()], repeats=rp),
+    _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat(timeline=dummy_tim2, patterns=patterns)], repeats=rp),
                              # iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=1)
                              iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=rp)
                              # "duration": 4 * self.time_signature['numerator'] / self.time_signature['denominator']
@@ -707,8 +709,7 @@ def test_not_equal_chords(dummy_timeline, dummy_timeline2):
         # tempo = mido.tempo2bpm(msg.tempo)
         mid_meta_message(type='track_name', name=name, time=0, track_idx=track_idx)
 
-    def file_beat():
-        _ = dummy_tim2.schedule(patterns, remove_when_done=True)
+
 
 
     dummy_tim = dummy_timeline
@@ -764,7 +765,7 @@ def test_not_equal_chords(dummy_timeline, dummy_timeline2):
     rp = 2
     # _ = dummy_tim2.schedule(patterns)
     # _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat()], repeats=1),
-    _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat()], repeats=rp),
+    _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat(timeline=dummy_tim2, patterns=patterns)], repeats=rp),
                              iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=rp)
                              },
                             remove_when_done=True)
@@ -776,6 +777,35 @@ def test_not_equal_chords(dummy_timeline, dummy_timeline2):
 
 
     pass
+
+
+
+
+def test_action_repeat(dummy_timeline, dummy_timeline2):
+
+
+    events = {
+
+        iso.EVENT_NOTE: iso.PSequence(sequence=[50, 51, 52, 53], repeats=1)
+        # , iso.EVENT_DURATION: iso.PSequence(sequence=[1, 1, 1, 1], repeats=1)
+        ,iso.EVENT_DURATION: iso.PSequence(sequence=[1, 1, 1, 1], repeats=1)
+        # , iso.EVENT_CHANNEL: 0
+        # ,iso.EVENT_ACTION: iso.PSequence(sequence=[lambda track_idx: print('xxx')], repeats=4)
+    }
+    patterns = events
+    rp = 10
+    dummy_tim2 = dummy_timeline2
+    _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat(timeline=dummy_tim2, patterns=patterns)], repeats=rp),
+                             iso.EVENT_DURATION: iso.PSequence(sequence=[4], repeats=rp)
+                             },
+                            remove_when_done=True)
+    # _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: print('aaaa')], repeats=rp),
+    #                          iso.EVENT_DURATION: iso.PSequence(sequence=[4], repeats=rp)
+    #                          },
+    #                         remove_when_done=True)
+    dummy_tim2.run()
+    dummy_tim2.output_device.write()
+    print_mid(dummy_tim2.output_devices[0].filename)
 def test_hanging_rest_test(dummy_timeline, dummy_timeline2):
     def mid_meta_message(msg: mido.MetaMessage = None, *args, **kwargs):
         # return None
@@ -794,22 +824,26 @@ def test_hanging_rest_test(dummy_timeline, dummy_timeline2):
         # tempo = mido.tempo2bpm(msg.tempo)
         mid_meta_message(type='track_name', name=name, time=0, track_idx=track_idx)
 
-    def file_beat():
-        _ = dummy_tim2.schedule(patterns, remove_when_done=True)
-
-
     dummy_tim = dummy_timeline
 
 
-    events = {
+    events1 = {
 
-        iso.EVENT_NOTE: iso.PSequence(sequence=[50, 51, 52, 53], repeats=1)
-        , iso.EVENT_DURATION: iso.PSequence(sequence=[1, 1, 1, 1], repeats=1)
+        iso.EVENT_NOTE: iso.PSequence(sequence=[50, None, None, 53, None], repeats=1)
+        # iso.EVENT_NOTE: iso.PSequence(sequence=[50, 51, 52, 53, 54], repeats=1)
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[0.25, 1.75, 1, 0.5, 0.5], repeats=1)
+        , iso.EVENT_CHANNEL: 0
+    }
+    events2 = {
+
+        iso.EVENT_NOTE: iso.PSequence(sequence=[55, 56, 57, 58, 59], repeats=1)
+        # iso.EVENT_NOTE: iso.PSequence(sequence=[50, 51, 52, 53, 54], repeats=1)
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[1, 1, 1, 0.5, 0.5], repeats=1)
         , iso.EVENT_CHANNEL: 0
     }
 
-
-    dummy_tim.schedule(events, sel_track_idx=0)
+    dummy_tim.schedule(events1, sel_track_idx=0)
+    # dummy_tim.schedule(events2, sel_track_idx=0)
 
     dummy_tim.run()
     dummy_tim.output_device.write()
@@ -831,8 +865,8 @@ def test_hanging_rest_test(dummy_timeline, dummy_timeline2):
     rp = 2
     # _ = dummy_tim2.schedule(patterns)
     # _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat()], repeats=1),
-    _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat(), lambda track_idx: file_beat()], repeats=rp),
-                             iso.EVENT_DURATION: iso.PSequence(sequence=[dur, dur], repeats=rp)
+    _ = dummy_tim2.schedule({"action": iso.PSequence(sequence=[lambda track_idx: file_beat(timeline=dummy_tim2, patterns=patterns)], repeats=rp),
+                             iso.EVENT_DURATION: iso.PSequence(sequence=[dur], repeats=rp)
                              },
                             remove_when_done=True)
 
