@@ -151,6 +151,7 @@ class MidiFileManyTracksOutputDevice(iso.MidiFileOutputDevice):
             new_mid.tracks.append(new_track)
 
         self.midifile.tracks = new_mid.tracks
+        self.miditrack = new_mid.tracks
 
     def write(self, dedup=True):
         # ------------------------------------------------------------------------
