@@ -85,7 +85,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
             offset = 0
             offset_int = 0
             for event in track:
-                if event.type == 'note_on' and (event.velocity > 0 or event.note=0):
+                if event.type == 'note_on' and (event.velocity > 0 or event.note==0):
                     # ------------------------------------------------------------------------
                     # Found a note_on event.
                     # ------------------------------------------------------------------------

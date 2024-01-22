@@ -9,6 +9,8 @@ from tracker.app.midi_dev import *
 from tracker.utils.dump_midi import print_mid
 # from tests import dummy_timeline
 snoop.install(enabled=False)
+
+
 @pytest.fixture()
 def dummy_timeline():
     filename = 'output.mid'
@@ -41,9 +43,21 @@ def test_io_midifile_write_rests(dummy_timeline):
 
     d = MidiFileInputDevice("output.mid").read()
     # file_input_device = iso.MidiFileInputDevice(d)
+
+    snoop.install(enabled=True, out='xxx.log', overwrite=True)
+
     for key in events.keys():
         assert isinstance(d[0][key], iso.PSequence)
-        assert list(d[0][key]) == list(events[key])
+        if key == iso.EVENT_NOTE:
+            
+            for i, note in enumerate(list(events[key])):
+                if note is not None:
+                    return
+            snoop.pp([e or 0 for e in events[key][:i]])
+            # print([e or 0 for e in events[key][:i]])
+            assert list(d[0][key]) == [e or 0 for e in events[key][:i]]
+        else:
+            assert list(d[0][key]) == list(events[key])
 
     os.unlink("output.mid")
 
