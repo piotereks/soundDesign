@@ -85,7 +85,7 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
             offset = 0
             offset_int = 0
             for event in track:
-                if event.type == 'note_on' and event.velocity > 0:
+                if event.type == 'note_on' and (event.velocity > 0 or event.note=0):
                     # ------------------------------------------------------------------------
                     # Found a note_on event.
                     # ------------------------------------------------------------------------
@@ -100,7 +100,8 @@ class CustMidiFileInputDevice(MidiFileInputDevice):
                     offset = offset_int / self.midi_reader.ticks_per_beat
                     note_int = MidiNote(event.channel, event.note, event.velocity, offset)
                     notes.append(note_int)
-                elif event.type == 'note_off' or (event.type == 'note_on' and event.velocity == 0):
+                # elif event.type == 'note_off' or (event.type == 'note_on' and event.velocity == 0):
+                elif event.type == 'note_off' or (event.type == 'note_on'):
                     # ------------------------------------------------------------------------
                     # Found a note_off event.
                     # ------------------------------------------------------------------------

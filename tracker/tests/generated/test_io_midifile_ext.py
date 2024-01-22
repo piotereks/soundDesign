@@ -62,3 +62,7 @@ def test_io_midifile_write_rests(dummy_timeline):
 #         assert isinstance(d[key], iso.PSequence)
 #         assert list(d[key]) == list(events[key])
 #     os.unlink("output.mid")
+
+def test_test2():
+    pass    
+ 
