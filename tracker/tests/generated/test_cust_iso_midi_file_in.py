@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import MagicMock, Mock
-# from tracker.app.cust_iso_midi_file_in import midi_message_obj
+from tracker.app.cust_iso_midi_file_in import midi_message_obj
 import mido
 
 
