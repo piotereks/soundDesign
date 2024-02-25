@@ -4,10 +4,12 @@ import logging
 
 import snoop
 from isobar import Track
+from isobar.timeline.event import Event
 from isobar.pattern import PInterpolate, PSequence, PDict
 from isobar.util import midi_note_to_frequency
 
 from tracker.app.cust_event import *
+Event.__init__ = CustEvent.__init__
 
 log = logging.getLogger(__name__)
 
@@ -118,6 +120,7 @@ class CustTrack(Track):
                 self.is_finished = True
 
         self.current_time += self.tick_duration
+
 
     def perform_event(self, event):
 
