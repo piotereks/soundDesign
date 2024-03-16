@@ -2,8 +2,8 @@
 
 import os
 # from tracker.app.isobar_fixes import *
-from isobar_ext import *
-# import isobar_ext as iso
+# from isobar_ext import *
+import isobar_ext as iso
 # from isobar_ext.io.midifile import MidiFileOutputDevice, MidiFileInputDevice
 import pytest
 from . import dummy_timeline
@@ -16,13 +16,13 @@ def test_io_midifile_write(dummy_timeline):
         iso.EVENT_AMPLITUDE: iso.PSequence([64, 32, 16, 8], 1)
     }
 
-    midifile = MidiFileOutputDevice("output.mid")
+    midifile = iso.MidiFileOutputDevice("output.mid")
     dummy_timeline.output_device = midifile
     dummy_timeline.schedule(events)
     dummy_timeline.run()
     midifile.write()
 
-    midi_file_in = MidiFileInputDevice("output.mid")
+    midi_file_in = iso.MidiFileInputDevice("output.mid")
     d = midi_file_in.read()
 
     for key in events.keys():
@@ -40,7 +40,7 @@ def test_io_midifile_pdict_save(dummy_timeline):
     }
     pdict = iso.PDict(events)
     pdict.save("output.mid")
-    d = MidiFileInputDevice("output.mid").read()
+    d = iso.MidiFileInputDevice("output.mid").read()
     for key in events.keys():
         assert isinstance(d[key], iso.PSequence)
         assert list(d[key]) == list(events[key])

@@ -5,7 +5,7 @@ import pytest
 from isobar_ext import *
 from tracker.app.patterns import *
 
-read_config_file_scales()
+# read_config_file_scales()
 
 npat = NotePatterns()
 

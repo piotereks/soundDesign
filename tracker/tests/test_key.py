@@ -1,8 +1,8 @@
 # from tracker.app.isobar_fixes import *
-from isobar_ext import *
+# from isobar_ext import *
+import isobar_ext as iso
 
-
-read_config_file_scales()
+# read_config_file_scales()
 
 
 def test_key_nearest_note():

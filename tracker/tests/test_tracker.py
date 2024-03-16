@@ -1,12 +1,16 @@
 import contextlib
 
 import pytest
+from pathlib import Path
+import json
+import random
 
 # from tracker.app.isobar_fixes import *
-from isobar_ext import *
+# from isobar_ext import *
+import isobar_ext as iso
 from tracker.app.tracker import Tracker
 
-read_config_file_scales()
+# read_config_file_scales()
 
 this_dir = Path(__file__).resolve().parent
 config_file = this_dir / '../config/main_config.json'
