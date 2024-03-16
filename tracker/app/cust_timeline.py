@@ -52,7 +52,7 @@ class CustTimeline():
         self.max_tracks = 0
         self.tracks = []
 
-        self.thread = None
+        # self.thread = None
         self.stop_when_done = False
         self.events = []
         self.running = False

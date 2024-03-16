@@ -378,6 +378,7 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
         iso.EVENT_CHANNEL: 2
         , iso.EVENT_PROGRAM_CHANGE: iso.PSequence([56], repeats=1)
     }
+
     events_action = {
         iso.EVENT_DURATION: iso.PSequence(sequence=[1.22, 1.3, 1.33, 1.41], repeats=1)
         # iso.EVENT_DURATION : iso.PSequence(sequence = [1, 1, 1, 1], repeats=1)
@@ -417,7 +418,7 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
     # dummy_tim.schedule(events_action, sel_track_idx=0)
 
     dummy_tim.schedule(pgm, sel_track_idx=0)
-    dummy_tim.schedule(pgm2, sel_track_idx=1)
+    # dummy_tim.schedule(pgm2, sel_track_idx=1)
     # with pysnooper.snoop(output='output.log', watch=('self.tracks')):
     # with pysnooper.snoop(watch_explode=('self.tracks'), output='output.log'):
     dummy_tim.schedule(events_action, sel_track_idx=0)
@@ -426,7 +427,7 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
     snoop.install(enabled=False)
     dummy_tim.schedule(events0, sel_track_idx=0)
     # dummy_tim.schedule(events_none, sel_track_idx=0)
-    dummy_tim.schedule(events2, sel_track_idx=1)
+    # dummy_tim.schedule(events2, sel_track_idx=1)
     # dummy_tim.schedule(dummy_events, sel_track_idx=0)
 
     # control_series = iso.PSeries(start=1, step=20, length=5)
@@ -498,6 +499,72 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
     x = 1
 
 
+def test_action_multi1(dummy_timeline, tmp_path):
+    def mid_meta_message(msg: mido.MetaMessage = None, *args, **kwargs):
+        # return None
+        track_idx = min(kwargs.pop('track_idx', 0), len(dummy_timeline.output_device.miditrack) - 1)
+        if not msg:
+            msg = mido.MetaMessage(*args, **kwargs)
+        dummy_timeline.output_device.miditrack[track_idx].append(msg)
+
+    def set_tempo(tempo):
+        # dummy_timeline.set_tempo(int(tempo))
+        # tempo = mido.tempo2bpm(msg.tempo)
+        mid_meta_message(type='set_tempo', tempo=int(mido.tempo2bpm(tempo)), time=0)
+
+    def track_name(name, track_idx=0):
+        mid_meta_message(type='track_name', name=name, time=0, track_idx=track_idx)
+    filename = tmp_path/"output.mid"
+    # midifile = MidiFileOutputDevice(filename)
+    midifile = MidiFileManyTracksOutputDevice(filename)
+    dummy_timeline.output_device = midifile
+
+    events_1 = {
+        #     iso.EVENT_NOTE: iso.PSequence(sequence=[50, 52], repeats=1)
+        # , iso.EVENT_DURATION: iso.PSequence(sequence=[0.5, 1], repeats=1)
+        iso.EVENT_NOTE: iso.PSequence(sequence=[50, 52, 51, 53], repeats=1)
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[1, 1, 1, 1], repeats=1)
+        , iso.EVENT_CHANNEL: 0
+        # , iso.EVENT_PROGRAM_CHANGE: 0
+    }
+
+    pgm_1 = {
+        iso.EVENT_CHANNEL: 0
+        , iso.EVENT_PROGRAM_CHANGE: iso.PSequence([99], repeats=1)
+    }
+
+
+    events_action = {
+        # iso.EVENT_DURATION: iso.PSequence(sequence=[1.22, 1.3, 1.33, 1.41], repeats=1)
+        # iso.EVENT_DURATION: iso.PSequence(sequence=[1.22, 1.3, 1.33, 1.41], repeats=1)
+        iso.EVENT_DURATION: iso.PSequence(sequence=[1, 1, 1, 1], repeats=1)
+        , iso.EVENT_ACTION: iso.PSequence(
+            # sequence=[lambda track_idx=None: (set_tempo(222), set_tempo(111), track_name('blah'), dummy_timeline.track_name('blaxx', 1)),
+            #           lambda track_idx=None: set_tempo(444),
+            #           lambda track_idx=None: set_tempo(555), lambda track_idx=None: set_tempo(666)], repeats=1)
+            sequence=[lambda track_idx=None: set_tempo(222),
+                      lambda track_idx=None: set_tempo(444),
+                      lambda track_idx=None: set_tempo(555),
+                      lambda track_idx=None: set_tempo(666)], repeats=1)
+
+    }
+
+
+    dummy_timeline.schedule(pgm_1, sel_track_idx=0)
+    dummy_timeline.schedule(events_action, sel_track_idx=0)
+    dummy_timeline.schedule(events_1, sel_track_idx=0)
+
+
+
+    dummy_timeline.run()
+    # return
+    assert len(midifile.miditrack) == 1, "1 track expected in midifile"
+    midifile.write()
+
+    midi_file_in = MidiFileInputDevice(filename)
+    d = midi_file_in.read(multi_track_file=True)
+    return
+
 def test_track_edit(dummy_timeline):
     dummy_tim = dummy_timeline
     filename = this_dir / '..' / 'tests' / 'x1x1a.mid'
@@ -549,6 +616,17 @@ def test_deduplication_tgt(dummy_timeline):
 # @dummy_timeline2
 # @dummy_timeline(opt='dummy')
 # def test_pattern_len(dummy_timeline, dummy_timeline2):
+def test_cprofile(dummy_timeline, dummy_timeline2):
+    # pattern_len(dummy_timeline, dummy_timeline2)
+    # import cProfile
+    # # cProfile.run('pattern_len(dummy_timeline, dummy_timeline2)')
+    # cProfile.runctx('test_io_midifile_write_multi(dummy_timeline, tmp_path)', globals(), locals())
+    from pyinstrument import Profiler
+    profiler = Profiler()
+    profiler.start()
+    test_pattern_len(dummy_timeline, dummy_timeline2)
+    profiler.stop()
+    profiler.print()
 def test_pattern_len(dummy_timeline, dummy_timeline2):
     def mid_meta_message(msg: mido.MetaMessage = None, *args, **kwargs):
         # return None
@@ -622,6 +700,8 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
     dummy_tim.schedule(events2, sel_track_idx=1)
 
     dummy_tim.run()
+
+    # return
     dummy_tim.output_device.write()
 
     filename = this_dir / '..' / 'tests' / 'x1x1a.mid'
@@ -806,6 +886,8 @@ def test_action_repeat(dummy_timeline, dummy_timeline2):
     dummy_tim2.run()
     dummy_tim2.output_device.write()
     print_mid(dummy_tim2.output_devices[0].filename)
+
+
 def test_hanging_rest_test(dummy_timeline, dummy_timeline2):
     def mid_meta_message(msg: mido.MetaMessage = None, *args, **kwargs):
         # return None
@@ -873,3 +955,32 @@ def test_hanging_rest_test(dummy_timeline, dummy_timeline2):
     dummy_tim2.run()
     dummy_tim2.output_device.write()
     print_mid(dummy_tim2.output_devices[0].filename)
+
+
+def test_io_midifile_write_multi(dummy_timeline, tmp_path):
+    events1 = {
+
+        iso.EVENT_NOTE: iso.PSequence(sequence=[50, 52, 55], repeats=1)
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[0.5, 1, 1], repeats=1)
+        , iso.EVENT_CHANNEL: 0
+    }
+    events2 = {
+        iso.EVENT_NOTE: iso.PSequence(sequence=[75, 69, 72], repeats=1)
+        , iso.EVENT_DURATION: iso.PSequence(sequence=[1, 1, 1], repeats=1)
+        , iso.EVENT_CHANNEL: 2
+    }
+    filename = tmp_path/"output.mid"
+    midifile = MidiFileManyTracksOutputDevice(filename)
+    dummy_timeline.output_device = midifile
+
+    dummy_timeline.schedule(events1, sel_track_idx=0)
+    dummy_timeline.schedule(events2, sel_track_idx=1)
+
+    dummy_timeline.run()
+    midifile.write()
+
+    midi_file_in = MidiFileInputDevice(filename)
+    d = midi_file_in.read()
+    pass
+
+

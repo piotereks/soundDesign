@@ -1,6 +1,15 @@
 from tracker.app.isobar_fixes import *
+snoop.install(enabled=False)
 
 read_config_file_scales()
+
+def test_single_scale():
+    scale = iso.Scale.major
+    key = iso.Key(tonic=0, scale=scale)
+    key.tonic = 1
+    snoop.install(enabled=False)
+    key.nearest_note(62)
+    pass
 
 
 def test_key_nearest_note():
