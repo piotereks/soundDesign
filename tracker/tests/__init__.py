@@ -1,6 +1,6 @@
 import pytest
 # from tracker.app.isobar_fixes import *
-from isoba import *
+from isobar_ext import *
 
 @pytest.fixture()
 def dummy_timeline():
