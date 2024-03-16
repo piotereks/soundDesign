@@ -1,13 +1,17 @@
 # import os
-import contextlib
+# import contextlib
 import shutil
 from datetime import datetime
 from itertools import accumulate
 from queue import Queue
 import mido
+import copy
 
 # from .isobar_fixes import *
+# from isobar_ext import *
+# import isobar_ext as iso
 from isobar_ext import *
+# from isobar_ext.io.midifile import MidiFileOut
 from .log_call import *
 # from .midi_dev import *
 from .patterns import *
@@ -74,7 +78,7 @@ class Tracker:
             )
             track_nr = tracker_config.get('note_at_beat_track_nr', 0)
             if track_nr is not None:
-                note_tracks = (f for f in self.patterns_from_file if f.get(EVENT_NOTE))
+                note_tracks = (f for f in self.patterns_from_file if f.get(iso.EVENT_NOTE))
                 for _ in range(track_nr+1):
                     try:
                         track = next(note_tracks)
@@ -218,8 +222,8 @@ class Tracker:
         self.set_program_change_trk(program=self.pgm_change_config)
 
     def _init_notes_at_beat(self, track, time_signature):
-        durs = list(track[EVENT_DURATION].copy())
-        notes = list(track[EVENT_NOTE].copy())
+        durs = list(track[iso.EVENT_DURATION].copy())
+        notes = list(track[iso.EVENT_NOTE].copy())
         self.notes_at_beat = get_notes_at_beat(notes=notes, durations=durs,
                                                quantize=0.5 / time_signature['denominator'],
                                                time_signature=time_signature)
@@ -391,7 +395,7 @@ class Tracker:
         if midi_in_name:
             try:
                 # self.midi_dev_in = ExtendedMidiInputDevice(midi_in_name[0])
-                self.midi_dev_in = ExtendedMidiInputDevice(midi_in_name[0])
+                self.midi_dev_in = iso.MidiInputDevice(midi_in_name[0])
             except iso.DeviceNotFoundException:
                 print(f"Can't open midi in named'{midi_in_name[0]}. Possibly locked by other application'")
                 return
@@ -471,7 +475,7 @@ class Tracker:
             self.midi_out = iso.MidiOutputDevice(device_name=self.midi_out_name, send_clock=True)
             print("device mode")
         elif midi_out_mode == self.MIDI_OUT_MIX_FILE_DEVICE:
-            self.midi_out = FileOut(filename=filename, device_name=self.midi_out_name, send_clock=True,
+            self.midi_out = iso.FileOut(filename=filename, device_name=self.midi_out_name, send_clock=True,
                                     virtual=NO_MIDI_OUT, ticks_per_beat=self.input_ticks_per_beat)
             print("device mode")
         else:
@@ -534,7 +538,7 @@ class Tracker:
 
 
 
-            notes[EVENT_CHANNEL] = self.min_avail_channel
+            notes[iso.EVENT_CHANNEL] = self.min_avail_channel
 
 
             #  I use negative index to differentiate from standard sel_track_idx calculations
@@ -703,15 +707,15 @@ class Tracker:
             return None
         copy_patterns_from_file = copy.deepcopy(self.patterns_from_file)
         for tr in copy_patterns_from_file:
-            if tr.get(EVENT_AMPLITUDE):
+            if tr.get(iso.EVENT_AMPLITUDE):
                 # tr[EVENT_AMPLITUDE].sequence = [int(a * self.filename_in_volume / 100) for a in tr[EVENT_AMPLITUDE].sequence]
                 seq = []
-                for elem in tr[EVENT_AMPLITUDE].sequence:
+                for elem in tr[iso.EVENT_AMPLITUDE].sequence:
                     if isinstance(elem, tuple):
                         seq.append(tuple(int(n * self.filename_in_volume / 100) for n in elem))
                     else:
                         seq.append(int(elem * self.filename_in_volume / 100) )
-                tr[EVENT_AMPLITUDE].sequence = seq
+                tr[iso.EVENT_AMPLITUDE].sequence = seq
 
         self.timeline.schedule(copy_patterns_from_file, remove_when_done=True)
 
@@ -800,8 +804,8 @@ class Tracker:
             return
         self.timeline.schedule(
             {
-                EVENT_PROGRAM_CHANGE: iso.PSequence(sequence = [program], repeats=1),
-                EVENT_CHANNEL: self.min_avail_channel
+                iso.EVENT_PROGRAM_CHANGE: iso.PSequence(sequence = [program], repeats=1),
+                iso.EVENT_CHANNEL: self.min_avail_channel
             }, sel_track_idx=-1
         )
         self.midi_out.program_change(program=int(program), channel=int(channel))
