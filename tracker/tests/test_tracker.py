@@ -2,7 +2,8 @@ import contextlib
 
 import pytest
 
-from tracker.app.isobar_fixes import *
+# from tracker.app.isobar_fixes import *
+from isobar_ext import *
 from tracker.app.tracker import Tracker
 
 read_config_file_scales()

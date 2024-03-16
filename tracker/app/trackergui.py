@@ -4,7 +4,7 @@ from pathlib import Path
 import random
 from itertools import chain
 
-import isobar as iso
+import isobar_ext as iso
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.properties import (StringProperty, ListProperty, ObjectProperty, NumericProperty, BooleanProperty)

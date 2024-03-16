@@ -1,8 +1,8 @@
 # import os
 from pathlib import Path
 
-from tracker.app.mido_fixes import *
-
+# from tracker.app.mido_fixes import *
+import mido
 
 def print_mid(filename):
     mid = mido.MidiFile(filename)

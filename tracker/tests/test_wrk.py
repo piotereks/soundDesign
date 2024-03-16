@@ -1,7 +1,8 @@
 # import isobar as iso
 import pytest
 
-from tracker.app.isobar_fixes import *
+# from tracker.app.isobar_fixes import *
+from isobar_ext import *
 from tracker.app.midi_dev import *
 # from tracker.app.midi_dev import FileOut, MidiFileManyTracksOutputDevice
 from tracker.utils.dump_midi import print_mid

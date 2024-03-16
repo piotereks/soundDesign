@@ -8,7 +8,7 @@ import re
 from fractions import *
 from functools import wraps
 
-import isobar as iso
+import isobar_ext as iso
 import numpy as np
 
 

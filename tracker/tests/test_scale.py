@@ -1,4 +1,5 @@
-from tracker.app.isobar_fixes import *
+# from tracker.app.isobar_fixes import *
+from isobar_ext import *
 
 read_config_file_scales()
 

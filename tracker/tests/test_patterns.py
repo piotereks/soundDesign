@@ -1,6 +1,8 @@
 import pytest
 
-from tracker.app.isobar_fixes import *
+# from tracker.app.isobar_fixes import *
+# from isobar import *
+from isobar_ext import *
 from tracker.app.patterns import *
 
 read_config_file_scales()

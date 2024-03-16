@@ -4,10 +4,12 @@ import shutil
 from datetime import datetime
 from itertools import accumulate
 from queue import Queue
+import mido
 
-from .isobar_fixes import *
+# from .isobar_fixes import *
+from isobar_ext import *
 from .log_call import *
-from .midi_dev import *
+# from .midi_dev import *
 from .patterns import *
 
 # import pysnooper
@@ -40,7 +42,7 @@ class Tracker:
         self.notes_at_beat = None
         log_call()
 
-        read_config_file_scales()
+        # read_config_file_scales()
         filename_in = tracker_config.get("filename_in")
         if filename_in:
             # filename_in = os.path.join(os.path.dirname(os.path.abspath(__file__)), *filename_in)
@@ -388,6 +390,7 @@ class Tracker:
 
         if midi_in_name:
             try:
+                # self.midi_dev_in = ExtendedMidiInputDevice(midi_in_name[0])
                 self.midi_dev_in = ExtendedMidiInputDevice(midi_in_name[0])
             except iso.DeviceNotFoundException:
                 print(f"Can't open midi in named'{midi_in_name[0]}. Possibly locked by other application'")
