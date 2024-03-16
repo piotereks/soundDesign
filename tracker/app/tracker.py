@@ -563,7 +563,7 @@ class Tracker:
     def metro_timeline(self):
         log_call()
         return self.timeline.schedule({
-            "action": lambda track_idx: self.metro_beat(),
+            "action": lambda track_idx=None: self.metro_beat(),
             "duration": 4 * (self.time_signature['numerator'] / self.time_signature['denominator'])
         },
             remove_when_done=False
@@ -571,7 +571,7 @@ class Tracker:
 
     def metro_none(self):
         log_call()
-        self.timeline.schedule({iso.EVENT_ACTION: lambda track_idx: None,
+        self.timeline.schedule({iso.EVENT_ACTION: lambda track_idx=None: None,
                                 iso.EVENT_DURATION: 1
                                 },
                                remove_when_done=True)
@@ -739,7 +739,7 @@ class Tracker:
         else:
             dur = factor
 
-        return self.timeline.schedule({"action": lambda track_idx: self.file_beat(),
+        return self.timeline.schedule({"action": lambda track_idx=None: self.file_beat(),
                                        iso.EVENT_DURATION: dur
                                        },
                                       remove_when_done=False)
