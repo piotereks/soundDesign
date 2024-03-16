@@ -1,11 +1,19 @@
 # import isobar as iso
 import pytest
+import copy
+import mido
+import time
+
+from functools import partial
 
 # from tracker.app.isobar_fixes import *
-from isobar_ext import *
-from tracker.app.midi_dev import *
-# from tracker.app.midi_dev import FileOut, MidiFileManyTracksOutputDevice
+# from isobar_ext import *
+# from tracker.app.midi_dev import *
+# from tracker.app.midi_dev import FileOut, iso.MidiFileOutputDevice
+import isobar_ext as iso
 from tracker.utils.dump_midi import print_mid
+import snoop
+from pathlib import Path
 
 # import mido
 
@@ -28,7 +36,7 @@ def dummy_timeline():
     midi_out = midi_out_play_name
     # midi_out_device = FileOut(device_name=midi_out, filename=tmp_filename, send_clock=True, virtual=False)
     filename = tmp_filename
-    midi_out_device = MidiFileManyTracksOutputDevice(filename=filename)
+    midi_out_device = iso.MidiFileOutputDevice(filename=filename)
 
     # timeline = iso.Timeline(output_device=iso.io.DummyOutputDevice(), clock_source=iso.DummyClock())
     timeline = iso.Timeline(output_device=midi_out_device, clock_source=iso.DummyClock())
@@ -52,10 +60,10 @@ def dummy_timeline2():
     # timeline = iso.Timeline(output_device=midi_out_device)
 
     if play_or_dummy_for_timeline2 == 'play':
-        midi_out_device = FileOut(device_name=midi_out, filename=filename, send_clock=True, virtual=False)
+        midi_out_device = iso.FileOut(device_name=midi_out, filename=filename, send_clock=True, virtual=False)
         timeline = iso.Timeline(output_device=midi_out_device)
     else:
-        midi_out_device = MidiFileManyTracksOutputDevice(filename=filename)
+        midi_out_device = iso.MidiFileOutputDevice(filename=filename)
         timeline = iso.Timeline(output_device=midi_out_device, clock_source=iso.DummyClock())
 
     timeline.stop_when_done = True
