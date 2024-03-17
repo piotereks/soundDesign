@@ -23,7 +23,7 @@ def test_io_midifile_write(dummy_timeline):
     midifile.write()
 
     midi_file_in = iso.MidiFileInputDevice("output.mid")
-    d = midi_file_in.read()
+    d = midi_file_in.read(multi_track_file=True)
 
     for key in events.keys():
         assert isinstance(d[key], iso.PSequence)
@@ -40,7 +40,7 @@ def test_io_midifile_pdict_save(dummy_timeline):
     }
     pdict = iso.PDict(events)
     pdict.save("output.mid")
-    d = iso.MidiFileInputDevice("output.mid").read()
+    d = iso.MidiFileInputDevice("output.mid").read(multi_track_file=True)
     for key in events.keys():
         assert isinstance(d[key], iso.PSequence)
         assert list(d[key]) == list(events[key])

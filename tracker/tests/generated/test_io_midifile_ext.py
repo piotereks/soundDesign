@@ -42,7 +42,7 @@ def test_io_midifile_write_rests(dummy_timeline):
     dummy_timeline.run()
     midifile.write()
 
-    d = MidiFileInputDevice("output.mid").read()
+    d = MidiFileInputDevice("output.mid").read(multi_track_file=True)
     # file_input_device = iso.MidiFileInputDevice(d)
 
     snoop.install(enabled=True, out='xxx.log', overwrite=True)
@@ -72,7 +72,7 @@ def test_io_midifile_write_rests(dummy_timeline):
 #     }
 #     pdict = iso.PDict(events)
 #     pdict.save("output.mid")
-#     d = MidiFileInputDevice("output.mid").read()
+#     d = MidiFileInputDevice("output.mid").read(multi_track_file=True)
 #     for key in events.keys():
 #         assert isinstance(d[key], iso.PSequence)
 #         assert list(d[key]) == list(events[key])

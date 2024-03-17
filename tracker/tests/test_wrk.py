@@ -174,7 +174,7 @@ def test_timeline_wrk(dummy_timeline, dummy_timeline2):
 
     file_input_device = iso.MidiFileInputDevice(tmp_filename)
     # file_input_device = iso.MidiFileInputDevice(tmp_filenameX)
-    patterns = file_input_device.read()
+    patterns = file_input_device.read(multi_track_file=True)
 
     def app_time():
         dummy_timeline2.event_times.append(time.time())
@@ -477,7 +477,7 @@ def test_track_assignment(dummy_timeline, dummy_timeline2):
 
     file_input_device = iso.MidiFileInputDevice(dummy_tim.output_devices[0].filename)
     # file_input_device = iso.MidiFileInputDevice(tmp_filenameX)
-    patterns = file_input_device.read()
+    patterns = file_input_device.read(multi_track_file=True)
     # def app_time():
     #     dummy_tim2.event_times.append(time.time())
     # dummy_tim2.event_times = []
@@ -513,7 +513,7 @@ def test_track_edit(dummy_timeline):
     filename = this_dir / '..' / 'utils' / 'src_Var_tempo_2_trks_sax_piano.mid'
     # file_input_device = iso.MidiFileInputDevice(dummy_tim.output_devices[0].filename)
     # file_input_device = iso.MidiFileInputDevice(tmp_filenameX)
-    # patterns = file_input_device.read()
+    # patterns = file_input_device.read(multi_track_file=True)
     # from mido import MidiFile
 
     mid = mido.MidiFile(filename)
@@ -533,7 +533,7 @@ def test_deduplication_tgt(dummy_timeline):
     output_filename = this_dir / '..' / 'tests' / 'x1x1_dedup_tgt.mid'
     # mid = mido.MidiFile(filename)
     file_input_device = iso.MidiFileInputDevice(filename)
-    patterns = file_input_device.read()
+    patterns = file_input_device.read(multi_track_file=True)
 
     # input_file.
     # mid.save(output_filename)
@@ -644,7 +644,7 @@ def test_pattern_len(dummy_timeline, dummy_timeline2):
     # dummy_timeline2_instance.opt = 'other'
     # dummy_tim2 = dummy_timeline2(opt='other')
     file_input_device = iso.MidiFileInputDevice(dummy_tim.output_devices[0].filename)
-    patterns = file_input_device.read()
+    patterns = file_input_device.read(multi_track_file=True)
     # patterns_from_file_duration = max([sum(pat[iso.EVENT_DURATION].sequence)
     #                                         for pat in patterns if pat.get(iso.EVENT_DURATION, None)])
     #
@@ -766,7 +766,7 @@ def test_not_equal_chords(dummy_timeline, dummy_timeline2):
     # dummy_timeline2.opt = 'xplay'
     dummy_tim2 = dummy_timeline2
     file_input_device = iso.MidiFileInputDevice(dummy_tim.output_devices[0].filename)
-    patterns = file_input_device.read()
+    patterns = file_input_device.read(multi_track_file=True)
 
     flag = True
 
@@ -866,7 +866,7 @@ def test_hanging_rest_test(dummy_timeline, dummy_timeline2):
     # dummy_timeline2.opt = 'xplay'
     dummy_tim2 = dummy_timeline2
     file_input_device = iso.MidiFileInputDevice(dummy_tim.output_devices[0].filename)
-    patterns = file_input_device.read()
+    patterns = file_input_device.read(multi_track_file=True)
 
     flag = True
     # return

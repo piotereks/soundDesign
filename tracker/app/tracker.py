@@ -58,7 +58,7 @@ class Tracker:
         if filename_in:
             self.file_input_device = iso.MidiFileInputDevice(filename_in) if filename_in else None
 
-            self.patterns_from_file = self.file_input_device.read()
+            self.patterns_from_file = self.file_input_device.read(multi_track_file=True)
             if not isinstance(self.patterns_from_file, list):
                 self.patterns_from_file = [self.patterns_from_file]
                 # self.file_input_device.midi_reader.tracks
