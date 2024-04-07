@@ -747,7 +747,7 @@ class Tracker:
     def tracker_timeline(self):
         log_call()
         return self.timeline.schedule({
-            "action": lambda track_idx: self.beat(),
+            "action": lambda track_idx=None: self.beat(),
             "duration": 4 * self.time_signature['numerator'] / self.time_signature['denominator']
         },
             remove_when_done=False)
